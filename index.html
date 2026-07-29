@@ -539,7 +539,6 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
   <button class="tab" onclick="switchTab(2);playClick()">计划详情</button>
   <button class="tab" onclick="switchTab(3);playClick()">周度复盘</button>
   <button class="tab" id="calendarTab" onclick="switchTab(4);playClick()">经期日历</button>
-  <button class="tab" onclick="switchTab(6);playClick()">食物热量</button>
   <button class="tab" id="adminTab" onclick="switchTab(5);playClick()" style="display:none">管理员</button>
 </nav>
 
@@ -852,7 +851,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 <!-- 经期日详情弹窗 -->
 <div class="modal-overlay" id="periodDetailModal">
   <div class="modal">
-    <h2>🔍 日记/备注详情</h2>
+    <h2>🌸 经期备注</h2>
     <div style="text-align:center;margin-bottom:16px">
       <div id="periodDetailDate" style="font-size:0.85rem;color:var(--text-l)">2024-01-01</div>
       <div id="periodDetailDay" style="font-size:1.1rem;font-weight:700;color:var(--rose-600);margin-top:4px">经期第 1 天</div>
@@ -861,7 +860,8 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
       <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--rose-50);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">体重</span><span id="periodDetailWeight" style="font-size:0.9rem;font-weight:600;color:var(--rose-600)">—</span></div>
       <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">饮食</span><span id="periodDetailDiet" style="font-size:0.9rem;font-weight:500;color:var(--text)">—</span></div>
       <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">运动</span><span id="periodDetailExercise" style="font-size:0.9rem;font-weight:500;color:var(--text)">—</span></div>
-      <div style="padding:10px 12px;background:var(--bg);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">日记/备注</div><div id="periodDetailNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
+      <div style="padding:10px 12px;background:var(--bg);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">🌸 经期备注</div><div id="periodDetailNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
+      <div style="padding:10px 12px;background:var(--rose-50);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">📝 每日日记/备注</div><div id="periodDetailDailyNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closePeriodDetail();playClick()">关闭</button>
@@ -1954,9 +1954,9 @@ setInterval(updateClock, 1000);
 
 /* ---------- Tab ---------- */
 function switchTab(idx) {
-  /* 限制范围（食物热量6始终可用，管理员5仅管理员可见） */
+  /* 限制范围（管理员5仅管理员可见） */
   const adminVisible = document.getElementById('adminTab').style.display !== 'none';
-  const maxIdx = adminVisible ? 6 : 6;
+  const maxIdx = adminVisible ? 5 : 4;
   if (idx < 0 || idx > maxIdx) return;
   if (idx === 5 && !adminVisible) return;
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
@@ -1966,7 +1966,6 @@ function switchTab(idx) {
   if (idx === 3) renderReview();
   if (idx === 4) renderCalendar();
   if (idx === 5 && adminVisible) { renderKeyList(); renderVersionPanel(); }
-  if (idx === 6) { requestAnimationFrame(() => renderFoodCal()); }
   /* 切页后滚到顶部 */
   window.scrollTo(0, 0);
 }
@@ -3457,7 +3456,15 @@ function onCalDayClick(ds) {
 
   /* 构建简洁方框操作菜单 */
   let actions = '';
-  /* 男性：运动打卡；女性：经期相关 */
+  /* 照片：上传和查看左右排列 — 放在最上方 */
+  let photoRow = '<div style="display:flex;gap:8px;margin-bottom:8px">';
+  photoRow += '<div class="cal-action-box" style="flex:1;margin-bottom:0" onclick="uploadDayPhoto(\'' + ds + '\')">📷 上传照片</div>';
+  if (hasPhoto) {
+    photoRow += '<div class="cal-action-box" style="flex:1;margin-bottom:0" onclick="viewDayPhoto(\'' + ds + '\')">👁 查看照片</div>';
+  }
+  photoRow += '</div>';
+  actions += photoRow;
+  /* 男性：运动打卡；女性：经期备注+修改经期时间上下排列 */
   if (isMale) {
     if (hasExercise) {
       actions += '<div class="cal-action-box" onclick="cancelCalExercise(\'' + ds + '\')">🏃 取消运动打卡</div>';
@@ -3466,20 +3473,12 @@ function onCalDayClick(ds) {
     }
   } else {
     if (isPeriod) {
-      actions += '<div class="cal-action-box" onclick="showPeriodDetail(\'' + ds + '\')">🔍 查看日记/备注</div>';
+      actions += '<div class="cal-action-box" onclick="showPeriodDetail(\'' + ds + '\')">🌸 经期备注</div>';
     } else if (hasNote) {
-      actions += '<div class="cal-action-box" onclick="viewDayNote(\'' + ds + '\')">🔍 查看日记/备注</div>';
+      actions += '<div class="cal-action-box" onclick="viewDayNote(\'' + ds + '\')">🌸 经期备注</div>';
     }
     actions += '<div class="cal-action-box" onclick="editPeriodTime(\'' + ds + '\')">🕐 修改经期时间</div>';
   }
-  /* 照片：上传和查看左右排列 */
-  let photoRow = '<div style="display:flex;gap:8px;margin-top:8px">';
-  photoRow += '<div class="cal-action-box" style="flex:1;margin-bottom:0" onclick="uploadDayPhoto(\'' + ds + '\')">📷 上传照片</div>';
-  if (hasPhoto) {
-    photoRow += '<div class="cal-action-box" style="flex:1;margin-bottom:0" onclick="viewDayPhoto(\'' + ds + '\')">👁 查看照片</div>';
-  }
-  photoRow += '</div>';
-  actions += photoRow;
 
   document.getElementById('calActionDate').textContent = ds;
   document.getElementById('calActionList').innerHTML = actions;
@@ -3623,7 +3622,8 @@ function showPeriodDetail(ds) {
   const pday = dayIdx >= 0 ? countPeriodDays(ds) : 1;
   const weight = day ? (day.weightAM || day.weightPM) : null;
   const wStr = weight ? ((state.unit === '斤' ? weight * 2 : weight).toFixed(1) + state.unit) : '未记录';
-  const note = day ? (day.periodNote || '无备注') : '无备注';
+  const periodNote = (day && day.periodNote) ? day.periodNote : '无备注';
+  const dailyNote = (day && day.note) ? day.note : '无日记';
   const diet = day ? (day.diet || '未记录') : '未记录';
   const exercise = day ? (day.exercise || '未记录') : '未记录';
   document.getElementById('periodDetailDate').textContent = ds;
@@ -3631,7 +3631,8 @@ function showPeriodDetail(ds) {
   document.getElementById('periodDetailWeight').textContent = wStr;
   document.getElementById('periodDetailDiet').textContent = diet;
   document.getElementById('periodDetailExercise').textContent = exercise;
-  document.getElementById('periodDetailNote').textContent = note;
+  document.getElementById('periodDetailNote').textContent = periodNote;
+  document.getElementById('periodDetailDailyNote').textContent = dailyNote;
   document.getElementById('periodDetailModal').classList.add('show');
 }
 function closePeriodDetail() {
