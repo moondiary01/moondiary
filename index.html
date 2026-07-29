@@ -3198,8 +3198,11 @@ function renderCalendar() {
           }
         }
       }
-      var clickHandler = isPeriodDay(ds) ? 'onCalDayClick(\\'' + ds + '\\')' : 'toggleCalPeriod(\\'' + ds + '\\')';
-      html += '<div class="' + cls + '" onclick="' + clickHandler + '">' + label + (weightArrow || '') + '</div>';
+      if (isPeriodDay(ds)) {
+        html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + label + (weightArrow || '') + '</div>';
+      } else {
+        html += '<div class="' + cls + '" onclick="toggleCalPeriod(\'' + ds + '\')">' + label + (weightArrow || '') + '</div>';
+      }
     }
   }
   /* 补满 */
