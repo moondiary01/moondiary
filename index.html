@@ -165,6 +165,8 @@ body{
 .btn-primary:hover{background:var(--rose-600)}
 .btn-outline{background:transparent;color:var(--rose-500);border:1.5px solid var(--rose-300)}
 .btn-outline:hover{background:var(--rose-50)}
+.btn-danger{background:#EF4444;color:#fff;border:none}
+.btn-danger:hover{background:#DC2626}
 .btn-gold{background:var(--grad-gold);color:#fff}
 .btn-sm{padding:5px 10px;font-size:0.72rem}
 /* ===== 个人信息条 ===== */
@@ -377,6 +379,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .cal-weight.up{color:#EF4444}
 .cal-weight.down{color:#10B981}
 .cal-weight.same{color:var(--text-l)}
+.cal-photo{font-size:0.5rem;display:block;line-height:1;margin-bottom:1px;text-align:center}
 .avatar-option{aspect-ratio:1;border-radius:50%;background:var(--rose-50);border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:all 0.15s}
 .avatar-option:hover{transform:scale(1.1)}
 .avatar-option.selected{border-color:var(--rose-500);background:var(--rose-100)}
@@ -954,9 +957,26 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
       <div style="padding:10px 12px;background:var(--bg);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">🌸 经期备注</div><div id="periodDetailNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
       <div style="padding:10px 12px;background:var(--rose-50);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">📝 每日日记/备注</div><div id="periodDetailDailyNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
     </div>
+    <!-- 照片按钮行 -->
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button class="btn btn-outline" style="flex:1;font-size:0.8rem" onclick="uploadDayPhotoFromDetail();playClick()">📷 上传照片</button>
+      <button class="btn btn-outline" style="flex:1;font-size:0.8rem" id="periodDetailViewPhoto" onclick="viewDayPhotoFromDetail();playClick()" style="display:none">👁 查看照片</button>
+    </div>
     <div class="modal-actions">
       <button class="btn btn-outline" id="periodDetailAction" onclick="cancelPeriodFromDetail();playClick()">取消经期</button>
       <button class="btn btn-outline" onclick="closePeriodDetail();playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 查看照片弹窗 -->
+<div class="modal-overlay" id="dayPhotoModal">
+  <div class="modal">
+    <h2>📷 当日照片</h2>
+    <img id="dayPhotoImg" src="" style="width:100%;border-radius:12px;margin-bottom:12px">
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="deleteDayPhoto();playClick()">🗑 删除照片</button>
+      <button class="btn btn-outline" onclick="closeDayPhoto();playClick()">关闭</button>
     </div>
   </div>
 </div>
@@ -3225,7 +3245,9 @@ function renderCalendar() {
           }
         }
       }
-      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + label + (weightArrow || '') + '</div>';
+      /* 照片标记（在日期数字上方） */
+      var photoMark = (dayIdx2 >= 0 && state.days[dayIdx2].photo) ? '<span class="cal-photo">📷</span>' : '';
+      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + (photoMark || '') + label + (weightArrow || '') + '</div>';
     }
   }
   /* 补满 */
@@ -3342,6 +3364,9 @@ function showPeriodDetail(ds) {
     btn.textContent = '标记经期';
     btn.setAttribute('onclick', 'markPeriodFromDetail();playClick()');
   }
+  /* 有照片时显示"查看照片"按钮 */
+  var viewBtn = document.getElementById('periodDetailViewPhoto');
+  if (viewBtn) viewBtn.style.display = (day && day.photo) ? '' : 'none';
   document.getElementById('periodDetailModal').classList.add('show');
 }
 function closePeriodDetail() {
@@ -3358,6 +3383,56 @@ function markPeriodFromDetail() {
   closePeriodDetail();
   toggleCalPeriod(ds);
   showToast('已标记该天经期');
+}
+
+/* 照片上传/查看/删除 */
+function uploadDayPhotoFromDetail() {
+  const ds = document.getElementById('periodDetailDate').textContent;
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      let dayIdx = state.days.findIndex(dd => dd.date === ds);
+      if (dayIdx < 0) { showToast('该日期不在计划范围内'); return; }
+      state.days[dayIdx].photo = ev.target.result;
+      saveState(); renderCalendar(); renderTable();
+      /* 更新弹窗里的查看按钮 */
+      var btn = document.getElementById('periodDetailViewPhoto');
+      if (btn) btn.style.display = '';
+      showToast('照片上传成功');
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+function viewDayPhotoFromDetail() {
+  const ds = document.getElementById('periodDetailDate').textContent;
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  if (dayIdx < 0 || !state.days[dayIdx].photo) { showToast('无照片'); return; }
+  document.getElementById('dayPhotoImg').src = state.days[dayIdx].photo;
+  document.getElementById('dayPhotoModal').dataset.date = ds;
+  document.getElementById('dayPhotoModal').classList.add('show');
+}
+function closeDayPhoto() {
+  document.getElementById('dayPhotoModal').classList.remove('show');
+}
+function deleteDayPhoto() {
+  const ds = document.getElementById('dayPhotoModal').dataset.date;
+  if (!ds) { closeDayPhoto(); return; }
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  if (dayIdx >= 0 && state.days[dayIdx].photo) {
+    state.days[dayIdx].photo = null;
+    saveState(); renderCalendar(); renderTable();
+    /* 更新经期弹窗的查看按钮 */
+    var btn = document.getElementById('periodDetailViewPhoto');
+    if (btn) btn.style.display = 'none';
+    showToast('照片已删除');
+  }
+  closeDayPhoto();
 }
 
 function toggleCalPeriod(ds) {
