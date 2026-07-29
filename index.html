@@ -376,6 +376,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .cal-weight{font-size:0.55rem;font-weight:700}
 .cal-weight.up{color:#EF4444}
 .cal-weight.down{color:#10B981}
+.cal-photo{font-size:0.55rem;display:block;line-height:1}
 .avatar-option{aspect-ratio:1;border-radius:50%;background:var(--rose-50);border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:all 0.15s}
 .avatar-option:hover{transform:scale(1.1)}
 .avatar-option.selected{border-color:var(--rose-500);background:var(--rose-100)}
@@ -535,6 +536,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
   <button class="tab" onclick="switchTab(2);playClick()">计划详情</button>
   <button class="tab" onclick="switchTab(3);playClick()">周度复盘</button>
   <button class="tab" id="calendarTab" onclick="switchTab(4);playClick()">经期日历</button>
+  <button class="tab" onclick="switchTab(6);playClick()">食物热量</button>
   <button class="tab" id="adminTab" onclick="switchTab(5);playClick()" style="display:none">管理员</button>
 </nav>
 
@@ -751,7 +753,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 <!-- ===== Page 6: 食物热量查询 ===== -->
 <div class="page" id="page6">
   <div class="card">
-    <div class="card-title">🍎 食物热量查询</div>
+    <div class="card-title">食物热量查询</div>
     <div style="position:relative;margin-bottom:14px">
       <input type="text" id="foodSearch" placeholder="搜索食物名称" oninput="renderFoodCal()" style="width:100%;padding:11px 14px 11px 38px;border:1.5px solid var(--border);border-radius:12px;font-size:0.95rem;outline:none;background:var(--bg-card);color:var(--text)">
       <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:1.05rem">🔍</span>
@@ -860,6 +862,52 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
     </div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closePeriodDetail();playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 日历操作菜单弹窗 -->
+<div class="modal-overlay" id="calActionModal">
+  <div class="modal">
+    <h2 id="calActionDate">日期操作</h2>
+    <div id="calActionList" style="margin-bottom:12px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeCalAction();playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 查看照片弹窗 -->
+<div class="modal-overlay" id="dayPhotoModal">
+  <div class="modal">
+    <h2>📷 当日照片</h2>
+    <img id="dayPhotoImg" src="" style="width:100%;border-radius:12px;margin-bottom:12px">
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeDayPhoto();playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 查看备注弹窗 -->
+<div class="modal-overlay" id="dayNoteModal">
+  <div class="modal">
+    <h2>📝 当日备注</h2>
+    <div id="dayNoteText" style="padding:14px;background:var(--bg);border-radius:10px;font-size:0.9rem;line-height:1.6;color:var(--text);min-height:60px;margin-bottom:12px">—</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeDayNote();playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 修改经期时间弹窗 -->
+<div class="modal-overlay" id="editPeriodModal">
+  <div class="modal">
+    <h2>🕐 修改经期时间</h2>
+    <div class="input-group"><label>开始日期</label><input type="date" id="editPeriodStart"></div>
+    <div class="input-group"><label>结束日期（不填=进行中）</label><input type="date" id="editPeriodEnd"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeEditPeriod();playClick()">取消</button>
+      <button class="btn btn-primary" onclick="savePeriodTime();playClick()">保存</button>
     </div>
   </div>
 </div>
@@ -1904,7 +1952,7 @@ setInterval(updateClock, 1000);
 /* ---------- Tab ---------- */
 function switchTab(idx) {
   /* 限制范围（管理员tab不可见时不能滑到） */
-  const maxIdx = document.getElementById('adminTab').style.display === 'none' ? 4 : 5;
+  const maxIdx = document.getElementById('adminTab').style.display === 'none' ? 5 : 6;
   if (idx < 0 || idx > maxIdx) return;
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
   document.querySelectorAll('.page').forEach((p,i) => p.classList.toggle('active', i===idx));
@@ -1913,6 +1961,7 @@ function switchTab(idx) {
   if (idx === 3) renderReview();
   if (idx === 4) renderCalendar();
   if (idx === 5) { renderKeyList(); renderVersionPanel(); }
+  if (idx === 6) { requestAnimationFrame(() => renderFoodCal()); }
   /* 切页后滚到顶部 */
   window.scrollTo(0, 0);
 }
@@ -2778,7 +2827,16 @@ function renderFoodCal() {
   if (currentFoodCat !== '全部') arr = arr.filter(f => f.cat === currentFoodCat);
   if (kw) arr = arr.filter(f => f.name.toLowerCase().includes(kw));
   if (arr.length === 0) { list.innerHTML = '<div style="text-align:center;color:var(--text-l);padding:30px 0;font-size:0.85rem">未找到相关食物</div>'; return; }
-  list.innerHTML = arr.map(f => `<div class="food-item"><div class="food-name">${f.name}</div><div class="food-cal"><b>${f.cal}</b> kcal/100g</div></div>`).join('');
+  /* 限制渲染数量提升性能 */
+  const max = 200;
+  const show = arr.slice(0, max);
+  let html = '';
+  for (let i = 0; i < show.length; i++) {
+    const f = show[i];
+    html += '<div class="food-item"><div class="food-name">' + f.name + '</div><div class="food-cal"><b>' + f.cal + '</b> kcal/100g</div></div>';
+  }
+  if (arr.length > max) html += '<div style="text-align:center;color:var(--text-l);padding:12px;font-size:0.78rem">还有 ' + (arr.length - max) + ' 条，请搜索或筛选</div>';
+  list.innerHTML = html;
 }
 
 /* ---------- 设置 ---------- */
@@ -3289,7 +3347,10 @@ function renderCalendar() {
         if (checkDate.getTime() === ovulationDay.getTime()) { cls += ' ovulation'; label = d + '🥚'; }
         else if (checkDate >= ovStart && checkDate <= ovEnd) cls += ' ovulation-window';
       }
-      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + label + (weightArrow ? '<br>' + weightArrow : '') + '</div>';
+      /* 照片缩略图 */
+      const dayIdx = state.days.findIndex(dd => dd.date === ds);
+      const photoMark = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo">📷</span>' : '';
+      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + label + (weightArrow ? '<br>' + weightArrow : '') + photoMark + '</div>';
     }
   }
   /* 补满 */
@@ -3360,14 +3421,166 @@ function toggleCalExercise(ds) {
 }
 
 function onCalDayClick(ds) {
-  if (isPeriodDay(ds)) {
-    showPeriodDetail(ds);
+  const isPeriod = isPeriodDay(ds);
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  const day = dayIdx >= 0 ? state.days[dayIdx] : null;
+  const hasPhoto = day && day.photo;
+  const hasNote = day && (day.periodNote || day.note);
+
+  /* 构建操作菜单 */
+  let actions = '';
+  if (isPeriod) {
+    actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="cancelCalPeriod(\'' + ds + '\')">取消经期标记</button>';
+    actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="showPeriodDetail(\'' + ds + '\')">查看经期详情</button>';
   } else {
-    toggleCalPeriod(ds);
+    actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="markCalPeriod(\'' + ds + '\')">标记经期</button>';
   }
+  actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="uploadDayPhoto(\'' + ds + '\')">📷 上传照片</button>';
+  if (hasPhoto) {
+    actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="viewDayPhoto(\'' + ds + '\')">👁 查看照片</button>';
+  }
+  if (hasNote) {
+    actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="viewDayNote(\'' + ds + '\')">📝 查看备注</button>';
+  }
+  actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="editPeriodTime(\'' + ds + '\')">🕐 修改经期时间</button>';
+
+  document.getElementById('calActionDate').textContent = ds;
+  document.getElementById('calActionList').innerHTML = actions;
+  document.getElementById('calActionModal').classList.add('show');
+}
+function closeCalAction() {
+  document.getElementById('calActionModal').classList.remove('show');
+}
+
+/* 上传照片 */
+function uploadDayPhoto(ds) {
+  closeCalAction();
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const dayIdx = state.days.findIndex(dd => dd.date === ds);
+      if (dayIdx >= 0) {
+        state.days[dayIdx].photo = ev.target.result;
+        saveState();
+        renderCalendar();
+        showToast('照片已上传');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+function viewDayPhoto(ds) {
+  closeCalAction();
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  if (dayIdx < 0 || !state.days[dayIdx].photo) { showToast('无照片'); return; }
+  document.getElementById('dayPhotoImg').src = state.days[dayIdx].photo;
+  document.getElementById('dayPhotoModal').classList.add('show');
+}
+function closeDayPhoto() {
+  document.getElementById('dayPhotoModal').classList.remove('show');
+}
+function viewDayNote(ds) {
+  closeCalAction();
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  if (dayIdx < 0) { showToast('无备注'); return; }
+  const day = state.days[dayIdx];
+  const note = day.periodNote || day.note || '无备注';
+  document.getElementById('dayNoteText').textContent = note;
+  document.getElementById('dayNoteModal').classList.add('show');
+}
+function closeDayNote() {
+  document.getElementById('dayNoteModal').classList.remove('show');
+}
+
+/* 修改经期时间 */
+function editPeriodTime(ds) {
+  closeCalAction();
+  const isPeriod = isPeriodDay(ds);
+  const period = isPeriod ? state.periods.find(p => ds >= p.start && (p.end === null || ds <= p.end)) : null;
+  document.getElementById('editPeriodStart').value = period ? period.start : ds;
+  document.getElementById('editPeriodEnd').value = period && period.end ? period.end : '';
+  document.getElementById('editPeriodModal').classList.add('show');
+  document.getElementById('editPeriodModal').dataset.ds = ds;
+}
+function savePeriodTime() {
+  const ds = document.getElementById('editPeriodModal').dataset.ds;
+  const start = document.getElementById('editPeriodStart').value;
+  const end = document.getElementById('editPeriodEnd').value;
+  if (!start) { showToast('请选择开始日期'); return; }
+  if (!state.periods) state.periods = [];
+  /* 删除包含当前日期的经期区间 */
+  state.periods = state.periods.filter(p => !(ds >= p.start && (p.end === null || ds <= p.end)));
+  /* 添加新的经期区间 */
+  state.periods.push({ start: start, end: end || null });
+  state.periods.sort((a, b) => a.start.localeCompare(b.start));
+  saveState();
+  renderCalendar();
+  document.getElementById('editPeriodModal').classList.remove('show');
+  showToast('经期时间已修改');
+}
+function closeEditPeriod() {
+  document.getElementById('editPeriodModal').classList.remove('show');
+}
+
+/* 标记经期 */
+function markCalPeriod(ds) {
+  closeCalAction();
+  if (!state.periods) state.periods = [];
+  state.periods.push({ start: ds, end: null });
+  state.periods.sort((a, b) => a.start.localeCompare(b.start));
+  const merged = [];
+  state.periods.forEach(p => {
+    if (merged.length) {
+      const last = merged[merged.length - 1];
+      const lastEnd = last.end ? new Date(last.end) : new Date(last.start);
+      const curStart = new Date(p.start);
+      if (curStart.getTime() <= lastEnd.getTime() + 86400000) {
+        last.end = p.end || p.start;
+      } else {
+        merged.push(p);
+      }
+    } else {
+      merged.push(p);
+    }
+  });
+  state.periods = merged;
+  saveState(); renderCalendar(); renderTable();
+  showToast('已标记经期');
+}
+
+/* 取消经期标记 */
+function cancelCalPeriod(ds) {
+  closeCalAction();
+  if (!state.periods) return;
+  const existing = state.periods.find(p => ds >= p.start && (p.end === null || ds <= p.end));
+  if (!existing) { showToast('该日期不是经期'); return; }
+  const start = new Date(existing.start);
+  const end = existing.end ? new Date(existing.end) : new Date(existing.start);
+  const target = new Date(ds);
+  if (target.getTime() === start.getTime() && target.getTime() === end.getTime()) {
+    state.periods = state.periods.filter(p => p !== existing);
+  } else if (target.getTime() === start.getTime()) {
+    existing.start = localDateStr(new Date(start.getTime() + 86400000));
+  } else if (target.getTime() === end.getTime()) {
+    existing.end = localDateStr(new Date(end.getTime() - 86400000));
+  } else {
+    const newEnd = localDateStr(new Date(target.getTime() - 86400000));
+    const newStart = localDateStr(new Date(target.getTime() + 86400000));
+    existing.end = newEnd;
+    state.periods.push({ start: newStart, end: localDateStr(end) });
+  }
+  saveState(); renderCalendar(); renderTable();
+  showToast('已取消经期标记');
 }
 
 function showPeriodDetail(ds) {
+  closeCalAction();
   const dayIdx = state.days.findIndex(dd => dd.date === ds);
   const day = dayIdx >= 0 ? state.days[dayIdx] : null;
   const pday = dayIdx >= 0 ? countPeriodDays(ds) : 1;
