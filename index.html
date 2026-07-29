@@ -935,6 +935,27 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
   </div>
 </div>
 
+<!-- 经期备注详情弹窗 -->
+<div class="modal-overlay" id="periodDetailModal">
+  <div class="modal">
+    <h2>🌸 经期备注</h2>
+    <div style="text-align:center;margin-bottom:16px">
+      <div id="periodDetailDate" style="font-size:0.85rem;color:var(--text-l)">—</div>
+      <div id="periodDetailDay" style="font-size:1.1rem;font-weight:700;color:var(--rose-600);margin-top:4px">—</div>
+    </div>
+    <div style="display:grid;gap:10px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--rose-50);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">体重</span><span id="periodDetailWeight" style="font-size:0.9rem;font-weight:600;color:var(--rose-600)">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">饮食</span><span id="periodDetailDiet" style="font-size:0.9rem;font-weight:500;color:var(--text)">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">运动</span><span id="periodDetailExercise" style="font-size:0.9rem;font-weight:500;color:var(--text)">—</span></div>
+      <div style="padding:10px 12px;background:var(--bg);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">🌸 经期备注</div><div id="periodDetailNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
+      <div style="padding:10px 12px;background:var(--rose-50);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">📝 每日日记/备注</div><div id="periodDetailDailyNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closePeriodDetail();playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <div class="save-indicator" id="saveIndicator">✓ 已保存</div>
 
@@ -3154,7 +3175,8 @@ function renderCalendar() {
           else if (checkDate >= ovStart && checkDate <= ovEnd) cls += ' ovulation-window';
         }
       }
-      html += '<div class="' + cls + '" onclick="toggleCalPeriod(\'' + ds + '\')">' + label + '</div>';
+      var clickHandler = isPeriodDay(ds) ? 'onCalDayClick(\\'' + ds + '\\')' : 'toggleCalPeriod(\\'' + ds + '\\')';
+      html += '<div class="' + cls + '" onclick="' + clickHandler + '">' + label + '</div>';
     }
   }
   /* 补满 */
@@ -3222,6 +3244,53 @@ function toggleCalExercise(ds) {
     showToast('🏃 运动打卡！');
   }
   saveState(); renderCalendar(); renderTable(); playToggle();
+}
+
+/* 点击经期日期：弹窗查看备注 */
+function onCalDayClick(ds) {
+  /* 如果是经期日，弹窗查看；否则标记经期 */
+  if (isPeriodDay(ds)) {
+    showPeriodDetail(ds);
+  } else {
+    toggleCalPeriod(ds);
+  }
+}
+
+function countPeriodDays(ds) {
+  if (!state.periods) return 0;
+  for (const p of state.periods) {
+    if (ds < p.start) continue;
+    const e = (p.end === null || p.end === undefined) ? p.start : p.end;
+    if (ds <= e) {
+      const s = new Date(p.start);
+      const t = new Date(ds);
+      return Math.floor((t - s) / 86400000) + 1;
+    }
+  }
+  return 0;
+}
+
+function showPeriodDetail(ds) {
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  const day = dayIdx >= 0 ? state.days[dayIdx] : null;
+  const pday = countPeriodDays(ds);
+  const weight = day ? (day.weightAM || day.weightPM) : null;
+  const wStr = weight ? ((state.unit === '斤' ? weight * 2 : weight).toFixed(1) + state.unit) : '未记录';
+  const periodNote = (day && day.periodNote) ? day.periodNote : '无备注';
+  const dailyNote = (day && day.note) ? day.note : '无日记';
+  const diet = day ? (day.diet || '未记录') : '未记录';
+  const exercise = day ? (day.exercise || '未记录') : '未记录';
+  document.getElementById('periodDetailDate').textContent = ds;
+  document.getElementById('periodDetailDay').textContent = pday > 0 ? '经期第 ' + pday + ' 天' : '非经期日';
+  document.getElementById('periodDetailWeight').textContent = wStr;
+  document.getElementById('periodDetailDiet').textContent = diet;
+  document.getElementById('periodDetailExercise').textContent = exercise;
+  document.getElementById('periodDetailNote').textContent = periodNote;
+  document.getElementById('periodDetailDailyNote').textContent = dailyNote;
+  document.getElementById('periodDetailModal').classList.add('show');
+}
+function closePeriodDetail() {
+  document.getElementById('periodDetailModal').classList.remove('show');
 }
 
 function toggleCalPeriod(ds) {
