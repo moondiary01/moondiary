@@ -1819,6 +1819,8 @@ function switchTab(idx) {
   if (idx === 3) renderReview();
   if (idx === 4) renderCalendar();
   if (idx === 5) { renderKeyList(); renderVersionPanel(); }
+  /* 切页后滚到顶部 */
+  window.scrollTo(0, 0);
 }
 
 /* ---------- 左右滑动切换页面 ---------- */
