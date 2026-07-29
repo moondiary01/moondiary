@@ -1525,9 +1525,9 @@ function loadState() {
 function saveState() {
   try {
     localStorage.setItem(userStorageKey(currentKey), JSON.stringify(state));
-    saveToCloud(currentKey, state);
-    showSaveIndicator();
-  } catch(e) { showToast('保存失败，浏览器可能禁用了本地存储'); }
+  } catch(e) {}
+  saveToCloud(currentKey, state);
+  showSaveIndicator();
 }
 function saveStateImmediate() {
   if (currentKey) {
