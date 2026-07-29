@@ -363,7 +363,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 /* 日历 */
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal-wd{text-align:center;font-size:0.72rem;font-weight:700;color:var(--text-l);padding:6px 0}
-.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;position:relative;background:var(--bg)}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;position:relative;background:var(--bg)}
 .cal-day:hover{background:var(--rose-100)}
 .cal-day.empty{background:transparent;cursor:default}
 .cal-day.today{background:var(--rose-500);color:#fff}
@@ -373,7 +373,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .cal-day.ovulation-window{background:#FEF9C3;color:#A16207}
 .cal-day.exercise{background:#D1FAE5;color:#065F46;font-weight:700}
 .cal-day.other-month{color:var(--text-l);opacity:0.4}
-.cal-weight{font-size:0.5rem;display:block;line-height:1;margin-top:1px;text-align:center}
+.cal-weight{font-size:0.65rem;display:block;line-height:1.2;margin-top:2px;text-align:center;font-weight:700}
 .cal-weight.up{color:#EF4444}
 .cal-weight.down{color:#10B981}
 .cal-weight.same{color:var(--text-l)}
@@ -955,7 +955,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
       <div style="padding:10px 12px;background:var(--rose-50);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">📝 每日日记/备注</div><div id="periodDetailDailyNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-outline" onclick="cancelPeriodFromDetail();playClick()">取消经期</button>
+      <button class="btn btn-outline" id="periodDetailAction" onclick="cancelPeriodFromDetail();playClick()">取消经期</button>
       <button class="btn btn-outline" onclick="closePeriodDetail();playClick()">关闭</button>
     </div>
   </div>
@@ -3225,11 +3225,7 @@ function renderCalendar() {
           }
         }
       }
-      if (isPeriodDay(ds)) {
-        html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + label + (weightArrow || '') + '</div>';
-      } else {
-        html += '<div class="' + cls + '" onclick="toggleCalPeriod(\'' + ds + '\')">' + label + (weightArrow || '') + '</div>';
-      }
+      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + label + (weightArrow || '') + '</div>';
     }
   }
   /* 补满 */
@@ -3301,12 +3297,8 @@ function toggleCalExercise(ds) {
 
 /* 点击经期日期：弹窗查看备注 */
 function onCalDayClick(ds) {
-  /* 如果是经期日，弹窗查看；否则标记经期 */
-  if (isPeriodDay(ds)) {
-    showPeriodDetail(ds);
-  } else {
-    toggleCalPeriod(ds);
-  }
+  /* 所有日期都弹窗查看 */
+  showPeriodDetail(ds);
 }
 
 function countPeriodDays(ds) {
@@ -3327,6 +3319,7 @@ function showPeriodDetail(ds) {
   const dayIdx = state.days.findIndex(dd => dd.date === ds);
   const day = dayIdx >= 0 ? state.days[dayIdx] : null;
   const pday = countPeriodDays(ds);
+  const isPeriod = isPeriodDay(ds);
   const weight = day ? (day.weightAM || day.weightPM) : null;
   const wStr = weight ? ((state.unit === '斤' ? weight * 2 : weight).toFixed(1) + state.unit) : '未记录';
   const periodNote = (day && day.periodNote) ? day.periodNote : '无备注';
@@ -3334,12 +3327,21 @@ function showPeriodDetail(ds) {
   const diet = day ? (day.diet || '未记录') : '未记录';
   const exercise = day ? (day.exercise || '未记录') : '未记录';
   document.getElementById('periodDetailDate').textContent = ds;
-  document.getElementById('periodDetailDay').textContent = pday > 0 ? '经期第 ' + pday + ' 天' : '非经期日';
+  document.getElementById('periodDetailDay').textContent = isPeriod ? '经期第 ' + pday + ' 天' : '非经期日';
   document.getElementById('periodDetailWeight').textContent = wStr;
   document.getElementById('periodDetailDiet').textContent = diet;
   document.getElementById('periodDetailExercise').textContent = exercise;
   document.getElementById('periodDetailNote').textContent = periodNote;
   document.getElementById('periodDetailDailyNote').textContent = dailyNote;
+  /* 动态设置按钮：经期日显示"取消经期"，非经期日显示"标记经期" */
+  var btn = document.getElementById('periodDetailAction');
+  if (isPeriod) {
+    btn.textContent = '取消经期';
+    btn.setAttribute('onclick', 'cancelPeriodFromDetail();playClick()');
+  } else {
+    btn.textContent = '标记经期';
+    btn.setAttribute('onclick', 'markPeriodFromDetail();playClick()');
+  }
   document.getElementById('periodDetailModal').classList.add('show');
 }
 function closePeriodDetail() {
@@ -3350,6 +3352,12 @@ function cancelPeriodFromDetail() {
   closePeriodDetail();
   toggleCalPeriod(ds);
   showToast('已取消该天经期');
+}
+function markPeriodFromDetail() {
+  const ds = document.getElementById('periodDetailDate').textContent;
+  closePeriodDetail();
+  toggleCalPeriod(ds);
+  showToast('已标记该天经期');
 }
 
 function toggleCalPeriod(ds) {
