@@ -3205,10 +3205,28 @@ function renderCalendar() {
     let label = d;
     if (ds === todayStr) cls += ' today';
     if (isMale) {
-      /* 运动日历：检查当天是否有运动 */
+      /* 运动日历 */
       const dayIdx = state.days.findIndex(dd => dd.date === ds);
-      if (dayIdx >= 0 && state.days[dayIdx].exercise && state.days[dayIdx].exercise !== '无运动') { cls += ' exercise'; label = d + '🏃'; }
-      html += '<div class="' + cls + '" onclick="toggleCalExercise(\'' + ds + '\')">' + label + '</div>';
+      const hasExercise = dayIdx >= 0 && state.days[dayIdx].exercise && state.days[dayIdx].exercise !== '无运动';
+      if (hasExercise) { cls += ' exercise'; label = d + '🏃'; }
+      /* 照片标记 + 体重箭头 */
+      var photoMarkM = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo">📷</span>' : '';
+      var weightArrowM = '';
+      if (dayIdx >= 0) {
+        var wM = state.days[dayIdx].weightAM;
+        if (wM) {
+          var prevWM = null;
+          for (var pm = dayIdx - 1; pm >= 0; pm--) {
+            if (state.days[pm].weightAM) { prevWM = state.days[pm].weightAM; break; }
+          }
+          if (prevWM !== null) {
+            if (wM > prevWM) weightArrowM = '<span class="cal-weight up">↑</span>';
+            else if (wM < prevWM) weightArrowM = '<span class="cal-weight down">↓</span>';
+            else weightArrowM = '<span class="cal-weight same">=</span>';
+          }
+        }
+      }
+      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + (photoMarkM || '') + label + (weightArrowM || '') + '</div>';
     } else {
       /* 经期日历 */
       if (isPeriodDay(ds)) cls += ' period';
@@ -3317,10 +3335,13 @@ function toggleCalExercise(ds) {
   saveState(); renderCalendar(); renderTable(); playToggle();
 }
 
-/* 点击经期日期：弹窗查看备注 */
+/* 点击日历日期：弹窗查看 */
 function onCalDayClick(ds) {
-  /* 所有日期都弹窗查看 */
-  showPeriodDetail(ds);
+  if (state.gender === '男') {
+    showExerciseDetail(ds);
+  } else {
+    showPeriodDetail(ds);
+  }
 }
 
 function countPeriodDays(ds) {
@@ -3348,6 +3369,10 @@ function showPeriodDetail(ds) {
   const dailyNote = (day && day.note) ? day.note : '无日记';
   const diet = day ? (day.diet || '未记录') : '未记录';
   const exercise = day ? (day.exercise || '未记录') : '未记录';
+  /* 恢复标题和经期备注区块 */
+  document.querySelector('#periodDetailModal h2').textContent = '🌸 经期备注';
+  var noteBox = document.getElementById('periodDetailNote').parentElement;
+  noteBox.style.display = '';
   document.getElementById('periodDetailDate').textContent = ds;
   document.getElementById('periodDetailDay').textContent = isPeriod ? '经期第 ' + pday + ' 天' : '非经期日';
   document.getElementById('periodDetailWeight').textContent = wStr;
@@ -3371,6 +3396,63 @@ function showPeriodDetail(ds) {
 }
 function closePeriodDetail() {
   document.getElementById('periodDetailModal').classList.remove('show');
+}
+
+/* 男性运动日详情弹窗 */
+function showExerciseDetail(ds) {
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  const day = dayIdx >= 0 ? state.days[dayIdx] : null;
+  const hasExercise = day && day.exercise && day.exercise !== '无运动';
+  const weight = day ? (day.weightAM || day.weightPM) : null;
+  const wStr = weight ? ((state.unit === '斤' ? weight * 2 : weight).toFixed(1) + state.unit) : '未记录';
+  const dailyNote = (day && day.note) ? day.note : '无日记';
+  const diet = day ? (day.diet || '未记录') : '未记录';
+  const exercise = day ? (day.exercise || '未记录') : '未记录';
+  /* 设置标题 */
+  document.querySelector('#periodDetailModal h2').textContent = '🏃 运动打卡';
+  document.getElementById('periodDetailDate').textContent = ds;
+  document.getElementById('periodDetailDay').textContent = hasExercise ? '✅ 已打卡运动' : '未打卡运动';
+  document.getElementById('periodDetailWeight').textContent = wStr;
+  document.getElementById('periodDetailDiet').textContent = diet;
+  document.getElementById('periodDetailExercise').textContent = exercise;
+  /* 经期备注区块隐藏，改为运动日记 */
+  var noteBox = document.getElementById('periodDetailNote').parentElement;
+  noteBox.style.display = 'none';
+  document.getElementById('periodDetailNote').textContent = '';
+  document.getElementById('periodDetailDailyNote').textContent = dailyNote;
+  /* 动态设置按钮 */
+  var btn = document.getElementById('periodDetailAction');
+  if (hasExercise) {
+    btn.textContent = '取消运动';
+    btn.setAttribute('onclick', 'cancelExerciseFromDetail();playClick()');
+  } else {
+    btn.textContent = '打卡运动';
+    btn.setAttribute('onclick', 'markExerciseFromDetail();playClick()');
+  }
+  /* 有照片时显示"查看照片"按钮 */
+  var viewBtn = document.getElementById('periodDetailViewPhoto');
+  if (viewBtn) viewBtn.style.display = (day && day.photo) ? '' : 'none';
+  document.getElementById('periodDetailModal').classList.add('show');
+}
+function cancelExerciseFromDetail() {
+  const ds = document.getElementById('periodDetailDate').textContent;
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  if (dayIdx >= 0) {
+    state.days[dayIdx].exercise = '';
+    saveState(); renderCalendar(); renderTable();
+  }
+  closePeriodDetail();
+  showToast('已取消运动打卡');
+}
+function markExerciseFromDetail() {
+  const ds = document.getElementById('periodDetailDate').textContent;
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  if (dayIdx >= 0) {
+    state.days[dayIdx].exercise = '有运动';
+    saveState(); renderCalendar(); renderTable();
+  }
+  closePeriodDetail();
+  showToast('🏃 运动打卡成功');
 }
 function cancelPeriodFromDetail() {
   const ds = document.getElementById('periodDetailDate').textContent;
