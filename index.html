@@ -535,7 +535,6 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
   <button class="tab" onclick="switchTab(2);playClick()">计划详情</button>
   <button class="tab" onclick="switchTab(3);playClick()">周度复盘</button>
   <button class="tab" id="calendarTab" onclick="switchTab(4);playClick()">经期日历</button>
-  <button class="tab" onclick="switchTab(6);playClick()">🍎 热量</button>
   <button class="tab" id="adminTab" onclick="switchTab(5);playClick()" style="display:none">管理员</button>
 </nav>
 
@@ -1905,7 +1904,7 @@ setInterval(updateClock, 1000);
 /* ---------- Tab ---------- */
 function switchTab(idx) {
   /* 限制范围（管理员tab不可见时不能滑到） */
-  const maxIdx = document.getElementById('adminTab').style.display === 'none' ? 5 : 6;
+  const maxIdx = document.getElementById('adminTab').style.display === 'none' ? 4 : 5;
   if (idx < 0 || idx > maxIdx) return;
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
   document.querySelectorAll('.page').forEach((p,i) => p.classList.toggle('active', i===idx));
@@ -1914,7 +1913,6 @@ function switchTab(idx) {
   if (idx === 3) renderReview();
   if (idx === 4) renderCalendar();
   if (idx === 5) { renderKeyList(); renderVersionPanel(); }
-  if (idx === 6) renderFoodCal();
   /* 切页后滚到顶部 */
   window.scrollTo(0, 0);
 }
