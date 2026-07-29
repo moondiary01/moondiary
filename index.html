@@ -1571,8 +1571,9 @@ function countPeriodDays(dateStr) {
 function isPeriodDay(dateStr) {
   if (!state.periods) return false;
   return state.periods.some(p => {
-    if (p.end === null) return dateStr >= p.start;
-    return dateStr >= p.start && dateStr <= p.end;
+    if (dateStr < p.start) return false;
+    const e = (p.end === null || p.end === undefined) ? p.start : p.end;
+    return dateStr <= e;
   });
 }
 
@@ -3225,51 +3226,53 @@ function toggleCalExercise(ds) {
 
 function toggleCalPeriod(ds) {
   if (!state.periods) state.periods = [];
-  /* 检查是否已标记（处理 end 为 null 的情况） */
-  const existing = state.periods.find(p => {
+  /* 找到包含该日期的区间 */
+  const existingIdx = state.periods.findIndex(p => {
     if (ds < p.start) return false;
-    if (p.end === null || p.end === undefined) return ds === p.start;
-    return ds <= p.end;
+    const e = (p.end === null || p.end === undefined) ? p.start : p.end;
+    return ds <= e;
   });
-  if (existing) {
-    /* 取消标记：从区间中移除该天 */
-    const start = new Date(existing.start);
-    const end = existing.end ? new Date(existing.end) : new Date(existing.start);
+  if (existingIdx >= 0) {
+    /* 取消该天经期 */
+    const p = state.periods[existingIdx];
+    const start = new Date(p.start);
+    const end = (p.end === null || p.end === undefined) ? new Date(p.start) : new Date(p.end);
     const target = new Date(ds);
     if (target.getTime() === start.getTime() && target.getTime() === end.getTime()) {
-      /* 单天：删除整个区间 */
-      state.periods = state.periods.filter(p => p !== existing);
+      /* 单日：删除 */
+      state.periods.splice(existingIdx, 1);
     } else if (target.getTime() === start.getTime()) {
-      existing.start = localDateStr(new Date(start.getTime() + 86400000));
+      /* 取消开始天：start 后移 */
+      p.start = localDateStr(new Date(start.getTime() + 86400000));
     } else if (target.getTime() === end.getTime()) {
-      existing.end = localDateStr(new Date(end.getTime() - 86400000));
+      /* 取消结束天：end 前移 */
+      p.end = localDateStr(new Date(end.getTime() - 86400000));
     } else {
       /* 中间：拆分 */
       const newEnd = localDateStr(new Date(target.getTime() - 86400000));
       const newStart = localDateStr(new Date(target.getTime() + 86400000));
-      existing.end = newEnd;
-      state.periods.push({ start: newStart, end: existing.end ? localDateStr(end) : null });
+      p.end = newEnd;
+      state.periods.push({ start: newStart, end: localDateStr(end) });
     }
   } else {
-    /* 标记为经期 */
-    state.periods.push({ start: ds, end: null });
-    /* 合并相邻区间 */
+    /* 标记为经期：先作为单日加入，再合并相邻 */
+    state.periods.push({ start: ds, end: ds });
+    /* 合并相邻或重叠区间 */
     state.periods.sort((a, b) => a.start.localeCompare(b.start));
     const merged = [];
     state.periods.forEach(p => {
+      const ps = new Date(p.start);
+      const pe = (p.end === null || p.end === undefined) ? new Date(p.start) : new Date(p.end);
       if (merged.length) {
         const last = merged[merged.length - 1];
-        const lastEnd = last.end ? new Date(last.end) : new Date(last.start);
-        const curStart = new Date(p.start);
-        if (curStart.getTime() <= lastEnd.getTime() + 86400000) {
-          /* 合并：取较晚的结束日期 */
-          const curEnd = p.end ? new Date(p.end) : new Date(p.start);
-          last.end = curEnd > lastEnd ? localDateStr(curEnd) : localDateStr(lastEnd);
+        const lastEnd = new Date(last.end);
+        if (ps.getTime() <= lastEnd.getTime() + 86400000) {
+          if (pe > lastEnd) last.end = localDateStr(pe);
         } else {
-          merged.push(p);
+          merged.push({ start: localDateStr(ps), end: localDateStr(pe) });
         }
       } else {
-        merged.push(p);
+        merged.push({ start: localDateStr(ps), end: localDateStr(pe) });
       }
     });
     state.periods = merged;
