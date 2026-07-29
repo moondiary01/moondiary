@@ -3318,7 +3318,8 @@ function renderCalendar() {
       /* 运动日历：检查当天是否有运动 */
       const dayIdx = state.days.findIndex(dd => dd.date === ds);
       if (dayIdx >= 0 && state.days[dayIdx].exercise && state.days[dayIdx].exercise !== '无运动') { cls += ' exercise'; label = d + '🏃'; }
-      html += '<div class="' + cls + '" onclick="toggleCalExercise(\'' + ds + '\')">' + label + '</div>';
+      const photoMark = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo">📷</span>' : '';
+      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + photoMark + label + '</div>';
     } else {
       /* 经期日历 */
       let weightArrow = '';
@@ -3429,20 +3430,47 @@ function toggleCalExercise(ds) {
   }
   saveState(); renderCalendar(); renderTable(); playToggle();
 }
+function markCalExercise(ds) {
+  closeCalAction();
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  if (dayIdx < 0) { showToast('该日期不在计划范围内'); return; }
+  state.days[dayIdx].exercise = '有运动';
+  saveState(); renderCalendar(); renderTable();
+  showToast('🏃 运动打卡！');
+}
+function cancelCalExercise(ds) {
+  closeCalAction();
+  const dayIdx = state.days.findIndex(dd => dd.date === ds);
+  if (dayIdx < 0) { return; }
+  state.days[dayIdx].exercise = '';
+  saveState(); renderCalendar(); renderTable();
+  showToast('已取消运动打卡');
+}
 
 function onCalDayClick(ds) {
-  const isPeriod = isPeriodDay(ds);
+  const isMale = state.gender === '男';
+  const isPeriod = !isMale && isPeriodDay(ds);
   const dayIdx = state.days.findIndex(dd => dd.date === ds);
   const day = dayIdx >= 0 ? state.days[dayIdx] : null;
   const hasPhoto = day && day.photo;
   const hasNote = day && (day.periodNote || day.note);
+  const hasExercise = day && day.exercise && day.exercise !== '无运动';
 
   /* 构建简洁方框操作菜单 */
   let actions = '';
-  if (isPeriod) {
-    actions += '<div class="cal-action-box" onclick="showPeriodDetail(\'' + ds + '\')">🌸 查看经期详情</div>';
+  /* 男性：运动打卡；女性：经期相关 */
+  if (isMale) {
+    if (hasExercise) {
+      actions += '<div class="cal-action-box" onclick="cancelCalExercise(\'' + ds + '\')">🏃 取消运动打卡</div>';
+    } else {
+      actions += '<div class="cal-action-box" onclick="markCalExercise(\'' + ds + '\')">🏃 运动打卡</div>';
+    }
+  } else {
+    if (isPeriod) {
+      actions += '<div class="cal-action-box" onclick="showPeriodDetail(\'' + ds + '\')">🌸 查看经期详情</div>';
+    }
+    actions += '<div class="cal-action-box" onclick="editPeriodTime(\'' + ds + '\')">🕐 修改经期时间</div>';
   }
-  actions += '<div class="cal-action-box" onclick="editPeriodTime(\'' + ds + '\')">🕐 修改经期时间</div>';
   actions += '<div class="cal-action-box" onclick="uploadDayPhoto(\'' + ds + '\')">📷 上传照片</div>';
   if (hasPhoto) {
     actions += '<div class="cal-action-box" onclick="viewDayPhoto(\'' + ds + '\')">👁 查看照片</div>';
