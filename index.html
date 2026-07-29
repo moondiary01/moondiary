@@ -1181,20 +1181,24 @@ function playLoginSound() {
   } catch(e) {}
 }
 
-/* 点击音效（轻柔短促） */
+/* 点击音效（清脆水晶触碰） */
 function playClick() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
+    const filter = ctx.createBiquadFilter();
+    osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
     osc.frequency.value = 880;
     osc.type = 'sine';
+    filter.type = 'lowpass';
+    filter.frequency.value = 3000;
+    filter.Q.value = 1;
     const t = ctx.currentTime;
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.12, t + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-    osc.start(t); osc.stop(t + 0.08);
+    gain.gain.linearRampToValueAtTime(0.22, t + 0.003);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    osc.start(t); osc.stop(t + 0.09);
   } catch(e) {}
 }
 /* 选项切换音效 */
@@ -1214,47 +1218,73 @@ function playToggle() {
   } catch(e) {}
 }
 
-/* 滑动音效（高级水晶丝滑扫频，区分左右方向） */
+/* 滑动音效（左右方向不同：右滑丝滑上行，左滑低沉水晶钟声下行） */
 function playSwipe(dir) {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const now = ctx.currentTime;
-    /* 第一层：丝滑扫频 whoosh，带低通滤波模拟手指划过质感 */
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
-    osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
-    osc.type = 'triangle';
-    filter.type = 'lowpass';
-    filter.Q.value = 0.8;
-    const fStart = (dir > 0) ? 400 : 1400;
-    const fEnd   = (dir > 0) ? 1400 : 400;
-    osc.frequency.setValueAtTime(fStart, now);
-    osc.frequency.exponentialRampToValueAtTime(fEnd, now + 0.22);
-    filter.frequency.setValueAtTime(fStart * 2, now);
-    filter.frequency.exponentialRampToValueAtTime(fEnd * 2, now + 0.22);
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.18, now + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-    osc.start(now); osc.stop(now + 0.25);
-    /* 第二层：水晶尾音，两音符琶音 */
-    const tailNotes = (dir > 0) ? [783.99, 1046.50] : [1046.50, 783.99];
-    tailNotes.forEach((f, i) => {
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      const filter2 = ctx.createBiquadFilter();
-      osc2.connect(filter2); filter2.connect(gain2); gain2.connect(ctx.destination);
-      osc2.type = 'sine';
-      osc2.frequency.value = f;
-      filter2.type = 'lowpass';
-      filter2.frequency.value = f * 4;
-      filter2.Q.value = 1.5;
-      const t2 = now + 0.1 + i * 0.04;
-      gain2.gain.setValueAtTime(0, t2);
-      gain2.gain.linearRampToValueAtTime(0.12, t2 + 0.005);
-      gain2.gain.exponentialRampToValueAtTime(0.001, t2 + 0.15);
-      osc2.start(t2); osc2.stop(t2 + 0.15);
-    });
+
+    if (dir > 0) {
+      /* 右滑：丝滑上行扫频 + 水晶琶音 */
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'triangle';
+      filter.type = 'lowpass';
+      filter.Q.value = 0.8;
+      osc.frequency.setValueAtTime(400, now);
+      osc.frequency.exponentialRampToValueAtTime(1400, now + 0.22);
+      filter.frequency.setValueAtTime(800, now);
+      filter.frequency.exponentialRampToValueAtTime(2800, now + 0.22);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.18, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc.start(now); osc.stop(now + 0.25);
+      [783.99, 1046.50].forEach((f, i) => {
+        const o2 = ctx.createOscillator();
+        const g2 = ctx.createGain();
+        o2.connect(g2); g2.connect(ctx.destination);
+        o2.type = 'sine'; o2.frequency.value = f;
+        const t2 = now + 0.1 + i * 0.04;
+        g2.gain.setValueAtTime(0, t2);
+        g2.gain.linearRampToValueAtTime(0.12, t2 + 0.005);
+        g2.gain.exponentialRampToValueAtTime(0.001, t2 + 0.15);
+        o2.start(t2); o2.stop(t2 + 0.15);
+      });
+    } else {
+      /* 左滑：低沉水晶钟声下行 — 模拟金属铃铛敲击 */
+      /* 主音：G4-C5 下行双音 */
+      [783.99, 523.25].forEach((f, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        const filt = ctx.createBiquadFilter();
+        o.connect(filt); filt.connect(g); g.connect(ctx.destination);
+        o.type = 'sine';
+        o.frequency.value = f;
+        filt.type = 'lowpass';
+        filt.frequency.value = f * 3.5;
+        filt.Q.value = 2;
+        const t = now + i * 0.06;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.2, t + 0.003);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+        o.start(t); o.stop(t + 0.3);
+      });
+      /* 泛音层：增加钟声金属质感 */
+      [1567.98, 1318.51].forEach((f, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = 'sine';
+        o.frequency.value = f;
+        const t = now + i * 0.05;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.08, t + 0.003);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+        o.start(t); o.stop(t + 0.25);
+      });
+    }
   } catch(e) {}
 }
 
