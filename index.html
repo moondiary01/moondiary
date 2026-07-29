@@ -365,7 +365,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 /* 日历 */
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal-wd{text-align:center;font-size:0.72rem;font-weight:700;color:var(--text-l);padding:6px 0}
-.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;position:relative;background:var(--bg)}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;position:relative;background:var(--bg)}
 .cal-day:hover{background:var(--rose-100)}
 .cal-day.empty{background:transparent;cursor:default}
 .cal-day.today{background:var(--rose-500);color:#fff}
@@ -375,11 +375,11 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .cal-day.ovulation-window{background:#FEF9C3;color:#A16207}
 .cal-day.exercise{background:#D1FAE5;color:#065F46;font-weight:700}
 .cal-day.other-month{color:var(--text-l);opacity:0.4}
-.cal-weight{font-size:0.6rem;display:flex;align-items:center;justify-content:center;gap:1px;line-height:1.2;margin-top:2px;text-align:center;font-weight:700}
+.cal-photo{font-size:0.5rem;position:absolute;top:2px;left:0;right:0;text-align:center;line-height:1}
+.cal-weight{font-size:0.55rem;position:absolute;bottom:2px;left:0;right:0;text-align:center;line-height:1;font-weight:700}
 .cal-weight.up{color:#EF4444}
 .cal-weight.down{color:#10B981}
 .cal-weight.same{color:var(--text-l)}
-.cal-photo{font-size:0.5rem;display:block;line-height:1;margin-bottom:1px;text-align:center}
 .avatar-option{aspect-ratio:1;border-radius:50%;background:var(--rose-50);border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:all 0.15s}
 .avatar-option:hover{transform:scale(1.1)}
 .avatar-option.selected{border-color:var(--rose-500);background:var(--rose-100)}
