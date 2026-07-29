@@ -367,19 +367,12 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .cal-day:hover{background:var(--rose-100)}
 .cal-day.empty{background:transparent;cursor:default}
 .cal-day.today{background:var(--rose-500);color:#fff}
-.cal-day.period{background:#FCE7F3;color:var(--rose-700);flex-direction:column;gap:1px}
+.cal-day.period{background:#FCE7F3;color:var(--rose-700)}
 .cal-day.period-predict{background:#FECDD3;color:var(--rose-600)}
 .cal-day.ovulation{background:#FEF3C7;color:#B45309;font-weight:800}
 .cal-day.ovulation-window{background:#FEF9C3;color:#A16207}
 .cal-day.exercise{background:#D1FAE5;color:#065F46;font-weight:700}
 .cal-day.other-month{color:var(--text-l);opacity:0.4}
-.cal-weight{font-size:0.55rem;font-weight:700}
-.cal-weight.up{color:#EF4444}
-.cal-weight.down{color:#10B981}
-.cal-photo{font-size:0.5rem;display:block;line-height:1;margin-bottom:1px}
-.cal-action-box{width:100%;padding:14px;margin-bottom:8px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);font-size:0.9rem;font-weight:500;color:var(--text);text-align:center;cursor:pointer;transition:all 0.15s}
-.cal-action-box:hover{border-color:var(--rose-400);background:var(--rose-50);color:var(--rose-600)}
-.cal-action-box:active{transform:scale(0.97)}
 .avatar-option{aspect-ratio:1;border-radius:50%;background:var(--rose-50);border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:all 0.15s}
 .avatar-option:hover{transform:scale(1.1)}
 .avatar-option.selected{border-color:var(--rose-500);background:var(--rose-100)}
@@ -396,14 +389,6 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .toast.show{opacity:1}
 .save-indicator{position:fixed;top:16px;right:16px;background:var(--mint);color:#fff;padding:4px 12px;border-radius:20px;font-size:0.7rem;font-weight:600;z-index:150;opacity:0;transition:opacity 0.3s;display:flex;align-items:center;gap:4px}
 .save-indicator.show{opacity:1}
-/* 食物热量查询 */
-.food-chip{display:inline-block;padding:6px 13px;border-radius:16px;background:var(--card);border:1.5px solid var(--border);color:var(--text-l);font-size:0.75rem;font-weight:600;white-space:nowrap;cursor:pointer;transition:all 0.15s}
-.food-chip.active{background:linear-gradient(135deg,#7C3AED,#EC4899);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(124,58,237,0.25)}
-.food-item{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);gap:10px}
-.food-item:last-child{border-bottom:none}
-.food-name{flex:1;font-size:0.88rem;color:var(--text);font-weight:500}
-.food-cal{font-size:0.78rem;color:var(--text-l);background:var(--bg);padding:4px 10px;border-radius:10px;white-space:nowrap}
-.food-cal b{font-size:0.95rem;color:#7C3AED;margin-right:2px}
 /* ===== 响应式 ===== */
 @media(max-width:600px){
   .hero-title{font-size:1.05rem}
@@ -752,30 +737,6 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
   </div>
 </div>
 
-<!-- ===== Page 6: 食物热量查询 ===== -->
-<div class="page" id="page6">
-  <div class="card">
-    <div class="card-title">食物热量查询</div>
-    <div style="position:relative;margin-bottom:14px">
-      <input type="text" id="foodSearch" placeholder="搜索食物名称" oninput="renderFoodCal()" style="width:100%;padding:11px 14px 11px 38px;border:1.5px solid var(--border);border-radius:12px;font-size:0.95rem;outline:none;background:var(--bg-card);color:var(--text)">
-      <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:1.05rem">🔍</span>
-    </div>
-    <div id="foodCatChips" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;overflow-x:auto;padding-bottom:4px">
-      <span class="food-chip active" data-cat="全部" onclick="setFoodCat('全部')">全部</span>
-      <span class="food-chip" data-cat="主食" onclick="setFoodCat('主食')">主食</span>
-      <span class="food-chip" data-cat="肉蛋" onclick="setFoodCat('肉蛋')">肉蛋</span>
-      <span class="food-chip" data-cat="水产" onclick="setFoodCat('水产')">水产</span>
-      <span class="food-chip" data-cat="蔬菜" onclick="setFoodCat('蔬菜')">蔬菜</span>
-      <span class="food-chip" data-cat="水果" onclick="setFoodCat('水果')">水果</span>
-      <span class="food-chip" data-cat="奶豆" onclick="setFoodCat('奶豆')">奶豆</span>
-      <span class="food-chip" data-cat="坚果零食" onclick="setFoodCat('坚果零食')">坚果零食</span>
-      <span class="food-chip" data-cat="饮料" onclick="setFoodCat('饮料')">饮料</span>
-      <span class="food-chip" data-cat="菜肴" onclick="setFoodCat('菜肴')">菜肴</span>
-    </div>
-    <div id="foodList" style="max-height:60vh;overflow-y:auto"></div>
-  </div>
-</div>
-
 <!-- ===== Page 5: 管理员 ===== -->
 <div class="page" id="page5">
   <div class="card">
@@ -844,73 +805,6 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
     <div class="modal-actions">
       <button class="btn btn-outline" id="editHistoryBtn" onclick="editHistoryData();playClick()" style="display:none">更改历史数据</button>
       <button class="btn btn-primary" onclick="document.getElementById('dayDetailModal').classList.remove('show');playClick()">关闭</button>
-    </div>
-  </div>
-</div>
-
-<!-- 经期日详情弹窗 -->
-<div class="modal-overlay" id="periodDetailModal">
-  <div class="modal">
-    <h2>🌸 经期备注</h2>
-    <div style="text-align:center;margin-bottom:16px">
-      <div id="periodDetailDate" style="font-size:0.85rem;color:var(--text-l)">2024-01-01</div>
-      <div id="periodDetailDay" style="font-size:1.1rem;font-weight:700;color:var(--rose-600);margin-top:4px">经期第 1 天</div>
-    </div>
-    <div style="display:grid;gap:10px;margin-bottom:16px">
-      <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--rose-50);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">体重</span><span id="periodDetailWeight" style="font-size:0.9rem;font-weight:600;color:var(--rose-600)">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">饮食</span><span id="periodDetailDiet" style="font-size:0.9rem;font-weight:500;color:var(--text)">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">运动</span><span id="periodDetailExercise" style="font-size:0.9rem;font-weight:500;color:var(--text)">—</span></div>
-      <div style="padding:10px 12px;background:var(--bg);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">🌸 经期备注</div><div id="periodDetailNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
-      <div style="padding:10px 12px;background:var(--rose-50);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">📝 每日日记/备注</div><div id="periodDetailDailyNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closePeriodDetail();playClick()">关闭</button>
-    </div>
-  </div>
-</div>
-
-<!-- 日历操作菜单弹窗 -->
-<div class="modal-overlay" id="calActionModal">
-  <div class="modal">
-    <h2 id="calActionDate">日期操作</h2>
-    <div id="calActionList" style="margin-bottom:12px"></div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeCalAction();playClick()">关闭</button>
-    </div>
-  </div>
-</div>
-
-<!-- 查看照片弹窗 -->
-<div class="modal-overlay" id="dayPhotoModal">
-  <div class="modal">
-    <h2>📷 当日照片</h2>
-    <img id="dayPhotoImg" src="" style="width:100%;border-radius:12px;margin-bottom:12px">
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeDayPhoto();playClick()">关闭</button>
-    </div>
-  </div>
-</div>
-
-<!-- 查看备注弹窗 -->
-<div class="modal-overlay" id="dayNoteModal">
-  <div class="modal">
-    <h2>📝 当日备注</h2>
-    <div id="dayNoteText" style="padding:14px;background:var(--bg);border-radius:10px;font-size:0.9rem;line-height:1.6;color:var(--text);min-height:60px;margin-bottom:12px">—</div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeDayNote();playClick()">关闭</button>
-    </div>
-  </div>
-</div>
-
-<!-- 修改经期时间弹窗 -->
-<div class="modal-overlay" id="editPeriodModal">
-  <div class="modal">
-    <h2>🕐 修改经期时间</h2>
-    <div class="input-group"><label>开始日期</label><input type="date" id="editPeriodStart"></div>
-    <div class="input-group"><label>结束日期（不填=进行中）</label><input type="date" id="editPeriodEnd"></div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeEditPeriod();playClick()">取消</button>
-      <button class="btn btn-primary" onclick="savePeriodTime();playClick()">保存</button>
     </div>
   </div>
 </div>
@@ -1225,19 +1119,6 @@ function savePresetInfo(info) {
   saveToCloudImmediate('_preset_info', info);
 }
 
-/* ---------- 食物热量数据库 (每100g / kcal) ---------- */
-const FOOD_DB = [
-  {name:'米饭', cat:'主食', cal:116},{name:'白粥', cat:'主食', cal:31},{name:'馒头', cat:'主食', cal:221},{name:'花卷', cat:'主食', cal:214},{name:'包子(肉馅)', cat:'主食', cal:227},{name:'包子(素馅)', cat:'主食', cal:176},{name:'饺子(猪肉)', cat:'主食', cal:250},{name:'面条(煮)', cat:'主食', cal:110},{name:'拉面', cat:'主食', cal:119},{name:'米粉', cat:'主食', cal:120},{name:'河粉', cat:'主食', cal:140},{name:'米线', cat:'主食', cal:92},{name:'面包(吐司)', cat:'主食', cal:265},{name:'全麦面包', cat:'主食', cal:247},{name:'燕麦片', cat:'主食', cal:377},{name:'玉米', cat:'主食', cal:112},{name:'红薯', cat:'主食', cal:86},{name:'紫薯', cat:'主食', cal:106},{name:'土豆', cat:'主食', cal:77},{name:'山药', cat:'主食', cal:57},{name:'红豆', cat:'主食', cal:324},{name:'绿豆', cat:'主食', cal:316},{name:'黑豆', cat:'主食', cal:381},{name:'荞麦面', cat:'主食', cal:337},{name:'意大利面(煮)', cat:'主食', cal:158},{name:'煎饼', cat:'主食', cal:354},{name:'油条', cat:'主食', cal:386},{name:'烧饼', cat:'主食', cal:298},{name:'粽子', cat:'主食', cal:177},{name:'汤圆', cat:'主食', cal:230},{name:'年糕', cat:'主食', cal:154},{name:'馄饨', cat:'主食', cal:135},{name:'烙饼', cat:'主食', cal:259},{name:'米饭团', cat:'主食', cal:140},{name:'蛋炒饭', cat:'主食', cal:188},{name:'炒面', cat:'主食', cal:180},{name:'牛肉面', cat:'主食', cal:146},{name:'炸酱面', cat:'主食', cal:163},{name:'兰州拉面', cat:'主食', cal:120},
-  {name:'鸡蛋(煮)', cat:'肉蛋', cal:143},{name:'鸡蛋(煎)', cat:'肉蛋', cal:209},{name:'鸡蛋(炒)', cat:'肉蛋', cal:184},{name:'茶叶蛋', cat:'肉蛋', cal:140},{name:'鹌鹑蛋', cat:'肉蛋', cal:160},{name:'鸡胸肉', cat:'肉蛋', cal:133},{name:'鸡腿肉', cat:'肉蛋', cal:181},{name:'鸡翅', cat:'肉蛋', cal:202},{name:'猪肉(瘦)', cat:'肉蛋', cal:143},{name:'猪肉(肥)', cat:'肉蛋', cal:807},{name:'猪肉(五花)', cat:'肉蛋', cal:349},{name:'排骨', cat:'肉蛋', cal:264},{name:'猪蹄', cat:'肉蛋', cal:260},{name:'牛肉(瘦)', cat:'肉蛋', cal:106},{name:'牛肉(肥)', cat:'肉蛋', cal:250},{name:'牛腩', cat:'肉蛋', cal:181},{name:'牛排', cat:'肉蛋', cal:198},{name:'羊肉(瘦)', cat:'肉蛋', cal:118},{name:'羊肉(肥)', cat:'肉蛋', cal:203},{name:'鸭肉', cat:'肉蛋', cal:240},{name:'鸭腿', cat:'肉蛋', cal:190},{name:'鸡腿', cat:'肉蛋', cal:146},{name:'火腿肠', cat:'肉蛋', cal:212},{name:'午餐肉', cat:'肉蛋', cal:229},{name:'培根', cat:'肉蛋', cal:181},{name:'香肠', cat:'肉蛋', cal:324},{name:'腊肠', cat:'肉蛋', cal:584},{name:'腊肉', cat:'肉蛋', cal:692},{name:'牛肉干', cat:'肉蛋', cal:550},{name:'鱼丸', cat:'肉蛋', cal:107},{name:'虾丸', cat:'肉蛋', cal:132},{name:'蟹棒', cat:'肉蛋', cal:123},{name:'肉丸', cat:'肉蛋', cal:212},{name:'鸡蛋羹', cat:'肉蛋', cal:74},{name:'水煮蛋', cat:'肉蛋', cal:143},
-  {name:'虾', cat:'水产', cal:93},{name:'虾仁', cat:'水产', cal:81},{name:'螃蟹', cat:'水产', cal:103},{name:'三文鱼', cat:'水产', cal:208},{name:'带鱼', cat:'水产', cal:127},{name:'鲈鱼', cat:'水产', cal:105},{name:'鲫鱼', cat:'水产', cal:108},{name:'草鱼', cat:'水产', cal:113},{name:'鲤鱼', cat:'水产', cal:109},{name:'黄花鱼', cat:'水产', cal:97},{name:'鱿鱼', cat:'水产', cal:92},{name:'墨鱼', cat:'水产', cal:82},{name:'扇贝', cat:'水产', cal:60},{name:'蛤蜊', cat:'水产', cal:62},{name:'牡蛎', cat:'水产', cal:73},{name:'海参', cat:'水产', cal:71},{name:'海蜇', cat:'水产', cal:33},{name:'海带', cat:'水产', cal:13},{name:'紫菜', cat:'水产', cal:250},{name:'鱼豆腐', cat:'水产', cal:152},{name:'鱼丸汤', cat:'水产', cal:58},{name:'清蒸鱼', cat:'水产', cal:118},
-  {name:'白菜', cat:'蔬菜', cal:18},{name:'菠菜', cat:'蔬菜', cal:24},{name:'生菜', cat:'蔬菜', cal:13},{name:'油麦菜', cat:'蔬菜', cal:8},{name:'西兰花', cat:'蔬菜', cal:34},{name:'花菜', cat:'蔬菜', cal:25},{name:'芹菜', cat:'蔬菜', cal:14},{name:'韭菜', cat:'蔬菜', cal:29},{name:'蒜苗', cat:'蔬菜', cal:37},{name:'大葱', cat:'蔬菜', cal:33},{name:'小葱', cat:'蔬菜', cal:27},{name:'香菜', cat:'蔬菜', cal:31},{name:'空心菜', cat:'蔬菜', cal:19},{name:'茼蒿', cat:'蔬菜', cal:21},{name:'芥蓝', cat:'蔬菜', cal:22},{name:'菜心', cat:'蔬菜', cal:14},{name:'油菜', cat:'蔬菜', cal:14},{name:'小白菜', cat:'蔬菜', cal:14},{name:'圆白菜', cat:'蔬菜', cal:22},{name:'紫甘蓝', cat:'蔬菜', cal:25},{name:'胡萝卜', cat:'蔬菜', cal:41},{name:'白萝卜', cat:'蔬菜', cal:16},{name:'黄瓜', cat:'蔬菜', cal:16},{name:'苦瓜', cat:'蔬菜', cal:19},{name:'冬瓜', cat:'蔬菜', cal:12},{name:'丝瓜', cat:'蔬菜', cal:20},{name:'南瓜', cat:'蔬菜', cal:23},{name:'西葫芦', cat:'蔬菜', cal:19},{name:'番茄', cat:'蔬菜', cal:19},{name:'茄子', cat:'蔬菜', cal:23},{name:'青椒', cat:'蔬菜', cal:22},{name:'辣椒', cat:'蔬菜', cal:32},{name:'豆角', cat:'蔬菜', cal:33},{name:'四季豆', cat:'蔬菜', cal:31},{name:'荷兰豆', cat:'蔬菜', cal:27},{name:'毛豆', cat:'蔬菜', cal:131},{name:'豌豆', cat:'蔬菜', cal:105},{name:'黄豆芽', cat:'蔬菜', cal:44},{name:'绿豆芽', cat:'蔬菜', cal:18},{name:'豆腐', cat:'蔬菜', cal:49},{name:'豆腐干', cat:'蔬菜', cal:140},{name:'腐竹', cat:'蔬菜', cal:461},{name:'千张', cat:'蔬菜', cal:262},{name:'香菇', cat:'蔬菜', cal:26},{name:'金针菇', cat:'蔬菜', cal:32},{name:'平菇', cat:'蔬菜', cal:24},{name:'杏鲍菇', cat:'蔬菜', cal:35},{name:'木耳', cat:'蔬菜', cal:27},{name:'银耳', cat:'蔬菜', cal:261},{name:'莲藕', cat:'蔬菜', cal:47},{name:'芋头', cat:'蔬菜', cal:56},{name:'洋葱', cat:'蔬菜', cal:40},{name:'大蒜', cat:'蔬菜', cal:149},{name:'生姜', cat:'蔬菜', cal:46},
-  {name:'苹果', cat:'水果', cal:52},{name:'香蕉', cat:'水果', cal:93},{name:'橙子', cat:'水果', cal:47},{name:'橘子', cat:'水果', cal:44},{name:'梨', cat:'水果', cal:51},{name:'葡萄', cat:'水果', cal:69},{name:'草莓', cat:'水果', cal:32},{name:'蓝莓', cat:'水果', cal:57},{name:'猕猴桃', cat:'水果', cal:61},{name:'火龙果', cat:'水果', cal:55},{name:'芒果', cat:'水果', cal:60},{name:'西瓜', cat:'水果', cal:31},{name:'哈密瓜', cat:'水果', cal:34},{name:'桃子', cat:'水果', cal:39},{name:'李子', cat:'水果', cal:38},{name:'樱桃', cat:'水果', cal:63},{name:'柚子', cat:'水果', cal:42},{name:'菠萝', cat:'水果', cal:50},{name:'木瓜', cat:'水果', cal:29},{name:'榴莲', cat:'水果', cal:147},{name:'牛油果', cat:'水果', cal:160},{name:'椰子肉', cat:'水果', cal:354},{name:'冬枣', cat:'水果', cal:113},{name:'山楂', cat:'水果', cal:102},{name:'柿子', cat:'水果', cal:71},{name:'荔枝', cat:'水果', cal:71},{name:'龙眼', cat:'水果', cal:71},{name:'杨梅', cat:'水果', cal:30},
-  {name:'牛奶', cat:'奶豆', cal:54},{name:'低脂牛奶', cat:'奶豆', cal:42},{name:'全脂牛奶', cat:'奶豆', cal:65},{name:'酸奶', cat:'奶豆', cal:72},{name:'无糖酸奶', cat:'奶豆', cal:62},{name:'豆浆', cat:'奶豆', cal:33},{name:'无糖豆浆', cat:'奶豆', cal:16},{name:'豆奶', cat:'奶豆', cal:45},{name:'奶酪', cat:'奶豆', cal:328},{name:'奶油', cat:'奶豆', cal:879},{name:'黄油', cat:'奶豆', cal:888},{name:'炼乳', cat:'奶豆', cal:332},{name:'奶粉', cat:'奶豆', cal:484},{name:'豆腐脑', cat:'奶豆', cal:15},
-  {name:'核桃', cat:'坚果零食', cal:646},{name:'杏仁', cat:'坚果零食', cal:578},{name:'腰果', cat:'坚果零食', cal:553},{name:'花生', cat:'坚果零食', cal:567},{name:'瓜子', cat:'坚果零食', cal:615},{name:'开心果', cat:'坚果零食', cal:631},{name:'榛子', cat:'坚果零食', cal:617},{name:'松子', cat:'坚果零食', cal:619},{name:'葡萄干', cat:'坚果零食', cal:299},{name:'红枣', cat:'坚果零食', cal:276},{name:'枸杞', cat:'坚果零食', cal:258},{name:'巧克力', cat:'坚果零食', cal:546},{name:'黑巧克力', cat:'坚果零食', cal:598},{name:'薯片', cat:'坚果零食', cal:536},{name:'薯条', cat:'坚果零食', cal:312},{name:'饼干', cat:'坚果零食', cal:433},{name:'苏打饼干', cat:'坚果零食', cal:408},{name:'蛋糕', cat:'坚果零食', cal:347},{name:'奶油蛋糕', cat:'坚果零食', cal:379},{name:'蛋挞', cat:'坚果零食', cal:301},{name:'甜甜圈', cat:'坚果零食', cal:452},{name:'爆米花', cat:'坚果零食', cal:387},{name:'果冻', cat:'坚果零食', cal:62},{name:'糖果', cat:'坚果零食', cal:400},{name:'冰淇淋', cat:'坚果零食', cal:207},{name:'雪糕', cat:'坚果零食', cal:153},
-  {name:'可乐', cat:'饮料', cal:43},{name:'雪碧', cat:'饮料', cal:38},{name:'橙汁', cat:'饮料', cal:45},{name:'苹果汁', cat:'饮料', cal:46},{name:'葡萄汁', cat:'饮料', cal:60},{name:'椰汁', cat:'饮料', cal:51},{name:'酸梅汤', cat:'饮料', cal:35},{name:'奶茶', cat:'饮料', cal:65},{name:'珍珠奶茶', cat:'饮料', cal:92},{name:'咖啡(黑)', cat:'饮料', cal:2},{name:'拿铁', cat:'饮料', cal:43},{name:'卡布奇诺', cat:'饮料', cal:38},{name:'美式咖啡', cat:'饮料', cal:2},{name:'绿茶', cat:'饮料', cal:1},{name:'红茶', cat:'饮料', cal:1},{name:'乌龙茶', cat:'饮料', cal:1},{name:'普洱茶', cat:'饮料', cal:0},{name:'柠檬水', cat:'饮料', cal:29},{name:'蜂蜜水', cat:'饮料', cal:31},{name:'运动饮料', cat:'饮料', cal:24},{name:'啤酒', cat:'饮料', cal:43},{name:'红酒', cat:'饮料', cal:85},{name:'白酒', cat:'饮料', cal:295},
-  {name:'番茄炒蛋', cat:'菜肴', cal:125},{name:'青椒炒肉丝', cat:'菜肴', cal:152},{name:'红烧肉', cat:'菜肴', cal:470},{name:'糖醋排骨', cat:'菜肴', cal:338},{name:'宫保鸡丁', cat:'菜肴', cal:198},{name:'鱼香肉丝', cat:'菜肴', cal:176},{name:'麻婆豆腐', cat:'菜肴', cal:137},{name:'水煮鱼', cat:'菜肴', cal:152},{name:'酸菜鱼', cat:'菜肴', cal:135},{name:'清蒸鱼', cat:'菜肴', cal:118},{name:'可乐鸡翅', cat:'菜肴', cal:245},{name:'黄焖鸡', cat:'菜肴', cal:168},{name:'回锅肉', cat:'菜肴', cal:320},{name:'小炒肉', cat:'菜肴', cal:258},{name:'干煸四季豆', cat:'菜肴', cal:135},{name:'地三鲜', cat:'菜肴', cal:128},{name:'炒青菜', cat:'菜肴', cal:65},{name:'蒜蓉西兰花', cat:'菜肴', cal:82},{name:'手撕包菜', cat:'菜肴', cal:78},{name:'拍黄瓜', cat:'菜肴', cal:42},{name:'凉拌木耳', cat:'菜肴', cal:55},{name:'西红柿鸡蛋汤', cat:'菜肴', cal:38},{name:'紫菜蛋花汤', cat:'菜肴', cal:32},{name:'排骨汤', cat:'菜肴', cal:85},{name:'鸡汤', cat:'菜肴', cal:78},{name:'火锅(清汤底)', cat:'菜肴', cal:120},{name:'火锅(麻辣底)', cat:'菜肴', cal:180},{name:'麻辣烫', cat:'菜肴', cal:160},{name:'烧烤', cat:'菜肴', cal:250},{name:'炸鸡', cat:'菜肴', cal:280},{name:'汉堡', cat:'菜肴', cal:256},{name:'披萨', cat:'菜肴', cal:266},{name:'寿司', cat:'菜肴', cal:143},{name:'三明治', cat:'菜肴', cal:204},{name:'沙拉', cat:'菜肴', cal:68},{name:'凯撒沙拉', cat:'菜肴', cal:135},{name:'咖喱饭', cat:'菜肴', cal:180},{name:'卤肉饭', cat:'菜肴', cal:285},{name:'盖浇饭', cat:'菜肴', cal:220},{name:'炒饭', cat:'菜肴', cal:188},{name:'炒粉', cat:'菜肴', cal:185},{name:'煎饼果子', cat:'菜肴', cal:240},{name:'肉夹馍', cat:'菜肴', cal:258},{name:'凉皮', cat:'菜肴', cal:117},{name:'酸辣粉', cat:'菜肴', cal:130},{name:'螺蛳粉', cat:'菜肴', cal:165},{name:'热干面', cat:'菜肴', cal:178},{name:'重庆小面', cat:'菜肴', cal:165},{name:'炸酱面', cat:'菜肴', cal:163},{name:'葱油拌面', cat:'菜肴', cal:210},{name:'云吞面', cat:'菜肴', cal:140},{name:'叉烧饭', cat:'菜肴', cal:265},{name:'白切鸡饭', cat:'菜肴', cal:215}
-];
-
 /* ---------- 用户状态 ---------- */
 var state = {
   version: 3, name: '', gender: '', age: null, height: null,
@@ -1259,65 +1140,43 @@ function userStorageKey(key) { return 'bodydiary_user_' + key; }
 function playLoginSound() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    /* 高级水晶琶音：C5-E5-G5-C6-E6-G6 + 长延音 + 泛音层 */
+    /* 水晶琶音：C5-E5-G5-C6 + 延音 */
     const notes = [
-      { f: 523.25,  t: 0,     d: 0.6,  v: 0.45 }, /* C5 */
-      { f: 659.25,  t: 0.09,  d: 0.6,  v: 0.42 }, /* E5 */
-      { f: 783.99,  t: 0.18,  d: 0.6,  v: 0.42 }, /* G5 */
-      { f: 1046.50, t: 0.27,  d: 0.9,  v: 0.48 }, /* C6 */
-      { f: 1318.51, t: 0.36,  d: 1.0,  v: 0.45 }, /* E6 */
-      { f: 1567.98, t: 0.45,  d: 1.2,  v: 0.40 }, /* G6 高音延音 */
+      { f: 523.25, t: 0,    d: 0.5 }, /* C5 */
+      { f: 659.25, t: 0.08, d: 0.5 }, /* E5 */
+      { f: 783.99, t: 0.16, d: 0.5 }, /* G5 */
+      { f: 1046.50, t: 0.24, d: 0.8 }, /* C6 */
+      { f: 1318.51, t: 0.32, d: 0.8 }, /* E6 高音延音 */
     ];
     notes.forEach(n => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      const filter = ctx.createBiquadFilter();
-      osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(ctx.destination);
       osc.frequency.value = n.f;
       osc.type = 'sine';
-      filter.type = 'lowpass';
-      filter.frequency.value = n.f * 3;
-      filter.Q.value = 1;
       const t = ctx.currentTime + n.t;
       gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(n.v, t + 0.02);
+      gain.gain.linearRampToValueAtTime(0.3, t + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.001, t + n.d);
       osc.start(t); osc.stop(t + n.d);
-    });
-    /* 叠加高八度泛音，增加水晶光泽 */
-    [2637.02, 3135.96].forEach((f, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = f;
-      osc.type = 'sine';
-      const t = ctx.currentTime + 0.27 + i * 0.09;
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.15, t + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
-      osc.start(t); osc.stop(t + 1.0);
     });
   } catch(e) {}
 }
 
-/* 点击音效（清脆水晶触碰） */
+/* 点击音效（轻柔短促） */
 function playClick() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
-    osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    osc.connect(gain); gain.connect(ctx.destination);
     osc.frequency.value = 880;
     osc.type = 'sine';
-    filter.type = 'lowpass';
-    filter.frequency.value = 3000;
-    filter.Q.value = 1;
     const t = ctx.currentTime;
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.22, t + 0.003);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
-    osc.start(t); osc.stop(t + 0.09);
+    gain.gain.linearRampToValueAtTime(0.12, t + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    osc.start(t); osc.stop(t + 0.08);
   } catch(e) {}
 }
 /* 选项切换音效 */
@@ -1337,46 +1196,42 @@ function playToggle() {
   } catch(e) {}
 }
 
-/* 滑动音效（左右方向不同，每次稳定播放） */
+/* 滑动音效（带 whoosh 感的扫频，区分左右滑方向） */
 function playSwipe(dir) {
   try {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    const ctx = new AC();
-    if (ctx.state === 'suspended') ctx.resume();
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const now = ctx.currentTime;
-
-    if (dir > 0) {
-      /* 右滑：清脆上行小铃 — E5→A5 两音快速琶音 */
-      [659.25, 880.00].forEach((f, i) => {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        const filt = ctx.createBiquadFilter();
-        o.connect(filt); filt.connect(g); g.connect(ctx.destination);
-        o.type = 'sine'; o.frequency.value = f;
-        filt.type = 'lowpass'; filt.frequency.value = f * 4; filt.Q.value = 1.2;
-        const t = now + i * 0.05;
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.2, t + 0.003);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-        o.start(t); o.stop(t + 0.18);
-      });
-    } else {
-      /* 左滑：温柔下行小铃 — A5→E5 两音快速琶音 */
-      [880.00, 659.25].forEach((f, i) => {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        const filt = ctx.createBiquadFilter();
-        o.connect(filt); filt.connect(g); g.connect(ctx.destination);
-        o.type = 'sine'; o.frequency.value = f;
-        filt.type = 'lowpass'; filt.frequency.value = f * 4; filt.Q.value = 1.2;
-        const t = now + i * 0.05;
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.2, t + 0.003);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-        o.start(t); o.stop(t + 0.18);
-      });
-    }
+    /* 主扫频音：模拟手指划过的 whoosh */
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    filter.type = 'bandpass';
+    filter.Q.value = 1.2;
+    /* 左滑(dir<=0)：频率下行 1200→500；右滑(dir>0)：上行 500→1200 */
+    const fStart = (dir > 0) ? 500 : 1200;
+    const fEnd   = (dir > 0) ? 1200 : 500;
+    osc.frequency.setValueAtTime(fStart, now);
+    osc.frequency.exponentialRampToValueAtTime(fEnd, now + 0.18);
+    filter.frequency.setValueAtTime(fStart, now);
+    filter.frequency.exponentialRampToValueAtTime(fEnd, now + 0.18);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.14, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    osc.start(now); osc.stop(now + 0.2);
+    /* 叠加一个短促的水晶尾音，保持与 App 音效风格统一 */
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2); gain2.connect(ctx.destination);
+    osc2.type = 'sine';
+    const tailF = (dir > 0) ? 1046.50 : 783.99; /* 右滑C6，左滑G5 */
+    osc2.frequency.value = tailF;
+    const t2 = now + 0.1;
+    gain2.gain.setValueAtTime(0, t2);
+    gain2.gain.linearRampToValueAtTime(0.08, t2 + 0.005);
+    gain2.gain.exponentialRampToValueAtTime(0.001, t2 + 0.1);
+    osc2.start(t2); osc2.stop(t2 + 0.1);
   } catch(e) {}
 }
 
@@ -1954,20 +1809,16 @@ setInterval(updateClock, 1000);
 
 /* ---------- Tab ---------- */
 function switchTab(idx) {
-  /* 限制范围（管理员5仅管理员可见） */
-  const adminVisible = document.getElementById('adminTab').style.display !== 'none';
-  const maxIdx = adminVisible ? 5 : 4;
+  /* 限制范围（管理员tab不可见时不能滑到） */
+  const maxIdx = document.getElementById('adminTab').style.display === 'none' ? 4 : 5;
   if (idx < 0 || idx > maxIdx) return;
-  if (idx === 5 && !adminVisible) return;
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
   document.querySelectorAll('.page').forEach((p,i) => p.classList.toggle('active', i===idx));
   if (idx === 1) { drawChart(); renderBmi(); }
   if (idx === 2) renderPlan();
   if (idx === 3) renderReview();
   if (idx === 4) renderCalendar();
-  if (idx === 5 && adminVisible) { renderKeyList(); renderVersionPanel(); }
-  /* 切页后滚到顶部 */
-  window.scrollTo(0, 0);
+  if (idx === 5) { renderKeyList(); renderVersionPanel(); }
 }
 
 /* ---------- 左右滑动切换页面 ---------- */
@@ -1989,21 +1840,15 @@ document.addEventListener('touchend', e => {
   if (Math.abs(diffX) < 80) return; /* 水平滑动太短忽略 */
   /* 只有水平滑动明显大于垂直滑动时才切换页面，避免上下滚动误触发 */
   if (Math.abs(diffY) > Math.abs(diffX) * 0.4) return;
-  /* 找当前tab和可见tab列表 */
-  const allTabs = Array.from(document.querySelectorAll('.tab'));
+  /* 找当前tab */
   let cur = 0;
-  allTabs.forEach((t,i) => { if (t.classList.contains('active')) cur = i; });
-  /* 获取可见tab的索引列表 */
-  const visibleTabs = allTabs.map((t,i) => t.style.display === 'none' ? -1 : i).filter(i => i >= 0);
-  const curPos = visibleTabs.indexOf(cur);
+  document.querySelectorAll('.tab').forEach((t,i) => { if (t.classList.contains('active')) cur = i; });
   if (diffX > 0) {
-    /* 左滑→下一个可见tab */
-    const nextTab = curPos >= 0 && curPos < visibleTabs.length - 1 ? visibleTabs[curPos + 1] : -1;
-    if (nextTab >= 0) { switchTab(nextTab); playSwipe(-1); }
+    /* 左滑→下一个 */
+    switchTab(cur + 1); playSwipe(-1);
   } else {
-    /* 右滑→上一个可见tab */
-    const prevTab = curPos > 0 ? visibleTabs[curPos - 1] : -1;
-    if (prevTab >= 0) { switchTab(prevTab); playSwipe(1); }
+    /* 右滑→上一个 */
+    switchTab(cur - 1); playSwipe(1);
   }
 }, { passive: true });
 
@@ -2431,7 +2276,7 @@ function drawChart() {
     pmD.forEach(d => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
-      ctx.fillStyle = '#EC4899'; ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#EC4899'; ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill();
     });
   }
   if (amD.length > 0) {
@@ -2445,7 +2290,7 @@ function drawChart() {
     amD.forEach(d => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
-      ctx.fillStyle = '#C026D3'; ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#C026D3'; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
     });
   }
   /* 体脂率曲线（右侧Y轴，桔黄色） */
@@ -2474,7 +2319,7 @@ function drawChart() {
     fatD.forEach(d => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.f-minF)/(maxF-minF))*ch;
-      ctx.fillStyle = '#D4B800'; ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#D4B800'; ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill();
     });
     /* 图例 */
     ctx.fillStyle = '#D4B800'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';
@@ -2813,33 +2658,6 @@ function saveMeasure() {
   renderAll();
   closeMeasure();
   showToast('三围已保存并同步');
-}
-
-/* ---------- 食物热量查询 ---------- */
-var currentFoodCat = '全部';
-function setFoodCat(cat) {
-  currentFoodCat = cat;
-  document.querySelectorAll('.food-chip').forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
-  renderFoodCal();
-}
-function renderFoodCal() {
-  const list = document.getElementById('foodList');
-  if (!list) return;
-  const kw = (document.getElementById('foodSearch')?.value || '').trim().toLowerCase();
-  let arr = FOOD_DB;
-  if (currentFoodCat !== '全部') arr = arr.filter(f => f.cat === currentFoodCat);
-  if (kw) arr = arr.filter(f => f.name.toLowerCase().includes(kw));
-  if (arr.length === 0) { list.innerHTML = '<div style="text-align:center;color:var(--text-l);padding:30px 0;font-size:0.85rem">未找到相关食物</div>'; return; }
-  /* 限制渲染数量提升性能 */
-  const max = 200;
-  const show = arr.slice(0, max);
-  let html = '';
-  for (let i = 0; i < show.length; i++) {
-    const f = show[i];
-    html += '<div class="food-item"><div class="food-name">' + f.name + '</div><div class="food-cal"><b>' + f.cal + '</b> kcal/100g</div></div>';
-  }
-  if (arr.length > max) html += '<div style="text-align:center;color:var(--text-l);padding:12px;font-size:0.78rem">还有 ' + (arr.length - max) + ' 条，请搜索或筛选</div>';
-  list.innerHTML = html;
 }
 
 /* ---------- 设置 ---------- */
@@ -3316,50 +3134,24 @@ function renderCalendar() {
       /* 运动日历：检查当天是否有运动 */
       const dayIdx = state.days.findIndex(dd => dd.date === ds);
       if (dayIdx >= 0 && state.days[dayIdx].exercise && state.days[dayIdx].exercise !== '无运动') { cls += ' exercise'; label = d + '🏃'; }
-      const photoMark = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo">📷</span>' : '';
-      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + photoMark + label + '</div>';
+      html += '<div class="' + cls + '" onclick="toggleCalExercise(\'' + ds + '\')">' + label + '</div>';
     } else {
       /* 经期日历 */
-      let weightArrow = '';
-      if (isPeriodDay(ds)) {
-        cls += ' period';
-        /* 计算体重波动 */
-        const dayIdx = state.days.findIndex(dd => dd.date === ds);
-        if (dayIdx > 0) {
-          const curW = state.days[dayIdx].weightAM || state.days[dayIdx].weightPM;
-          const prevW = state.days[dayIdx-1].weightAM || state.days[dayIdx-1].weightPM;
-          if (curW && prevW) {
-            const diff = curW - prevW;
-            const conv = state.unit === '斤' ? 2 : 1;
-            const dVal = (diff * conv).toFixed(1);
-            if (Math.abs(diff) >= 0.05) {
-              weightArrow = diff > 0 ? '<span class="cal-weight up">▲' + dVal + '</span>' : '<span class="cal-weight down">▼' + Math.abs(dVal) + '</span>';
-            }
-          }
-        }
-      }
-      /* 排卵期和下次经期预估 */
+      if (isPeriodDay(ds)) cls += ' period';
       if (!isPeriodDay(ds) && state.periods && state.periods.length) {
         const lastP = state.periods[state.periods.length - 1];
         const lastStart = new Date(lastP.start);
-        const lastEnd = lastP.end ? new Date(lastP.end) : new Date(lastP.start);
-        const periodLen = Math.floor((lastEnd - lastStart) / 86400000) + 1;
-        /* 下次经期预估：上次开始+28天 */
         const predictStart = new Date(lastStart); predictStart.setDate(predictStart.getDate() + 28);
-        const predictEnd = new Date(predictStart); predictEnd.setDate(predictEnd.getDate() + periodLen - 1);
+        const predictEnd = new Date(predictStart); predictEnd.setDate(predictEnd.getDate() + 5);
         const checkDate = new Date(ds);
-        if (checkDate >= predictStart && checkDate <= predictEnd) cls += ' period-predict';
-        /* 排卵日：下次经期开始前14天 */
+        if (checkDate >= predictStart && checkDate <= predictEnd && checkDate > today) cls += ' period-predict';
         const ovulationDay = new Date(predictStart); ovulationDay.setDate(ovulationDay.getDate() - 14);
         const ovStart = new Date(ovulationDay); ovStart.setDate(ovStart.getDate() - 2);
         const ovEnd = new Date(ovulationDay); ovEnd.setDate(ovEnd.getDate() + 2);
         if (checkDate.getTime() === ovulationDay.getTime()) { cls += ' ovulation'; label = d + '🥚'; }
         else if (checkDate >= ovStart && checkDate <= ovEnd) cls += ' ovulation-window';
       }
-      /* 照片缩略图 */
-      const dayIdx2 = state.days.findIndex(dd => dd.date === ds);
-      const photoMark = (dayIdx2 >= 0 && state.days[dayIdx2].photo) ? '<span class="cal-photo">📷</span>' : '';
-      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + photoMark + label + (weightArrow ? '<br>' + weightArrow : '') + '</div>';
+      html += '<div class="' + cls + '" onclick="toggleCalPeriod(\'' + ds + '\')">' + label + '</div>';
     }
   }
   /* 补满 */
@@ -3395,7 +3187,7 @@ function renderCalendar() {
         }
       });
     }
-    document.getElementById('calStats').innerHTML = periodCount > 0 ? '本月经期 ' + periodCount + ' 天 · 🥚排卵日 · 📋点击日期查看详情或修改经期' : '📋点击日期查看详情或修改经期 · 🥚排卵日自动推算';
+    document.getElementById('calStats').innerHTML = periodCount > 0 ? '本月经期 ' + periodCount + ' 天 · 🥚排卵日 · 点击日期可标记/取消经期' : '点击日期可标记/取消经期 · 🥚排卵日自动推算';
   }
   /* 动态图例 */
   const legend = document.getElementById('calLegend');
@@ -3427,216 +3219,6 @@ function toggleCalExercise(ds) {
     showToast('🏃 运动打卡！');
   }
   saveState(); renderCalendar(); renderTable(); playToggle();
-}
-function markCalExercise(ds) {
-  closeCalAction();
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  if (dayIdx < 0) { showToast('该日期不在计划范围内'); return; }
-  state.days[dayIdx].exercise = '有运动';
-  saveState(); renderCalendar(); renderTable();
-  showToast('🏃 运动打卡！');
-}
-function cancelCalExercise(ds) {
-  closeCalAction();
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  if (dayIdx < 0) { return; }
-  state.days[dayIdx].exercise = '';
-  saveState(); renderCalendar(); renderTable();
-  showToast('已取消运动打卡');
-}
-
-function onCalDayClick(ds) {
-  const isMale = state.gender === '男';
-  const isPeriod = !isMale && isPeriodDay(ds);
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  const day = dayIdx >= 0 ? state.days[dayIdx] : null;
-  const hasPhoto = day && day.photo;
-  const hasNote = day && (day.periodNote || day.note);
-  const hasExercise = day && day.exercise && day.exercise !== '无运动';
-
-  /* 构建简洁方框操作菜单 */
-  let actions = '';
-  /* 照片：上传和查看左右排列 — 放在最上方 */
-  let photoRow = '<div style="display:flex;gap:8px;margin-bottom:8px">';
-  photoRow += '<div class="cal-action-box" style="flex:1;margin-bottom:0" onclick="uploadDayPhoto(\'' + ds + '\')">📷 上传照片</div>';
-  if (hasPhoto) {
-    photoRow += '<div class="cal-action-box" style="flex:1;margin-bottom:0" onclick="viewDayPhoto(\'' + ds + '\')">👁 查看照片</div>';
-  }
-  photoRow += '</div>';
-  actions += photoRow;
-  /* 男性：运动打卡；女性：经期备注+修改经期时间上下排列 */
-  if (isMale) {
-    if (hasExercise) {
-      actions += '<div class="cal-action-box" onclick="cancelCalExercise(\'' + ds + '\')">🏃 取消运动打卡</div>';
-    } else {
-      actions += '<div class="cal-action-box" onclick="markCalExercise(\'' + ds + '\')">🏃 运动打卡</div>';
-    }
-  } else {
-    if (isPeriod) {
-      actions += '<div class="cal-action-box" onclick="showPeriodDetail(\'' + ds + '\')">🌸 经期备注</div>';
-    } else if (hasNote) {
-      actions += '<div class="cal-action-box" onclick="viewDayNote(\'' + ds + '\')">🌸 经期备注</div>';
-    }
-    actions += '<div class="cal-action-box" onclick="editPeriodTime(\'' + ds + '\')">🕐 修改经期时间</div>';
-  }
-
-  document.getElementById('calActionDate').textContent = ds;
-  document.getElementById('calActionList').innerHTML = actions;
-  document.getElementById('calActionModal').classList.add('show');
-}
-function closeCalAction() {
-  document.getElementById('calActionModal').classList.remove('show');
-}
-
-/* 上传照片 */
-function uploadDayPhoto(ds) {
-  closeCalAction();
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.onchange = function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      const dayIdx = state.days.findIndex(dd => dd.date === ds);
-      if (dayIdx >= 0) {
-        state.days[dayIdx].photo = ev.target.result;
-        saveState();
-        renderCalendar();
-        showToast('照片已上传');
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
-}
-function viewDayPhoto(ds) {
-  closeCalAction();
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  if (dayIdx < 0 || !state.days[dayIdx].photo) { showToast('无照片'); return; }
-  document.getElementById('dayPhotoImg').src = state.days[dayIdx].photo;
-  document.getElementById('dayPhotoModal').classList.add('show');
-}
-function closeDayPhoto() {
-  document.getElementById('dayPhotoModal').classList.remove('show');
-}
-function viewDayNote(ds) {
-  closeCalAction();
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  if (dayIdx < 0) { showToast('无备注'); return; }
-  const day = state.days[dayIdx];
-  const note = day.periodNote || day.note || '无备注';
-  document.getElementById('dayNoteText').textContent = note;
-  document.getElementById('dayNoteModal').classList.add('show');
-}
-function closeDayNote() {
-  document.getElementById('dayNoteModal').classList.remove('show');
-}
-
-/* 修改经期时间 */
-function editPeriodTime(ds) {
-  closeCalAction();
-  const isPeriod = isPeriodDay(ds);
-  const period = isPeriod ? state.periods.find(p => ds >= p.start && (p.end === null || ds <= p.end)) : null;
-  document.getElementById('editPeriodStart').value = period ? period.start : ds;
-  document.getElementById('editPeriodEnd').value = period && period.end ? period.end : '';
-  document.getElementById('editPeriodModal').classList.add('show');
-  document.getElementById('editPeriodModal').dataset.ds = ds;
-}
-function savePeriodTime() {
-  const ds = document.getElementById('editPeriodModal').dataset.ds;
-  const start = document.getElementById('editPeriodStart').value;
-  const end = document.getElementById('editPeriodEnd').value;
-  if (!start) { showToast('请选择开始日期'); return; }
-  if (!state.periods) state.periods = [];
-  /* 删除包含当前日期的经期区间 */
-  state.periods = state.periods.filter(p => !(ds >= p.start && (p.end === null || ds <= p.end)));
-  /* 添加新的经期区间 */
-  state.periods.push({ start: start, end: end || null });
-  state.periods.sort((a, b) => a.start.localeCompare(b.start));
-  saveState();
-  renderCalendar();
-  document.getElementById('editPeriodModal').classList.remove('show');
-  showToast('经期时间已修改');
-}
-function closeEditPeriod() {
-  document.getElementById('editPeriodModal').classList.remove('show');
-}
-
-/* 标记经期 */
-function markCalPeriod(ds) {
-  closeCalAction();
-  if (!state.periods) state.periods = [];
-  state.periods.push({ start: ds, end: null });
-  state.periods.sort((a, b) => a.start.localeCompare(b.start));
-  const merged = [];
-  state.periods.forEach(p => {
-    if (merged.length) {
-      const last = merged[merged.length - 1];
-      const lastEnd = last.end ? new Date(last.end) : new Date(last.start);
-      const curStart = new Date(p.start);
-      if (curStart.getTime() <= lastEnd.getTime() + 86400000) {
-        last.end = p.end || p.start;
-      } else {
-        merged.push(p);
-      }
-    } else {
-      merged.push(p);
-    }
-  });
-  state.periods = merged;
-  saveState(); renderCalendar(); renderTable();
-  showToast('已标记经期');
-}
-
-/* 取消经期标记 */
-function cancelCalPeriod(ds) {
-  closeCalAction();
-  if (!state.periods) return;
-  const existing = state.periods.find(p => ds >= p.start && (p.end === null || ds <= p.end));
-  if (!existing) { showToast('该日期不是经期'); return; }
-  const start = new Date(existing.start);
-  const end = existing.end ? new Date(existing.end) : new Date(existing.start);
-  const target = new Date(ds);
-  if (target.getTime() === start.getTime() && target.getTime() === end.getTime()) {
-    state.periods = state.periods.filter(p => p !== existing);
-  } else if (target.getTime() === start.getTime()) {
-    existing.start = localDateStr(new Date(start.getTime() + 86400000));
-  } else if (target.getTime() === end.getTime()) {
-    existing.end = localDateStr(new Date(end.getTime() - 86400000));
-  } else {
-    const newEnd = localDateStr(new Date(target.getTime() - 86400000));
-    const newStart = localDateStr(new Date(target.getTime() + 86400000));
-    existing.end = newEnd;
-    state.periods.push({ start: newStart, end: localDateStr(end) });
-  }
-  saveState(); renderCalendar(); renderTable();
-  showToast('已取消经期标记');
-}
-
-function showPeriodDetail(ds) {
-  closeCalAction();
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  const day = dayIdx >= 0 ? state.days[dayIdx] : null;
-  const pday = dayIdx >= 0 ? countPeriodDays(ds) : 1;
-  const weight = day ? (day.weightAM || day.weightPM) : null;
-  const wStr = weight ? ((state.unit === '斤' ? weight * 2 : weight).toFixed(1) + state.unit) : '未记录';
-  const periodNote = (day && day.periodNote) ? day.periodNote : '无备注';
-  const dailyNote = (day && day.note) ? day.note : '无日记';
-  const diet = day ? (day.diet || '未记录') : '未记录';
-  const exercise = day ? (day.exercise || '未记录') : '未记录';
-  document.getElementById('periodDetailDate').textContent = ds;
-  document.getElementById('periodDetailDay').textContent = '经期第 ' + pday + ' 天';
-  document.getElementById('periodDetailWeight').textContent = wStr;
-  document.getElementById('periodDetailDiet').textContent = diet;
-  document.getElementById('periodDetailExercise').textContent = exercise;
-  document.getElementById('periodDetailNote').textContent = periodNote;
-  document.getElementById('periodDetailDailyNote').textContent = dailyNote;
-  document.getElementById('periodDetailModal').classList.add('show');
-}
-function closePeriodDetail() {
-  document.getElementById('periodDetailModal').classList.remove('show');
 }
 
 function toggleCalPeriod(ds) {
