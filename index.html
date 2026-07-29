@@ -852,7 +852,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 <!-- 经期日详情弹窗 -->
 <div class="modal-overlay" id="periodDetailModal">
   <div class="modal">
-    <h2>🌸 经期详情</h2>
+    <h2>🔍 日记/备注详情</h2>
     <div style="text-align:center;margin-bottom:16px">
       <div id="periodDetailDate" style="font-size:0.85rem;color:var(--text-l)">2024-01-01</div>
       <div id="periodDetailDay" style="font-size:1.1rem;font-weight:700;color:var(--rose-600);margin-top:4px">经期第 1 天</div>
@@ -861,7 +861,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
       <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--rose-50);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">体重</span><span id="periodDetailWeight" style="font-size:0.9rem;font-weight:600;color:var(--rose-600)">—</span></div>
       <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">饮食</span><span id="periodDetailDiet" style="font-size:0.9rem;font-weight:500;color:var(--text)">—</span></div>
       <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">运动</span><span id="periodDetailExercise" style="font-size:0.9rem;font-weight:500;color:var(--text)">—</span></div>
-      <div style="padding:10px 12px;background:var(--bg);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">经期备注</div><div id="periodDetailNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
+      <div style="padding:10px 12px;background:var(--bg);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">日记/备注</div><div id="periodDetailNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closePeriodDetail();playClick()">关闭</button>
@@ -1990,22 +1990,21 @@ document.addEventListener('touchend', e => {
   if (Math.abs(diffX) < 80) return; /* 水平滑动太短忽略 */
   /* 只有水平滑动明显大于垂直滑动时才切换页面，避免上下滚动误触发 */
   if (Math.abs(diffY) > Math.abs(diffX) * 0.4) return;
-  /* 找当前tab */
+  /* 找当前tab和可见tab列表 */
+  const allTabs = Array.from(document.querySelectorAll('.tab'));
   let cur = 0;
-  document.querySelectorAll('.tab').forEach((t,i) => { if (t.classList.contains('active')) cur = i; });
+  allTabs.forEach((t,i) => { if (t.classList.contains('active')) cur = i; });
+  /* 获取可见tab的索引列表 */
+  const visibleTabs = allTabs.map((t,i) => t.style.display === 'none' ? -1 : i).filter(i => i >= 0);
+  const curPos = visibleTabs.indexOf(cur);
   if (diffX > 0) {
-    /* 左滑→下一个 */
-    const oldCur = cur;
-    switchTab(cur + 1);
-    /* 只有实际切换了才播放音效 */
-    const newCur = Array.from(document.querySelectorAll('.tab')).findIndex(t => t.classList.contains('active'));
-    if (newCur !== oldCur) playSwipe(-1);
+    /* 左滑→下一个可见tab */
+    const nextTab = curPos >= 0 && curPos < visibleTabs.length - 1 ? visibleTabs[curPos + 1] : -1;
+    if (nextTab >= 0) { switchTab(nextTab); playSwipe(-1); }
   } else {
-    /* 右滑→上一个 */
-    const oldCur = cur;
-    switchTab(cur - 1);
-    const newCur = Array.from(document.querySelectorAll('.tab')).findIndex(t => t.classList.contains('active'));
-    if (newCur !== oldCur) playSwipe(1);
+    /* 右滑→上一个可见tab */
+    const prevTab = curPos > 0 ? visibleTabs[curPos - 1] : -1;
+    if (prevTab >= 0) { switchTab(prevTab); playSwipe(1); }
   }
 }, { passive: true });
 
@@ -3467,17 +3466,20 @@ function onCalDayClick(ds) {
     }
   } else {
     if (isPeriod) {
-      actions += '<div class="cal-action-box" onclick="showPeriodDetail(\'' + ds + '\')">🌸 查看经期详情</div>';
+      actions += '<div class="cal-action-box" onclick="showPeriodDetail(\'' + ds + '\')">🔍 查看日记/备注</div>';
+    } else if (hasNote) {
+      actions += '<div class="cal-action-box" onclick="viewDayNote(\'' + ds + '\')">🔍 查看日记/备注</div>';
     }
     actions += '<div class="cal-action-box" onclick="editPeriodTime(\'' + ds + '\')">🕐 修改经期时间</div>';
   }
-  actions += '<div class="cal-action-box" onclick="uploadDayPhoto(\'' + ds + '\')">📷 上传照片</div>';
+  /* 照片：上传和查看左右排列 */
+  let photoRow = '<div style="display:flex;gap:8px;margin-top:8px">';
+  photoRow += '<div class="cal-action-box" style="flex:1;margin-bottom:0" onclick="uploadDayPhoto(\'' + ds + '\')">📷 上传照片</div>';
   if (hasPhoto) {
-    actions += '<div class="cal-action-box" onclick="viewDayPhoto(\'' + ds + '\')">👁 查看照片</div>';
+    photoRow += '<div class="cal-action-box" style="flex:1;margin-bottom:0" onclick="viewDayPhoto(\'' + ds + '\')">👁 查看照片</div>';
   }
-  if (hasNote) {
-    actions += '<div class="cal-action-box" onclick="viewDayNote(\'' + ds + '\')">📝 查看备注</div>';
-  }
+  photoRow += '</div>';
+  actions += photoRow;
 
   document.getElementById('calActionDate').textContent = ds;
   document.getElementById('calActionList').innerHTML = actions;
