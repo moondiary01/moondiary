@@ -376,7 +376,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .cal-weight{font-size:0.55rem;font-weight:700}
 .cal-weight.up{color:#EF4444}
 .cal-weight.down{color:#10B981}
-.cal-photo{font-size:0.55rem;display:block;line-height:1}
+.cal-photo{font-size:0.5rem;display:block;line-height:1;margin-bottom:1px}
 .cal-action-box{width:100%;padding:14px;margin-bottom:8px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);font-size:0.9rem;font-weight:500;color:var(--text);text-align:center;cursor:pointer;transition:all 0.15s}
 .cal-action-box:hover{border-color:var(--rose-400);background:var(--rose-50);color:var(--rose-600)}
 .cal-action-box:active{transform:scale(0.97)}
@@ -3358,9 +3358,9 @@ function renderCalendar() {
         else if (checkDate >= ovStart && checkDate <= ovEnd) cls += ' ovulation-window';
       }
       /* 照片缩略图 */
-      const dayIdx = state.days.findIndex(dd => dd.date === ds);
-      const photoMark = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo">📷</span>' : '';
-      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + label + (weightArrow ? '<br>' + weightArrow : '') + photoMark + '</div>';
+      const dayIdx2 = state.days.findIndex(dd => dd.date === ds);
+      const photoMark = (dayIdx2 >= 0 && state.days[dayIdx2].photo) ? '<span class="cal-photo">📷</span>' : '';
+      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + photoMark + label + (weightArrow ? '<br>' + weightArrow : '') + '</div>';
     }
   }
   /* 补满 */
