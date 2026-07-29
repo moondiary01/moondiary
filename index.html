@@ -671,7 +671,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
       <div class="dash-item dash-clickable" onclick="editStartFat();playClick()"><div class="dash-label">起始体脂率</div><div class="dash-value amber" id="s-startFat" style="color:#9A8C00">—</div></div>
       <div class="dash-item"><div class="dash-label">最新体脂率</div><div class="dash-value amber" id="s-latestFat" style="color:#9A8C00">—</div></div>
       <div class="dash-item"><div class="dash-label">体脂变化</div><div class="dash-value mint" id="s-fatDiff">—</div></div>
-      <div class="dash-item" style="grid-column:span 1"><div class="dash-label">📏 三围记录</div><div class="dash-value" id="s-measure" style="font-size:0.9rem;font-weight:600;color:var(--rose-500);line-height:1.4">—</div></div>
+      <div class="dash-item" style="grid-column:span 1;cursor:pointer" onclick="editMeasure()"><div class="dash-label">📏 三围记录 <span style="font-size:0.6rem;color:var(--text-l)">点击修改</span></div><div class="dash-value" id="s-measure" style="font-size:0.9rem;font-weight:600;color:var(--rose-500);line-height:1.4">—</div></div>
     </div>
   </div>
 </div>
@@ -884,6 +884,20 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeEdit();playClick()">取消</button>
       <button class="btn btn-primary" onclick="confirmEdit();playClick()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 三围编辑弹窗 -->
+<div class="modal-overlay" id="measureModal">
+  <div class="modal">
+    <h2>📏 修改三围</h2>
+    <div class="input-group"><label>胸围 (cm)</label><input type="number" id="measureBust" step="0.1" placeholder="如 90"></div>
+    <div class="input-group"><label>腰围 (cm)</label><input type="number" id="measureWaist" step="0.1" placeholder="如 70"></div>
+    <div class="input-group"><label>臀围 (cm)</label><input type="number" id="measureHip" step="0.1" placeholder="如 95"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeMeasure();playClick()">取消</button>
+      <button class="btn btn-primary" onclick="saveMeasure();playClick()">保存</button>
     </div>
   </div>
 </div>
@@ -1110,6 +1124,7 @@ var state = {
   version: 3, name: '', gender: '', age: null, height: null,
   startDate: '', targetDate: '', startWeight: null, targetWeight: null,
   startFat: null,
+  bust: null, waist: null, hip: null,
   unit: '斤', calGoal: 1400, waterGoal: 2000,
   days: [], weeklyReview: [], periods: [], avatar: MOON_AVATAR
 };
@@ -1392,6 +1407,7 @@ function loadState() {
       version: 3, name: '', gender: '', age: null, height: null,
       startDate: '', targetDate: '', startWeight: null, targetWeight: null,
       startFat: null,
+      bust: null, waist: null, hip: null,
       unit: '斤', calGoal: 1400, waterGoal: 2000,
       days: [], weeklyReview: [], periods: [], avatar: MOON_AVATAR
     };
@@ -2619,6 +2635,29 @@ function importAllData(input) {
   };
   reader.readAsText(file);
   input.value = '';
+}
+
+/* ---------- 三围编辑 ---------- */
+function editMeasure() {
+  document.getElementById('measureBust').value = state.bust || '';
+  document.getElementById('measureWaist').value = state.waist || '';
+  document.getElementById('measureHip').value = state.hip || '';
+  document.getElementById('measureModal').classList.add('show');
+}
+function closeMeasure() {
+  document.getElementById('measureModal').classList.remove('show');
+}
+function saveMeasure() {
+  const b = parseFloat(document.getElementById('measureBust').value);
+  const w = parseFloat(document.getElementById('measureWaist').value);
+  const h = parseFloat(document.getElementById('measureHip').value);
+  state.bust = isNaN(b) ? null : b;
+  state.waist = isNaN(w) ? null : w;
+  state.hip = isNaN(h) ? null : h;
+  saveState();
+  renderAll();
+  closeMeasure();
+  showToast('三围已保存并同步');
 }
 
 /* ---------- 设置 ---------- */
