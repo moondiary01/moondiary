@@ -2276,7 +2276,7 @@ function drawChart() {
     pmD.forEach(d => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
-      ctx.fillStyle = '#EC4899'; ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#EC4899'; ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
     });
   }
   if (amD.length > 0) {
@@ -2290,7 +2290,7 @@ function drawChart() {
     amD.forEach(d => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
-      ctx.fillStyle = '#C026D3'; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#C026D3'; ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
     });
   }
   /* 体脂率曲线（右侧Y轴，桔黄色） */
@@ -2319,7 +2319,7 @@ function drawChart() {
     fatD.forEach(d => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.f-minF)/(maxF-minF))*ch;
-      ctx.fillStyle = '#D4B800'; ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#D4B800'; ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
     });
     /* 图例 */
     ctx.fillStyle = '#D4B800'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';
