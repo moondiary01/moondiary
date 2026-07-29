@@ -1,0 +1,96 @@
+<!-- pages/index/index.wxml -->
+<view class="index-page">
+
+  <!-- 顶部信息 -->
+  <view class="hero-card">
+    <view class="hero-top">
+      <view class="hero-name">{{userName || '你好'}}</view>
+      <view class="hero-date">{{todayStr}}</view>
+    </view>
+    <view class="hero-weight">
+      <text class="hero-weight-num">{{todayWeightDisplay}}</text>
+      <text class="hero-weight-unit">{{unitLabel}}</text>
+    </view>
+    <view class="hero-weight-label">今日体重</view>
+  </view>
+
+  <!-- 体重输入 -->
+  <view class="card">
+    <view class="card-title">体重记录</view>
+    <view class="weight-row">
+      <view class="weight-input-group">
+        <text class="input-label">晨起体重</text>
+        <input class="input" type="digit" placeholder="{{unitLabel}}" value="{{dayData.morningWeight}}" bindinput="onMorningWeightInput" />
+      </view>
+      <view class="weight-input-group">
+        <text class="input-label">晚间体重</text>
+        <input class="input" type="digit" placeholder="{{unitLabel}}" value="{{dayData.eveningWeight}}" bindinput="onEveningWeightInput" />
+      </view>
+    </view>
+    <view class="weight-row">
+      <view class="weight-input-group">
+        <text class="input-label">体脂率(%)</text>
+        <input class="input" type="digit" placeholder="如 25" value="{{dayData.fatRate}}" bindinput="onFatRateInput" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 饮食选择 -->
+  <view class="card">
+    <view class="card-title">饮食</view>
+    <scroll-view scroll-x="true" class="tag-scroll">
+      <view class="tag-list">
+        <view wx:for="{{dietOptions}}" wx:key="*this"
+          class="tag-item {{dayData.diet === item ? 'tag-item-active' : ''}}"
+          bindtap="onDietSelect" data-value="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 运动选择 -->
+  <view class="card">
+    <view class="card-title">运动</view>
+    <scroll-view scroll-x="true" class="tag-scroll">
+      <view class="tag-list">
+        <view wx:for="{{exerciseOptions}}" wx:key="*this"
+          class="tag-item {{dayData.exercise === item ? 'tag-item-active' : ''}}"
+          bindtap="onExerciseSelect" data-value="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 饮水打卡 -->
+  <view class="card">
+    <view class="card-title">饮水打卡</view>
+    <view class="water-row">
+      <view class="water-info">
+        <text class="water-count">{{dayData.waterCups || 0}}</text>
+        <text class="water-unit">杯</text>
+        <text class="water-ml">约 {{waterMl}} ml</text>
+      </view>
+      <view class="water-btn" bindtap="onWaterAdd">+1杯</view>
+    </view>
+  </view>
+
+  <!-- 经期备注（女性用户） -->
+  <view class="card" wx:if="{{isFemale}}">
+    <view class="card-title">经期备注</view>
+    <textarea class="textarea" placeholder="记录经期感受..." value="{{dayData.periodNote}}" bindinput="onPeriodNoteInput" maxlength="200"></textarea>
+  </view>
+
+  <!-- 心情日记 -->
+  <view class="card">
+    <view class="card-title">心情日记</view>
+    <textarea class="textarea" placeholder="今天怎么样..." value="{{dayData.diary}}" bindinput="onDiaryInput" maxlength="500"></textarea>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-area">
+    <button class="btn btn-primary btn-block" bindtap="onSave">保存今日记录</button>
+  </view>
+
+</view>

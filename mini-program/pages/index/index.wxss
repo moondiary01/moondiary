@@ -1,0 +1,138 @@
+/* pages/index/index.wxss */
+.index-page {
+  padding-bottom: 120rpx;
+}
+
+/* 顶部信息卡 */
+.hero-card {
+  background: linear-gradient(135deg, #f43f5e, #ec4899);
+  margin: 20rpx 24rpx;
+  border-radius: 24rpx;
+  padding: 40rpx 30rpx;
+  color: #fff;
+}
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+.hero-name {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+.hero-date {
+  font-size: 26rpx;
+  opacity: 0.85;
+}
+.hero-weight {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+.hero-weight-num {
+  font-size: 80rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+.hero-weight-unit {
+  font-size: 30rpx;
+  opacity: 0.85;
+}
+.hero-weight-label {
+  font-size: 24rpx;
+  opacity: 0.7;
+  margin-top: 8rpx;
+}
+
+/* 体重输入行 */
+.weight-row {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 10rpx;
+}
+.weight-input-group {
+  flex: 1;
+}
+.weight-input-group .input-label {
+  font-size: 26rpx;
+  color: #78716c;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+/* 标签横向滚动 */
+.tag-scroll {
+  white-space: nowrap;
+}
+.tag-list {
+  display: inline-flex;
+  gap: 16rpx;
+  padding: 4rpx 0;
+}
+.tag-item {
+  display: inline-block;
+  padding: 14rpx 28rpx;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  background: #f5f5f4;
+  color: #78716c;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.tag-item-active {
+  background: #fce7f3;
+  color: #ec4899;
+}
+
+/* 饮水 */
+.water-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.water-info {
+  display: flex;
+  align-items: baseline;
+  gap: 6rpx;
+}
+.water-count {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #ec4899;
+}
+.water-unit {
+  font-size: 28rpx;
+  color: #78716c;
+}
+.water-ml {
+  font-size: 24rpx;
+  color: #a8a29e;
+  margin-left: 12rpx;
+}
+.water-btn {
+  background: #fce7f3;
+  color: #ec4899;
+  padding: 18rpx 36rpx;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* 文本域 */
+.textarea {
+  width: 100%;
+  min-height: 160rpx;
+  padding: 20rpx 24rpx;
+  border: 3rpx solid #e5e7eb;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* 保存 */
+.save-area {
+  padding: 30rpx 24rpx;
+}

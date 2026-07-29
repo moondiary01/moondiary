@@ -1,0 +1,74 @@
+/* pages/login/login.wxss */
+.login-page {
+  min-height: 100vh;
+  padding-bottom: 60rpx;
+}
+
+/* Logo */
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 0 50rpx;
+}
+.logo-icon {
+  font-size: 100rpx;
+  margin-bottom: 20rpx;
+}
+.logo-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #1c1917;
+}
+.logo-subtitle {
+  font-size: 28rpx;
+  color: #78716c;
+  margin-top: 8rpx;
+}
+
+/* Tab */
+.tab-bar {
+  display: flex;
+  margin: 0 24rpx 10rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 8rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+}
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 26rpx;
+  color: #78716c;
+  border-radius: 12rpx;
+  transition: all 0.2s;
+}
+.tab-item.active {
+  background: linear-gradient(135deg, #f43f5e, #ec4899);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 内容 */
+.login-content {
+  margin-top: 10rpx;
+}
+.login-tip {
+  font-size: 26rpx;
+  color: #78716c;
+  text-align: center;
+  margin-bottom: 30rpx;
+  line-height: 1.6;
+}
+.wx-login-btn {
+  font-size: 32rpx;
+  padding: 24rpx 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+.wx-icon {
+  font-size: 36rpx;
+}

@@ -1,0 +1,45 @@
+<!-- pages/privacy/privacy.wxml -->
+<view class="privacy-page">
+  <view class="card">
+    <view class="section">
+      <view class="section-title">1. 信息收集</view>
+      <view class="section-item">- 手机号（密钥登录用户）</view>
+      <view class="section-item">- 微信授权信息（微信登录用户）</view>
+      <view class="section-item">- 体重、体脂、饮食、运动等健康记录数据</view>
+      <view class="section-item">- 经期记录、照片（用户主动上传）</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">2. 信息使用</view>
+      <view class="section-item">- 仅用于提供身材管理记录服务</view>
+      <view class="section-item">- 不会用于其他商业用途</view>
+      <view class="section-item">- 不会分享给第三方</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">3. 信息存储</view>
+      <view class="section-item">- 数据存储在腾讯云COS（重庆区域）</view>
+      <view class="section-item">- 每个用户数据独立存储，互不可见</view>
+      <view class="section-item">- 数据传输使用HTTPS加密</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">4. 用户权利</view>
+      <view class="section-item">- 可随时导出自己的数据</view>
+      <view class="section-item">- 可随时删除自己的数据</view>
+      <view class="section-item">- 可拒绝授权微信信息</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">5. 信息安全</view>
+      <view class="section-item">- 采用HTTPS加密传输</view>
+      <view class="section-item">- COS采用腾讯云安全防护</view>
+      <view class="section-item">- 密钥使用加密存储</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">6. 联系方式</view>
+      <view class="section-item">- 如有隐私问题请联系：moon_diary_service</view>
+    </view>
+  </view>
+</view>

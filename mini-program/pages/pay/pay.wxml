@@ -1,0 +1,52 @@
+<!-- pages/pay/pay.wxml -->
+<view class="pay-page">
+  <!-- 标题 -->
+  <view class="pay-header">
+    <view class="pay-header-icon">🌙</view>
+    <view class="pay-header-title">Moon Diary 会员</view>
+  </view>
+
+  <!-- 价格卡片 -->
+  <view class="card price-card">
+    <view class="price-amount">19.9元/月</view>
+    <view class="price-desc">永久云存储</view>
+  </view>
+
+  <!-- 会员权益 -->
+  <view class="card">
+    <view class="card-title">会员权益</view>
+    <view class="benefit-list">
+      <view class="benefit-item">
+        <text class="benefit-icon">✅</text>
+        <text class="benefit-text">全部功能解锁</text>
+      </view>
+      <view class="benefit-item">
+        <text class="benefit-icon">☁️</text>
+        <text class="benefit-text">云端数据同步</text>
+      </view>
+      <view class="benefit-item">
+        <text class="benefit-icon">📅</text>
+        <text class="benefit-text">经期日历</text>
+      </view>
+      <view class="benefit-item">
+        <text class="benefit-icon">📷</text>
+        <text class="benefit-text">照片上传</text>
+      </view>
+      <view class="benefit-item">
+        <text class="benefit-icon">📤</text>
+        <text class="benefit-text">数据导出</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 入口按钮 -->
+  <view class="card">
+    <view class="entry-btn" bindtap="onNotice">查看购买须知</view>
+    <view class="entry-btn" bindtap="onPrivacy">查看隐私政策</view>
+  </view>
+
+  <!-- 底部支付按钮 -->
+  <view class="pay-footer">
+    <button class="btn btn-primary btn-block pay-btn" bindtap="onPay">立即开通 19.9元/月</button>
+  </view>
+</view>

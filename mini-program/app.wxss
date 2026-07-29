@@ -1,0 +1,156 @@
+/* ===== Moon Diary 全局样式 ===== */
+page {
+  background: #faf5f9;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1c1917;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+/* 主题色 */
+.theme-rose { color: #ec4899; }
+.theme-rose-bg { background: #fce7f3; }
+
+/* 卡片 */
+.card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  margin: 20rpx 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+}
+.card-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1c1917;
+  margin-bottom: 20rpx;
+}
+
+/* 按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18rpx 36rpx;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+  transition: all 0.15s;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #f43f5e, #ec4899);
+  color: #fff;
+}
+.btn-outline {
+  background: transparent;
+  color: #ec4899;
+  border: 3rpx solid #f9a8d4;
+}
+.btn-danger {
+  background: #ef4444;
+  color: #fff;
+}
+.btn-block {
+  width: 100%;
+  display: flex;
+}
+
+/* 输入框 */
+.input {
+  width: 100%;
+  padding: 20rpx 24rpx;
+  border: 3rpx solid #e5e7eb;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  background: #fff;
+  color: #1c1917;
+  box-sizing: border-box;
+}
+.input-group {
+  margin-bottom: 20rpx;
+}
+.input-label {
+  font-size: 26rpx;
+  color: #78716c;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(28,25,23,0.85);
+  color: #fff;
+  padding: 20rpx 40rpx;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* 遮罩层 */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(28,25,23,0.4);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 弹窗 */
+.modal {
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 40rpx;
+  width: 85%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+.modal-actions {
+  display: flex;
+  gap: 20rpx;
+  justify-content: center;
+  margin-top: 30rpx;
+}
+
+/* 标签 */
+.tag {
+  display: inline-block;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+.tag-active {
+  background: #fce7f3;
+  color: #ec4899;
+}
+
+/* 文字辅助 */
+.text-sm { font-size: 24rpx; }
+.text-md { font-size: 28rpx; }
+.text-lg { font-size: 32rpx; }
+.text-xl { font-size: 40rpx; }
+.text-light { color: #78716c; }
+.text-center { text-align: center; }
+.text-bold { font-weight: 700; }
+.mt-10 { margin-top: 10rpx; }
+.mt-20 { margin-top: 20rpx; }
+.mt-30 { margin-top: 30rpx; }
+.mb-10 { margin-bottom: 10rpx; }
+.mb-20 { margin-bottom: 20rpx; }

@@ -1,0 +1,85 @@
+/* pages/pay/pay.wxss */
+.pay-page {
+  min-height: 100vh;
+  padding-bottom: 140rpx;
+}
+
+/* 头部 */
+.pay-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 0 40rpx;
+}
+.pay-header-icon {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+.pay-header-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #1c1917;
+}
+
+/* 价格卡片 */
+.price-card {
+  text-align: center;
+  background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+}
+.price-amount {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #ec4899;
+}
+.price-desc {
+  font-size: 28rpx;
+  color: #78716c;
+  margin-top: 12rpx;
+}
+
+/* 权益列表 */
+.benefit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.benefit-icon {
+  font-size: 32rpx;
+}
+.benefit-text {
+  font-size: 30rpx;
+  color: #1c1917;
+}
+
+/* 入口按钮 */
+.entry-btn {
+  font-size: 28rpx;
+  color: #ec4899;
+  padding: 24rpx 0;
+  text-align: center;
+  border-bottom: 2rpx solid #f3f4f6;
+}
+.entry-btn:last-child {
+  border-bottom: none;
+}
+
+/* 底部支付 */
+.pay-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx 24rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.06);
+}
+.pay-btn {
+  font-size: 32rpx;
+  padding: 24rpx 0;
+}

@@ -1,0 +1,35 @@
+/* components/pay-modal/pay-modal.wxss */
+.pay-modal {
+  text-align: center;
+}
+.pay-modal-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+.pay-modal-desc {
+  font-size: 28rpx;
+  color: #78716c;
+  line-height: 1.6;
+  margin-bottom: 30rpx;
+}
+.pay-modal-price {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #ec4899;
+  margin-bottom: 30rpx;
+}
+.pay-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 40rpx;
+  margin-bottom: 30rpx;
+}
+.pay-modal-link {
+  font-size: 26rpx;
+  color: #ec4899;
+  text-decoration: underline;
+}
+.pay-modal-btn {
+  font-size: 32rpx;
+  padding: 24rpx 0;
+}

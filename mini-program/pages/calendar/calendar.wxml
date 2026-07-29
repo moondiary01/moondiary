@@ -1,0 +1,121 @@
+<!-- pages/calendar/calendar.wxml -->
+<view class="calendar-page">
+
+  <!-- 月份导航 -->
+  <view class="cal-nav">
+    <view class="cal-nav-btn" bindtap="onPrevMonth">‹</view>
+    <view class="cal-nav-title">{{calYear}}年{{calMonth + 1}}月</view>
+    <view class="cal-nav-btn" bindtap="onNextMonth">›</view>
+  </view>
+
+  <!-- 日历表头 -->
+  <view class="cal-header">
+    <view class="cal-hcell">日</view>
+    <view class="cal-hcell">一</view>
+    <view class="cal-hcell">二</view>
+    <view class="cal-hcell">三</view>
+    <view class="cal-hcell">四</view>
+    <view class="cal-hcell">五</view>
+    <view class="cal-hcell">六</view>
+  </view>
+
+  <!-- 日历网格 -->
+  <view class="cal-grid">
+    <block wx:for="{{calDays}}" wx:key="key">
+      <view class="cal-cell {{item.empty ? 'cal-empty' : ''}}"
+        wx:if="{{item.empty}}">
+      </view>
+      <view class="cal-cell {{item.today ? 'cal-today' : ''}} {{item.period ? 'cal-period' : ''}} {{item.periodPredict ? 'cal-period-predict' : ''}} {{item.ovulation ? 'cal-ovulation' : ''}} {{item.exercise ? 'cal-exercise' : ''}}"
+        wx:else
+        bindtap="onCalDayClick" data-date="{{item.dateStr}}">
+        <view class="cal-day-num">{{item.day}}</view>
+        <view class="cal-day-marks">
+          <text wx:if="{{item.ovulation}}" class="cal-mark cal-egg">🥚</text>
+          <text wx:if="{{item.exercise}}" class="cal-mark cal-run">🏃</text>
+          <text wx:if="{{item.hasPhoto}}" class="cal-mark cal-cam">📷</text>
+        </view>
+        <view class="cal-day-weight" wx:if="{{item.weightChange}}">
+          <text class="weight-arrow {{item.weightUp ? 'arrow-up' : 'arrow-down'}}">{{item.weightUp ? '↑' : '↓'}}</text>
+          <text class="weight-change-val {{item.weightUp ? 'change-up' : 'change-down'}}">{{item.weightChange}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 图例 -->
+  <view class="cal-legend">
+    <view class="legend-item" wx:if="{{isFemale}}">
+      <view class="legend-dot lg-period"></view>
+      <text>经期</text>
+    </view>
+    <view class="legend-item" wx:if="{{isFemale}}">
+      <view class="legend-dot lg-ovulation"></view>
+      <text>排卵日</text>
+    </view>
+    <view class="legend-item" wx:if="{{isFemale}}">
+      <view class="legend-dot lg-predict"></view>
+      <text>经期预测</text>
+    </view>
+    <view class="legend-item" wx:if="{{!isFemale}}">
+      <view class="legend-dot lg-exercise"></view>
+      <text>运动日</text>
+    </view>
+    <view class="legend-item">
+      <text class="legend-emoji">📷</text>
+      <text>有照片</text>
+    </view>
+  </view>
+
+</view>
+
+<!-- 日期详情弹窗 -->
+<view class="overlay" wx:if="{{showDetail}}" bindtap="onCloseDetail">
+  <view class="modal detail-modal" catchtap="">
+    <view class="modal-title">{{detailDate}}</view>
+
+    <view class="detail-section">
+      <view class="detail-row">
+        <text class="detail-label">晨起体重</text>
+        <text class="detail-val">{{detailData.morningWeight || '--'}} {{unitLabel}}</text>
+      </view>
+      <view class="detail-row">
+        <text class="detail-label">晚间体重</text>
+        <text class="detail-val">{{detailData.eveningWeight || '--'}} {{unitLabel}}</text>
+      </view>
+      <view class="detail-row">
+        <text class="detail-label">体脂率</text>
+        <text class="detail-val">{{detailData.fatRate ? detailData.fatRate + '%' : '--'}}</text>
+      </view>
+      <view class="detail-row">
+        <text class="detail-label">饮食</text>
+        <text class="detail-val">{{detailData.diet || '--'}}</text>
+      </view>
+      <view class="detail-row">
+        <text class="detail-label">运动</text>
+        <text class="detail-val">{{detailData.exercise || '--'}}</text>
+      </view>
+    </view>
+
+    <view class="detail-section" wx:if="{{isFemale && detailData.periodNote}}">
+      <view class="detail-label">经期备注</view>
+      <view class="detail-text">{{detailData.periodNote}}</view>
+    </view>
+
+    <view class="detail-section" wx:if="{{detailData.diary}}">
+      <view class="detail-label">心情日记</view>
+      <view class="detail-text">{{detailData.diary}}</view>
+    </view>
+
+    <view class="detail-actions">
+      <block wx:if="{{isFemale}}">
+        <button class="btn btn-outline" bindtap="onTogglePeriod" wx:if="{{!isPeriodDay}}">标记经期</button>
+        <button class="btn btn-outline" bindtap="onTogglePeriod" wx:else>取消经期</button>
+      </block>
+      <block wx:if="{{!isFemale}}">
+        <button class="btn btn-outline" bindtap="onToggleExercise" wx:if="{{!isExerciseDay}}">运动打卡</button>
+        <button class="btn btn-outline" bindtap="onToggleExercise" wx:else>取消打卡</button>
+      </block>
+      <button class="btn btn-primary" bindtap="onCloseDetail">关闭</button>
+    </view>
+  </view>
+</view>

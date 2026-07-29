@@ -1,0 +1,144 @@
+/* pages/admin/admin.wxss */
+.admin-page {
+  padding-bottom: 40rpx;
+}
+
+/* 统计 */
+.stat-row {
+  display: flex;
+  gap: 20rpx;
+}
+.stat-cell {
+  flex: 1;
+  text-align: center;
+  background: #faf5f9;
+  border-radius: 16rpx;
+  padding: 24rpx 10rpx;
+}
+.stat-num {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #ec4899;
+  display: block;
+}
+.stat-label {
+  font-size: 24rpx;
+  color: #78716c;
+  margin-top: 4rpx;
+}
+
+/* 版本通知 */
+.notice-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.notice-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+.notice-version {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1c1917;
+}
+.notice-status {
+  font-size: 24rpx;
+  color: #a8a29e;
+}
+.notice-btn {
+  font-size: 26rpx;
+  padding: 14rpx 28rpx;
+}
+
+/* 筛选 */
+.filter-row {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+.filter-btn {
+  flex: 1;
+  text-align: center;
+  padding: 12rpx 0;
+  font-size: 24rpx;
+  color: #78716c;
+  background: #f5f5f4;
+  border-radius: 12rpx;
+  transition: all 0.15s;
+}
+.filter-active {
+  background: #fce7f3;
+  color: #ec4899;
+  font-weight: 600;
+}
+
+/* 密钥列表 */
+.key-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.key-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20rpx;
+  background: #faf5f9;
+  border-radius: 16rpx;
+}
+.key-info {
+  flex: 1;
+}
+.key-num {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1c1917;
+  font-family: monospace;
+}
+.key-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  margin-top: 6rpx;
+}
+.key-phone {
+  font-size: 24rpx;
+  color: #78716c;
+}
+.key-remark {
+  font-size: 22rpx;
+  color: #a8a29e;
+}
+.key-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+}
+.key-status {
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+.status-active { background: #dcfce7; color: #16a34a; }
+.status-inactive { background: #f5f5f4; color: #a8a29e; }
+.status-revoked { background: #fee2e2; color: #dc2626; }
+
+.key-actions {
+  display: flex;
+  gap: 8rpx;
+}
+.mini-btn {
+  font-size: 22rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 10rpx;
+  line-height: 1.5;
+}
+.mini-btn-outline {
+  background: transparent;
+  border: 2rpx solid #e5e7eb;
+  color: #78716c;
+}

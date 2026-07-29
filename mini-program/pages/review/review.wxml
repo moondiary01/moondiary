@@ -1,0 +1,31 @@
+<!-- pages/review/review.wxml -->
+<view class="review-page">
+
+  <view class="review-tip">每周记录一次复盘，回顾这周的成果与感受</view>
+
+  <!-- 周度复盘列表 -->
+  <view class="card" wx:for="{{weekList}}" wx:key="week">
+    <view class="card-title">第 {{item.week}} 周</view>
+    <view class="week-date">{{item.dateRange}}</view>
+    <textarea class="textarea"
+      placeholder="这周的感受、变化、调整..."
+      value="{{item.content}}"
+      data-index="{{index}}"
+      bindinput="onReviewInput"
+      maxlength="500">
+    </textarea>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{weekList.length === 0}}">
+    <text class="empty-icon">📝</text>
+    <text class="empty-text">还没有复盘记录</text>
+    <text class="empty-sub">设置开始日期后，周度复盘会自动生成</text>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-area" wx:if="{{weekList.length > 0}}">
+    <button class="btn btn-primary btn-block" bindtap="onSave">保存复盘</button>
+  </view>
+
+</view>

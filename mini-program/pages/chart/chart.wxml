@@ -1,0 +1,71 @@
+<!-- pages/chart/chart.wxml -->
+<view class="chart-page">
+
+  <!-- 体重趋势图 -->
+  <view class="card">
+    <view class="card-title">体重趋势</view>
+    <view class="chart-legend">
+      <view class="legend-item">
+        <view class="legend-dot legend-morning"></view>
+        <text>晨起体重</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-dot legend-evening"></view>
+        <text>晚间体重</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-dot legend-fat"></view>
+        <text>体脂率</text>
+      </view>
+    </view>
+    <canvas canvas-id="weightChart" id="weightChart" class="chart-canvas"></canvas>
+    <view class="chart-empty" wx:if="{{!hasData}}">
+      <text>暂无体重数据，去记录吧~</text>
+    </view>
+  </view>
+
+  <!-- BMI 显示 -->
+  <view class="card bmi-card">
+    <view class="bmi-row">
+      <view class="bmi-info">
+        <text class="bmi-label">BMI</text>
+        <text class="bmi-value">{{bmiValue || '--'}}</text>
+      </view>
+      <view class="bmi-status {{bmiClass}}">{{bmiStatus}}</view>
+    </view>
+  </view>
+
+  <!-- 三围记录 -->
+  <view class="card">
+    <view class="card-title">三围记录</view>
+    <view class="measure-row">
+      <view class="measure-item" bindtap="onEditMeasure" data-field="bust">
+        <text class="measure-label">胸围</text>
+        <text class="measure-value">{{bust || '--'}} <text class="measure-unit">cm</text></text>
+      </view>
+      <view class="measure-item" bindtap="onEditMeasure" data-field="waist">
+        <text class="measure-label">腰围</text>
+        <text class="measure-value">{{waist || '--'}} <text class="measure-unit">cm</text></text>
+      </view>
+      <view class="measure-item" bindtap="onEditMeasure" data-field="hip">
+        <text class="measure-label">臀围</text>
+        <text class="measure-value">{{hip || '--'}} <text class="measure-unit">cm</text></text>
+      </view>
+    </view>
+  </view>
+
+</view>
+
+<!-- 编辑三围弹窗 -->
+<view class="overlay" wx:if="{{showEditModal}}" bindtap="onCloseModal">
+  <view class="modal" catchtap="">
+    <view class="modal-title">{{editLabel}}</view>
+    <view class="input-group">
+      <input class="input" type="digit" placeholder="请输入数值(cm)" value="{{editValue}}" bindinput="onEditValueInput" />
+    </view>
+    <view class="modal-actions">
+      <button class="btn btn-outline" bindtap="onCloseModal">取消</button>
+      <button class="btn btn-primary" bindtap="onConfirmEdit">确认</button>
+    </view>
+  </view>
+</view>

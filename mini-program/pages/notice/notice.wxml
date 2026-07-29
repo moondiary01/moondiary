@@ -1,0 +1,43 @@
+<!-- pages/notice/notice.wxml -->
+<view class="notice-page">
+  <view class="card">
+    <view class="section">
+      <view class="section-title">1. 服务内容</view>
+      <view class="section-item">- Moon Diary 是一款身材管理记录工具</view>
+      <view class="section-item">- 会员可使用全部功能：每日体重记录、趋势统计、经期日历、运动打卡、照片上传、云端数据同步</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">2. 订阅规则</view>
+      <view class="section-item">- 会员费：19.9元/月</view>
+      <view class="section-item">- 付费后30天内可使用全部功能</view>
+      <view class="section-item">- 到期后需重新付费才能继续使用</view>
+      <view class="section-item">- 永久云存储：您的数据始终保存在云端，即使会员到期数据也不会丢失</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">3. 试用规则</view>
+      <view class="section-item">- 新用户可免费试用24小时</view>
+      <view class="section-item">- 试用期间可使用全部功能</view>
+      <view class="section-item">- 试用结束后需开通会员才能继续使用</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">4. 退款政策</view>
+      <view class="section-item">- 虚拟商品一经购买不支持退款</view>
+      <view class="section-item">- 请在试用期内充分体验后再决定购买</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">5. 自动续费</view>
+      <view class="section-item">- 暂不支持自动续费</view>
+      <view class="section-item">- 会员到期后需手动续费</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">6. 联系方式</view>
+      <view class="section-item">- 客服微信：moon_diary_service</view>
+      <view class="section-item">- 问题反馈：moon_diary_service</view>
+    </view>
+  </view>
+</view>

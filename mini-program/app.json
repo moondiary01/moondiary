@@ -1,0 +1,54 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/index/index",
+    "pages/chart/chart",
+    "pages/plan/plan",
+    "pages/review/review",
+    "pages/calendar/calendar",
+    "pages/admin/admin",
+    "pages/pay/pay",
+    "pages/notice/notice",
+    "pages/privacy/privacy"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#1a1025",
+    "navigationBarTitleText": "Moon Diary",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#faf5f9",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#9ca3af",
+    "selectedColor": "#ec4899",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "每日记录"
+      },
+      {
+        "pagePath": "pages/chart/chart",
+        "text": "趋势统计"
+      },
+      {
+        "pagePath": "pages/plan/plan",
+        "text": "计划详情"
+      },
+      {
+        "pagePath": "pages/review/review",
+        "text": "周度复盘"
+      },
+      {
+        "pagePath": "pages/calendar/calendar",
+        "text": "经期日历"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "usingComponents": {
+    "pay-modal": "/components/pay-modal/pay-modal"
+  }
+}

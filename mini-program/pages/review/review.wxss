@@ -1,0 +1,56 @@
+/* pages/review/review.wxss */
+.review-page {
+  padding-bottom: 120rpx;
+}
+
+.review-tip {
+  font-size: 26rpx;
+  color: #78716c;
+  text-align: center;
+  padding: 20rpx 40rpx;
+}
+
+.week-date {
+  font-size: 24rpx;
+  color: #a8a29e;
+  margin-bottom: 16rpx;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 200rpx;
+  padding: 20rpx 24rpx;
+  border: 3rpx solid #e5e7eb;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  background: #fff;
+  box-sizing: border-box;
+  line-height: 1.6;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0;
+}
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+.empty-text {
+  font-size: 30rpx;
+  color: #78716c;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+.empty-sub {
+  font-size: 24rpx;
+  color: #a8a29e;
+}
+
+/* 保存 */
+.save-area {
+  padding: 20rpx 24rpx;
+}

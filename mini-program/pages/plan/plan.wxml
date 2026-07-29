@@ -1,0 +1,182 @@
+<!-- pages/plan/plan.wxml -->
+<view class="plan-page">
+
+  <!-- 基本信息卡片 -->
+  <view class="card" bindtap="onEditCard" data-card="basic">
+    <view class="card-title">基本信息</view>
+    <view class="info-grid">
+      <view class="info-cell">
+        <text class="info-label">姓名</text>
+        <text class="info-value">{{state.name || '未设置'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">性别</text>
+        <text class="info-value">{{state.gender || '未设置'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">年龄</text>
+        <text class="info-value">{{state.age || '--'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">身高</text>
+        <text class="info-value">{{state.height || '--'}} cm</text>
+      </view>
+    </view>
+    <view class="edit-hint">点击编辑</view>
+  </view>
+
+  <!-- 计划卡片 -->
+  <view class="card" bindtap="onEditCard" data-card="plan">
+    <view class="card-title">减重计划</view>
+    <view class="info-grid">
+      <view class="info-cell">
+        <text class="info-label">开始日期</text>
+        <text class="info-value">{{state.startDate || '未设置'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">目标日期</text>
+        <text class="info-value">{{state.targetDate || '未设置'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">开始体重</text>
+        <text class="info-value">{{startWeightDisplay}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">目标体重</text>
+        <text class="info-value">{{targetWeightDisplay}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">体脂率</text>
+        <text class="info-value">{{state.startFat || '--'}}%</text>
+      </view>
+    </view>
+    <view class="edit-hint">点击编辑</view>
+  </view>
+
+  <!-- 三围卡片 -->
+  <view class="card" bindtap="onEditCard" data-card="measure">
+    <view class="card-title">三围记录</view>
+    <view class="measure-row">
+      <view class="measure-cell">
+        <text class="measure-num">{{state.bust || '--'}}</text>
+        <text class="measure-lbl">胸围</text>
+      </view>
+      <view class="measure-cell">
+        <text class="measure-num">{{state.waist || '--'}}</text>
+        <text class="measure-lbl">腰围</text>
+      </view>
+      <view class="measure-cell">
+        <text class="measure-num">{{state.hip || '--'}}</text>
+        <text class="measure-lbl">臀围</text>
+      </view>
+    </view>
+    <view class="edit-hint">点击编辑</view>
+  </view>
+
+  <!-- 进度卡片 -->
+  <view class="card">
+    <view class="card-title">进度</view>
+    <view class="progress-list">
+      <view class="progress-item">
+        <text class="progress-label">当前第几天</text>
+        <text class="progress-value">第 {{currentDay}} 天</text>
+      </view>
+      <view class="progress-item">
+        <text class="progress-label">剩余天数</text>
+        <text class="progress-value">{{remainingDays}} 天</text>
+      </view>
+      <view class="progress-item">
+        <text class="progress-label">已减重</text>
+        <text class="progress-value {{lostWeight > 0 ? 'progress-good' : ''}} {{lostWeight < 0 ? 'progress-bad' : ''}}">{{lostWeightStr}}</text>
+      </view>
+    </view>
+
+    <!-- 进度条 -->
+    <view class="progress-bar-wrap" wx:if="{{totalDays > 0}}">
+      <view class="progress-bar">
+        <view class="progress-bar-fill" style="width: {{progressPercent}}%"></view>
+      </view>
+      <text class="progress-percent">{{progressPercent}}%</text>
+    </view>
+  </view>
+
+</view>
+
+<!-- 编辑弹窗 -->
+<view class="overlay" wx:if="{{showEditModal}}" bindtap="onCloseModal">
+  <view class="modal" catchtap="">
+    <view class="modal-title">编辑信息</view>
+
+    <!-- 基本信息编辑 -->
+    <block wx:if="{{editCard === 'basic'}}">
+      <view class="input-group">
+        <text class="input-label">姓名</text>
+        <input class="input" placeholder="请输入姓名" value="{{editName}}" bindinput="onInput" data-field="editName" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">性别</text>
+        <view class="gender-row">
+          <view class="gender-btn {{editGender === '女' ? 'gender-active' : ''}}" bindtap="onGenderSelect" data-val="女">女</view>
+          <view class="gender-btn {{editGender === '男' ? 'gender-active' : ''}}" bindtap="onGenderSelect" data-val="男">男</view>
+        </view>
+      </view>
+      <view class="input-group">
+        <text class="input-label">年龄</text>
+        <input class="input" type="number" placeholder="请输入年龄" value="{{editAge}}" bindinput="onInput" data-field="editAge" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">身高(cm)</text>
+        <input class="input" type="digit" placeholder="请输入身高" value="{{editHeight}}" bindinput="onInput" data-field="editHeight" />
+      </view>
+    </block>
+
+    <!-- 计划编辑 -->
+    <block wx:if="{{editCard === 'plan'}}">
+      <view class="input-group">
+        <text class="input-label">开始日期</text>
+        <picker mode="date" value="{{editStartDate}}" bindchange="onDateChange" data-field="editStartDate">
+          <view class="picker-value">{{editStartDate || '选择日期'}}</view>
+        </picker>
+      </view>
+      <view class="input-group">
+        <text class="input-label">目标日期</text>
+        <picker mode="date" value="{{editTargetDate}}" bindchange="onDateChange" data-field="editTargetDate">
+          <view class="picker-value">{{editTargetDate || '选择日期'}}</view>
+        </picker>
+      </view>
+      <view class="input-group">
+        <text class="input-label">开始体重({{unitLabel}})</text>
+        <input class="input" type="digit" placeholder="请输入体重" value="{{editStartWeight}}" bindinput="onInput" data-field="editStartWeight" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">目标体重({{unitLabel}})</text>
+        <input class="input" type="digit" placeholder="请输入体重" value="{{editTargetWeight}}" bindinput="onInput" data-field="editTargetWeight" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">体脂率(%)</text>
+        <input class="input" type="digit" placeholder="请输入体脂率" value="{{editStartFat}}" bindinput="onInput" data-field="editStartFat" />
+      </view>
+    </block>
+
+    <!-- 三围编辑 -->
+    <block wx:if="{{editCard === 'measure'}}">
+      <view class="input-group">
+        <text class="input-label">胸围(cm)</text>
+        <input class="input" type="digit" placeholder="请输入胸围" value="{{editBust}}" bindinput="onInput" data-field="editBust" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">腰围(cm)</text>
+        <input class="input" type="digit" placeholder="请输入腰围" value="{{editWaist}}" bindinput="onInput" data-field="editWaist" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">臀围(cm)</text>
+        <input class="input" type="digit" placeholder="请输入臀围" value="{{editHip}}" bindinput="onInput" data-field="editHip" />
+      </view>
+    </block>
+
+    <view class="modal-actions">
+      <button class="btn btn-outline" bindtap="onCloseModal">取消</button>
+      <button class="btn btn-primary" bindtap="onConfirmEdit">保存</button>
+    </view>
+  </view>
+</view>
