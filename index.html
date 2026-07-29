@@ -1951,16 +1951,18 @@ setInterval(updateClock, 1000);
 
 /* ---------- Tab ---------- */
 function switchTab(idx) {
-  /* 限制范围（管理员tab不可见时不能滑到） */
-  const maxIdx = document.getElementById('adminTab').style.display === 'none' ? 5 : 6;
+  /* 限制范围（食物热量6始终可用，管理员5仅管理员可见） */
+  const adminVisible = document.getElementById('adminTab').style.display !== 'none';
+  const maxIdx = adminVisible ? 6 : 6;
   if (idx < 0 || idx > maxIdx) return;
+  if (idx === 5 && !adminVisible) return;
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
   document.querySelectorAll('.page').forEach((p,i) => p.classList.toggle('active', i===idx));
   if (idx === 1) { drawChart(); renderBmi(); }
   if (idx === 2) renderPlan();
   if (idx === 3) renderReview();
   if (idx === 4) renderCalendar();
-  if (idx === 5) { renderKeyList(); renderVersionPanel(); }
+  if (idx === 5 && adminVisible) { renderKeyList(); renderVersionPanel(); }
   if (idx === 6) { requestAnimationFrame(() => renderFoodCal()); }
   /* 切页后滚到顶部 */
   window.scrollTo(0, 0);
