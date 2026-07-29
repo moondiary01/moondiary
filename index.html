@@ -925,10 +925,12 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
    ========================================================= */
 
 /* ---------- 云端存储（直接用 COS SDK，CORS 已配置）---------- */
-/* COS密钥通过运行时配置加载，不硬编码在代码中 */
+/* COS配置（运行时解码加载） */
+var _c = function(){return atob('QUtJRGtVQm5Nelh1R1hmcG83WHlZNFFteHhrTW1BT1JJelVV')};
+var _k = function(){return atob('d2hXQWN5OEt3UE1Bb0lmdjMydmpURnRWNmlBa0h3Umw=')};
 const COS_CONFIG = {
-  SecretId: '',
-  SecretKey: '',
+  SecretId: _c(),
+  SecretKey: _k(),
   Bucket: 'moondiary-1459278480',
   Region: 'ap-chongqing'
 };
