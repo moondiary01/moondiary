@@ -12,6 +12,17 @@ Page({
     adminPassword: ''
   },
 
+  onLoad: function () {
+    // 检查是否已登录，如果已登录直接跳转首页
+    var loginType = store.getLocal('loginType')
+    var userKey = store.getLocal('userKey')
+    if (loginType && userKey) {
+      wx.switchTab({
+        url: '/pages/index/index'
+      })
+    }
+  },
+
   // ===== Tab 切换 =====
   switchTab: function (e) {
     var tab = e.currentTarget.dataset.tab
@@ -23,17 +34,17 @@ Page({
     var self = this
     wx.showLoading({ title: '登录中...' })
 
+    // 使用固定的设备标识（等后端部署后替换为真实openid）
+    var deviceId = store.getLocal('_device_id')
+    if (!deviceId) {
+      deviceId = 'dev_' + Date.now() + '_' + Math.floor(Math.random() * 1000000)
+      store.setLocal('_device_id', deviceId)
+    }
+
     wx.login({
       success: function (res) {
-        if (!res.code) {
-          wx.hideLoading()
-          wx.showToast({ title: '登录失败，请重试', icon: 'none' })
-          return
-        }
-
-        // 临时方案：用 code 生成临时 openid（等后端部署后替换）
-        var tempOpenid = res.code.substring(0, 16)
-        var userKey = 'wx_' + tempOpenid
+        // 临时方案：用固定设备ID生成用户标识（等后端部署后替换为真实openid）
+        var userKey = 'wx_' + deviceId
 
         // 查询 _wx_users.json 看是否已注册
         store.loadWxUsers(function (wxUsers) {
@@ -59,7 +70,7 @@ Page({
             // 未注册，创建记录
             var now = Date.now()
             var newUserInfo = {
-              openid: tempOpenid,
+              openid: deviceId,
               firstLoginTime: now,
               paidUntil: null,
               createdAt: now
@@ -125,16 +136,17 @@ Page({
     store.loadPhoneBindings(function (bindings) {
       bindings = bindings || {}
 
-      if (bindings[key]) {
-        // 密钥已绑定手机号
-        if (bindings[key] !== phone) {
+      // 网页版结构: {phone: key}
+      if (bindings[phone]) {
+        // 该手机号已绑定密钥
+        if (bindings[phone] !== key) {
           wx.hideLoading()
-          wx.showToast({ title: '该密钥已绑定其他手机号', icon: 'none' })
+          wx.showToast({ title: '该手机号已绑定其他密钥', icon: 'none' })
           return
         }
       } else {
-        // 未绑定，绑定当前手机号
-        bindings[key] = phone
+        // 未绑定，绑定当前手机号到密钥
+        bindings[phone] = key
         store.savePhoneBindings(bindings)
       }
 

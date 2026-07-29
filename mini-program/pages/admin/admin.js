@@ -34,15 +34,22 @@ Page({
   loadData: function () {
     var self = this
 
-    // 加载预设密钥信息
+    // 加载预设密钥信息（网页版结构: {key: {activated, phone, activatedAt, gender, age, note}}）
     store.loadPresetInfo(function (presetInfo) {
       presetInfo = presetInfo || {}
-      var keyStatusMap = presetInfo.keys || {}
-      var remarks = presetInfo.remarks || {}
 
-      // 加载手机号绑定
+      // 加载手机号绑定（网页版结构: {phone: key}）
       store.loadPhoneBindings(function (bindings) {
         bindings = bindings || {}
+
+        // 构建反向映射：key → phone
+        var keyToPhone = {}
+        var phones = Object.keys(bindings)
+        for (var p = 0; p < phones.length; p++) {
+          var phone = phones[p]
+          var boundKey = bindings[phone]
+          keyToPhone[boundKey] = phone
+        }
 
         // 加载微信用户
         store.loadWxUsers(function (wxUsersData) {
@@ -55,19 +62,31 @@ Page({
 
           for (var i = 0; i < presetKeys.length; i++) {
             var key = presetKeys[i]
-            var status = keyStatusMap[key] || 'inactive'
-            if (status === 'active') activeCount++
+            var keyInfo = presetInfo[key] || {}
+            var isActivated = keyInfo.activated === true
+            if (isActivated) activeCount++
 
+            var status = ''
             var statusText = ''
             var statusClass = ''
-            if (status === 'active') { statusText = '已启用'; statusClass = 'status-active' }
-            else if (status === 'inactive') { statusText = '未启用'; statusClass = 'status-inactive' }
-            else if (status === 'revoked') { statusText = '已作废'; statusClass = 'status-revoked' }
+            if (keyInfo.activated === true) {
+              status = 'active'
+              statusText = '已启用'
+              statusClass = 'status-active'
+            } else if (keyInfo.activated === false && keyInfo.revoked) {
+              status = 'revoked'
+              statusText = '已作废'
+              statusClass = 'status-revoked'
+            } else {
+              status = 'inactive'
+              statusText = '未启用'
+              statusClass = 'status-inactive'
+            }
 
             keyList.push({
               key: key,
-              phone: bindings[key] || '',
-              remark: remarks[key] || '',
+              phone: keyInfo.phone || keyToPhone[key] || '',
+              remark: keyInfo.note || '',
               status: status,
               statusText: statusText,
               statusClass: statusClass
@@ -131,12 +150,23 @@ Page({
 
   doToggleKey: function (key, action) {
     var self = this
-    var newStatus = action === 'activate' ? 'active' : 'revoked'
 
     store.loadPresetInfo(function (presetInfo) {
       presetInfo = presetInfo || {}
-      presetInfo.keys = presetInfo.keys || {}
-      presetInfo.keys[key] = newStatus
+
+      // 网页版结构: {key: {activated, phone, activatedAt, gender, age, note}}
+      var keyInfo = presetInfo[key] || {}
+
+      if (action === 'activate') {
+        keyInfo.activated = true
+        keyInfo.activatedAt = Date.now()
+        keyInfo.revoked = false
+      } else {
+        keyInfo.activated = false
+        keyInfo.revoked = true
+      }
+
+      presetInfo[key] = keyInfo
 
       store.savePresetInfo(presetInfo)
 

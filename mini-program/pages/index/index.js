@@ -12,6 +12,7 @@ Page({
     isFemale: false,
     dayData: {},
     waterMl: 0,
+    showPayModal: false,
     dietOptions: ['液断', '轻断食', '少餐', '正餐', '放纵'],
     exerciseOptions: ['有运动', '无运动', '有氧运动', '力量训练', '瑜伽拉伸', '散步']
   },
@@ -23,12 +24,14 @@ Page({
   onShow: function () {
     // 检查试用是否过期
     if (!app.canUse()) {
-      wx.navigateTo({
-        url: '/pages/pay/pay'
-      })
+      this.setData({ showPayModal: true })
       return
     }
     this.loadUserData()
+  },
+
+  onPayModalClose: function () {
+    this.setData({ showPayModal: false })
   },
 
   loadUserData: function () {
@@ -72,26 +75,29 @@ Page({
     if (!todayData) {
       todayData = {
         date: today,
-        morningWeight: null,
-        eveningWeight: null,
-        fatRate: null,
+        weightAM: null,
+        weightPM: null,
+        fat: null,
+        bm: '',
         diet: '',
         exercise: '',
-        waterCups: 0,
+        water: 0,
+        period: false,
         periodNote: '',
-        diary: ''
+        note: ''
       }
     }
 
     var isFemale = state.gender === '女'
     var unitLabel = state.unit || '斤'
-    var weightVal = todayData.morningWeight || todayData.eveningWeight
+    var weightVal = todayData.weightAM || todayData.weightPM
     var weightDisplay = '--'
     if (weightVal) {
+      // 存储的是kg，斤模式下显示 ×2
       weightDisplay = unitLabel === '斤' ? (weightVal * 2).toFixed(1) : Number(weightVal).toFixed(1)
     }
 
-    var waterMl = (todayData.waterCups || 0) * 250
+    var waterMl = (todayData.water || 0) * 250
 
     // 格式化日期显示
     var d = new Date()
@@ -115,15 +121,25 @@ Page({
 
   // ===== 输入处理 =====
   onMorningWeightInput: function (e) {
-    this.updateDayData('morningWeight', e.detail.value)
+    var v = e.detail.value
+    // 斤模式下存储 v/2（即kg），与网页版一致
+    var unitLabel = this.data.unitLabel
+    var storedVal = v ? (unitLabel === '斤' ? Number(v) / 2 : Number(v)) : null
+    this.updateDayData('weightAM', storedVal)
     this.updateWeightDisplay()
   },
   onEveningWeightInput: function (e) {
-    this.updateDayData('eveningWeight', e.detail.value)
+    var v = e.detail.value
+    var unitLabel = this.data.unitLabel
+    var storedVal = v ? (unitLabel === '斤' ? Number(v) / 2 : Number(v)) : null
+    this.updateDayData('weightPM', storedVal)
     this.updateWeightDisplay()
   },
   onFatRateInput: function (e) {
-    this.updateDayData('fatRate', e.detail.value)
+    this.updateDayData('fat', e.detail.value)
+  },
+  onBmInput: function (e) {
+    this.updateDayData('bm', e.detail.value)
   },
   onDietSelect: function (e) {
     var val = e.currentTarget.dataset.value
@@ -136,15 +152,19 @@ Page({
     this.updateDayData('exercise', current)
   },
   onWaterAdd: function () {
-    var cups = (this.data.dayData.waterCups || 0) + 1
-    this.updateDayData('waterCups', cups)
+    var cups = (this.data.dayData.water || 0) + 1
+    this.updateDayData('water', cups)
     this.setData({ waterMl: cups * 250 })
+  },
+  onPeriodToggle: function () {
+    var current = !this.data.dayData.period
+    this.updateDayData('period', current)
   },
   onPeriodNoteInput: function (e) {
     this.updateDayData('periodNote', e.detail.value)
   },
-  onDiaryInput: function (e) {
-    this.updateDayData('diary', e.detail.value)
+  onNoteInput: function (e) {
+    this.updateDayData('note', e.detail.value)
   },
 
   updateDayData: function (field, value) {
@@ -156,9 +176,10 @@ Page({
 
   updateWeightDisplay: function () {
     var dayData = this.data.dayData
-    var weightVal = dayData.morningWeight || dayData.eveningWeight
+    var weightVal = dayData.weightAM || dayData.weightPM
     var display = '--'
     if (weightVal) {
+      // 存储的是kg，斤模式下显示 ×2
       display = this.data.unitLabel === '斤' ? (weightVal * 2).toFixed(1) : Number(weightVal).toFixed(1)
     }
     this.setData({ todayWeightDisplay: display })

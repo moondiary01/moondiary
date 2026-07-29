@@ -9,7 +9,7 @@
     <view class="week-date">{{item.dateRange}}</view>
     <textarea class="textarea"
       placeholder="这周的感受、变化、调整..."
-      value="{{item.content}}"
+      value="{{item.review}}"
       data-index="{{index}}"
       bindinput="onReviewInput"
       maxlength="500">

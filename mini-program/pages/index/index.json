@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "每日记录"
+  "navigationBarTitleText": "每日记录",
+  "usingComponents": {
+    "pay-modal": "/components/pay-modal/pay-modal"
+  }
 }

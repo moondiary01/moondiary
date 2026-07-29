@@ -109,8 +109,8 @@ Page({
       var days = state.days || []
       var latestWeight = null
       for (var i = days.length - 1; i >= 0; i--) {
-        if (days[i].morningWeight) {
-          latestWeight = Number(days[i].morningWeight)
+        if (days[i].weightAM) {
+          latestWeight = Number(days[i].weightAM)
           break
         }
       }

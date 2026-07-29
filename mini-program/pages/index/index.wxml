@@ -1,4 +1,6 @@
 <!-- pages/index/index.wxml -->
+<pay-modal show="{{showPayModal}}" bind:close="onPayModalClose" />
+
 <view class="index-page">
 
   <!-- 顶部信息 -->
@@ -20,17 +22,21 @@
     <view class="weight-row">
       <view class="weight-input-group">
         <text class="input-label">晨起体重</text>
-        <input class="input" type="digit" placeholder="{{unitLabel}}" value="{{dayData.morningWeight}}" bindinput="onMorningWeightInput" />
+        <input class="input" type="digit" placeholder="{{unitLabel}}" value="{{dayData.weightAM ? (unitLabel === '斤' ? (dayData.weightAM * 2) : dayData.weightAM) : ''}}" bindinput="onMorningWeightInput" />
       </view>
       <view class="weight-input-group">
         <text class="input-label">晚间体重</text>
-        <input class="input" type="digit" placeholder="{{unitLabel}}" value="{{dayData.eveningWeight}}" bindinput="onEveningWeightInput" />
+        <input class="input" type="digit" placeholder="{{unitLabel}}" value="{{dayData.weightPM ? (unitLabel === '斤' ? (dayData.weightPM * 2) : dayData.weightPM) : ''}}" bindinput="onEveningWeightInput" />
       </view>
     </view>
     <view class="weight-row">
       <view class="weight-input-group">
         <text class="input-label">体脂率(%)</text>
-        <input class="input" type="digit" placeholder="如 25" value="{{dayData.fatRate}}" bindinput="onFatRateInput" />
+        <input class="input" type="digit" placeholder="如 25" value="{{dayData.fat}}" bindinput="onFatRateInput" />
+      </view>
+      <view class="weight-input-group">
+        <text class="input-label">排便情况</text>
+        <input class="input" placeholder="如 正常/便秘" value="{{dayData.bm}}" bindinput="onBmInput" />
       </view>
     </view>
   </view>
@@ -68,7 +74,7 @@
     <view class="card-title">饮水打卡</view>
     <view class="water-row">
       <view class="water-info">
-        <text class="water-count">{{dayData.waterCups || 0}}</text>
+        <text class="water-count">{{dayData.water || 0}}</text>
         <text class="water-unit">杯</text>
         <text class="water-ml">约 {{waterMl}} ml</text>
       </view>
@@ -79,13 +85,16 @@
   <!-- 经期备注（女性用户） -->
   <view class="card" wx:if="{{isFemale}}">
     <view class="card-title">经期备注</view>
+    <view class="tag-row" style="margin-bottom: 16rpx;">
+      <view class="tag-item {{dayData.period ? 'tag-item-active' : ''}}" bindtap="onPeriodToggle">今日经期</view>
+    </view>
     <textarea class="textarea" placeholder="记录经期感受..." value="{{dayData.periodNote}}" bindinput="onPeriodNoteInput" maxlength="200"></textarea>
   </view>
 
   <!-- 心情日记 -->
   <view class="card">
     <view class="card-title">心情日记</view>
-    <textarea class="textarea" placeholder="今天怎么样..." value="{{dayData.diary}}" bindinput="onDiaryInput" maxlength="500"></textarea>
+    <textarea class="textarea" placeholder="今天怎么样..." value="{{dayData.note}}" bindinput="onNoteInput" maxlength="500"></textarea>
   </view>
 
   <!-- 保存按钮 -->

@@ -1,18 +1,6 @@
 // Moon Diary 小程序全局配置
 
-// COS 配置（运行时解码，避免明文暴露）
-var _c = function () { return wx.base64ToArrayBuffer ? arrayBufferToString(wx.base64ToArrayBuffer('QUtJRGtVQm5Nelh1R1hmcG83WHlZNFFteHhrTW1BT1JJelVV')) : ''; };
-var _k = function () { return wx.base64ToArrayBuffer ? arrayBufferToString(wx.base64ToArrayBuffer('d2hXQWN5OEt3UE1Bb0lmdjMydmpURnRWNmlBa0h3Umw=')) : ''; };
-
-function arrayBufferToString(buf) {
-  var bytes = new Uint8Array(buf);
-  var str = '';
-  for (var i = 0; i < bytes.length; i++) {
-    str += String.fromCharCode(bytes[i]);
-  }
-  return str;
-}
-
+// COS 配置
 // 预设解码（兼容方案）
 function decodeBase64(b64) {
   try {

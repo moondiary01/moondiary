@@ -62,11 +62,11 @@ Page({
       var startStr = (weekStartDate.getMonth() + 1) + '/' + weekStartDate.getDate()
       var endStr = (weekEndDate.getMonth() + 1) + '/' + weekEndDate.getDate()
 
-      var content = ''
+      var review = ''
       // 从 weeklyReview 数组找对应周的内容
       for (var i = 0; i < weeklyReview.length; i++) {
         if (weeklyReview[i] && weeklyReview[i].week === w) {
-          content = weeklyReview[i].content || ''
+          review = weeklyReview[i].review || ''
           break
         }
       }
@@ -74,7 +74,7 @@ Page({
       weekList.push({
         week: w,
         dateRange: startStr + ' - ' + endStr,
-        content: content
+        review: review
       })
     }
 
@@ -84,7 +84,7 @@ Page({
   onReviewInput: function (e) {
     var index = e.currentTarget.dataset.index
     var value = e.detail.value
-    var key = 'weekList[' + index + '].content'
+    var key = 'weekList[' + index + '].review'
     var obj = {}
     obj[key] = value
     this.setData(obj)
@@ -98,7 +98,7 @@ Page({
     for (var i = 0; i < weekList.length; i++) {
       weeklyReview.push({
         week: weekList[i].week,
-        content: weekList[i].content
+        review: weekList[i].review
       })
     }
 

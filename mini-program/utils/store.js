@@ -19,21 +19,177 @@ function getCosUrl(key) {
   return 'https://' + COS_CONFIG.Bucket + '.cos.' + COS_CONFIG.Region + '.myqcloud.com/userdata/' + key + '.json';
 }
 
-// 生成 COS 签名（简单版，用于 PUT/GET）
+// HMAC-SHA1 实现（用于 COS V5 签名）
+function hmacSha1(key, message) {
+  // 使用小程序的 hmac 算法（纯JS实现）
+  var blockSize = 64;
+
+  function strToBytes(str) {
+    var bytes = [];
+    for (var i = 0; i < str.length; i++) {
+      var c = str.charCodeAt(i);
+      if (c < 128) {
+        bytes.push(c);
+      } else if (c < 2048) {
+        bytes.push(192 | (c >> 6));
+        bytes.push(128 | (c & 63));
+      } else {
+        bytes.push(224 | (c >> 12));
+        bytes.push(128 | ((c >> 6) & 63));
+        bytes.push(128 | (c & 63));
+      }
+    }
+    return bytes;
+  }
+
+  function bytesToHex(bytes) {
+    var hex = '';
+    for (var i = 0; i < bytes.length; i++) {
+      hex += (bytes[i] < 16 ? '0' : '') + bytes[i].toString(16);
+    }
+    return hex;
+  }
+
+  // SHA1 implementation
+  function sha1(msgBytes) {
+    var h0 = 0x67452301, h1 = 0xEFCDAB89, h2 = 0x98BADCFE, h3 = 0x10325476, h4 = 0xC3D2E1F0;
+    var ml = msgBytes.length;
+    var bitLen = ml * 8;
+
+    // Padding
+    msgBytes = msgBytes.slice();
+    msgBytes.push(0x80);
+    while (msgBytes.length % 64 !== 56) {
+      msgBytes.push(0);
+    }
+    // Append length as 64-bit big-endian
+    for (var i = 7; i >= 0; i--) {
+      msgBytes.push((bitLen >>> (i * 8)) & 0xFF);
+    }
+
+    function rotl(n, s) { return ((n << s) | (n >>> (32 - s))) & 0xFFFFFFFF; }
+
+    for (var chunk = 0; chunk < msgBytes.length; chunk += 64) {
+      var w = [];
+      for (var i = 0; i < 16; i++) {
+        w[i] = (msgBytes[chunk + i * 4] << 24) | (msgBytes[chunk + i * 4 + 1] << 16) | (msgBytes[chunk + i * 4 + 2] << 8) | msgBytes[chunk + i * 4 + 3];
+        w[i] = w[i] & 0xFFFFFFFF;
+      }
+      for (var i = 16; i < 80; i++) {
+        w[i] = rotl((w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16]), 1);
+      }
+
+      var a = h0, b = h1, c = h2, d = h3, e = h4;
+      for (var i = 0; i < 80; i++) {
+        var f, k;
+        if (i < 20) { f = (b & c) | ((~b) & d); k = 0x5A827999; }
+        else if (i < 40) { f = b ^ c ^ d; k = 0x6ED9EBA1; }
+        else if (i < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }
+        else { f = b ^ c ^ d; k = 0xCA62C1D6; }
+
+        var temp = (rotl(a, 5) + f + e + k + w[i]) & 0xFFFFFFFF;
+        e = d; d = c; c = rotl(b, 30); b = a; a = temp;
+      }
+
+      h0 = (h0 + a) & 0xFFFFFFFF;
+      h1 = (h1 + b) & 0xFFFFFFFF;
+      h2 = (h2 + c) & 0xFFFFFFFF;
+      h3 = (h3 + d) & 0xFFFFFFFF;
+      h4 = (h4 + e) & 0xFFFFFFFF;
+    }
+
+    var result = [];
+    var hs = [h0, h1, h2, h3, h4];
+    for (var i = 0; i < 5; i++) {
+      result.push((hs[i] >>> 24) & 0xFF);
+      result.push((hs[i] >>> 16) & 0xFF);
+      result.push((hs[i] >>> 8) & 0xFF);
+      result.push(hs[i] & 0xFF);
+    }
+    return result;
+  }
+
+  var keyBytes = strToBytes(key);
+  if (keyBytes.length > blockSize) {
+    keyBytes = sha1(keyBytes);
+  }
+  while (keyBytes.length < blockSize) {
+    keyBytes.push(0);
+  }
+
+  var oKeyPad = [], iKeyPad = [];
+  for (var i = 0; i < blockSize; i++) {
+    oKeyPad.push(keyBytes[i] ^ 0x5C);
+    iKeyPad.push(keyBytes[i] ^ 0x36);
+  }
+
+  var innerHash = sha1(iKeyPad.concat(strToBytes(message)));
+  var outerHash = sha1(oKeyPad.concat(innerHash));
+
+  return bytesToHex(outerHash);
+}
+
+// 生成 COS V5 签名
 function getCosAuth(method, key) {
-  // 这里使用简单的临时密钥方式
-  // 实际生产环境建议使用临时密钥服务
-  return COS_CONFIG.SecretId + ':' + COS_CONFIG.SecretKey;
+  var SecretId = COS_CONFIG.SecretId;
+  var SecretKey = COS_CONFIG.SecretKey;
+
+  var host = COS_CONFIG.Bucket + '.cos.' + COS_CONFIG.Region + '.myqcloud.com';
+  var pathStr = '/userdata/' + key + '.json';
+
+  // 签名时间
+  var now = Math.floor(Date.now() / 1000);
+  var signTimeStart = now;
+  var signTimeEnd = now + 600; // 10分钟有效期
+  var keyTime = signTimeStart + ';' + signTimeEnd;
+  var signTime = keyTime;
+
+  // 构造签名串
+  // HttpHeadersString: "host=" + host + "\n"
+  var headerList = 'host';
+  var urlParamList = '';
+
+  // 生成 SignKey = HMAC-SHA1(SecretKey, KeyTime)
+  var signKey = hmacSha1(SecretKey, keyTime);
+
+  // 生成 HttpMethodString
+  var httpMethod = method.toLowerCase();
+
+  // 生成 HttpUriString
+  var httpUri = pathStr;
+
+  // 生成 HttpHeaderString
+  var httpHeaderString = 'host=' + host + '\n';
+
+  // 生成 HttpRequestString
+  var httpRequestString = httpMethod + '\n' + httpUri + '\n' + urlParamList + '\n' + httpHeaderString + '\n';
+
+  // 生成 Signature = HMAC-SHA1(SignKey, HttpRequestString)
+  var signature = hmacSha1(signKey, httpRequestString);
+
+  // 组装 Authorization
+  var auth = 'q-sign-algorithm=sha1' +
+    '&q-ak=' + SecretId +
+    '&q-sign-time=' + signTime +
+    '&q-key-time=' + keyTime +
+    '&q-header-list=' + headerList +
+    '&q-url-param-list=' + urlParamList +
+    '&q-signature=' + signature;
+
+  return auth;
 }
 
 // 保存数据到云端
 function saveToCloud(key, data, callback) {
-  const url = getCosUrl(key);
+  var url = getCosUrl(key);
+  var auth = getCosAuth('put', key);
   wx.request({
     url: url,
     method: 'PUT',
     header: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': auth,
+      'Host': COS_CONFIG.Bucket + '.cos.' + COS_CONFIG.Region + '.myqcloud.com'
     },
     data: JSON.stringify(data),
     success: function (res) {
@@ -54,12 +210,14 @@ function saveToCloud(key, data, callback) {
 
 // 从云端读取数据
 function loadFromCloud(key, callback) {
-  const url = getCosUrl(key);
+  var url = getCosUrl(key);
+  var auth = getCosAuth('get', key);
   wx.request({
     url: url,
     method: 'GET',
     header: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': auth
     },
     success: function (res) {
       if (res.statusCode === 200 && res.data) {

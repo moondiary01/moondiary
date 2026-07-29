@@ -67,6 +67,34 @@ Page({
     this.renderCalendar(app.globalData.state)
   },
 
+  // 检查某日期是否在经期区间内
+  isDateInPeriods: function (dateStr, periods) {
+    for (var i = 0; i < periods.length; i++) {
+      var p = periods[i]
+      if (dateStr >= p.start && dateStr <= p.end) {
+        return true
+      }
+    }
+    return false
+  },
+
+  // 从经期区间数组构建日期集合（用于预测）
+  buildPeriodDateSet: function (periods) {
+    var set = {}
+    for (var i = 0; i < periods.length; i++) {
+      var p = periods[i]
+      var start = new Date(p.start)
+      var end = new Date(p.end)
+      var cur = new Date(start)
+      while (cur <= end) {
+        var ds = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0') + '-' + String(cur.getDate()).padStart(2, '0')
+        set[ds] = true
+        cur.setDate(cur.getDate() + 1)
+      }
+    }
+    return set
+  },
+
   // ===== 生成日历数据 =====
   renderCalendar: function (state) {
     if (!state) return
@@ -85,17 +113,21 @@ Page({
       dayMap[days[i].date] = days[i]
     }
 
-    // 经期日期集合
-    var periodSet = {}
+    // 经期日期集合（从对象数组展开）
+    var periodSet = this.buildPeriodDateSet(periods)
+
+    // 经期开始日期集合（用于预测）
+    var periodStartDates = []
     for (var j = 0; j < periods.length; j++) {
-      periodSet[periods[j]] = true
+      periodStartDates.push(periods[j].start)
     }
+    periodStartDates.sort()
 
     // 经期预测：根据历史经期周期预测下个月
-    var predictSet = this.predictPeriods(periods, year, month)
+    var predictSet = this.predictPeriods(periodStartDates, year, month)
 
     // 排卵日预测：经期开始后第14天
-    var ovulationSet = this.predictOvulation(periods)
+    var ovulationSet = this.predictOvulation(periodStartDates)
 
     // 当月天数
     var firstDay = new Date(year, month, 1)
@@ -120,12 +152,12 @@ Page({
       var isPeriod = !!periodSet[dateStr]
       var isPredict = !!predictSet[dateStr]
       var isOvulation = !!ovulationSet[dateStr]
-      var hasExercise = !!dayData.exercise && dayData.exercise !== '无运动'
+      var hasExercise = !!(dayData.exercise && dayData.exercise !== '无运动')
 
       // 体重波动
       var weightChange = ''
       var weightUp = false
-      var currentWeight = dayData.morningWeight ? Number(dayData.morningWeight) : null
+      var currentWeight = dayData.weightAM ? Number(dayData.weightAM) : null
       if (currentWeight !== null && prevWeight !== null) {
         var diff = currentWeight - prevWeight
         if (Math.abs(diff) > 0.01) {
@@ -161,23 +193,22 @@ Page({
     })
   },
 
-  // 预测经期
-  predictPeriods: function (periodSet, year, month) {
+  // 预测经期（使用经期开始日期数组）
+  predictPeriods: function (periodStartDates, year, month) {
     var predictSet = {}
-    var periodDates = Object.keys(periodSet).sort()
-    if (periodDates.length < 2) return predictSet
+    if (periodStartDates.length < 2) return predictSet
 
     // 计算平均周期
     var gaps = []
-    for (var i = 1; i < periodDates.length; i++) {
-      var gap = (new Date(periodDates[i]) - new Date(periodDates[i - 1])) / (24 * 60 * 60 * 1000)
+    for (var i = 1; i < periodStartDates.length; i++) {
+      var gap = (new Date(periodStartDates[i]) - new Date(periodStartDates[i - 1])) / (24 * 60 * 60 * 1000)
       gaps.push(gap)
     }
     var avgCycle = Math.round(gaps.reduce(function (a, b) { return a + b }, 0) / gaps.length)
     if (avgCycle < 21 || avgCycle > 35) avgCycle = 28
 
     // 最后一次经期开始日
-    var lastPeriod = periodDates[periodDates.length - 1]
+    var lastPeriod = periodStartDates[periodStartDates.length - 1]
     var lastDate = new Date(lastPeriod)
 
     // 预测未来经期
@@ -192,9 +223,7 @@ Page({
         var pd = new Date(nextPeriod.getTime() + p * 24 * 60 * 60 * 1000)
         if (pd.getMonth() === month && pd.getFullYear() === year) {
           var ds = pd.getFullYear() + '-' + String(pd.getMonth() + 1).padStart(2, '0') + '-' + String(pd.getDate()).padStart(2, '0')
-          if (!periodSet[ds]) {
-            predictSet[ds] = true
-          }
+          predictSet[ds] = true
         }
       }
     }
@@ -202,12 +231,11 @@ Page({
     return predictSet
   },
 
-  // 预测排卵日
-  predictOvulation: function (periodSet) {
+  // 预测排卵日（使用经期开始日期数组）
+  predictOvulation: function (periodStartDates) {
     var ovulationSet = {}
-    var periodDates = Object.keys(periodSet).sort()
-    for (var i = 0; i < periodDates.length; i++) {
-      var periodStart = new Date(periodDates[i])
+    for (var i = 0; i < periodStartDates.length; i++) {
+      var periodStart = new Date(periodStartDates[i])
       var ovulationDate = new Date(periodStart.getTime() + 14 * 24 * 60 * 60 * 1000)
       var ds = ovulationDate.getFullYear() + '-' + String(ovulationDate.getMonth() + 1).padStart(2, '0') + '-' + String(ovulationDate.getDate()).padStart(2, '0')
       ovulationSet[ds] = true
@@ -228,11 +256,11 @@ Page({
       }
     }
     if (!dayData) {
-      dayData = { date: dateStr, morningWeight: null, eveningWeight: null, fatRate: null, diet: '', exercise: '', periodNote: '', diary: '' }
+      dayData = { date: dateStr, weightAM: null, weightPM: null, fat: null, bm: '', diet: '', exercise: '', period: false, periodNote: '', note: '' }
     }
 
     var periods = state.periods || []
-    var isPeriodDay = periods.indexOf(dateStr) !== -1
+    var isPeriodDay = this.isDateInPeriods(dateStr, periods)
     var isExerciseDay = !!(dayData.exercise && dayData.exercise !== '无运动')
 
     this.setData({
@@ -255,13 +283,25 @@ Page({
     var state = app.globalData.state
     var periods = state.periods || []
 
-    var idx = periods.indexOf(dateStr)
-    if (idx !== -1) {
-      periods.splice(idx, 1)
+    // 查找包含当前日期的经期区间
+    var foundIdx = -1
+    for (var i = 0; i < periods.length; i++) {
+      if (dateStr >= periods[i].start && dateStr <= periods[i].end) {
+        foundIdx = i
+        break
+      }
+    }
+
+    if (foundIdx !== -1) {
+      // 取消经期标记：移除该区间
+      periods.splice(foundIdx, 1)
       this.setData({ isPeriodDay: false })
     } else {
-      periods.push(dateStr)
-      periods.sort()
+      // 标记经期：添加单日区间
+      periods.push({ start: dateStr, end: dateStr })
+      periods.sort(function (a, b) {
+        return a.start < b.start ? -1 : a.start > b.start ? 1 : 0
+      })
       this.setData({ isPeriodDay: true })
     }
 
@@ -288,7 +328,7 @@ Page({
       }
     }
     if (!dayData) {
-      dayData = { date: dateStr, morningWeight: null, eveningWeight: null, fatRate: null, diet: '', exercise: '', periodNote: '', diary: '' }
+      dayData = { date: dateStr, weightAM: null, weightPM: null, fat: null, bm: '', diet: '', exercise: '', period: false, periodNote: '', note: '' }
       days.push(dayData)
       dayIndex = days.length - 1
     }

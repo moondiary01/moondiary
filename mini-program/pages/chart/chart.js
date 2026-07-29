@@ -60,9 +60,9 @@ Page({
 
     for (var i = 0; i < recentDays.length; i++) {
       var d = recentDays[i]
-      var mw = d.morningWeight ? Number(d.morningWeight) : null
-      var ew = d.eveningWeight ? Number(d.eveningWeight) : null
-      var fr = d.fatRate ? Number(d.fatRate) : null
+      var mw = d.weightAM ? Number(d.weightAM) : null
+      var ew = d.weightPM ? Number(d.weightPM) : null
+      var fr = d.fat ? Number(d.fat) : null
 
       if (mw || ew || fr) hasData = true
 
@@ -96,8 +96,8 @@ Page({
     // 找最近有体重的记录
     var days = state.days || []
     for (var i = days.length - 1; i >= 0; i--) {
-      if (days[i].morningWeight) {
-        weight = Number(days[i].morningWeight)
+      if (days[i].weightAM) {
+        weight = Number(days[i].weightAM)
         break
       }
     }
@@ -107,8 +107,8 @@ Page({
       return
     }
 
-    // 如果单位是斤，转换为 kg
-    var weightKg = state.unit === '斤' ? weight * 2 : weight
+    // weightAM/weightPM 存储的是kg，BMI直接使用
+    var weightKg = weight
     var heightM = height / 100
     var bmi = weightKg / (heightM * heightM)
     var bmiStr = bmi.toFixed(1)

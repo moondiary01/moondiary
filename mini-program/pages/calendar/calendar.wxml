@@ -76,15 +76,15 @@
     <view class="detail-section">
       <view class="detail-row">
         <text class="detail-label">晨起体重</text>
-        <text class="detail-val">{{detailData.morningWeight || '--'}} {{unitLabel}}</text>
+        <text class="detail-val">{{detailData.weightAM ? (unitLabel === '斤' ? (detailData.weightAM * 2) : detailData.weightAM) : '--'}} {{unitLabel}}</text>
       </view>
       <view class="detail-row">
         <text class="detail-label">晚间体重</text>
-        <text class="detail-val">{{detailData.eveningWeight || '--'}} {{unitLabel}}</text>
+        <text class="detail-val">{{detailData.weightPM ? (unitLabel === '斤' ? (detailData.weightPM * 2) : detailData.weightPM) : '--'}} {{unitLabel}}</text>
       </view>
       <view class="detail-row">
         <text class="detail-label">体脂率</text>
-        <text class="detail-val">{{detailData.fatRate ? detailData.fatRate + '%' : '--'}}</text>
+        <text class="detail-val">{{detailData.fat ? detailData.fat + '%' : '--'}}</text>
       </view>
       <view class="detail-row">
         <text class="detail-label">饮食</text>
@@ -101,9 +101,9 @@
       <view class="detail-text">{{detailData.periodNote}}</view>
     </view>
 
-    <view class="detail-section" wx:if="{{detailData.diary}}">
+    <view class="detail-section" wx:if="{{detailData.note}}">
       <view class="detail-label">心情日记</view>
-      <view class="detail-text">{{detailData.diary}}</view>
+      <view class="detail-text">{{detailData.note}}</view>
     </view>
 
     <view class="detail-actions">
