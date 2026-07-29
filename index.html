@@ -375,7 +375,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .cal-day.ovulation-window{background:#FEF9C3;color:#A16207}
 .cal-day.exercise{background:#D1FAE5;color:#065F46;font-weight:700}
 .cal-day.other-month{color:var(--text-l);opacity:0.4}
-.cal-weight{font-size:0.65rem;display:block;line-height:1.2;margin-top:2px;text-align:center;font-weight:700}
+.cal-weight{font-size:0.6rem;display:flex;align-items:center;justify-content:center;gap:1px;line-height:1.2;margin-top:2px;text-align:center;font-weight:700}
 .cal-weight.up{color:#EF4444}
 .cal-weight.down{color:#10B981}
 .cal-weight.same{color:var(--text-l)}
@@ -3220,9 +3220,11 @@ function renderCalendar() {
             if (state.days[pm].weightAM) { prevWM = state.days[pm].weightAM; break; }
           }
           if (prevWM !== null) {
-            if (wM > prevWM) weightArrowM = '<span class="cal-weight up">↑</span>';
-            else if (wM < prevWM) weightArrowM = '<span class="cal-weight down">↓</span>';
-            else weightArrowM = '<span class="cal-weight same">=</span>';
+            var diffM = Math.abs(wM - prevWM);
+            var diffStrM = state.unit === '斤' ? (diffM * 2).toFixed(1) : diffM.toFixed(1);
+            if (wM > prevWM) weightArrowM = '<span class="cal-weight up">↑' + diffStrM + '</span>';
+            else if (wM < prevWM) weightArrowM = '<span class="cal-weight down">↓' + diffStrM + '</span>';
+            else weightArrowM = '<span class="cal-weight same">=0</span>';
           }
         }
       }
@@ -3257,9 +3259,11 @@ function renderCalendar() {
             if (state.days[pi].weightAM) { prevW = state.days[pi].weightAM; break; }
           }
           if (prevW !== null) {
-            if (w > prevW) weightArrow = '<span class="cal-weight up">↑</span>';
-            else if (w < prevW) weightArrow = '<span class="cal-weight down">↓</span>';
-            else weightArrow = '<span class="cal-weight same">=</span>';
+            var diff = Math.abs(w - prevW);
+            var diffStr = state.unit === '斤' ? (diff * 2).toFixed(1) : diff.toFixed(1);
+            if (w > prevW) weightArrow = '<span class="cal-weight up">↑' + diffStr + '</span>';
+            else if (w < prevW) weightArrow = '<span class="cal-weight down">↓' + diffStr + '</span>';
+            else weightArrow = '<span class="cal-weight same">=0</span>';
           }
         }
       }
