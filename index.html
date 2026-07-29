@@ -165,8 +165,6 @@ body{
 .btn-primary:hover{background:var(--rose-600)}
 .btn-outline{background:transparent;color:var(--rose-500);border:1.5px solid var(--rose-300)}
 .btn-outline:hover{background:var(--rose-50)}
-.btn-danger{background:#EF4444;color:#fff;border:none}
-.btn-danger:hover{background:#DC2626}
 .btn-gold{background:var(--grad-gold);color:#fff}
 .btn-sm{padding:5px 10px;font-size:0.72rem}
 /* ===== 个人信息条 ===== */
@@ -375,13 +373,6 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .cal-day.ovulation-window{background:#FEF9C3;color:#A16207}
 .cal-day.exercise{background:#D1FAE5;color:#065F46;font-weight:700}
 .cal-day.other-month{color:var(--text-l);opacity:0.4}
-.cal-photo{font-size:0.5rem;display:block;line-height:1;margin-bottom:1px;text-align:center}
-.cal-weight{font-size:0.55rem;display:block;line-height:1;margin-top:1px;text-align:center}
-.cal-weight.up{color:#EF4444}
-.cal-weight.down{color:#10B981}
-.cal-action-box{width:100%;padding:14px;margin-bottom:8px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);font-size:0.9rem;font-weight:500;color:var(--text);text-align:center;cursor:pointer;transition:all 0.15s}
-.cal-action-box:hover{border-color:var(--rose-400);background:var(--rose-50);color:var(--rose-600)}
-.cal-action-box:active{transform:scale(0.97)}
 .avatar-option{aspect-ratio:1;border-radius:50%;background:var(--rose-50);border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:all 0.15s}
 .avatar-option:hover{transform:scale(1.1)}
 .avatar-option.selected{border-color:var(--rose-500);background:var(--rose-100)}
@@ -940,69 +931,6 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
       <button class="btn btn-primary" onclick="saveNewKeyInfo()">💾 保存并发送</button>
       <button class="btn btn-outline" onclick="copyNewKey()">📋 仅复制</button>
       <button class="btn btn-outline" onclick="closeNewKey()">完成</button>
-    </div>
-  </div>
-</div>
-
-<!-- 日历操作菜单弹窗 -->
-<div class="modal-overlay" id="calActionModal">
-  <div class="modal">
-    <h2>📅 <span id="calActionDate">—</span></h2>
-    <div id="calActionList"></div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeCalAction();playClick()">关闭</button>
-    </div>
-  </div>
-</div>
-
-<!-- 查看照片弹窗 -->
-<div class="modal-overlay" id="dayPhotoModal">
-  <div class="modal">
-    <h2>📷 当日照片</h2>
-    <img id="dayPhotoImg" src="" style="width:100%;border-radius:12px;margin-bottom:12px">
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeDayPhoto();playClick()">关闭</button>
-      <button class="btn btn-danger" onclick="deleteDayPhoto();playClick()">🗑 删除照片</button>
-    </div>
-  </div>
-</div>
-
-<!-- 经期备注详情弹窗 -->
-<div class="modal-overlay" id="periodDetailModal">
-  <div class="modal">
-    <h2>🌸 经期备注</h2>
-    <div style="text-align:center;margin-bottom:16px">
-      <div id="periodDetailDate" style="font-size:0.85rem;color:var(--text-l)">—</div>
-      <div id="periodDetailDay" style="font-size:1.1rem;font-weight:700;color:var(--rose-600);margin-top:4px">—</div>
-    </div>
-    <div style="display:grid;gap:10px;margin-bottom:16px">
-      <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--rose-50);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">体重</span><span id="periodDetailWeight" style="font-size:0.9rem;font-weight:600;color:var(--rose-600)">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">饮食</span><span id="periodDetailDiet" style="font-size:0.9rem;font-weight:500;color:var(--text)">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px"><span style="font-size:0.8rem;color:var(--text-l)">运动</span><span id="periodDetailExercise" style="font-size:0.9rem;font-weight:500;color:var(--text)">—</span></div>
-      <div style="padding:10px 12px;background:var(--bg);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">🌸 经期备注</div><div id="periodDetailNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
-      <div style="padding:10px 12px;background:var(--rose-50);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">📝 每日日记/备注</div><div id="periodDetailDailyNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closePeriodDetail();playClick()">关闭</button>
-    </div>
-  </div>
-</div>
-
-<!-- 修改经期时间弹窗 -->
-<div class="modal-overlay" id="editPeriodModal">
-  <div class="modal">
-    <h2>🕐 修改经期时间</h2>
-    <div class="input-group" style="margin-bottom:12px">
-      <label>经期开始日期</label>
-      <input type="date" id="editPeriodStart">
-    </div>
-    <div class="input-group" style="margin-bottom:12px">
-      <label>经期结束日期（可选）</label>
-      <input type="date" id="editPeriodEnd">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeEditPeriod();playClick()">取消</button>
-      <button class="btn btn-primary" onclick="saveEditPeriod();playClick()">保存</button>
     </div>
   </div>
 </div>
@@ -3205,11 +3133,8 @@ function renderCalendar() {
     if (isMale) {
       /* 运动日历：检查当天是否有运动 */
       const dayIdx = state.days.findIndex(dd => dd.date === ds);
-      const hasExercise = dayIdx >= 0 && state.days[dayIdx].exercise && state.days[dayIdx].exercise !== '无运动';
-      if (hasExercise) { cls += ' exercise'; label = d + '🏃'; }
-      /* 照片标记 */
-      const photoMark = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo">📷</span>' : '';
-      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + photoMark + label + '</div>';
+      if (dayIdx >= 0 && state.days[dayIdx].exercise && state.days[dayIdx].exercise !== '无运动') { cls += ' exercise'; label = d + '🏃'; }
+      html += '<div class="' + cls + '" onclick="toggleCalExercise(\'' + ds + '\')">' + label + '</div>';
     } else {
       /* 经期日历 */
       if (isPeriodDay(ds)) cls += ' period';
@@ -3219,29 +3144,14 @@ function renderCalendar() {
         const predictStart = new Date(lastStart); predictStart.setDate(predictStart.getDate() + 28);
         const predictEnd = new Date(predictStart); predictEnd.setDate(predictEnd.getDate() + 5);
         const checkDate = new Date(ds);
-        if (checkDate >= predictStart && checkDate <= predictEnd) cls += ' period-predict';
+        if (checkDate >= predictStart && checkDate <= predictEnd && checkDate > today) cls += ' period-predict';
         const ovulationDay = new Date(predictStart); ovulationDay.setDate(ovulationDay.getDate() - 14);
         const ovStart = new Date(ovulationDay); ovStart.setDate(ovStart.getDate() - 2);
         const ovEnd = new Date(ovulationDay); ovEnd.setDate(ovEnd.getDate() + 2);
         if (checkDate.getTime() === ovulationDay.getTime()) { cls += ' ovulation'; label = d + '🥚'; }
         else if (checkDate >= ovStart && checkDate <= ovEnd) cls += ' ovulation-window';
       }
-      /* 照片标记 + 体重箭头 */
-      const dayIdx = state.days.findIndex(dd => dd.date === ds);
-      const photoMark = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo">📷</span>' : '';
-      let weightArrow = '';
-      if (dayIdx >= 0) {
-        const w = state.days[dayIdx].weightAM || state.days[dayIdx].weightPM;
-        if (w) {
-          const prevIdx = state.days.findIndex((dd, i) => i < dayIdx && (dd.weightAM || dd.weightPM));
-          if (prevIdx >= 0) {
-            const prevW = state.days[prevIdx].weightAM || state.days[prevIdx].weightPM;
-            if (w > prevW) weightArrow = '<span class="cal-weight up">↑</span>';
-            else if (w < prevW) weightArrow = '<span class="cal-weight down">↓</span>';
-          }
-        }
-      }
-      html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + photoMark + label + (weightArrow || '') + '</div>';
+      html += '<div class="' + cls + '" onclick="toggleCalPeriod(\'' + ds + '\')">' + label + '</div>';
     }
   }
   /* 补满 */
@@ -3277,7 +3187,7 @@ function renderCalendar() {
         }
       });
     }
-    document.getElementById('calStats').innerHTML = periodCount > 0 ? '本月经期 ' + periodCount + ' 天 · 🥚排卵日 · 📷照片 · 点击日期查看详情' : '点击日期查看详情 · 🥚排卵日自动推算';
+    document.getElementById('calStats').innerHTML = periodCount > 0 ? '本月经期 ' + periodCount + ' 天 · 🥚排卵日 · 点击日期可标记/取消经期' : '点击日期可标记/取消经期 · 🥚排卵日自动推算';
   }
   /* 动态图例 */
   const legend = document.getElementById('calLegend');
@@ -3359,198 +3269,7 @@ function toggleCalPeriod(ds) {
   saveState(); renderCalendar(); renderTable();
 }
 
-/* ---------- 日历点击弹窗 ---------- */
-function onCalDayClick(ds) {
-  const isMale = state.gender === '男';
-  const isPeriod = !isMale && isPeriodDay(ds);
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  const day = dayIdx >= 0 ? state.days[dayIdx] : null;
-  const hasPhoto = day && day.photo;
-  const hasNote = day && (day.periodNote || day.note);
-  const hasExercise = day && day.exercise && day.exercise !== '无运动';
-
-  let actions = '';
-  /* 照片：上传和查看左右排列 — 最上方 */
-  let photoRow = '<div style="display:flex;gap:8px;margin-bottom:8px">';
-  photoRow += '<div class="cal-action-box" style="flex:1;margin-bottom:0" onclick="uploadDayPhoto(\'' + ds + '\')">📷 上传照片</div>';
-  if (hasPhoto) {
-    photoRow += '<div class="cal-action-box" style="flex:1;margin-bottom:0" onclick="viewDayPhoto(\'' + ds + '\')">👁 查看照片</div>';
-  }
-  photoRow += '</div>';
-  actions += photoRow;
-  /* 男性：运动打卡；女性：经期备注+修改经期时间 */
-  if (isMale) {
-    if (hasExercise) {
-      actions += '<div class="cal-action-box" onclick="cancelCalExercise(\'' + ds + '\')">🏃 取消运动打卡</div>';
-    } else {
-      actions += '<div class="cal-action-box" onclick="markCalExercise(\'' + ds + '\')">🏃 运动打卡</div>';
-    }
-  } else {
-    if (isPeriod) {
-      actions += '<div class="cal-action-box" onclick="showPeriodDetail(\'' + ds + '\')">🌸 经期备注</div>';
-    } else if (hasNote) {
-      actions += '<div class="cal-action-box" onclick="showPeriodDetail(\'' + ds + '\')">🌸 经期备注</div>';
-    }
-    actions += '<div class="cal-action-box" onclick="editPeriodTime(\'' + ds + '\')">🕐 修改经期时间</div>';
-  }
-
-  document.getElementById('calActionDate').textContent = ds;
-  document.getElementById('calActionList').innerHTML = actions;
-  document.getElementById('calActionModal').classList.add('show');
-}
-function closeCalAction() {
-  document.getElementById('calActionModal').classList.remove('show');
-}
-
-/* 运动打卡 */
-function markCalExercise(ds) {
-  closeCalAction();
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  if (dayIdx < 0) { showToast('该日期不在计划范围内'); return; }
-  state.days[dayIdx].exercise = '有运动';
-  saveState(); renderCalendar(); renderTable();
-  showToast('运动打卡成功');
-}
-function cancelCalExercise(ds) {
-  closeCalAction();
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  if (dayIdx < 0) { return; }
-  state.days[dayIdx].exercise = '';
-  saveState(); renderCalendar(); renderTable();
-  showToast('已取消运动打卡');
-}
-
-/* 照片上传与查看 */
-function uploadDayPhoto(ds) {
-  closeCalAction();
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.onchange = function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      let dayIdx = state.days.findIndex(dd => dd.date === ds);
-      if (dayIdx < 0) { showToast('该日期不在计划范围内'); return; }
-      state.days[dayIdx].photo = ev.target.result;
-      saveState(); renderCalendar(); renderTable();
-      showToast('照片上传成功');
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
-}
-function viewDayPhoto(ds) {
-  closeCalAction();
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  if (dayIdx < 0 || !state.days[dayIdx].photo) { showToast('无照片'); return; }
-  document.getElementById('dayPhotoImg').src = state.days[dayIdx].photo;
-  document.getElementById('dayPhotoModal').dataset.date = ds;
-  document.getElementById('dayPhotoModal').classList.add('show');
-}
-function closeDayPhoto() {
-  document.getElementById('dayPhotoModal').classList.remove('show');
-}
-function deleteDayPhoto() {
-  const ds = document.getElementById('dayPhotoModal').dataset.date;
-  if (!ds) { closeDayPhoto(); return; }
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  if (dayIdx >= 0 && state.days[dayIdx].photo) {
-    state.days[dayIdx].photo = null;
-    saveState(); renderCalendar(); renderTable();
-    showToast('照片已删除');
-  }
-  closeDayPhoto();
-}
-
-/* 经期备注详情（同步每日日记） */
-function countPeriodDays(ds) {
-  if (!state.periods) return 1;
-  for (const p of state.periods) {
-    if (ds >= p.start && (p.end === null || ds <= p.end)) {
-      const s = new Date(p.start);
-      const t = new Date(ds);
-      return Math.floor((t - s) / 86400000) + 1;
-    }
-  }
-  return 1;
-}
-function showPeriodDetail(ds) {
-  closeCalAction();
-  const dayIdx = state.days.findIndex(dd => dd.date === ds);
-  const day = dayIdx >= 0 ? state.days[dayIdx] : null;
-  const pday = isPeriodDay(ds) ? countPeriodDays(ds) : 0;
-  const weight = day ? (day.weightAM || day.weightPM) : null;
-  const wStr = weight ? ((state.unit === '斤' ? weight * 2 : weight).toFixed(1) + state.unit) : '未记录';
-  const periodNote = (day && day.periodNote) ? day.periodNote : '无备注';
-  const dailyNote = (day && day.note) ? day.note : '无日记';
-  const diet = day ? (day.diet || '未记录') : '未记录';
-  const exercise = day ? (day.exercise || '未记录') : '未记录';
-  document.getElementById('periodDetailDate').textContent = ds;
-  document.getElementById('periodDetailDay').textContent = pday > 0 ? '经期第 ' + pday + ' 天' : '非经期日';
-  document.getElementById('periodDetailWeight').textContent = wStr;
-  document.getElementById('periodDetailDiet').textContent = diet;
-  document.getElementById('periodDetailExercise').textContent = exercise;
-  document.getElementById('periodDetailNote').textContent = periodNote;
-  document.getElementById('periodDetailDailyNote').textContent = dailyNote;
-  document.getElementById('periodDetailModal').classList.add('show');
-}
-function closePeriodDetail() {
-  document.getElementById('periodDetailModal').classList.remove('show');
-}
-
-/* 修改经期时间 */
-var editPeriodDs = null;
-function editPeriodTime(ds) {
-  closeCalAction();
-  editPeriodDs = ds;
-  /* 查找现有经期区间 */
-  if (!state.periods) state.periods = [];
-  const existing = state.periods.find(p => ds >= p.start && (p.end === null || ds <= p.end));
-  document.getElementById('editPeriodStart').value = existing ? existing.start : ds;
-  document.getElementById('editPeriodEnd').value = existing ? (existing.end || existing.start) : ds;
-  document.getElementById('editPeriodModal').classList.add('show');
-}
-function closeEditPeriod() {
-  document.getElementById('editPeriodModal').classList.remove('show');
-}
-function saveEditPeriod() {
-  if (!editPeriodDs) { closeEditPeriod(); return; }
-  const start = document.getElementById('editPeriodStart').value;
-  const end = document.getElementById('editPeriodEnd').value;
-  if (!start) { showToast('请选择开始日期'); return; }
-  if (!state.periods) state.periods = [];
-  /* 删除包含该日期的旧区间 */
-  state.periods = state.periods.filter(p => !(editPeriodDs >= p.start && (p.end === null || editPeriodDs <= p.end)));
-  /* 添加新区间 */
-  if (end && end !== start) {
-    state.periods.push({ start: start, end: end });
-  } else {
-    state.periods.push({ start: start, end: null });
-  }
-  /* 合并相邻区间 */
-  state.periods.sort((a, b) => a.start.localeCompare(b.start));
-  const merged = [];
-  state.periods.forEach(p => {
-    if (merged.length) {
-      const last = merged[merged.length - 1];
-      const lastEnd = last.end ? new Date(last.end) : new Date(last.start);
-      const curStart = new Date(p.start);
-      if (curStart.getTime() <= lastEnd.getTime() + 86400000) {
-        last.end = p.end || p.start;
-      } else {
-        merged.push(p);
-      }
-    } else {
-      merged.push(p);
-    }
-  });
-  state.periods = merged;
-  saveState(); renderCalendar(); renderTable();
-  closeEditPeriod();
-  showToast('经期时间已保存');
-}
+/* ---------- 版本更新通知 ---------- */
 function renderVersionPanel() {
   /* 管理员页加版本更新发布功能 */
   const vi = getVersionInfo();
