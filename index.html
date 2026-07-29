@@ -1218,71 +1218,44 @@ function playToggle() {
   } catch(e) {}
 }
 
-/* 滑动音效（左右方向不同：右滑丝滑上行，左滑低沉水晶钟声下行） */
+/* 滑动音效（左右方向不同，每次稳定播放） */
 function playSwipe(dir) {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    const ctx = new AC();
+    if (ctx.state === 'suspended') ctx.resume();
     const now = ctx.currentTime;
 
     if (dir > 0) {
-      /* 右滑：丝滑上行扫频 + 水晶琶音 */
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const filter = ctx.createBiquadFilter();
-      osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
-      osc.type = 'triangle';
-      filter.type = 'lowpass';
-      filter.Q.value = 0.8;
-      osc.frequency.setValueAtTime(400, now);
-      osc.frequency.exponentialRampToValueAtTime(1400, now + 0.22);
-      filter.frequency.setValueAtTime(800, now);
-      filter.frequency.exponentialRampToValueAtTime(2800, now + 0.22);
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(0.18, now + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-      osc.start(now); osc.stop(now + 0.25);
-      [783.99, 1046.50].forEach((f, i) => {
-        const o2 = ctx.createOscillator();
-        const g2 = ctx.createGain();
-        o2.connect(g2); g2.connect(ctx.destination);
-        o2.type = 'sine'; o2.frequency.value = f;
-        const t2 = now + 0.1 + i * 0.04;
-        g2.gain.setValueAtTime(0, t2);
-        g2.gain.linearRampToValueAtTime(0.12, t2 + 0.005);
-        g2.gain.exponentialRampToValueAtTime(0.001, t2 + 0.15);
-        o2.start(t2); o2.stop(t2 + 0.15);
-      });
-    } else {
-      /* 左滑：低沉水晶钟声下行 — 模拟金属铃铛敲击 */
-      /* 主音：G4-C5 下行双音 */
-      [783.99, 523.25].forEach((f, i) => {
+      /* 右滑：清脆上行小铃 — E5→A5 两音快速琶音 */
+      [659.25, 880.00].forEach((f, i) => {
         const o = ctx.createOscillator();
         const g = ctx.createGain();
         const filt = ctx.createBiquadFilter();
         o.connect(filt); filt.connect(g); g.connect(ctx.destination);
-        o.type = 'sine';
-        o.frequency.value = f;
-        filt.type = 'lowpass';
-        filt.frequency.value = f * 3.5;
-        filt.Q.value = 2;
-        const t = now + i * 0.06;
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.2, t + 0.003);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-        o.start(t); o.stop(t + 0.3);
-      });
-      /* 泛音层：增加钟声金属质感 */
-      [1567.98, 1318.51].forEach((f, i) => {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.type = 'sine';
-        o.frequency.value = f;
+        o.type = 'sine'; o.frequency.value = f;
+        filt.type = 'lowpass'; filt.frequency.value = f * 4; filt.Q.value = 1.2;
         const t = now + i * 0.05;
         g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.08, t + 0.003);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-        o.start(t); o.stop(t + 0.25);
+        g.gain.linearRampToValueAtTime(0.2, t + 0.003);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+        o.start(t); o.stop(t + 0.18);
+      });
+    } else {
+      /* 左滑：温柔下行小铃 — A5→E5 两音快速琶音 */
+      [880.00, 659.25].forEach((f, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        const filt = ctx.createBiquadFilter();
+        o.connect(filt); filt.connect(g); g.connect(ctx.destination);
+        o.type = 'sine'; o.frequency.value = f;
+        filt.type = 'lowpass'; filt.frequency.value = f * 4; filt.Q.value = 1.2;
+        const t = now + i * 0.05;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.2, t + 0.003);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+        o.start(t); o.stop(t + 0.18);
       });
     }
   } catch(e) {}
@@ -1900,10 +1873,17 @@ document.addEventListener('touchend', e => {
   document.querySelectorAll('.tab').forEach((t,i) => { if (t.classList.contains('active')) cur = i; });
   if (diffX > 0) {
     /* 左滑→下一个 */
-    switchTab(cur + 1); playSwipe(-1);
+    const oldCur = cur;
+    switchTab(cur + 1);
+    /* 只有实际切换了才播放音效 */
+    const newCur = Array.from(document.querySelectorAll('.tab')).findIndex(t => t.classList.contains('active'));
+    if (newCur !== oldCur) playSwipe(-1);
   } else {
     /* 右滑→上一个 */
-    switchTab(cur - 1); playSwipe(1);
+    const oldCur = cur;
+    switchTab(cur - 1);
+    const newCur = Array.from(document.querySelectorAll('.tab')).findIndex(t => t.classList.contains('active'));
+    if (newCur !== oldCur) playSwipe(1);
   }
 }, { passive: true });
 
