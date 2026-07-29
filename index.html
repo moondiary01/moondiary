@@ -377,6 +377,9 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .cal-weight.up{color:#EF4444}
 .cal-weight.down{color:#10B981}
 .cal-photo{font-size:0.55rem;display:block;line-height:1}
+.cal-action-box{width:100%;padding:14px;margin-bottom:8px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);font-size:0.9rem;font-weight:500;color:var(--text);text-align:center;cursor:pointer;transition:all 0.15s}
+.cal-action-box:hover{border-color:var(--rose-400);background:var(--rose-50);color:var(--rose-600)}
+.cal-action-box:active{transform:scale(0.97)}
 .avatar-option{aspect-ratio:1;border-radius:50%;background:var(--rose-50);border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:all 0.15s}
 .avatar-option:hover{transform:scale(1.1)}
 .avatar-option.selected{border-color:var(--rose-500);background:var(--rose-100)}
@@ -3329,20 +3332,25 @@ function renderCalendar() {
           if (curW && prevW) {
             const diff = curW - prevW;
             const conv = state.unit === '斤' ? 2 : 1;
-            const d = (diff * conv).toFixed(1);
+            const dVal = (diff * conv).toFixed(1);
             if (Math.abs(diff) >= 0.05) {
-              weightArrow = diff > 0 ? `<span class="cal-weight up">▲${d}</span>` : `<span class="cal-weight down">▼${Math.abs(d)}</span>`;
+              weightArrow = diff > 0 ? '<span class="cal-weight up">▲' + dVal + '</span>' : '<span class="cal-weight down">▼' + Math.abs(dVal) + '</span>';
             }
           }
         }
       }
+      /* 排卵期和下次经期预估 */
       if (!isPeriodDay(ds) && state.periods && state.periods.length) {
         const lastP = state.periods[state.periods.length - 1];
         const lastStart = new Date(lastP.start);
+        const lastEnd = lastP.end ? new Date(lastP.end) : new Date(lastP.start);
+        const periodLen = Math.floor((lastEnd - lastStart) / 86400000) + 1;
+        /* 下次经期预估：上次开始+28天 */
         const predictStart = new Date(lastStart); predictStart.setDate(predictStart.getDate() + 28);
-        const predictEnd = new Date(predictStart); predictEnd.setDate(predictEnd.getDate() + 5);
+        const predictEnd = new Date(predictStart); predictEnd.setDate(predictEnd.getDate() + periodLen - 1);
         const checkDate = new Date(ds);
-        if (checkDate >= predictStart && checkDate <= predictEnd && checkDate > today) cls += ' period-predict';
+        if (checkDate >= predictStart && checkDate <= predictEnd) cls += ' period-predict';
+        /* 排卵日：下次经期开始前14天 */
         const ovulationDay = new Date(predictStart); ovulationDay.setDate(ovulationDay.getDate() - 14);
         const ovStart = new Date(ovulationDay); ovStart.setDate(ovStart.getDate() - 2);
         const ovEnd = new Date(ovulationDay); ovEnd.setDate(ovEnd.getDate() + 2);
@@ -3388,7 +3396,7 @@ function renderCalendar() {
         }
       });
     }
-    document.getElementById('calStats').innerHTML = periodCount > 0 ? '本月经期 ' + periodCount + ' 天 · 🥚排卵日 · 点击日期可标记/取消经期' : '点击日期可标记/取消经期 · 🥚排卵日自动推算';
+    document.getElementById('calStats').innerHTML = periodCount > 0 ? '本月经期 ' + periodCount + ' 天 · 🥚排卵日 · 📋点击日期查看详情或修改经期' : '📋点击日期查看详情或修改经期 · 🥚排卵日自动推算';
   }
   /* 动态图例 */
   const legend = document.getElementById('calLegend');
@@ -3429,22 +3437,19 @@ function onCalDayClick(ds) {
   const hasPhoto = day && day.photo;
   const hasNote = day && (day.periodNote || day.note);
 
-  /* 构建操作菜单 */
+  /* 构建简洁方框操作菜单 */
   let actions = '';
   if (isPeriod) {
-    actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="cancelCalPeriod(\'' + ds + '\')">取消经期标记</button>';
-    actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="showPeriodDetail(\'' + ds + '\')">查看经期详情</button>';
-  } else {
-    actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="markCalPeriod(\'' + ds + '\')">标记经期</button>';
+    actions += '<div class="cal-action-box" onclick="showPeriodDetail(\'' + ds + '\')">🌸 查看经期详情</div>';
   }
-  actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="uploadDayPhoto(\'' + ds + '\')">📷 上传照片</button>';
+  actions += '<div class="cal-action-box" onclick="editPeriodTime(\'' + ds + '\')">🕐 修改经期时间</div>';
+  actions += '<div class="cal-action-box" onclick="uploadDayPhoto(\'' + ds + '\')">📷 上传照片</div>';
   if (hasPhoto) {
-    actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="viewDayPhoto(\'' + ds + '\')">👁 查看照片</button>';
+    actions += '<div class="cal-action-box" onclick="viewDayPhoto(\'' + ds + '\')">👁 查看照片</div>';
   }
   if (hasNote) {
-    actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="viewDayNote(\'' + ds + '\')">📝 查看备注</button>';
+    actions += '<div class="cal-action-box" onclick="viewDayNote(\'' + ds + '\')">📝 查看备注</div>';
   }
-  actions += '<button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="editPeriodTime(\'' + ds + '\')">🕐 修改经期时间</button>';
 
   document.getElementById('calActionDate').textContent = ds;
   document.getElementById('calActionList').innerHTML = actions;
