@@ -1140,25 +1140,43 @@ function userStorageKey(key) { return 'bodydiary_user_' + key; }
 function playLoginSound() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    /* 水晶琶音：C5-E5-G5-C6 + 延音 */
+    /* 高级水晶琶音：C5-E5-G5-C6-E6-G6 + 长延音 + 泛音层 */
     const notes = [
-      { f: 523.25, t: 0,    d: 0.5 }, /* C5 */
-      { f: 659.25, t: 0.08, d: 0.5 }, /* E5 */
-      { f: 783.99, t: 0.16, d: 0.5 }, /* G5 */
-      { f: 1046.50, t: 0.24, d: 0.8 }, /* C6 */
-      { f: 1318.51, t: 0.32, d: 0.8 }, /* E6 高音延音 */
+      { f: 523.25,  t: 0,     d: 0.6,  v: 0.45 }, /* C5 */
+      { f: 659.25,  t: 0.09,  d: 0.6,  v: 0.42 }, /* E5 */
+      { f: 783.99,  t: 0.18,  d: 0.6,  v: 0.42 }, /* G5 */
+      { f: 1046.50, t: 0.27,  d: 0.9,  v: 0.48 }, /* C6 */
+      { f: 1318.51, t: 0.36,  d: 1.0,  v: 0.45 }, /* E6 */
+      { f: 1567.98, t: 0.45,  d: 1.2,  v: 0.40 }, /* G6 高音延音 */
     ];
     notes.forEach(n => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
+      const filter = ctx.createBiquadFilter();
+      osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
       osc.frequency.value = n.f;
       osc.type = 'sine';
+      filter.type = 'lowpass';
+      filter.frequency.value = n.f * 3;
+      filter.Q.value = 1;
       const t = ctx.currentTime + n.t;
       gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.3, t + 0.02);
+      gain.gain.linearRampToValueAtTime(n.v, t + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.001, t + n.d);
       osc.start(t); osc.stop(t + n.d);
+    });
+    /* 叠加高八度泛音，增加水晶光泽 */
+    [2637.02, 3135.96].forEach((f, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = f;
+      osc.type = 'sine';
+      const t = ctx.currentTime + 0.27 + i * 0.09;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.15, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+      osc.start(t); osc.stop(t + 1.0);
     });
   } catch(e) {}
 }
@@ -1196,42 +1214,47 @@ function playToggle() {
   } catch(e) {}
 }
 
-/* 滑动音效（带 whoosh 感的扫频，区分左右滑方向） */
+/* 滑动音效（高级水晶丝滑扫频，区分左右方向） */
 function playSwipe(dir) {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const now = ctx.currentTime;
-    /* 主扫频音：模拟手指划过的 whoosh */
+    /* 第一层：丝滑扫频 whoosh，带低通滤波模拟手指划过质感 */
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     const filter = ctx.createBiquadFilter();
     osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
-    osc.type = 'sine';
-    filter.type = 'bandpass';
-    filter.Q.value = 1.2;
-    /* 左滑(dir<=0)：频率下行 1200→500；右滑(dir>0)：上行 500→1200 */
-    const fStart = (dir > 0) ? 500 : 1200;
-    const fEnd   = (dir > 0) ? 1200 : 500;
+    osc.type = 'triangle';
+    filter.type = 'lowpass';
+    filter.Q.value = 0.8;
+    const fStart = (dir > 0) ? 400 : 1400;
+    const fEnd   = (dir > 0) ? 1400 : 400;
     osc.frequency.setValueAtTime(fStart, now);
-    osc.frequency.exponentialRampToValueAtTime(fEnd, now + 0.18);
-    filter.frequency.setValueAtTime(fStart, now);
-    filter.frequency.exponentialRampToValueAtTime(fEnd, now + 0.18);
+    osc.frequency.exponentialRampToValueAtTime(fEnd, now + 0.22);
+    filter.frequency.setValueAtTime(fStart * 2, now);
+    filter.frequency.exponentialRampToValueAtTime(fEnd * 2, now + 0.22);
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.14, now + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-    osc.start(now); osc.stop(now + 0.2);
-    /* 叠加一个短促的水晶尾音，保持与 App 音效风格统一 */
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.connect(gain2); gain2.connect(ctx.destination);
-    osc2.type = 'sine';
-    const tailF = (dir > 0) ? 1046.50 : 783.99; /* 右滑C6，左滑G5 */
-    osc2.frequency.value = tailF;
-    const t2 = now + 0.1;
-    gain2.gain.setValueAtTime(0, t2);
-    gain2.gain.linearRampToValueAtTime(0.08, t2 + 0.005);
-    gain2.gain.exponentialRampToValueAtTime(0.001, t2 + 0.1);
-    osc2.start(t2); osc2.stop(t2 + 0.1);
+    gain.gain.linearRampToValueAtTime(0.18, now + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.start(now); osc.stop(now + 0.25);
+    /* 第二层：水晶尾音，两音符琶音 */
+    const tailNotes = (dir > 0) ? [783.99, 1046.50] : [1046.50, 783.99];
+    tailNotes.forEach((f, i) => {
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      const filter2 = ctx.createBiquadFilter();
+      osc2.connect(filter2); filter2.connect(gain2); gain2.connect(ctx.destination);
+      osc2.type = 'sine';
+      osc2.frequency.value = f;
+      filter2.type = 'lowpass';
+      filter2.frequency.value = f * 4;
+      filter2.Q.value = 1.5;
+      const t2 = now + 0.1 + i * 0.04;
+      gain2.gain.setValueAtTime(0, t2);
+      gain2.gain.linearRampToValueAtTime(0.12, t2 + 0.005);
+      gain2.gain.exponentialRampToValueAtTime(0.001, t2 + 0.15);
+      osc2.start(t2); osc2.stop(t2 + 0.15);
+    });
   } catch(e) {}
 }
 
