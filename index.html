@@ -373,6 +373,10 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .cal-day.ovulation-window{background:#FEF9C3;color:#A16207}
 .cal-day.exercise{background:#D1FAE5;color:#065F46;font-weight:700}
 .cal-day.other-month{color:var(--text-l);opacity:0.4}
+.cal-weight{font-size:0.5rem;display:block;line-height:1;margin-top:1px;text-align:center}
+.cal-weight.up{color:#EF4444}
+.cal-weight.down{color:#10B981}
+.cal-weight.same{color:var(--text-l)}
 .avatar-option{aspect-ratio:1;border-radius:50%;background:var(--rose-50);border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:all 0.15s}
 .avatar-option:hover{transform:scale(1.1)}
 .avatar-option.selected{border-color:var(--rose-500);background:var(--rose-100)}
@@ -951,6 +955,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
       <div style="padding:10px 12px;background:var(--rose-50);border-radius:10px"><div style="font-size:0.8rem;color:var(--text-l);margin-bottom:4px">📝 每日日记/备注</div><div id="periodDetailDailyNote" style="font-size:0.88rem;color:var(--text);line-height:1.5">—</div></div>
     </div>
     <div class="modal-actions">
+      <button class="btn btn-outline" onclick="cancelPeriodFromDetail();playClick()">取消经期</button>
       <button class="btn btn-outline" onclick="closePeriodDetail();playClick()">关闭</button>
     </div>
   </div>
@@ -3175,8 +3180,26 @@ function renderCalendar() {
           else if (checkDate >= ovStart && checkDate <= ovEnd) cls += ' ovulation-window';
         }
       }
+      /* 体重波动箭头（同步晨起体重） */
+      var weightArrow = '';
+      var dayIdx2 = state.days.findIndex(dd => dd.date === ds);
+      if (dayIdx2 >= 0) {
+        var w = state.days[dayIdx2].weightAM;
+        if (w) {
+          /* 找之前最近的有晨起体重的日期 */
+          var prevW = null;
+          for (var pi = dayIdx2 - 1; pi >= 0; pi--) {
+            if (state.days[pi].weightAM) { prevW = state.days[pi].weightAM; break; }
+          }
+          if (prevW !== null) {
+            if (w > prevW) weightArrow = '<span class="cal-weight up">↑</span>';
+            else if (w < prevW) weightArrow = '<span class="cal-weight down">↓</span>';
+            else weightArrow = '<span class="cal-weight same">=</span>';
+          }
+        }
+      }
       var clickHandler = isPeriodDay(ds) ? 'onCalDayClick(\\'' + ds + '\\')' : 'toggleCalPeriod(\\'' + ds + '\\')';
-      html += '<div class="' + cls + '" onclick="' + clickHandler + '">' + label + '</div>';
+      html += '<div class="' + cls + '" onclick="' + clickHandler + '">' + label + (weightArrow || '') + '</div>';
     }
   }
   /* 补满 */
@@ -3291,6 +3314,12 @@ function showPeriodDetail(ds) {
 }
 function closePeriodDetail() {
   document.getElementById('periodDetailModal').classList.remove('show');
+}
+function cancelPeriodFromDetail() {
+  const ds = document.getElementById('periodDetailDate').textContent;
+  closePeriodDetail();
+  toggleCalPeriod(ds);
+  showToast('已取消该天经期');
 }
 
 function toggleCalPeriod(ds) {
