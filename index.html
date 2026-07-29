@@ -3138,18 +3138,20 @@ function renderCalendar() {
     } else {
       /* 经期日历 */
       if (isPeriodDay(ds)) cls += ' period';
-      if (!isPeriodDay(ds) && state.periods && state.periods.length) {
+      if (state.periods && state.periods.length) {
         const lastP = state.periods[state.periods.length - 1];
         const lastStart = new Date(lastP.start);
         const predictStart = new Date(lastStart); predictStart.setDate(predictStart.getDate() + 28);
         const predictEnd = new Date(predictStart); predictEnd.setDate(predictEnd.getDate() + 5);
         const checkDate = new Date(ds);
-        if (checkDate >= predictStart && checkDate <= predictEnd && checkDate > today) cls += ' period-predict';
+        if (!isPeriodDay(ds) && checkDate >= predictStart && checkDate <= predictEnd) cls += ' period-predict';
         const ovulationDay = new Date(predictStart); ovulationDay.setDate(ovulationDay.getDate() - 14);
         const ovStart = new Date(ovulationDay); ovStart.setDate(ovStart.getDate() - 2);
         const ovEnd = new Date(ovulationDay); ovEnd.setDate(ovEnd.getDate() + 2);
-        if (checkDate.getTime() === ovulationDay.getTime()) { cls += ' ovulation'; label = d + '🥚'; }
-        else if (checkDate >= ovStart && checkDate <= ovEnd) cls += ' ovulation-window';
+        if (!isPeriodDay(ds)) {
+          if (checkDate.getTime() === ovulationDay.getTime()) { cls += ' ovulation'; label = d + '🥚'; }
+          else if (checkDate >= ovStart && checkDate <= ovEnd) cls += ' ovulation-window';
+        }
       }
       html += '<div class="' + cls + '" onclick="toggleCalPeriod(\'' + ds + '\')">' + label + '</div>';
     }
@@ -3223,8 +3225,12 @@ function toggleCalExercise(ds) {
 
 function toggleCalPeriod(ds) {
   if (!state.periods) state.periods = [];
-  /* 检查是否已标记 */
-  const existing = state.periods.find(p => ds >= p.start && (p.end === null || ds <= p.end));
+  /* 检查是否已标记（处理 end 为 null 的情况） */
+  const existing = state.periods.find(p => {
+    if (ds < p.start) return false;
+    if (p.end === null || p.end === undefined) return ds === p.start;
+    return ds <= p.end;
+  });
   if (existing) {
     /* 取消标记：从区间中移除该天 */
     const start = new Date(existing.start);
@@ -3242,7 +3248,7 @@ function toggleCalPeriod(ds) {
       const newEnd = localDateStr(new Date(target.getTime() - 86400000));
       const newStart = localDateStr(new Date(target.getTime() + 86400000));
       existing.end = newEnd;
-      state.periods.push({ start: newStart, end: localDateStr(end) });
+      state.periods.push({ start: newStart, end: existing.end ? localDateStr(end) : null });
     }
   } else {
     /* 标记为经期 */
@@ -3256,7 +3262,9 @@ function toggleCalPeriod(ds) {
         const lastEnd = last.end ? new Date(last.end) : new Date(last.start);
         const curStart = new Date(p.start);
         if (curStart.getTime() <= lastEnd.getTime() + 86400000) {
-          last.end = p.end || p.start;
+          /* 合并：取较晚的结束日期 */
+          const curEnd = p.end ? new Date(p.end) : new Date(p.start);
+          last.end = curEnd > lastEnd ? localDateStr(curEnd) : localDateStr(lastEnd);
         } else {
           merged.push(p);
         }
