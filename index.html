@@ -750,7 +750,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
           <span style="font-size:1.1rem;font-weight:700;color:#8b5cf6">100天变美日记</span>
           <span style="font-size:0.65rem;padding:2px 10px;border-radius:100rpx;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:600">升级版</span>
         </div>
-        <div style="font-size:0.78rem;color:#78716c;margin-top:4px">护肤打卡 · 心情记录 · 月友圈</div>
+        <div style="font-size:0.78rem;color:#78716c;margin-top:4px">护肤日记 · 心情记录 · 月友圈</div>
       </div>
       <span style="font-size:1.5rem;color:#c4b5fd">›</span>
     </div>
@@ -962,7 +962,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
         <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#fbcfe8,#f9a8d4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">💄</div>
         <div style="flex:1">
           <div style="font-size:1rem;font-weight:700;color:#1c1917">护肤日记</div>
-          <div style="font-size:0.75rem;color:#78716c">每日护肤打卡 · 日历照片 · do脸记录</div>
+          <div style="font-size:0.75rem;color:#78716c">每日护肤日记 · 日历照片 · do脸记录</div>
         </div>
         <span style="font-size:1.2rem;color:#c4b5fd">›</span>
       </div>
@@ -1019,17 +1019,20 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
           <span class="beauty-tag" data-key="footCare" onclick="toggleBodyCare(this,'footCare')">脚部护理</span>
         </div>
 
+        <!-- 自定义打卡项目 -->
+        <input type="text" id="beautyCustomCheck" placeholder="自定义打卡项目..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-bottom:12px" oninput="autoSaveSkincare()">
+
         <div class="skincare-check-list">
           <div class="skincare-check-row" id="check-salon" onclick="toggleSkincareCheck('salon');playClick()">
             <span class="skincare-check-label">💆 美容院护理</span>
             <span class="skincare-check-box"><span class="skincare-check-tick" style="display:none">✓</span></span>
           </div>
+          <input type="text" id="beautySalonNote" placeholder="护理心得..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;margin-bottom:8px;display:none" oninput="autoSaveSkincare()">
           <div class="skincare-check-row" id="check-cosmetic" onclick="toggleSkincareCheck('cosmetic');playClick()">
             <span class="skincare-check-label">💉 do脸日记</span>
             <span class="skincare-check-box"><span class="skincare-check-tick" style="display:none">✓</span></span>
           </div>
         </div>
-        <input type="text" id="beautySalonNote" placeholder="护理心得..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;display:none" oninput="autoSaveSkincare()">
         <input type="text" id="beautyCosmeticNote" placeholder="do脸项目感受..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;display:none" oninput="autoSaveSkincare()">
       </div>
 
@@ -4278,6 +4281,7 @@ var beautySkincareState = {
   skinType: '',
   morningSkincare: false,
   nightSkincare: false,
+  customCheck: '',
   bodyCare: [],
   salon: false, salonNote: '',
   cosmetic: false, cosmeticNote: '',
@@ -4401,7 +4405,7 @@ function updateSkincareUI() {
   countdownHtml += '</div></div>';
   /* 信息区 — 大标题用区别色 + 皮肤状态小字旁 */
   countdownHtml += '<div class="skincare-countdown-info">';
-  countdownHtml += '<div class="skincare-title-row"><span class="skincare-countdown-title">护肤打卡</span>';
+  countdownHtml += '<div class="skincare-title-row"><span class="skincare-countdown-title">护肤日记</span>';
   countdownHtml += '<span class="skincare-skin-badge" onclick="onSkinTypeChange();playClick()">'+skinTypeLabel+'</span></div>';
   countdownHtml += '<div class="skincare-countdown-desc">第'+beautySkincareState.currentDay+'天，坚持变美！</div>';
   countdownHtml += '<div class="skincare-countdown-progress">';
@@ -4444,6 +4448,7 @@ function updateSkincareUI() {
     el.classList.toggle('beauty-tag-active', beautySkincareState.bodyCare.indexOf(el.dataset.key) > -1);
   });
   if (document.getElementById('beautyNote')) document.getElementById('beautyNote').value = beautySkincareState.note;
+  if (document.getElementById('beautyCustomCheck')) document.getElementById('beautyCustomCheck').value = beautySkincareState.customCheck || '';
 }
 
 function updateSkincareSummary() {
@@ -4574,6 +4579,7 @@ function saveBeautySkincare() {
   var today = formatDateStr(new Date());
   beautySkincareState.salonNote = document.getElementById('beautySalonNote') ? document.getElementById('beautySalonNote').value : '';
   beautySkincareState.cosmeticNote = document.getElementById('beautyCosmeticNote') ? document.getElementById('beautyCosmeticNote').value : '';
+  beautySkincareState.customCheck = document.getElementById('beautyCustomCheck') ? document.getElementById('beautyCustomCheck').value : '';
   beautySkincareState.note = document.getElementById('beautyNote') ? document.getElementById('beautyNote').value : '';
 
   var record = Object.assign({ date: today }, beautySkincareState);
@@ -4669,7 +4675,7 @@ function renderSkincareCalendar() {
   calEl.innerHTML = html;
 }
 
-/* 判断某天是否有打卡（晨间/晚间/美容院/do脸/护理项目 任一即可） */
+/* 判断某天是否有打卡（美容院/do脸/护理项目/自定义项目 任一即可） */
 function isDayCheckedWeb(rec) {
   if (!rec) return false;
   if (rec.morningSkincare) return true;
@@ -4677,6 +4683,7 @@ function isDayCheckedWeb(rec) {
   if (rec.salon) return true;
   if (rec.cosmetic) return true;
   if (rec.bodyCare && rec.bodyCare.length > 0) return true;
+  if (rec.customCheck && rec.customCheck.trim()) return true;
   return false;
 }
 
@@ -4707,6 +4714,7 @@ function openSkincareDayDetail(dateStr) {
     note: record ? (record.note || '') : '',
     salonNote: record ? (record.salonNote || '') : '',
     cosmeticNote: record ? (record.cosmeticNote || '') : '',
+    customCheck: record ? (record.customCheck || '') : '',
     photo: record ? (record.photo || '') : '',
     record: record || null
   };
@@ -4714,6 +4722,9 @@ function openSkincareDayDetail(dateStr) {
   document.getElementById('skincareDayDetailTitle').textContent = '📅 ' + dateStr + ' 详情';
 
   var html = '';
+  /* 自定义打卡项目 */
+  html += '<div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">📌 自定义打卡项目</div>';
+  html += '<input type="text" id="skincareDetailCustomCheck" placeholder="自定义打卡项目..." value="'+skincareDayDetailState.customCheck.replace(/"/g,'&quot;')+'" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fff"></div>';
   /* 备注📝 */
   html += '<div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">📝 备注</div>';
   html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:70px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit">'+skincareDayDetailState.note+'</textarea></div>';
@@ -4763,20 +4774,77 @@ function openSkincareDayDetail(dateStr) {
 }
 
 function uploadSkincareDayPhoto() {
+  /* 创建一个持久的 hidden input，确保移动端兼容 */
+  var oldInput = document.getElementById('_skincarePhotoInput');
+  if (oldInput) oldInput.remove();
   var input = document.createElement('input');
+  input.id = '_skincarePhotoInput';
   input.type = 'file';
   input.accept = 'image/*';
+  input.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(input);
   input.onchange = function(e) {
     var file = e.target.files[0];
-    if (!file) return;
+    if (!file) { input.remove(); return; }
+    /* 检查文件类型 */
+    if (!file.type.startsWith('image/')) {
+      showToast('请选择图片文件');
+      input.remove();
+      return;
+    }
+    /* 检查文件大小（10MB 以内） */
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('图片太大，请选择 10MB 以内的图片');
+      input.remove();
+      return;
+    }
+    showToast('正在处理图片...');
+    /* 先用 FileReader 读取为 DataURL，再用 canvas 压缩 */
     var reader = new FileReader();
     reader.onload = function(ev) {
-      skincareDayDetailState.photo = ev.target.result;
-      openSkincareDayDetail(skincareDayDetailDate);
+      var img = new Image();
+      img.onload = function() {
+        /* 压缩到最大 800px 宽度，jpeg 0.7 质量 */
+        var maxW = 800;
+        var maxH = 800;
+        var w = img.width, h = img.height;
+        if (w > maxW || h > maxH) {
+          var ratio = Math.min(maxW / w, maxH / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        var compressed = canvas.toDataURL('image/jpeg', 0.7);
+        /* 如果压缩后仍然大于 500KB，进一步压缩 */
+        if (compressed.length > 500 * 1024) {
+          compressed = canvas.toDataURL('image/jpeg', 0.5);
+        }
+        skincareDayDetailState.photo = compressed;
+        input.remove();
+        openSkincareDayDetail(skincareDayDetailDate);
+        showToast('✅ 照片已添加');
+      };
+      img.onerror = function() {
+        /* 如果 Image 加载失败，直接用原始 DataURL */
+        skincareDayDetailState.photo = ev.target.result;
+        input.remove();
+        openSkincareDayDetail(skincareDayDetailDate);
+        showToast('✅ 照片已添加');
+      };
+      img.src = ev.target.result;
+    };
+    reader.onerror = function() {
+      showToast('图片读取失败，请重试');
+      input.remove();
     };
     reader.readAsDataURL(file);
   };
-  input.click();
+  /* 延迟点击，确保 input 已加入 DOM */
+  setTimeout(function() { input.click(); }, 100);
 }
 
 function deleteSkincareDayPhoto() {
@@ -4803,6 +4871,7 @@ function saveSkincareDayDetail() {
   skincareDayDetailState.note = document.getElementById('skincareDetailNote') ? document.getElementById('skincareDetailNote').value : '';
   skincareDayDetailState.salonNote = document.getElementById('skincareDetailSalonNote') ? document.getElementById('skincareDetailSalonNote').value : '';
   skincareDayDetailState.cosmeticNote = document.getElementById('skincareDetailCosmeticNote') ? document.getElementById('skincareDetailCosmeticNote').value : '';
+  skincareDayDetailState.customCheck = document.getElementById('skincareDetailCustomCheck') ? document.getElementById('skincareDetailCustomCheck').value : '';
 
   var found = false;
   for (var i = 0; i < beautySkinData.dailyRecords.length; i++) {
@@ -4811,6 +4880,7 @@ function saveSkincareDayDetail() {
       beautySkinData.dailyRecords[i].note = skincareDayDetailState.note;
       beautySkinData.dailyRecords[i].salonNote = skincareDayDetailState.salonNote;
       beautySkinData.dailyRecords[i].cosmeticNote = skincareDayDetailState.cosmeticNote;
+      beautySkinData.dailyRecords[i].customCheck = skincareDayDetailState.customCheck;
       beautySkinData.dailyRecords[i].photo = skincareDayDetailState.photo;
       beautySkinData.dailyRecords[i].updatedAt = Date.now();
       found = true; break;
@@ -4825,6 +4895,7 @@ function saveSkincareDayDetail() {
       salon: false,
       cosmetic: false,
       note: skincareDayDetailState.note,
+      customCheck: skincareDayDetailState.customCheck,
       salonNote: skincareDayDetailState.salonNote,
       cosmeticNote: skincareDayDetailState.cosmeticNote,
       photo: skincareDayDetailState.photo,
