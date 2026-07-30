@@ -136,3 +136,64 @@
 .save-area {
   padding: 30rpx 24rpx;
 }
+
+/* 100变美日记入口 */
+.beauty-entry-card {
+  background: linear-gradient(135deg, #fdf2f8, #f5f3ff);
+  border: 2rpx solid #e9d5ff;
+}
+.beauty-entry-banner {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.beauty-entry-icon {
+  font-size: 48rpx;
+}
+.beauty-entry-info {
+  flex: 1;
+}
+.beauty-entry-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.beauty-entry-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1c1917;
+}
+.upgrade-tag {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #8b5cf6;
+  background: #ede9fe;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+.beauty-entry-desc {
+  font-size: 24rpx;
+  color: #78716c;
+  margin-top: 4rpx;
+  display: block;
+}
+.beauty-entry-arrow {
+  font-size: 40rpx;
+  color: #8b5cf6;
+}
+
+/* 管理员入口 */
+.admin-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.admin-entry-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1c1917;
+}
+.admin-entry-arrow {
+  font-size: 36rpx;
+  color: #a8a29e;
+}

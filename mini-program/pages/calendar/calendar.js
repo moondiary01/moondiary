@@ -71,7 +71,10 @@ Page({
   isDateInPeriods: function (dateStr, periods) {
     for (var i = 0; i < periods.length; i++) {
       var p = periods[i]
-      if (dateStr >= p.start && dateStr <= p.end) {
+      if (!p.start) continue
+      // 处理 end 为 null/undefined 的情况（单日经期）
+      var end = (p.end === null || p.end === undefined) ? p.start : p.end
+      if (dateStr >= p.start && dateStr <= end) {
         return true
       }
     }
@@ -83,10 +86,13 @@ Page({
     var set = {}
     for (var i = 0; i < periods.length; i++) {
       var p = periods[i]
+      if (!p.start) continue
+      // 处理 end 为 null/undefined 的情况
+      var end = (p.end === null || p.end === undefined) ? p.start : p.end
       var start = new Date(p.start)
-      var end = new Date(p.end)
+      var endD = new Date(end)
       var cur = new Date(start)
-      while (cur <= end) {
+      while (cur <= endD) {
         var ds = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0') + '-' + String(cur.getDate()).padStart(2, '0')
         set[ds] = true
         cur.setDate(cur.getDate() + 1)
@@ -283,10 +289,13 @@ Page({
     var state = app.globalData.state
     var periods = state.periods || []
 
-    // 查找包含当前日期的经期区间
+    // 查找包含当前日期的经期区间（处理 end 为 null 的情况）
     var foundIdx = -1
     for (var i = 0; i < periods.length; i++) {
-      if (dateStr >= periods[i].start && dateStr <= periods[i].end) {
+      var p = periods[i]
+      if (!p.start) continue
+      var end = (p.end === null || p.end === undefined) ? p.start : p.end
+      if (dateStr >= p.start && dateStr <= end) {
         foundIdx = i
         break
       }

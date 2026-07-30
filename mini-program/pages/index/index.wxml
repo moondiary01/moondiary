@@ -102,4 +102,27 @@
     <button class="btn btn-primary btn-block" bindtap="onSave">保存今日记录</button>
   </view>
 
+  <!-- 100变美日记入口 -->
+  <view class="card beauty-entry-card" bindtap="onGoBeauty">
+    <view class="beauty-entry-banner">
+      <text class="beauty-entry-icon">✨</text>
+      <view class="beauty-entry-info">
+        <view class="beauty-entry-title-row">
+          <text class="beauty-entry-title">100天变美日记</text>
+          <text class="upgrade-tag">升级版</text>
+        </view>
+        <text class="beauty-entry-desc">护肤打卡 · 心情记录 · 月友圈</text>
+      </view>
+      <text class="beauty-entry-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 管理员入口 -->
+  <view class="card" wx:if="{{isAdmin}}">
+    <view class="admin-entry" bindtap="onGoAdmin">
+      <text class="admin-entry-text">⚙️ 管理后台</text>
+      <text class="admin-entry-arrow">›</text>
+    </view>
+  </view>
+
 </view>

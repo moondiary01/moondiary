@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "心情日记",
+  "navigationBarBackgroundColor": "#faf5f9",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "upgrade-lock": "/components/upgrade-lock/upgrade-lock"
+  }
+}

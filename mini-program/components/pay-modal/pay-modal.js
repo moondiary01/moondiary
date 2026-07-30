@@ -21,15 +21,13 @@ Component({
     },
 
     onPay: function () {
-      wx.showToast({
-        title: '支付功能即将开通，请联系客服',
-        icon: 'none',
-        duration: 2500
+      wx.navigateTo({
+        url: '/pages/pay/pay'
       })
     },
 
     onClose: function () {
-      this.setData({ show: false })
+      // 只通知父组件关闭，不自行修改 property
       this.triggerEvent('close')
     }
   }

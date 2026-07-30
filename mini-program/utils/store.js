@@ -252,8 +252,12 @@ function loadState(userKey, callback) {
     // 再读云端合并
     loadFromCloud(userKey, function (cloudData) {
       if (cloudData) {
-        // 云端覆盖本地
+        // 以云端为主，但确保数组字段不丢失
         var merged = Object.assign({}, local, cloudData);
+        // 确保关键数组字段存在
+        if (!merged.days) merged.days = cloudData.days || local.days || [];
+        if (!merged.periods) merged.periods = cloudData.periods || local.periods || [];
+        if (!merged.weeklyReview) merged.weeklyReview = cloudData.weeklyReview || local.weeklyReview || [];
         setLocal(userStorageKey(userKey), merged);
         if (callback) callback(merged);
       } else {
@@ -264,6 +268,10 @@ function loadState(userKey, callback) {
     // 全新用户
     loadFromCloud(userKey, function (cloudData) {
       if (cloudData) {
+        // 确保数组字段存在
+        if (!cloudData.days) cloudData.days = [];
+        if (!cloudData.periods) cloudData.periods = [];
+        if (!cloudData.weeklyReview) cloudData.weeklyReview = [];
         setLocal(userStorageKey(userKey), cloudData);
         if (callback) callback(cloudData);
       } else {

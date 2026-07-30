@@ -52,6 +52,12 @@ Page({
           var userInfo = wxUsers[userKey]
 
           if (userInfo) {
+            // 检查是否被管理员停用
+            if (userInfo.disabled === true) {
+              wx.hideLoading()
+              wx.showToast({ title: '您的账号已被停用，请联系管理员', icon: 'none', duration: 3000 })
+              return
+            }
             // 已注册用户
             var status = store.checkUserStatus(userInfo)
             app.globalData.loginType = 'wx'
@@ -60,6 +66,10 @@ Page({
             app.globalData.isTrial = status.isTrial
             app.globalData.trialExpired = status.trialExpired || false
             app.globalData.wxUserInfo = userInfo
+            app.globalData.statusReady = true
+
+            // 缓存到本地
+            store.setLocal('_wx_users_cache', wxUsers)
 
             store.setLocal('loginType', 'wx')
             store.setLocal('userKey', userKey)
@@ -84,6 +94,10 @@ Page({
             app.globalData.isTrial = true
             app.globalData.trialExpired = false
             app.globalData.wxUserInfo = newUserInfo
+            app.globalData.statusReady = true
+
+            // 缓存到本地
+            store.setLocal('_wx_users_cache', wxUsers)
 
             store.setLocal('loginType', 'wx')
             store.setLocal('userKey', userKey)
@@ -132,8 +146,21 @@ Page({
 
     wx.showLoading({ title: '验证中...' })
 
-    // 验证手机号绑定
-    store.loadPhoneBindings(function (bindings) {
+    // 先检查密钥是否已被停用
+    store.loadPresetInfo(function (presetInfo) {
+      presetInfo = presetInfo || {}
+      var keyInfo = presetInfo[key]
+      if (keyInfo && keyInfo.revoked) {
+        wx.hideLoading()
+        wx.showToast({ title: '该密钥已被停用，请联系管理员', icon: 'none', duration: 2000 })
+        setTimeout(function () {
+          wx.navigateTo({ url: '/pages/pay/pay' })
+        }, 2000)
+        return
+      }
+
+      // 验证手机号绑定
+      store.loadPhoneBindings(function (bindings) {
       bindings = bindings || {}
 
       // 网页版结构: {phone: key}
@@ -158,6 +185,7 @@ Page({
       app.globalData.isPaid = true
       app.globalData.isTrial = false
       app.globalData.trialExpired = false
+      app.globalData.statusReady = true
 
       store.setLocal('loginType', 'key')
       store.setLocal('userKey', userKey)
@@ -195,7 +223,8 @@ Page({
       setTimeout(function () {
         self.goHome()
       }, 1000)
-    })
+      }) // loadPhoneBindings
+    }) // loadPresetInfo
   },
 
   // ===== 管理员登录 =====
@@ -237,6 +266,7 @@ Page({
     app.globalData.isPaid = true
     app.globalData.isTrial = false
     app.globalData.trialExpired = false
+    app.globalData.statusReady = true
 
     store.setLocal('loginType', 'admin')
     store.setLocal('userKey', 'admin')

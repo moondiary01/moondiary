@@ -1,0 +1,57 @@
+<upgrade-lock show="{{!canUseUpgrade}}" />
+
+<view class="upgrade-page">
+  <!-- 顶部 Banner -->
+  <view class="upgrade-banner">
+    <view class="upgrade-banner-bg"></view>
+    <view class="upgrade-banner-content">
+      <text class="upgrade-banner-icon">✨</text>
+      <view class="upgrade-banner-title">100天变美日记</view>
+      <view class="upgrade-banner-sub">UPGRADE · 更美的自己</view>
+    </view>
+  </view>
+
+  <!-- 栏目入口 -->
+  <view class="upgrade-sections">
+    <view class="upgrade-section-card" bindtap="onGoSkincare">
+      <view class="section-icon-wrap section-icon-skincare">
+        <text class="section-icon">💄</text>
+      </view>
+      <view class="section-info">
+        <view class="section-title">护肤日记</view>
+        <view class="section-desc">每日护肤打卡 · 日历照片 · do脸记录</view>
+      </view>
+      <text class="section-arrow">›</text>
+    </view>
+
+    <view class="upgrade-section-card" bindtap="onGoMood">
+      <view class="section-icon-wrap section-icon-mood">
+        <text class="section-icon">💖</text>
+      </view>
+      <view class="section-info">
+        <view class="section-title">心情日记</view>
+        <view class="section-desc">心情记录 · 冥想音乐 · 自律打卡</view>
+      </view>
+      <text class="section-arrow">›</text>
+    </view>
+
+    <view class="upgrade-section-card" bindtap="onGoCommunity">
+      <view class="section-icon-wrap section-icon-community">
+        <text class="section-icon">🌙</text>
+      </view>
+      <view class="section-info">
+        <view class="section-title">月友圈</view>
+        <view class="section-desc">分享变美日记 · 互相点赞评论</view>
+      </view>
+      <text class="section-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 底部信息 -->
+  <view class="upgrade-footer">
+    <view class="upgrade-price-tag">
+      <text class="upgrade-price">29.9元 永久使用</text>
+      <text class="upgrade-price-desc">升级版会员 · 全功能解锁</text>
+    </view>
+  </view>
+</view>

@@ -11,6 +11,25 @@
     "pages/notice/notice",
     "pages/privacy/privacy"
   ],
+  "subPackages": [
+    {
+      "root": "subpkg-beauty",
+      "name": "beauty",
+      "pages": [
+        "pages/upgrade-home/upgrade-home",
+        "pages/skincare/skincare",
+        "pages/mood/mood",
+        "pages/community/community",
+        "pages/community-detail/community-detail"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "wifi",
+      "packages": ["beauty"]
+    }
+  },
   "window": {
     "navigationBarBackgroundColor": "#1a1025",
     "navigationBarTitleText": "Moon Diary",
@@ -26,28 +45,39 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "每日记录"
+        "text": "每日记录",
+        "iconPath": "assets/tabbar/index.png",
+        "selectedIconPath": "assets/tabbar/index_active.png"
       },
       {
         "pagePath": "pages/chart/chart",
-        "text": "趋势统计"
+        "text": "趋势统计",
+        "iconPath": "assets/tabbar/chart.png",
+        "selectedIconPath": "assets/tabbar/chart_active.png"
       },
       {
         "pagePath": "pages/plan/plan",
-        "text": "计划详情"
+        "text": "计划详情",
+        "iconPath": "assets/tabbar/plan.png",
+        "selectedIconPath": "assets/tabbar/plan_active.png"
       },
       {
         "pagePath": "pages/review/review",
-        "text": "周度复盘"
+        "text": "周度复盘",
+        "iconPath": "assets/tabbar/review.png",
+        "selectedIconPath": "assets/tabbar/review_active.png"
       },
       {
         "pagePath": "pages/calendar/calendar",
-        "text": "经期日历"
+        "text": "经期日历",
+        "iconPath": "assets/tabbar/calendar.png",
+        "selectedIconPath": "assets/tabbar/calendar_active.png"
       }
     ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",
+  "requiredBackgroundModes": ["audio"],
   "usingComponents": {
     "pay-modal": "/components/pay-modal/pay-modal"
   }

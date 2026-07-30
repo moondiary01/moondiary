@@ -22,9 +22,7 @@
   <!-- 日历网格 -->
   <view class="cal-grid">
     <block wx:for="{{calDays}}" wx:key="key">
-      <view class="cal-cell {{item.empty ? 'cal-empty' : ''}}"
-        wx:if="{{item.empty}}">
-      </view>
+      <view class="cal-cell cal-empty" wx:if="{{item.empty}}"></view>
       <view class="cal-cell {{item.today ? 'cal-today' : ''}} {{item.period ? 'cal-period' : ''}} {{item.periodPredict ? 'cal-period-predict' : ''}} {{item.ovulation ? 'cal-ovulation' : ''}} {{item.exercise ? 'cal-exercise' : ''}}"
         wx:else
         bindtap="onCalDayClick" data-date="{{item.dateStr}}">

@@ -6,38 +6,113 @@
     <view class="pay-header-title">Moon Diary 会员</view>
   </view>
 
-  <!-- 价格卡片 -->
-  <view class="card price-card">
-    <view class="price-amount">19.9元/月</view>
-    <view class="price-desc">永久云存储</view>
+  <!-- Tab切换 -->
+  <view class="pay-tabs">
+    <view
+      class="pay-tab {{currentTab === 'basic' ? 'tab-active' : ''}}"
+      data-tab="basic"
+      bindtap="onTabChange"
+    >基础版 19.9元永久</view>
+    <view
+      class="pay-tab {{currentTab === 'upgrade' ? 'tab-active' : ''}}"
+      data-tab="upgrade"
+      bindtap="onTabChange"
+    >升级版 29.9元永久</view>
   </view>
 
-  <!-- 会员权益 -->
-  <view class="card">
-    <view class="card-title">会员权益</view>
-    <view class="benefit-list">
-      <view class="benefit-item">
-        <text class="benefit-icon">✅</text>
-        <text class="benefit-text">全部功能解锁</text>
-      </view>
-      <view class="benefit-item">
-        <text class="benefit-icon">☁️</text>
-        <text class="benefit-text">云端数据同步</text>
-      </view>
-      <view class="benefit-item">
-        <text class="benefit-icon">📅</text>
-        <text class="benefit-text">经期日历</text>
-      </view>
-      <view class="benefit-item">
-        <text class="benefit-icon">📷</text>
-        <text class="benefit-text">照片上传</text>
-      </view>
-      <view class="benefit-item">
-        <text class="benefit-icon">📤</text>
-        <text class="benefit-text">数据导出</text>
+  <!-- 基础版 -->
+  <block wx:if="{{currentTab === 'basic'}}">
+    <!-- 价格卡片 -->
+    <view class="card price-card price-card-basic">
+      <view class="price-amount">19.9元</view>
+      <view class="price-desc">永久使用 · 云端数据存储</view>
+    </view>
+
+    <!-- 会员权益 -->
+    <view class="card">
+      <view class="card-title">基础版权益</view>
+      <view class="benefit-list">
+        <view class="benefit-item">
+          <text class="benefit-icon">✅</text>
+          <text class="benefit-text">全部功能解锁</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">☁️</text>
+          <text class="benefit-text">云端数据同步</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">📅</text>
+          <text class="benefit-text">经期日历</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">📷</text>
+          <text class="benefit-text">照片上传</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">📤</text>
+          <text class="benefit-text">数据导出</text>
+        </view>
       </view>
     </view>
-  </view>
+  </block>
+
+  <!-- 升级版 -->
+  <block wx:if="{{currentTab === 'upgrade'}}">
+    <!-- 价格卡片 -->
+    <view class="card price-card price-card-upgrade">
+      <view class="upgrade-badge">✨ 升级版</view>
+      <view class="price-amount">29.9元</view>
+      <view class="price-desc">永久使用 · 100天变美日记全功能</view>
+    </view>
+
+    <!-- 升级版权益 -->
+    <view class="card">
+      <view class="card-title">升级版权益</view>
+      <view class="benefit-list">
+        <view class="benefit-section">💄 护肤日记</view>
+        <view class="benefit-item">
+          <text class="benefit-icon">✅</text>
+          <text class="benefit-text">肤质管理 · 敏感度记录</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">✅</text>
+          <text class="benefit-text">晨间/夜间护肤打卡</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">✅</text>
+          <text class="benefit-text">面膜/美容院/do脸记录</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">✅</text>
+          <text class="benefit-text">身体护理 · 口腔护理</text>
+        </view>
+
+        <view class="benefit-section">💖 心情日记</view>
+        <view class="benefit-item">
+          <text class="benefit-icon">✅</text>
+          <text class="benefit-text">心情记录 · 10种表情</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">✅</text>
+          <text class="benefit-text">50首冥想音乐播放</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">✅</text>
+          <text class="benefit-text">自律打卡 · 12项类别</text>
+        </view>
+
+        <view class="benefit-section">🌙 月友圈</view>
+        <view class="benefit-item">
+          <text class="benefit-icon">✅</text>
+          <text class="benefit-text">发布动态 · 分享变美心得</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">✅</text>
+          <text class="benefit-text">点赞 · 评论 · 互动交流</text>
+        </view>
+      </view>
+    </view>
+  </block>
 
   <!-- 入口按钮 -->
   <view class="card">
@@ -47,6 +122,8 @@
 
   <!-- 底部支付按钮 -->
   <view class="pay-footer">
-    <button class="btn btn-primary btn-block pay-btn" bindtap="onPay">立即开通 19.9元/月</button>
+    <button class="btn btn-primary btn-block pay-btn {{currentTab === 'upgrade' ? 'pay-btn-upgrade' : ''}}" bindtap="onPay">
+      {{currentTab === 'upgrade' ? '立即开通升级版 29.9元永久' : '立即开通 19.9元永久'}}
+    </button>
   </view>
 </view>

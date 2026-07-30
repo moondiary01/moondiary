@@ -1,0 +1,283 @@
+<upgrade-lock show="{{!canUseUpgrade}}" />
+
+<view class="skincare-page">
+
+  <!-- 1. 打卡周期 + 皮肤状态（一体卡片） -->
+  <view class="countdown-card">
+    <view class="countdown-glow"></view>
+    <view class="countdown-top">
+      <view class="countdown-circle-3d">
+        <view class="circle-ring outer-ring"></view>
+        <view class="circle-ring middle-ring"></view>
+        <view class="countdown-circle-inner">
+          <view class="countdown-num">{{currentDay}}</view>
+          <view class="countdown-total">/ {{totalDays}}天</view>
+        </view>
+      </view>
+      <view class="countdown-info">
+        <view class="countdown-title-row">
+          <text class="countdown-title">护肤打卡</text>
+          <text class="skin-type-badge" bindtap="onSkinTypeChange">{{skinTypeLabel || '未设置'}}</text>
+        </view>
+        <view class="countdown-desc">第{{currentDay}}天，坚持变美！</view>
+        <view class="countdown-progress">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{currentDay / totalDays * 100}}%"></view>
+          </view>
+          <view class="progress-text">{{currentDay}} / {{totalDays}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="countdown-dates">
+      <view class="date-item" bindtap="onEditStartDate">
+        <text class="date-label">起始</text>
+        <text class="date-value">{{startDate}}</text>
+      </view>
+      <text class="date-sep">→</text>
+      <view class="date-item" bindtap="onEditEndDate">
+        <text class="date-label">结束</text>
+        <text class="date-value">{{endDate}}</text>
+      </view>
+    </view>
+    <view class="today-datetime">{{todayDateTime}}</view>
+  </view>
+
+  <!-- 起始日期选择器 -->
+  <view wx:if="{{showStartDatePicker}}" class="overlay" bindtap="onDatePickerCancel">
+    <view class="modal picker-modal" catchtap="">
+      <view class="modal-title">选择起始日期</view>
+      <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+        <view class="picker-display">{{startDate}}</view>
+      </picker>
+      <button class="btn btn-outline" catchtap="onDatePickerCancel">取消</button>
+    </view>
+  </view>
+
+  <!-- 结束日期选择器 -->
+  <view wx:if="{{showEndDatePicker}}" class="overlay" bindtap="onDatePickerCancel">
+    <view class="modal picker-modal" catchtap="">
+      <view class="modal-title">选择结束日期</view>
+      <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+        <view class="picker-display">{{endDate}}</view>
+      </picker>
+      <button class="btn btn-outline" catchtap="onDatePickerCancel">取消</button>
+    </view>
+  </view>
+
+  <!-- 2. 今日打卡（checkbox打勾模式） -->
+  <view class="card skincare-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">📋</view>
+      <view class="card-title-text">{{todayStr}}</view>
+    </view>
+
+    <!-- 护理项目（多选标签） -->
+    <view class="tag-row">
+      <view
+        wx:for="{{bodyCareOptions}}"
+        wx:key="key"
+        class="tag-item {{bodyCareSelected.indexOf(item.key) > -1 ? 'tag-active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onBodyCareToggle"
+      >{{item.label}}</view>
+    </view>
+
+    <!-- 打勾项列表 -->
+    <view class="check-list">
+      <view
+        wx:for="{{checkItems}}"
+        wx:key="key"
+        class="check-row {{todayRecord[item.key] ? 'check-on' : ''}}"
+        data-field="{{item.key}}"
+        bindtap="onToggleCheck"
+      >
+        <text class="check-icon-label">{{item.icon}} {{item.label}}</text>
+        <view class="check-box">
+          <text wx:if="{{todayRecord[item.key]}}" class="check-tick">✓</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 美容院护理心得（打勾后展开） -->
+    <textarea
+      wx:if="{{todayRecord.salon}}"
+      class="special-textarea"
+      placeholder="护理心得..."
+      value="{{todayRecord.salonNote}}"
+      data-field="salonNote"
+      bindinput="onTextInput"
+      maxlength="200"
+    />
+    <!-- do脸项目感受（打勾后展开） -->
+    <textarea
+      wx:if="{{todayRecord.cosmetic}}"
+      class="special-textarea"
+      placeholder="do脸项目感受..."
+      value="{{todayRecord.cosmeticNote}}"
+      data-field="cosmeticNote"
+      bindinput="onTextInput"
+      maxlength="200"
+    />
+  </view>
+
+  <!-- 4. 护肤日历 -->
+  <view class="card skincare-card calendar-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">📅</view>
+      <view class="card-title-text">护肤日历</view>
+    </view>
+    <view class="cal-hint">点击日期查看/编辑当日记录</view>
+
+    <!-- 月份导航 -->
+    <view class="cal-nav">
+      <view class="cal-nav-btn" bindtap="onPrevMonth">‹</view>
+      <view class="cal-nav-title">{{calYear}}年{{calMonth + 1}}月</view>
+      <view class="cal-nav-btn" bindtap="onNextMonth">›</view>
+    </view>
+
+    <!-- 日历表头 -->
+    <view class="cal-header">
+      <view class="cal-hcell">日</view>
+      <view class="cal-hcell">一</view>
+      <view class="cal-hcell">二</view>
+      <view class="cal-hcell">三</view>
+      <view class="cal-hcell">四</view>
+      <view class="cal-hcell">五</view>
+      <view class="cal-hcell">六</view>
+    </view>
+
+    <!-- 日历网格 -->
+    <view class="cal-grid">
+      <block wx:for="{{calDays}}" wx:key="key">
+        <view class="cal-cell cal-empty" wx:if="{{item.empty}}"></view>
+        <view
+          class="cal-cell {{item.today ? 'cal-today' : ''}} {{item.hasRecord ? 'cal-has-record' : ''}}"
+          wx:else
+          data-date="{{item.dateStr}}"
+          bindtap="onCalDayClick"
+        >
+          <!-- 📷在数字上方 -->
+          <text wx:if="{{item.hasPhoto}}" class="cal-mark cal-mark-photo">📷</text>
+          <view class="cal-day-num">{{item.day}}</view>
+          <!-- 底部打勾标记（不分早晚） -->
+          <view class="cal-day-marks">
+            <text wx:if="{{item.hasRecord}}" class="cal-mark cal-mark-done">✓</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 日历图例 -->
+    <view class="cal-legend">
+      <view class="legend-item"><text class="legend-emoji">📷</text><text>有照片</text></view>
+      <view class="legend-item"><text class="legend-emoji">✓</text><text>已打卡</text></view>
+    </view>
+  </view>
+
+  <!-- 6. 备注📝（日历下方） -->
+  <view class="card skincare-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">📝</view>
+      <view class="card-title-text">备注</view>
+    </view>
+    <textarea
+      class="note-textarea"
+      placeholder="记录今天的备注..."
+      value="{{todayRecord.note}}"
+      data-field="note"
+      bindinput="onTextInput"
+      maxlength="500"
+    />
+  </view>
+
+  <view style="height:40rpx"></view>
+</view>
+
+<!-- 日历日期详情弹窗（更小更紧凑） -->
+<view class="overlay" wx:if="{{showDayDetail}}" bindtap="onCloseDetail">
+  <view class="modal detail-modal" catchtap="">
+    <view class="detail-header">
+      <text class="detail-title-text">{{detailDate}}</text>
+      <view class="detail-close-btn" catchtap="onCloseDetail">✕</view>
+    </view>
+
+    <!-- 当日打卡数据（紧凑标签） -->
+    <view class="detail-section" wx:if="{{detailRecord}}">
+      <view class="detail-mini-tags">
+        <text class="detail-mini-tag {{detailRecord.morningSkincare ? 'mini-on' : 'mini-off'}}">晨间护肤 {{detailRecord.morningSkincare ? '✓' : ''}}</text>
+        <text class="detail-mini-tag {{detailRecord.nightSkincare ? 'mini-on' : 'mini-off'}}">晚间护肤 {{detailRecord.nightSkincare ? '✓' : ''}}</text>
+        <text class="detail-mini-tag {{detailRecord.salon ? 'mini-on' : 'mini-off'}}">美容院护理 {{detailRecord.salon ? '✓' : ''}}</text>
+        <text class="detail-mini-tag {{detailRecord.cosmetic ? 'mini-on' : 'mini-off'}}">do脸日记 {{detailRecord.cosmetic ? '✓' : ''}}</text>
+      </view>
+      <!-- 护理项目 -->
+      <view class="detail-mini-tags" wx:if="{{detailRecord.bodyCare.length > 0}}" style="margin-top:10rpx">
+        <text wx:for="{{bodyCareOptions}}" wx:for-item="bc" wx:key="key" class="detail-mini-tag {{detailRecord.bodyCare.indexOf(bc.key) > -1 ? 'mini-on' : 'mini-off'}}">{{bc.label}} {{detailRecord.bodyCare.indexOf(bc.key) > -1 ? '✓' : ''}}</text>
+      </view>
+    </view>
+
+    <!-- 备注📝 -->
+    <view class="detail-section">
+      <view class="detail-label">备注 📝</view>
+      <textarea
+        class="detail-note"
+        placeholder="记录当天的备注..."
+        value="{{detailNote}}"
+        bindinput="onDetailNoteInput"
+        maxlength="500"
+      />
+    </view>
+
+    <!-- 美容院护理心得 -->
+    <view class="detail-section">
+      <view class="detail-label">美容院护理心得</view>
+      <textarea
+        class="detail-note"
+        placeholder="护理心得..."
+        value="{{detailSalonNote}}"
+        bindinput="onDetailSalonNoteInput"
+        maxlength="200"
+      />
+    </view>
+
+    <!-- do脸项目感受 -->
+    <view class="detail-section">
+      <view class="detail-label">do脸项目感受</view>
+      <textarea
+        class="detail-note"
+        placeholder="do脸项目感受..."
+        value="{{detailCosmeticNote}}"
+        bindinput="onDetailCosmeticNoteInput"
+        maxlength="200"
+      />
+    </view>
+
+    <!-- 照片区域（最下端，紧凑入口） -->
+    <view class="detail-photo-section">
+      <!-- 有照片时：查看照片 + 上传/更换 + 删除 -->
+      <view wx:if="{{detailPhoto}}" class="photo-action-row">
+        <view class="photo-action-btn photo-view-btn" catchtap="onViewPhoto">
+          <text class="photo-action-icon">👁</text>
+          <text class="photo-action-text">查看照片</text>
+        </view>
+        <view class="photo-action-btn photo-upload-btn" catchtap="onDetailUploadPhoto">
+          <text class="photo-action-icon">📷</text>
+          <text class="photo-action-text">更换</text>
+        </view>
+        <view class="photo-action-btn photo-delete-btn" catchtap="onDeleteDetailPhoto">
+          <text class="photo-action-icon">🗑</text>
+          <text class="photo-action-text">删除</text>
+        </view>
+      </view>
+      <!-- 无照片时：小上传入口 -->
+      <view wx:else class="photo-upload-mini" catchtap="onDetailUploadPhoto">
+        <text class="photo-upload-mini-icon">📷</text>
+        <text class="photo-upload-mini-text">上传照片</text>
+      </view>
+    </view>
+
+    <view class="detail-actions">
+      <button class="btn btn-primary" catchtap="onSaveDetail">保存</button>
+    </view>
+  </view>
+</view>

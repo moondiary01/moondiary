@@ -6,16 +6,28 @@
     <view class="card-title">用户统计</view>
     <view class="stat-row">
       <view class="stat-cell">
+        <text class="stat-num">{{freeUsers}}</text>
+        <text class="stat-label">免费用户</text>
+      </view>
+      <view class="stat-cell">
+        <text class="stat-num">{{trialUsers}}</text>
+        <text class="stat-label">试用未充值</text>
+      </view>
+    </view>
+    <view class="stat-row stat-row-second">
+      <view class="stat-cell">
+        <text class="stat-num">{{vipBasicUsers}}</text>
+        <text class="stat-label">VIP基础版</text>
+      </view>
+      <view class="stat-cell" wx:if="{{showUpgradeStat}}">
+        <text class="stat-num">{{vipUpgradeUsers}}</text>
+        <text class="stat-label">VIP升级版</text>
+      </view>
+    </view>
+    <view class="stat-row stat-row-second">
+      <view class="stat-cell stat-total">
         <text class="stat-num">{{totalUsers}}</text>
-        <text class="stat-label">总用户数</text>
-      </view>
-      <view class="stat-cell">
-        <text class="stat-num">{{activeKeys}}</text>
-        <text class="stat-label">已启用密钥</text>
-      </view>
-      <view class="stat-cell">
-        <text class="stat-num">{{wxUsers}}</text>
-        <text class="stat-label">微信用户</text>
+        <text class="stat-label">总人数</text>
       </view>
     </view>
   </view>

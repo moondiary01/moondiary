@@ -8,12 +8,21 @@
   display: flex;
   gap: 20rpx;
 }
+.stat-row-second {
+  margin-top: 20rpx;
+}
 .stat-cell {
   flex: 1;
   text-align: center;
   background: #faf5f9;
   border-radius: 16rpx;
   padding: 24rpx 10rpx;
+}
+.stat-total {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+}
+.stat-total .stat-num {
+  color: #b45309;
 }
 .stat-num {
   font-size: 44rpx;

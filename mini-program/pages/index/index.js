@@ -10,6 +10,7 @@ Page({
     todayWeightDisplay: '--',
     unitLabel: '斤',
     isFemale: false,
+    isAdmin: false,
     dayData: {},
     waterMl: 0,
     showPayModal: false,
@@ -22,16 +23,40 @@ Page({
   },
 
   onShow: function () {
+    // 微信用户可能状态还在异步加载中
+    var self = this
+    if (app.globalData.loginType === 'wx' && !app.globalData.statusReady) {
+      // 等待状态加载完成
+      var checkCount = 0
+      var checkTimer = setInterval(function () {
+        checkCount++
+        if (app.globalData.statusReady || checkCount > 20) {
+          clearInterval(checkTimer)
+          self.checkAndLoad()
+        }
+      }, 100)
+    } else {
+      self.checkAndLoad()
+    }
+  },
+
+  checkAndLoad: function () {
     // 检查试用是否过期
     if (!app.canUse()) {
       this.setData({ showPayModal: true })
       return
+    }
+    // 如果 payModal 之前显示过，现在恢复了使用权限，隐藏它
+    if (this.data.showPayModal) {
+      this.setData({ showPayModal: false })
     }
     this.loadUserData()
   },
 
   onPayModalClose: function () {
     this.setData({ showPayModal: false })
+    // 试用过期后关闭弹窗，跳转到付费页面
+    wx.navigateTo({ url: '/pages/pay/pay' })
   },
 
   loadUserData: function () {
@@ -110,6 +135,7 @@ Page({
       todayWeightDisplay: weightDisplay,
       unitLabel: unitLabel,
       isFemale: isFemale,
+      isAdmin: app.globalData.loginType === 'admin',
       dayData: todayData,
       waterMl: waterMl
     })
@@ -209,5 +235,20 @@ Page({
     store.saveState(app.globalData.userKey, state)
 
     wx.showToast({ title: '保存成功', icon: 'success' })
+  },
+
+  // ===== 管理后台入口 =====
+  onGoAdmin: function () {
+    wx.navigateTo({ url: '/pages/admin/admin' })
+  },
+
+  // ===== 100变美日记入口 =====
+  onGoBeauty: function () {
+    var app = getApp()
+    var audio = require('../../utils/audio.js')
+    audio.playEnter()
+    wx.navigateTo({
+      url: '/subpkg-beauty/pages/upgrade-home/upgrade-home'
+    })
   }
 })

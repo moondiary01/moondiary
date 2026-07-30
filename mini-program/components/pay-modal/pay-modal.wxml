@@ -4,7 +4,7 @@
     <view class="pay-modal-icon">🔒</view>
     <view class="modal-title">试用已结束</view>
     <view class="pay-modal-desc">您的24小时试用已结束，开通会员继续使用全部功能</view>
-    <view class="pay-modal-price">19.9元/月 永久云存储</view>
+    <view class="pay-modal-price">19.9元 永久使用云存储</view>
     <view class="pay-modal-actions">
       <view class="pay-modal-link" bindtap="onNotice">查看购买须知</view>
       <view class="pay-modal-link" bindtap="onPrivacy">查看隐私政策</view>

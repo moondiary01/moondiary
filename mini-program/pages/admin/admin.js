@@ -6,8 +6,11 @@ var config = require('../../utils/config.js')
 Page({
   data: {
     totalUsers: 0,
-    activeKeys: 0,
-    wxUsers: 0,
+    trialUsers: 0,        // 试用未充值人数
+    vipBasicUsers: 0,     // VIP基础版用户人数
+    vipUpgradeUsers: 0,    // VIP升级版用户人数（暂不统计，等升级版上线后启用）
+    freeUsers: 0,          // 免费使用人数（密钥用户）
+    showUpgradeStat: true,// 升级版统计开关
     version: '3.0.0',
     noticeSent: false,
     keyList: [],
@@ -53,18 +56,49 @@ Page({
 
         // 加载微信用户
         store.loadWxUsers(function (wxUsersData) {
-          var wxCount = wxUsersData ? Object.keys(wxUsersData).length : 0
+          var now = Date.now()
+          var trialMs = 24 * 60 * 60 * 1000
+
+          // 统计微信用户分类
+          var trialCount = 0       // 试用未充值
+          var vipBasicCount = 0    // VIP基础版（已付费）
+          var vipUpgradeCount = 0  // VIP升级版（暂不统计）
+
+          if (wxUsersData) {
+            var wxKeys = Object.keys(wxUsersData)
+            for (var wi = 0; wi < wxKeys.length; wi++) {
+              var wxUser = wxUsersData[wxKeys[wi]]
+              if (!wxUser) continue
+
+              var firstLogin = wxUser.firstLoginTime || now
+              var paidUntil = wxUser.paidUntil || null
+
+              // 判断VIP升级版（目前没有升级版，跳过）
+              // if (wxUser.upgradePaid && wxUser.upgradePaidUntil > now) {
+              //   vipUpgradeCount++
+              // }
+
+              if (paidUntil && paidUntil > now) {
+                // 已付费 = VIP基础版
+                vipBasicCount++
+              } else if (now - firstLogin < trialMs) {
+                // 试用期内未充值
+                trialCount++
+              }
+              // 试用过期未付费的不计入任何统计（或可单独统计）
+            }
+          }
 
           // 构建密钥列表
           var keyList = []
-          var activeCount = 0
+          var freeCount = 0
           var presetKeys = config.PRESET_KEYS
 
           for (var i = 0; i < presetKeys.length; i++) {
             var key = presetKeys[i]
             var keyInfo = presetInfo[key] || {}
             var isActivated = keyInfo.activated === true
-            if (isActivated) activeCount++
+            if (isActivated) freeCount++
 
             var status = ''
             var statusText = ''
@@ -93,14 +127,16 @@ Page({
             })
           }
 
-          var totalUsers = activeCount + wxCount
+          var totalUsers = freeCount + trialCount + vipBasicCount
 
           self.setData({
             keyList: keyList,
             filteredKeys: keyList,
             totalUsers: totalUsers,
-            activeKeys: activeCount,
-            wxUsers: wxCount,
+            trialUsers: trialCount,
+            vipBasicUsers: vipBasicCount,
+            vipUpgradeUsers: vipUpgradeCount,
+            freeUsers: freeCount,
             noticeSent: presetInfo.noticeSent || false
           })
 

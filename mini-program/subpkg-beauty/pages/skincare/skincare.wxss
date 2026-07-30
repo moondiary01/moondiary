@@ -1,0 +1,801 @@
+/* subpkg-beauty/pages/skincare/skincare.wxss */
+
+.skincare-page {
+  min-height: 100vh;
+  background: #f8f6f2;
+  padding-bottom: 60rpx;
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', 'Source Han Sans CN', sans-serif;
+}
+
+/* ===== 倒计时卡片（高级质感深色系，稍大） ===== */
+.countdown-card {
+  position: relative;
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 50%, #4a1942 100%);
+  margin: 24rpx 24rpx;
+  border-radius: 32rpx;
+  padding: 52rpx 40rpx;
+  overflow: hidden;
+  box-shadow:
+    0 16rpx 48rpx rgba(26, 26, 46, 0.45),
+    0 6rpx 16rpx rgba(74, 25, 66, 0.25),
+    inset 0 2rpx 8rpx rgba(255, 255, 255, 0.08);
+}
+
+/* 光晕效果 */
+.countdown-glow {
+  position: absolute;
+  top: -80rpx;
+  right: -80rpx;
+  width: 280rpx;
+  height: 280rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, rgba(236, 72, 153, 0) 70%);
+  pointer-events: none;
+}
+
+.countdown-top {
+  display: flex;
+  align-items: center;
+  gap: 32rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* 3D立体倒计时圆环（稍大） */
+.countdown-circle-3d {
+  position: relative;
+  width: 190rpx;
+  height: 190rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 外环 */
+.circle-ring {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.outer-ring {
+  width: 190rpx;
+  height: 190rpx;
+  background: conic-gradient(
+    from 0deg,
+    rgba(236, 72, 153, 0.5),
+    rgba(139, 92, 246, 0.15),
+    rgba(236, 72, 153, 0.4),
+    rgba(139, 92, 246, 0.1),
+    rgba(236, 72, 153, 0.5)
+  );
+  box-shadow:
+    0 6rpx 20rpx rgba(0, 0, 0, 0.35),
+    inset 0 2rpx 6rpx rgba(255, 255, 255, 0.2),
+    inset 0 -2rpx 6rpx rgba(0, 0, 0, 0.2);
+}
+
+/* 中环 */
+.middle-ring {
+  width: 152rpx;
+  height: 152rpx;
+  background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
+  box-shadow:
+    inset 0 2rpx 8rpx rgba(255, 255, 255, 0.15),
+    inset 0 -2rpx 8rpx rgba(0, 0, 0, 0.25),
+    0 -2rpx 6rpx rgba(255, 255, 255, 0.06);
+}
+
+/* 内圆 */
+.countdown-circle-inner {
+  position: relative;
+  width: 124rpx;
+  height: 124rpx;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 3rpx 10rpx rgba(255, 255, 255, 0.2),
+    inset 0 -3rpx 10rpx rgba(0, 0, 0, 0.2),
+    0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+.countdown-num {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 2rpx 6rpx rgba(236, 72, 153, 0.5);
+}
+
+.countdown-total {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4rpx;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.3);
+}
+
+.countdown-info {
+  flex: 1;
+}
+
+.countdown-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14rpx;
+}
+
+/* 大标题：玫瑰金高级色 */
+.countdown-title {
+  font-size: 42rpx;
+  font-weight: 800;
+  color: #f0c0d0;
+  text-shadow: 0 2rpx 8rpx rgba(236, 72, 153, 0.4);
+  letter-spacing: 3rpx;
+}
+
+/* 皮肤状态小字标签（护肤打卡旁） */
+.skin-type-badge {
+  font-size: 22rpx;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 4rpx 18rpx;
+  border-radius: 100rpx;
+  background: rgba(236, 72, 153, 0.25);
+  border: 1rpx solid rgba(236, 72, 153, 0.3);
+  line-height: 1.4;
+}
+
+.countdown-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.65);
+  margin-top: 8rpx;
+  text-shadow: 0 1rpx 3rpx rgba(0, 0, 0, 0.2);
+}
+
+.countdown-progress {
+  margin-top: 20rpx;
+}
+
+.progress-bar {
+  height: 12rpx;
+  border-radius: 6rpx;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  box-shadow: inset 0 1rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 6rpx;
+  background: linear-gradient(90deg, #ec4899, #f0c0d0);
+  box-shadow: 0 0 8rpx rgba(236, 72, 153, 0.5);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 8rpx;
+  text-align: right;
+}
+
+/* 日期选择 */
+.countdown-dates {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 28rpx;
+  padding-top: 28rpx;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.date-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.date-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.date-value {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #fff;
+  padding: 8rpx 24rpx;
+  border-radius: 100rpx;
+  background: rgba(236, 72, 153, 0.15);
+  border: 1rpx solid rgba(236, 72, 153, 0.2);
+}
+
+.date-sep {
+  font-size: 32rpx;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 300;
+}
+
+.today-datetime {
+  text-align: center;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 20rpx;
+  position: relative;
+  z-index: 1;
+  letter-spacing: 1rpx;
+}
+
+/* ===== 日期选择器弹窗 ===== */
+.picker-modal {
+  width: 80%;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+}
+
+.picker-display {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 28rpx 24rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #faf5f9, #f5f3ff);
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #6b21a8;
+  text-align: center;
+  margin: 24rpx 0;
+  border: 2rpx solid #e9d5ff;
+}
+
+.picker-modal .btn {
+  width: 100%;
+  font-size: 30rpx;
+  padding: 20rpx 0;
+  border-radius: 100rpx;
+  text-align: center;
+}
+
+/* ===== 卡片通用（高级质感） ===== */
+.skincare-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 32rpx 30rpx;
+  margin: 16rpx 24rpx;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.03);
+  border: 1rpx solid rgba(0, 0, 0, 0.02);
+}
+
+/* 小标题：黑色 */
+.card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.card-title-icon {
+  font-size: 34rpx;
+}
+
+.card-title-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 1rpx;
+}
+
+/* ===== 顶部摘要卡片 ===== */
+.summary-card {
+  padding: 20rpx 24rpx;
+  margin: 16rpx 24rpx;
+}
+
+.summary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.summary-tag {
+  padding: 8rpx 20rpx;
+  border-radius: 100rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.summary-check {
+  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+  color: #be185d;
+  border: 1rpx solid #fbcfe8;
+}
+
+.summary-body {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  color: #6d28d9;
+  border: 1rpx solid #ddd6fe;
+}
+
+/* ===== checkbox 打勾列表 ===== */
+.check-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f5f5f4;
+  transition: all 0.2s;
+}
+
+.check-row:last-child {
+  border-bottom: none;
+}
+
+.check-icon-label {
+  font-size: 30rpx;
+  color: #44403c;
+  font-weight: 500;
+}
+
+/* 打勾框 */
+.check-box {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 12rpx;
+  border: 3rpx solid #d6d3d1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  background: #fafaf9;
+}
+
+/* 已选状态 */
+.check-on .check-box {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  border-color: transparent;
+  box-shadow: 0 4rpx 12rpx rgba(236, 72, 153, 0.3);
+}
+
+.check-on .check-icon-label {
+  color: #be185d;
+  font-weight: 600;
+}
+
+.check-tick {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* ===== 特殊护理文本框 ===== */
+.special-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 100rpx;
+  padding: 18rpx 24rpx;
+  border-radius: 16rpx;
+  background: #fafaf9;
+  font-size: 26rpx;
+  color: #44403c;
+  line-height: 1.6;
+  border: 1rpx solid #f5f5f4;
+  margin-top: 12rpx;
+}
+
+/* ===== 备注/心情 ===== */
+.note-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 160rpx;
+  padding: 22rpx 26rpx;
+  border-radius: 16rpx;
+  background: #fafaf9;
+  font-size: 28rpx;
+  color: #44403c;
+  line-height: 1.6;
+  border: 1rpx solid #f5f5f4;
+}
+
+/* ===== 标签选择 ===== */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.tag-item {
+  padding: 12rpx 32rpx;
+  border-radius: 100rpx;
+  background: #f5f5f4;
+  font-size: 26rpx;
+  color: #78716c;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: 1rpx solid transparent;
+}
+
+.tag-active {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4rpx 14rpx rgba(236, 72, 153, 0.25);
+  border-color: transparent;
+}
+
+/* ===== 护肤日历 ===== */
+.calendar-card {
+  margin-bottom: 0;
+}
+
+.cal-hint {
+  font-size: 24rpx;
+  color: #a8a29e;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40rpx;
+  margin-bottom: 24rpx;
+}
+
+.cal-nav-btn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #f5f5f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  color: #be185d;
+  font-weight: 700;
+}
+
+.cal-nav-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.cal-header {
+  display: flex;
+  margin-bottom: 12rpx;
+}
+
+.cal-hcell {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  color: #a8a29e;
+  font-weight: 500;
+}
+
+.cal-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* 日历单元格 */
+.cal-cell {
+  width: calc(100% / 7);
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 2rpx;
+}
+
+.cal-empty {
+  width: calc(100% / 7);
+}
+
+/* 📷图标在数字上方 */
+.cal-cell .cal-mark-photo {
+  font-size: 20rpx;
+  line-height: 1;
+  margin-bottom: 2rpx;
+}
+
+.cal-day-num {
+  font-size: 28rpx;
+  color: #44403c;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1;
+}
+
+.cal-today .cal-day-num {
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2rpx 10rpx rgba(236, 72, 153, 0.35);
+}
+
+.cal-has-record .cal-day-num {
+  color: #be185d;
+  font-weight: 600;
+}
+
+.cal-day-marks {
+  display: flex;
+  gap: 4rpx;
+  margin-top: 2rpx;
+  height: 20rpx;
+}
+
+.cal-mark {
+  font-size: 18rpx;
+  line-height: 1;
+}
+
+.cal-mark-morning { color: #f59e0b; }
+.cal-mark-night { color: #8b5cf6; }
+.cal-mark-photo { color: #ec4899; }
+
+.cal-legend {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 24rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f5f5f4;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 22rpx;
+  color: #a8a29e;
+}
+
+.legend-emoji {
+  font-size: 24rpx;
+}
+
+/* ===== 弹窗通用 ===== */
+.overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  width: 88%;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+}
+
+/* 详情弹窗 — 更小更紧凑 */
+.detail-modal {
+  width: 80%;
+  max-height: 75vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 28rpx 28rpx;
+}
+
+/* 弹窗头部 */
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #f5f5f4;
+}
+
+.detail-title-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 1rpx;
+}
+
+.detail-close-btn {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #f5f5f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #78716c;
+}
+
+/* 弹窗内日期标题（旧样式兼容） */
+.modal-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+/* ===== 日历详情 - 各区域 ===== */
+.detail-section {
+  margin-bottom: 18rpx;
+}
+
+.detail-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #44403c;
+  margin-bottom: 8rpx;
+}
+
+.detail-note {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 90rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 14rpx;
+  background: #fafaf9;
+  font-size: 26rpx;
+  color: #44403c;
+  line-height: 1.6;
+  border: 1rpx solid #f5f5f4;
+}
+
+/* ===== 紧凑打卡标签 ===== */
+.detail-mini-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.detail-mini-tag {
+  padding: 6rpx 16rpx;
+  border-radius: 100rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+/* 有（玫瑰色系） */
+.detail-mini-tag.mini-on {
+  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+  color: #be185d;
+  border: 1rpx solid #fbcfe8;
+}
+
+/* 无（灰色系） */
+.detail-mini-tag.mini-off {
+  background: #f5f5f4;
+  color: #a8a29e;
+}
+
+/* ===== 照片区域（紧凑入口） ===== */
+.detail-photo-section {
+  margin-bottom: 20rpx;
+  margin-top: 8rpx;
+}
+
+/* 有照片时的操作行 */
+.photo-action-row {
+  display: flex;
+  gap: 12rpx;
+}
+
+.photo-action-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+  padding: 16rpx 8rpx;
+  border-radius: 14rpx;
+  transition: all 0.2s;
+}
+
+.photo-action-icon {
+  font-size: 32rpx;
+}
+
+.photo-action-text {
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.photo-view-btn {
+  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+  color: #be185d;
+  border: 1rpx solid #fbcfe8;
+}
+
+.photo-upload-btn {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border: 1rpx solid #ddd6fe;
+}
+
+.photo-delete-btn {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1rpx solid #fecaca;
+}
+
+/* 无照片时的小上传入口 */
+.photo-upload-mini {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 14rpx 20rpx;
+  border-radius: 100rpx;
+  background: #fafaf9;
+  border: 2rpx dashed #d6d3d1;
+}
+
+.photo-upload-mini-icon {
+  font-size: 28rpx;
+}
+
+.photo-upload-mini-text {
+  font-size: 24rpx;
+  color: #78716c;
+  font-weight: 500;
+}
+
+/* ===== 弹窗按钮 ===== */
+.detail-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.detail-actions .btn {
+  flex: 1;
+  font-size: 30rpx;
+  padding: 18rpx 0;
+  border-radius: 100rpx;
+  text-align: center;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4rpx 14rpx rgba(236, 72, 153, 0.25);
+}
+
+.btn-outline {
+  background: #f5f5f4;
+  color: #78716c;
+}

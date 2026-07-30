@@ -45,9 +45,13 @@ const PRESET_KEYS = [
 ];
 
 // 会员配置
-const MEMBERSHIP_FEE = 19.9;        // 月费
+const MEMBERSHIP_FEE = 19.9;        // 基础月费
 const TRIAL_HOURS = 24;              // 试用小时数
 const MEMBERSHIP_DAYS = 30;          // 会员有效天数
+
+// 升级版配置
+const UPGRADE_FEE = 29.9;             // 升级版永久费用（一次性）
+const UPGRADE_DAYS = 36500;           // 永久（100年）
 
 module.exports = {
   COS_CONFIG,
@@ -57,5 +61,7 @@ module.exports = {
   PRESET_KEYS,
   MEMBERSHIP_FEE,
   TRIAL_HOURS,
-  MEMBERSHIP_DAYS
+  MEMBERSHIP_DAYS,
+  UPGRADE_FEE,
+  UPGRADE_DAYS
 };

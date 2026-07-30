@@ -154,3 +154,59 @@ page {
 .mt-30 { margin-top: 30rpx; }
 .mb-10 { margin-bottom: 10rpx; }
 .mb-20 { margin-bottom: 20rpx; }
+
+/* ===== 升级版公共样式 ===== */
+.upgrade-tag {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  font-weight: 700;
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  color: #fff;
+  letter-spacing: 1rpx;
+}
+.upgrade-gradient {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+}
+.upgrade-card {
+  background: linear-gradient(135deg, #fdf2f8, #f5f3ff);
+  border: 2rpx solid #e9d5ff;
+}
+.beauty-title {
+  font-size: 40rpx;
+  font-weight: 800;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 16rpx 24rpx;
+  border-radius: 16rpx;
+  background: #f5f5f4;
+  font-size: 28rpx;
+  transition: all 0.15s;
+}
+.check-item-active {
+  background: linear-gradient(135deg, #fce7f3, #f5f3ff);
+  color: #8b5cf6;
+  font-weight: 600;
+}
+.check-circle {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  border: 3rpx solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.check-circle-active {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: #fff;
+}

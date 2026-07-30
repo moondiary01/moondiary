@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "100变美日记",
+  "usingComponents": {
+    "upgrade-lock": "/components/upgrade-lock/upgrade-lock"
+  }
+}
