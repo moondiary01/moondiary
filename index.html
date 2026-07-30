@@ -1017,6 +1017,8 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
           <span class="beauty-tag" data-key="bodyCare" onclick="toggleBodyCare(this,'bodyCare')">身体护理</span>
           <span class="beauty-tag" data-key="handCare" onclick="toggleBodyCare(this,'handCare')">手部护理</span>
           <span class="beauty-tag" data-key="footCare" onclick="toggleBodyCare(this,'footCare')">脚部护理</span>
+          <span class="beauty-tag" data-key="eyeCare" onclick="toggleBodyCare(this,'eyeCare')">护眼</span>
+          <span class="beauty-tag" data-key="nailCare" onclick="toggleBodyCare(this,'nailCare')">美甲</span>
         </div>
 
         <!-- 自定义打卡项目 -->
@@ -4469,26 +4471,20 @@ function renderTodayPhotoArea() {
   if (!beautySkincareState.photos) beautySkincareState.photos = [];
   var photos = beautySkincareState.photos;
   var html = '';
-  /* 照片网格：最多4张，2列布局 */
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  /* 照片网格：最多4张，4列布局，缩小照片 */
+  html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
   for (var i = 0; i < photos.length; i++) {
-    html += '<div style="position:relative;border-radius:12px;overflow:hidden;cursor:pointer" onclick="viewPhotoByIndex('+i+');playClick()">';
-    html += '<img src="'+photos[i]+'" style="width:100%;aspect-ratio:1;object-fit:cover;display:block" />';
-    html += '<div onclick="event.stopPropagation();deleteTodayPhoto('+i+');playClick()" style="position:absolute;top:4px;right:4px;width:24px;height:24px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;cursor:pointer">✕</div>';
+    html += '<div style="position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0" onclick="viewPhotoByIndex('+i+');playClick()">';
+    html += '<img src="'+photos[i]+'" style="width:100%;height:100%;object-fit:cover;display:block" />';
+    html += '<div onclick="event.stopPropagation();deleteTodayPhoto('+i+');playClick()" style="position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.6rem;cursor:pointer">✕</div>';
     html += '</div>';
   }
   /* 不足4张时显示添加按钮 */
   if (photos.length < 4) {
-    html += '<div onclick="uploadTodayPhoto();playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px dashed var(--border);border-radius:12px;cursor:pointer;background:#fafaf9">';
-    html += '<span style="font-size:1.5rem">📷</span>';
-    html += '<span style="font-size:0.72rem;color:#a8a29e">添加照片</span>';
-    html += '<span style="font-size:0.65rem;color:#a8a29e">'+photos.length+'/4</span>';
+    html += '<div onclick="uploadTodayPhoto();playClick()" style="width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
+    html += '<span style="font-size:1.2rem">📷</span>';
+    html += '<span style="font-size:0.6rem;color:#a8a29e">'+photos.length+'/4</span>';
     html += '</div>';
-  }
-  /* 占位填充保持网格对齐 */
-  var emptySlots = 4 - photos.length - 1; /* 减1因为已经加了添加按钮 */
-  for (var j = 0; j < emptySlots; j++) {
-    html += '<div></div>';
   }
   html += '</div>';
   el.innerHTML = html;
@@ -4595,7 +4591,7 @@ function updateSkincareSummary() {
       tags.push({ label: item.icon + ' ' + item.label, type: 'check' });
     }
   });
-  var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理'};
+  var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理',eyeCare:'护眼',nailCare:'美甲'};
   beautySkincareState.bodyCare.forEach(function(k) {
     tags.push({ label: bodyCareLabels[k] || k, type: 'body' });
   });
@@ -4868,28 +4864,29 @@ function renderSkincareDayDetail() {
   var editing = s.isEditing;
   document.getElementById('skincareDayDetailTitle').textContent = '📅 ' + dateStr;
 
-  var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理'};
+  var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理',eyeCare:'护眼',nailCare:'美甲'};
   var html = '';
 
-  /* 顶部：照片展示（不要边框） */
+  /* 顶部：照片展示（不要边框，4张一排缩小） */
   if (s.photos && s.photos.length > 0) {
     html += '<div style="margin-bottom:16px">';
-    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+    html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
     for (var i = 0; i < s.photos.length; i++) {
-      html += '<div style="position:relative;border-radius:10px;overflow:hidden;cursor:pointer" onclick="viewDetailPhoto('+i+');playClick()">';
-      html += '<img src="'+s.photos[i]+'" style="width:100%;aspect-ratio:1;object-fit:cover;display:block" />';
+      html += '<div style="position:relative;width:68px;height:68px;border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0" onclick="viewDetailPhoto('+i+');playClick()">';
+      html += '<img src="'+s.photos[i]+'" style="width:100%;height:100%;object-fit:cover;display:block" />';
       if (editing) {
-        html += '<div onclick="event.stopPropagation();deleteDetailPhoto('+i+');playClick()" style="position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;cursor:pointer">✕</div>';
+        html += '<div onclick="event.stopPropagation();deleteDetailPhoto('+i+');playClick()" style="position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.6rem;cursor:pointer">✕</div>';
       }
       html += '</div>';
     }
-    html += '</div>';
     /* 编辑模式下可添加照片 */
     if (editing && s.photos.length < 4) {
-      html += '<div onclick="uploadDetailPhoto();playClick()" style="margin-top:6px;padding:10px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;background:#fafaf9">';
-      html += '<span style="font-size:0.8rem;color:#a8a29e">📷 添加照片 ('+s.photos.length+'/4)</span>';
+      html += '<div onclick="uploadDetailPhoto();playClick()" style="width:68px;height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
+      html += '<span style="font-size:1.2rem">📷</span>';
+      html += '<span style="font-size:0.6rem;color:#a8a29e">'+s.photos.length+'/4</span>';
       html += '</div>';
     }
+    html += '</div>';
     html += '</div>';
   } else if (editing) {
     html += '<div style="margin-bottom:16px">';
@@ -4906,7 +4903,7 @@ function renderSkincareDayDetail() {
     /* 护理项目标签 */
     html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:6px">护理项目</div>';
     html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
-    var allBodyCares = ['faceCare','oralCare','neckCare','bodyCare','handCare','footCare'];
+    var allBodyCares = ['faceCare','oralCare','neckCare','bodyCare','handCare','footCare','eyeCare','nailCare'];
     allBodyCares.forEach(function(k) {
       var active = s.bodyCare.indexOf(k) > -1;
       html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe':'background:#fafaf9;color:#78716c;border:1px solid var(--border)')+'">'+bodyCareLabels[k]+'</span>';
