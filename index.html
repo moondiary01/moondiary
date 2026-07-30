@@ -962,7 +962,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
         <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#fbcfe8,#f9a8d4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">💄</div>
         <div style="flex:1">
           <div style="font-size:1rem;font-weight:700;color:#1c1917">护肤日记</div>
-          <div style="font-size:0.75rem;color:#78716c">每日护肤日记 · 日历照片 · do脸记录</div>
+          <div style="font-size:0.75rem;color:#78716c">每日护肤日记 · 日历照片 · do脸小记</div>
         </div>
         <span style="font-size:1.2rem;color:#c4b5fd">›</span>
       </div>
@@ -1029,11 +1029,17 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
           </div>
           <input type="text" id="beautySalonNote" placeholder="护理心得..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;margin-bottom:8px;display:none" oninput="autoSaveSkincare()">
           <div class="skincare-check-row" id="check-cosmetic" onclick="toggleSkincareCheck('cosmetic');playClick()">
-            <span class="skincare-check-label">💉 do脸日记</span>
+            <span class="skincare-check-label">💉 do脸小记</span>
             <span class="skincare-check-box"><span class="skincare-check-tick" style="display:none">✓</span></span>
           </div>
         </div>
         <input type="text" id="beautyCosmeticNote" placeholder="do脸项目感受..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;display:none" oninput="autoSaveSkincare()">
+      </div>
+
+      <!-- 打卡自拍 -->
+      <div style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:8px">📷 打卡自拍</div>
+        <div id="skincareTodayPhotoArea"></div>
       </div>
 
       <!-- 护肤日历 -->
@@ -1057,11 +1063,12 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 
 <!-- 护肤日历日期详情弹窗 -->
 <div class="modal-overlay" id="skincareDayDetailModal">
-  <div class="modal" style="max-width:420px;max-height:75vh;overflow-y:auto">
+  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto">
     <h2 id="skincareDayDetailTitle">📅 日期详情</h2>
     <div id="skincareDayDetailContent"></div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="document.getElementById('skincareDayDetailModal').classList.remove('show');playClick()">关闭</button>
+    <div class="modal-actions" style="display:flex;gap:8px">
+      <button class="btn btn-outline" id="skincareDetailEditBtn" onclick="toggleSkincareDetailEdit();playClick()" style="flex:1">编辑更改信息</button>
+      <button class="btn btn-outline" onclick="document.getElementById('skincareDayDetailModal').classList.remove('show');playClick()" style="flex:1">关闭</button>
     </div>
   </div>
 </div>
@@ -4285,11 +4292,12 @@ var beautySkincareState = {
   bodyCare: [],
   salon: false, salonNote: '',
   cosmetic: false, cosmeticNote: '',
+  photos: [],
   note: ''
 };
 var skincareCheckItems = [
   { key: 'salon', label: '美容院护理', icon: '💆' },
-  { key: 'cosmetic', label: 'do脸日记', icon: '💉' }
+  { key: 'cosmetic', label: 'do脸小记', icon: '💉' }
 ];
 var meditationAudio = null;
 var commCurrentTab = 'hot';
@@ -4374,6 +4382,8 @@ function openBeautySkincare() {
       beautySkincareState.cosmetic = !!record.cosmetic;
       beautySkincareState.cosmeticNote = record.cosmeticNote || '';
       beautySkincareState.note = record.note || '';
+      beautySkincareState.photos = record.photos || (record.photo ? [record.photo] : []);
+      beautySkincareState.customCheck = record.customCheck || '';
     }
 
     updateSkincareUI();
@@ -4449,6 +4459,133 @@ function updateSkincareUI() {
   });
   if (document.getElementById('beautyNote')) document.getElementById('beautyNote').value = beautySkincareState.note;
   if (document.getElementById('beautyCustomCheck')) document.getElementById('beautyCustomCheck').value = beautySkincareState.customCheck || '';
+  /* 今日照片区域 */
+  renderTodayPhotoArea();
+}
+
+function renderTodayPhotoArea() {
+  var el = document.getElementById('skincareTodayPhotoArea');
+  if (!el) return;
+  if (!beautySkincareState.photos) beautySkincareState.photos = [];
+  var photos = beautySkincareState.photos;
+  var html = '';
+  /* 照片网格：最多4张，2列布局 */
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  for (var i = 0; i < photos.length; i++) {
+    html += '<div style="position:relative;border-radius:12px;overflow:hidden;cursor:pointer" onclick="viewPhotoByIndex('+i+');playClick()">';
+    html += '<img src="'+photos[i]+'" style="width:100%;aspect-ratio:1;object-fit:cover;display:block" />';
+    html += '<div onclick="event.stopPropagation();deleteTodayPhoto('+i+');playClick()" style="position:absolute;top:4px;right:4px;width:24px;height:24px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;cursor:pointer">✕</div>';
+    html += '</div>';
+  }
+  /* 不足4张时显示添加按钮 */
+  if (photos.length < 4) {
+    html += '<div onclick="uploadTodayPhoto();playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px dashed var(--border);border-radius:12px;cursor:pointer;background:#fafaf9">';
+    html += '<span style="font-size:1.5rem">📷</span>';
+    html += '<span style="font-size:0.72rem;color:#a8a29e">添加照片</span>';
+    html += '<span style="font-size:0.65rem;color:#a8a29e">'+photos.length+'/4</span>';
+    html += '</div>';
+  }
+  /* 占位填充保持网格对齐 */
+  var emptySlots = 4 - photos.length - 1; /* 减1因为已经加了添加按钮 */
+  for (var j = 0; j < emptySlots; j++) {
+    html += '<div></div>';
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function uploadTodayPhoto() {
+  if (!beautySkincareState.photos) beautySkincareState.photos = [];
+  if (beautySkincareState.photos.length >= 4) {
+    showToast('最多只能上传4张照片');
+    return;
+  }
+  var oldInput = document.getElementById('_skincarePhotoInput');
+  if (oldInput) oldInput.remove();
+  var input = document.createElement('input');
+  input.id = '_skincarePhotoInput';
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(input);
+  input.onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) { input.remove(); return; }
+    if (!file.type.startsWith('image/')) {
+      showToast('请选择图片文件');
+      input.remove();
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('图片太大，请选择 10MB 以内的图片');
+      input.remove();
+      return;
+    }
+    showToast('正在处理图片...');
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var img = new Image();
+      img.onload = function() {
+        var maxW = 800, maxH = 800;
+        var w = img.width, h = img.height;
+        if (w > maxW || h > maxH) {
+          var ratio = Math.min(maxW / w, maxH / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        var compressed = canvas.toDataURL('image/jpeg', 0.7);
+        if (compressed.length > 500 * 1024) {
+          compressed = canvas.toDataURL('image/jpeg', 0.5);
+        }
+        beautySkincareState.photos.push(compressed);
+        input.remove();
+        renderTodayPhotoArea();
+        autoSaveSkincare();
+        showToast('✅ 照片已添加');
+      };
+      img.onerror = function() {
+        beautySkincareState.photos.push(ev.target.result);
+        input.remove();
+        renderTodayPhotoArea();
+        autoSaveSkincare();
+        showToast('✅ 照片已添加');
+      };
+      img.src = ev.target.result;
+    };
+    reader.onerror = function() {
+      showToast('图片读取失败，请重试');
+      input.remove();
+    };
+    reader.readAsDataURL(file);
+  };
+  setTimeout(function() { input.click(); }, 100);
+}
+
+function deleteTodayPhoto(index) {
+  if (!beautySkincareState.photos) return;
+  if (index < 0 || index >= beautySkincareState.photos.length) return;
+  beautySkincareState.photos.splice(index, 1);
+  renderTodayPhotoArea();
+  autoSaveSkincare();
+  showToast('已删除照片');
+}
+
+function viewPhotoByIndex(index) {
+  var photos = beautySkincareState.photos || [];
+  if (index < 0 || index >= photos.length) return;
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  overlay.onclick = function() { overlay.remove(); };
+  var img = document.createElement('img');
+  img.src = photos[index];
+  img.style.cssText = 'max-width:90%;max-height:90%;border-radius:8px';
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
 }
 
 function updateSkincareSummary() {
@@ -4595,7 +4732,7 @@ function saveBeautySkincare() {
     if (beautySkinData.dailyRecords[i].date === today) {
       record.createdAt = beautySkinData.dailyRecords[i].createdAt || Date.now();
       /* 保留日历中编辑过的字段 */
-      record.photo = beautySkinData.dailyRecords[i].photo || record.photo;
+      record.photos = beautySkinData.dailyRecords[i].photos || record.photos;
       record.salonNote = beautySkinData.dailyRecords[i].salonNote || record.salonNote;
       record.cosmeticNote = beautySkinData.dailyRecords[i].cosmeticNote || record.cosmeticNote;
       beautySkinData.dailyRecords[i] = record;
@@ -4644,7 +4781,7 @@ function renderSkincareCalendar() {
     var isToday = ds === todayStr;
     var rec = recordsMap[ds];
     var hasRecord = !!rec && isDayCheckedWeb(rec);
-    var hasPhoto = rec && rec.photo;
+    var hasPhoto = rec && (rec.photos && rec.photos.length > 0 || rec.photo);
     var todayBg = isToday ? 'background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:700;' : '';
     var recColor = hasRecord && !isToday ? 'color:#8b5cf6;font-weight:600;' : 'color:#44403c;font-weight:400;';
     html += '<div onclick="openSkincareDayDetail(\''+ds+'\');playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;gap:1px;'+todayBg+'">';
@@ -4715,62 +4852,254 @@ function openSkincareDayDetail(dateStr) {
     salonNote: record ? (record.salonNote || '') : '',
     cosmeticNote: record ? (record.cosmeticNote || '') : '',
     customCheck: record ? (record.customCheck || '') : '',
-    photo: record ? (record.photo || '') : '',
-    record: record || null
+    photos: record ? (record.photos || (record.photo ? [record.photo] : [])) : [],
+    bodyCare: record ? (record.bodyCare || []) : [],
+    salon: record ? !!record.salon : false,
+    cosmetic: record ? !!record.cosmetic : false,
+    record: record || null,
+    isEditing: false
   };
+  renderSkincareDayDetail();
+}
 
-  document.getElementById('skincareDayDetailTitle').textContent = '📅 ' + dateStr + ' 详情';
+function renderSkincareDayDetail() {
+  var dateStr = skincareDayDetailDate;
+  var s = skincareDayDetailState;
+  var editing = s.isEditing;
+  document.getElementById('skincareDayDetailTitle').textContent = '📅 ' + dateStr;
 
+  var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理'};
   var html = '';
-  /* 自定义打卡项目 */
-  html += '<div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">📌 自定义打卡项目</div>';
-  html += '<input type="text" id="skincareDetailCustomCheck" placeholder="自定义打卡项目..." value="'+skincareDayDetailState.customCheck.replace(/"/g,'&quot;')+'" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fff"></div>';
-  /* 备注📝 */
-  html += '<div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">📝 备注</div>';
-  html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:70px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit">'+skincareDayDetailState.note+'</textarea></div>';
-  /* 美容院护理心得 */
-  html += '<div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">💆 美容院护理心得</div>';
-  html += '<input type="text" id="skincareDetailSalonNote" placeholder="护理心得..." value="'+skincareDayDetailState.salonNote.replace(/"/g,'&quot;')+'" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fff"></div>';
-  /* do脸项目感受 */
-  html += '<div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">💉 do脸项目感受</div>';
-  html += '<input type="text" id="skincareDetailCosmeticNote" placeholder="do脸项目感受..." value="'+skincareDayDetailState.cosmeticNote.replace(/"/g,'&quot;')+'" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fff"></div>';
-  /* 当日已选打卡数据（只显示已选，更简洁） */
-  if (skincareDayDetailState.record) {
-    var r = skincareDayDetailState.record;
-    var hasAnyCheck = r.salon || r.cosmetic;
-    var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理'};
-    var hasBodyCare = r.bodyCare && r.bodyCare.length > 0;
-    if (hasAnyCheck || hasBodyCare) {
-      html += '<div style="margin-bottom:14px"><div style="display:flex;flex-wrap:wrap;gap:6px">';
-      if (r.salon) html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8">美容院护理 ✓</span>';
-      if (r.cosmetic) html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8">do脸日记 ✓</span>';
-      if (hasBodyCare) {
-        r.bodyCare.forEach(function(k) {
-          html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe">'+(bodyCareLabels[k]||k)+' ✓</span>';
-        });
+
+  /* 顶部：照片展示（不要边框） */
+  if (s.photos && s.photos.length > 0) {
+    html += '<div style="margin-bottom:16px">';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+    for (var i = 0; i < s.photos.length; i++) {
+      html += '<div style="position:relative;border-radius:10px;overflow:hidden;cursor:pointer" onclick="viewDetailPhoto('+i+');playClick()">';
+      html += '<img src="'+s.photos[i]+'" style="width:100%;aspect-ratio:1;object-fit:cover;display:block" />';
+      if (editing) {
+        html += '<div onclick="event.stopPropagation();deleteDetailPhoto('+i+');playClick()" style="position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;cursor:pointer">✕</div>';
       }
-      html += '</div></div>';
+      html += '</div>';
+    }
+    html += '</div>';
+    /* 编辑模式下可添加照片 */
+    if (editing && s.photos.length < 4) {
+      html += '<div onclick="uploadDetailPhoto();playClick()" style="margin-top:6px;padding:10px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;background:#fafaf9">';
+      html += '<span style="font-size:0.8rem;color:#a8a29e">📷 添加照片 ('+s.photos.length+'/4)</span>';
+      html += '</div>';
+    }
+    html += '</div>';
+  } else if (editing) {
+    html += '<div style="margin-bottom:16px">';
+    html += '<div onclick="uploadDetailPhoto();playClick()" style="padding:20px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;background:#fafaf9">';
+    html += '<span style="font-size:1.5rem">📷</span><br>';
+    html += '<span style="font-size:0.8rem;color:#a8a29e">添加自拍</span>';
+    html += '</div>';
+    html += '</div>';
+  }
+
+  /* 下方：打卡项目 + 备注 */
+  if (editing) {
+    /* 编辑模式：可输入 */
+    /* 护理项目标签 */
+    html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:6px">护理项目</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+    var allBodyCares = ['faceCare','oralCare','neckCare','bodyCare','handCare','footCare'];
+    allBodyCares.forEach(function(k) {
+      var active = s.bodyCare.indexOf(k) > -1;
+      html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe':'background:#fafaf9;color:#78716c;border:1px solid var(--border)')+'">'+bodyCareLabels[k]+'</span>';
+    });
+    html += '</div></div>';
+
+    /* 自定义打卡项目 */
+    html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:4px">自定义打卡项目</div>';
+    html += '<input type="text" id="skincareDetailCustomCheck" placeholder="自定义打卡项目..." value="'+s.customCheck.replace(/"/g,'&quot;')+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9"></div>';
+
+    /* 美容院护理 */
+    html += '<div style="margin-bottom:12px">';
+    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:6px" onclick="toggleDetailCheck(\'salon\');playClick()">';
+    html += '<span style="width:20px;height:20px;border:2px solid '+(s.salon?'#10b981':'var(--border)')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.salon?'#10b981':'transparent')+'">✓</span>';
+    html += '<span style="font-size:0.85rem;font-weight:600;color:#44403c">💆 美容院护理</span></label>';
+    if (s.salon) {
+      html += '<input type="text" id="skincareDetailSalonNote" placeholder="护理心得..." value="'+s.salonNote.replace(/"/g,'&quot;')+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9">';
+    }
+    html += '</div>';
+
+    /* do脸小记 */
+    html += '<div style="margin-bottom:12px">';
+    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:6px" onclick="toggleDetailCheck(\'cosmetic\');playClick()">';
+    html += '<span style="width:20px;height:20px;border:2px solid '+(s.cosmetic?'#10b981':'var(--border)')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.cosmetic?'#10b981':'transparent')+'">✓</span>';
+    html += '<span style="font-size:0.85rem;font-weight:600;color:#44403c">💉 do脸小记</span></label>';
+    if (s.cosmetic) {
+      html += '<input type="text" id="skincareDetailCosmeticNote" placeholder="do脸项目感受..." value="'+s.cosmeticNote.replace(/"/g,'&quot;')+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9">';
+    }
+    html += '</div>';
+
+    /* 备注 */
+    html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:4px">📝 备注</div>';
+    html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;resize:vertical;outline:none;font-family:inherit">'+s.note+'</textarea></div>';
+  } else {
+    /* 只读模式：纯展示，无边框 */
+    /* 护理项目标签 */
+    if (s.bodyCare.length > 0 || s.customCheck || s.salon || s.cosmetic) {
+      html += '<div style="margin-bottom:12px">';
+      if (s.bodyCare.length > 0) {
+        html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">';
+        s.bodyCare.forEach(function(k) {
+          html += '<span style="padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe">'+(bodyCareLabels[k]||k)+'</span>';
+        });
+        html += '</div>';
+      }
+      if (s.customCheck) {
+        html += '<div style="font-size:0.8rem;color:#44403c;margin-bottom:4px">📌 '+s.customCheck+'</div>';
+      }
+      if (s.salon) {
+        html += '<div style="font-size:0.8rem;color:#44403c;margin-bottom:2px">💆 美容院护理 ✓</div>';
+        if (s.salonNote) html += '<div style="font-size:0.75rem;color:#78716c;margin-bottom:6px;padding-left:20px">'+s.salonNote+'</div>';
+      }
+      if (s.cosmetic) {
+        html += '<div style="font-size:0.8rem;color:#44403c;margin-bottom:2px">💉 do脸小记 ✓</div>';
+        if (s.cosmeticNote) html += '<div style="font-size:0.75rem;color:#78716c;margin-bottom:6px;padding-left:20px">'+s.cosmeticNote+'</div>';
+      }
+      html += '</div>';
+    }
+    /* 备注 */
+    if (s.note) {
+      html += '<div style="margin-bottom:12px">';
+      html += '<div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:4px">📝 备注</div>';
+      html += '<div style="font-size:0.82rem;color:#44403c;line-height:1.5">'+s.note+'</div>';
+      html += '</div>';
+    }
+    /* 无任何数据时提示 */
+    if (!s.photos.length && !s.bodyCare.length && !s.customCheck && !s.salon && !s.cosmetic && !s.note) {
+      html += '<div style="text-align:center;padding:30px 0;color:#a8a29e;font-size:0.85rem">暂无记录</div>';
     }
   }
-  /* 照片区域（最下端，紧凑入口） */
-  html += '<div style="margin-bottom:14px">';
-  if (skincareDayDetailState.photo) {
-    /* 有照片：查看照片 + 更换 + 删除 三个紧凑按钮 */
-    html += '<div class="skincare-photo-action-row">';
-    html += '<div class="skincare-photo-action-btn skincare-photo-view-btn" onclick="viewSkincareDayPhoto();playClick()"><span class="skincare-photo-action-icon">👁</span><span class="skincare-photo-action-text">查看照片</span></div>';
-    html += '<div class="skincare-photo-action-btn skincare-photo-upload-btn" onclick="uploadSkincareDayPhoto();playClick()"><span class="skincare-photo-action-icon">📷</span><span class="skincare-photo-action-text">更换</span></div>';
-    html += '<div class="skincare-photo-action-btn skincare-photo-delete-btn" onclick="deleteSkincareDayPhoto();playClick()"><span class="skincare-photo-action-icon">🗑</span><span class="skincare-photo-action-text">删除</span></div>';
-    html += '</div>';
-  } else {
-    /* 无照片：小上传入口 */
-    html += '<div class="skincare-photo-upload-mini" onclick="uploadSkincareDayPhoto();playClick()"><span class="skincare-photo-upload-mini-icon">📷</span><span class="skincare-photo-upload-mini-text">上传照片</span></div>';
-  }
-  html += '</div>';
-  /* 保存按钮 */
-  html += '<button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#f43f5e,#ec4899);padding:12px;font-size:0.95rem;font-weight:700" onclick="saveSkincareDayDetail();playClick()">保存</button>';
 
   document.getElementById('skincareDayDetailContent').innerHTML = html;
   document.getElementById('skincareDayDetailModal').classList.add('show');
+}
+
+/* 日历详情：切换编辑模式 */
+function toggleSkincareDetailEdit() {
+  if (skincareDayDetailState.isEditing) {
+    /* 保存 */
+    saveSkincareDayDetail();
+    var btn = document.getElementById('skincareDetailEditBtn');
+    if (btn) btn.textContent = '编辑更改信息';
+  } else {
+    skincareDayDetailState.isEditing = true;
+    renderSkincareDayDetail();
+    var btn = document.getElementById('skincareDetailEditBtn');
+    if (btn) btn.textContent = '保存更改';
+  }
+}
+
+/* 日历详情：切换打卡项 */
+function toggleDetailCheck(field) {
+  skincareDayDetailState[field] = !skincareDayDetailState[field];
+  renderSkincareDayDetail();
+}
+
+/* 日历详情：切换护理项目标签 */
+function toggleDetailBodyCare(el, key) {
+  var idx = skincareDayDetailState.bodyCare.indexOf(key);
+  if (idx > -1) skincareDayDetailState.bodyCare.splice(idx, 1);
+  else skincareDayDetailState.bodyCare.push(key);
+  renderSkincareDayDetail();
+}
+
+/* 日历详情：查看照片 */
+function viewDetailPhoto(index) {
+  var photos = skincareDayDetailState.photos || [];
+  if (index < 0 || index >= photos.length) return;
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  overlay.onclick = function() { overlay.remove(); };
+  var img = document.createElement('img');
+  img.src = photos[index];
+  img.style.cssText = 'max-width:90%;max-height:90%;border-radius:8px';
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
+}
+
+/* 日历详情：删除照片 */
+function deleteDetailPhoto(index) {
+  if (index < 0 || index >= skincareDayDetailState.photos.length) return;
+  skincareDayDetailState.photos.splice(index, 1);
+  renderSkincareDayDetail();
+}
+
+/* 日历详情：上传照片 */
+function uploadDetailPhoto() {
+  if (skincareDayDetailState.photos.length >= 4) {
+    showToast('最多只能上传4张照片');
+    return;
+  }
+  var oldInput = document.getElementById('_skincareDetailPhotoInput');
+  if (oldInput) oldInput.remove();
+  var input = document.createElement('input');
+  input.id = '_skincareDetailPhotoInput';
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(input);
+  input.onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) { input.remove(); return; }
+    if (!file.type.startsWith('image/')) {
+      showToast('请选择图片文件');
+      input.remove();
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('图片太大，请选择 10MB 以内的图片');
+      input.remove();
+      return;
+    }
+    showToast('正在处理图片...');
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var img = new Image();
+      img.onload = function() {
+        var maxW = 800, maxH = 800;
+        var w = img.width, h = img.height;
+        if (w > maxW || h > maxH) {
+          var ratio = Math.min(maxW / w, maxH / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        var compressed = canvas.toDataURL('image/jpeg', 0.7);
+        if (compressed.length > 500 * 1024) {
+          compressed = canvas.toDataURL('image/jpeg', 0.5);
+        }
+        skincareDayDetailState.photos.push(compressed);
+        input.remove();
+        renderSkincareDayDetail();
+        showToast('✅ 照片已添加');
+      };
+      img.onerror = function() {
+        skincareDayDetailState.photos.push(ev.target.result);
+        input.remove();
+        renderSkincareDayDetail();
+        showToast('✅ 照片已添加');
+      };
+      img.src = ev.target.result;
+    };
+    reader.onerror = function() {
+      showToast('图片读取失败，请重试');
+      input.remove();
+    };
+    reader.readAsDataURL(file);
+  };
+  setTimeout(function() { input.click(); }, 100);
 }
 
 function uploadSkincareDayPhoto() {
@@ -4853,35 +5182,46 @@ function deleteSkincareDayPhoto() {
 }
 
 function viewSkincareDayPhoto() {
-  if (skincareDayDetailState.photo) {
+  var photoData = '';
+  if (skincareDayDetailState.photos && skincareDayDetailState.photos.length > 0) {
+    photoData = skincareDayDetailState.photos[0];
+  } else if (beautySkincareState.photos && beautySkincareState.photos.length > 0) {
+    photoData = beautySkincareState.photos[0];
+  }
+  if (photoData) {
     var overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:pointer';
     overlay.onclick = function() { overlay.remove(); };
     var img = document.createElement('img');
-    img.src = skincareDayDetailState.photo;
+    img.src = photoData;
     img.style.cssText = 'max-width:90%;max-height:90%;border-radius:8px';
     overlay.appendChild(img);
     document.body.appendChild(overlay);
+  } else {
+    showToast('暂无照片');
   }
 }
 
 function saveSkincareDayDetail() {
   if (!beautySkinData) beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
   if (!beautySkinData.dailyRecords) beautySkinData.dailyRecords = [];
-  skincareDayDetailState.note = document.getElementById('skincareDetailNote') ? document.getElementById('skincareDetailNote').value : '';
-  skincareDayDetailState.salonNote = document.getElementById('skincareDetailSalonNote') ? document.getElementById('skincareDetailSalonNote').value : '';
-  skincareDayDetailState.cosmeticNote = document.getElementById('skincareDetailCosmeticNote') ? document.getElementById('skincareDetailCosmeticNote').value : '';
-  skincareDayDetailState.customCheck = document.getElementById('skincareDetailCustomCheck') ? document.getElementById('skincareDetailCustomCheck').value : '';
+  /* 从编辑框读取值 */
+  skincareDayDetailState.note = document.getElementById('skincareDetailNote') ? document.getElementById('skincareDetailNote').value : skincareDayDetailState.note;
+  skincareDayDetailState.salonNote = document.getElementById('skincareDetailSalonNote') ? document.getElementById('skincareDetailSalonNote').value : skincareDayDetailState.salonNote;
+  skincareDayDetailState.cosmeticNote = document.getElementById('skincareDetailCosmeticNote') ? document.getElementById('skincareDetailCosmeticNote').value : skincareDayDetailState.cosmeticNote;
+  skincareDayDetailState.customCheck = document.getElementById('skincareDetailCustomCheck') ? document.getElementById('skincareDetailCustomCheck').value : skincareDayDetailState.customCheck;
 
   var found = false;
   for (var i = 0; i < beautySkinData.dailyRecords.length; i++) {
     if (beautySkinData.dailyRecords[i].date === skincareDayDetailDate) {
-      /* 保留原有打卡数据，只更新日历编辑的字段 */
       beautySkinData.dailyRecords[i].note = skincareDayDetailState.note;
       beautySkinData.dailyRecords[i].salonNote = skincareDayDetailState.salonNote;
       beautySkinData.dailyRecords[i].cosmeticNote = skincareDayDetailState.cosmeticNote;
       beautySkinData.dailyRecords[i].customCheck = skincareDayDetailState.customCheck;
-      beautySkinData.dailyRecords[i].photo = skincareDayDetailState.photo;
+      beautySkinData.dailyRecords[i].photos = skincareDayDetailState.photos;
+      beautySkinData.dailyRecords[i].bodyCare = skincareDayDetailState.bodyCare;
+      beautySkinData.dailyRecords[i].salon = skincareDayDetailState.salon;
+      beautySkinData.dailyRecords[i].cosmetic = skincareDayDetailState.cosmetic;
       beautySkinData.dailyRecords[i].updatedAt = Date.now();
       found = true; break;
     }
@@ -4889,21 +5229,22 @@ function saveSkincareDayDetail() {
   if (!found) {
     beautySkinData.dailyRecords.push({
       date: skincareDayDetailDate,
-      morningSkincare: false,
-      nightSkincare: false,
-      bodyCare: [],
-      salon: false,
-      cosmetic: false,
+      bodyCare: skincareDayDetailState.bodyCare,
+      salon: skincareDayDetailState.salon,
+      cosmetic: skincareDayDetailState.cosmetic,
       note: skincareDayDetailState.note,
       customCheck: skincareDayDetailState.customCheck,
       salonNote: skincareDayDetailState.salonNote,
       cosmeticNote: skincareDayDetailState.cosmeticNote,
-      photo: skincareDayDetailState.photo,
+      photos: skincareDayDetailState.photos,
       createdAt: Date.now()
     });
   }
   var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
   saveToCloudImmediate('beauty/skincare/' + userKey, beautySkinData);
+  /* 退出编辑模式 */
+  skincareDayDetailState.isEditing = false;
+  renderSkincareDayDetail();
   showToast('✅ 保存成功');
   renderSkincareCalendar();
 }
