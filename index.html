@@ -329,10 +329,13 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .review-input{width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.82rem;resize:vertical;min-height:48px;font-family:inherit;background:var(--card);color:var(--text)}
 .review-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 /* ===== 管理员面板 ===== */
-.admin-stat{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
-.admin-stat-item{background:var(--grad-soft);border-radius:var(--radius-sm);padding:20px;text-align:center;border:1px solid var(--border)}
-.admin-stat-clickable{cursor:pointer;transition:all 0.2s;border:1px solid var(--rose-200)}
+.admin-stat{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.admin-stat-item{background:var(--grad-soft);border-radius:var(--radius-sm);padding:20px;text-align:center;border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+.admin-stat-clickable{border:1px solid var(--rose-200)}
 .admin-stat-clickable:hover{transform:translateY(-2px);box-shadow:var(--shadow-soft);border-color:var(--rose-400)}
+.admin-stat-wide{grid-column:span 2}
+.admin-stat-total{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #fbbf24}
+.admin-stat-total .admin-stat-num{color:#b45309}
 .admin-stat-num{font-size:2rem;font-weight:900;color:var(--rose-600)}
 .admin-stat-lbl{font-size:0.72rem;color:var(--text-l);margin-top:2px}
 .key-row-v2{background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px;overflow:hidden;border:1px solid var(--border)}
@@ -350,6 +353,8 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .key-info-icon{font-size:0.85rem;flex-shrink:0}
 .key-info-text{font-size:0.75rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .key-info-arrow{font-size:0.7rem;color:var(--rose-400);font-weight:600;flex-shrink:0}
+.key-row-action{padding:8px 14px;border-top:1px solid var(--border)}
+.key-row-action .key-toggle{width:100%}
 .key-badge{font-size:0.66rem;padding:2px 8px;border-radius:10px;font-weight:700}
 .key-badge.active{background:var(--mint-l);color:#065F46}
 .key-badge.revoked{background:#F3F4F6;color:#9CA3AF}
@@ -412,6 +417,103 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
   .hero-nickname{font-size:0.72rem;max-width:64px}
   .hero-actions{flex-wrap:wrap}
 }
+
+/* ===== 升级版样式 ===== */
+.beauty-tag{padding:6px 16px;border-radius:100px;background:#f5f5f4;font-size:0.82rem;color:#78716c;font-weight:500;cursor:pointer;transition:all 0.2s;user-select:none}
+.beauty-tag.beauty-tag-active{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(139,92,246,0.3)}
+.beauty-check{padding:8px 16px;border-radius:12px;background:#f5f5f4;font-size:0.82rem;color:#57534e;cursor:pointer;transition:all 0.2s;user-select:none;display:inline-flex;align-items:center;gap:6px}
+.beauty-check.beauty-check-active{background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;font-weight:600;box-shadow:0 1px 6px rgba(139,92,246,0.12)}
+.beauty-check::before{content:'○';font-size:0.85rem;color:#d6d3d1}
+.beauty-check.beauty-check-active::before{content:'✓';color:#8b5cf6}
+.beauty-emoji{font-size:2rem;padding:8px 12px;border-radius:12px;background:#f5f5f4;cursor:pointer;transition:all 0.2s}
+.beauty-emoji.beauty-emoji-active{background:linear-gradient(135deg,#f5f3ff,#fce7f3);box-shadow:0 2px 8px rgba(139,92,246,0.18);transform:scale(1.1)}
+.beauty-emoji-card{display:flex;flex-direction:column;align-items:center;padding:8px 6px;border-radius:10px;background:#f5f5f4;cursor:pointer;transition:all 0.2s;min-width:56px}
+.beauty-emoji-card small{font-size:0.65rem;color:#78716c;margin-top:2px}
+.beauty-emoji-card.beauty-emoji-card-active{background:linear-gradient(135deg,#f5f3ff,#fce7f3);box-shadow:0 2px 8px rgba(139,92,246,0.18);transform:scale(1.05)}
+.beauty-emoji-card.beauty-emoji-card-active small{color:#8b5cf6;font-weight:600}
+.beauty-toggle{display:inline-block;width:44px;height:24px;border-radius:12px;background:#d6d3d1;position:relative;cursor:pointer;transition:all 0.3s}
+.beauty-toggle.beauty-toggle-on{background:linear-gradient(135deg,#8b5cf6,#ec4899)}
+.beauty-toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:all 0.3s;box-shadow:0 1px 3px rgba(0,0,0,0.15)}
+.beauty-toggle.beauty-toggle-on::after{left:22px}
+.beauty-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f5f5f4}
+.beauty-toggle-row:last-child{border-bottom:none}
+.beauty-toggle-label{font-size:0.9rem;color:#44403c;font-weight:500}
+.beauty-yesno-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f5f5f4}
+.beauty-yesno-row:last-child{border-bottom:none}
+.beauty-yesno-label{font-size:0.9rem;color:#44403c;font-weight:500}
+.beauty-yesno-opts{display:flex;gap:8px}
+.beauty-yesno-opt{padding:6px 20px;border-radius:100px;background:#f5f5f4;font-size:0.82rem;color:#78716c;font-weight:500;cursor:pointer;transition:all 0.2s;user-select:none}
+.beauty-yesno-opt.yesno-yes-active{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:600}
+.beauty-yesno-opt.yesno-no-active{background:#e7e5e4;color:#44403c;font-weight:600}
+.beauty-mood-grid{display:flex;flex-wrap:wrap;gap:8px}
+.beauty-mood-grid .beauty-emoji{width:calc(20% - 7px);text-align:center;padding:8px 0}
+.beauty-date-row{display:flex;align-items:center;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.2)}
+.beauty-date-item{flex:1;text-align:center;cursor:pointer}
+.beauty-date-label{font-size:0.7rem;color:rgba(255,255,255,0.7);display:block}
+.beauty-date-value{font-size:0.82rem;font-weight:600;color:#fff;padding:4px 12px;border-radius:100px;background:rgba(255,255,255,0.15);display:inline-block;margin-top:4px}
+.beauty-entry-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,92,246,0.12)}
+.comm-post{background:var(--bg-card);border-radius:14px;padding:16px;border:1px solid var(--border)}
+.comm-post-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.comm-post-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#f5f3ff,#fce7f3);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#8b5cf6;flex-shrink:0}
+.comm-post-nick{font-size:0.9rem;font-weight:600;color:var(--text)}
+.comm-post-time{font-size:0.72rem;color:var(--text-l)}
+.comm-post-content{font-size:0.88rem;color:var(--text);line-height:1.6;margin-bottom:8px}
+.comm-post-actions{display:flex;gap:20px;padding-top:8px;border-top:1px solid #f5f5f4}
+.comm-post-action{display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--text-l);cursor:pointer}
+
+/* ===== 高级质感深色倒计时卡片 ===== */
+.skincare-countdown-card{position:relative;background:linear-gradient(135deg,#1a1a2e 0%,#2d1b4e 50%,#4a1942 100%);border-radius:20px;padding:24px 20px;margin-bottom:16px;overflow:hidden;box-shadow:0 8px 28px rgba(26,26,46,0.4),0 2px 8px rgba(74,25,66,0.2),inset 0 1px 4px rgba(255,255,255,0.08)}
+.skincare-countdown-glow{position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,0.2) 0%,rgba(236,72,153,0) 70%);pointer-events:none}
+.skincare-countdown-top{display:flex;align-items:center;gap:20px;position:relative;z-index:1}
+.skincare-circle-3d{position:relative;width:100px;height:100px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.skincare-circle-ring{position:absolute;border-radius:50%}
+.skincare-outer-ring{width:100px;height:100px;background:conic-gradient(from 0deg,rgba(236,72,153,0.5),rgba(139,92,246,0.15),rgba(236,72,153,0.4),rgba(139,92,246,0.1),rgba(236,72,153,0.5));box-shadow:0 4px 14px rgba(0,0,0,0.35),inset 0 1px 4px rgba(255,255,255,0.2),inset 0 -1px 4px rgba(0,0,0,0.2)}
+.skincare-middle-ring{width:80px;height:80px;background:linear-gradient(145deg,rgba(255,255,255,0.12),rgba(255,255,255,0.03));box-shadow:inset 0 1px 6px rgba(255,255,255,0.15),inset 0 -1px 6px rgba(0,0,0,0.25)}
+.skincare-circle-inner{position:relative;width:66px;height:66px;border-radius:50%;background:linear-gradient(145deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 2px 8px rgba(255,255,255,0.2),inset 0 -2px 8px rgba(0,0,0,0.2),0 1px 6px rgba(0,0,0,0.15);z-index:1}
+.skincare-countdown-num{font-size:1.7rem;font-weight:800;color:#fff;line-height:1;text-shadow:0 1px 4px rgba(236,72,153,0.5)}
+.skincare-countdown-total{font-size:0.62rem;color:rgba(255,255,255,0.7);margin-top:2px;text-shadow:0 1px 2px rgba(0,0,0,0.3)}
+.skincare-countdown-info{flex:1}
+.skincare-countdown-title{font-size:1.25rem;font-weight:800;color:#f0c0d0;text-shadow:0 1px 5px rgba(236,72,153,0.4);letter-spacing:2px}
+.skincare-title-row{display:flex;align-items:baseline;gap:10px}
+.skincare-skin-badge{font-size:0.68rem;font-weight:500;color:rgba(255,255,255,0.85);padding:2px 12px;border-radius:100px;background:rgba(236,72,153,0.25);border:1px solid rgba(236,72,153,0.3);cursor:pointer}
+.skincare-skin-badge:hover{background:rgba(236,72,153,0.35)}
+.skincare-countdown-desc{font-size:0.75rem;color:rgba(255,255,255,0.65);margin-top:4px;text-shadow:0 1px 2px rgba(0,0,0,0.2)}
+.skincare-countdown-progress{margin-top:10px}
+.skincare-progress-bar{height:9px;border-radius:5px;background:rgba(255,255,255,0.12);overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.2)}
+.skincare-progress-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#ec4899,#f0c0d0);box-shadow:0 0 6px rgba(236,72,153,0.5);transition:width 0.3s ease}
+.skincare-progress-text{font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:4px;text-align:right}
+.skincare-date-row{display:flex;align-items:center;gap:12px;margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.1);position:relative;z-index:1}
+.skincare-date-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.skincare-date-label{font-size:0.68rem;color:rgba(255,255,255,0.55)}
+.skincare-date-input{font-size:0.78rem;font-weight:600;color:#fff;padding:5px 10px;border-radius:100px;background:rgba(236,72,153,0.15);border:1px solid rgba(236,72,153,0.2);outline:none;text-align:center;cursor:pointer;font-family:inherit}
+.skincare-date-sep{font-size:1rem;color:rgba(255,255,255,0.4);font-weight:300}
+.skincare-today-datetime{text-align:center;font-size:0.72rem;color:rgba(255,255,255,0.5);margin-top:12px;position:relative;z-index:1;letter-spacing:1px}
+/* ===== 顶部摘要卡片 ===== */
+.skincare-summary-card{background:#fff;border-radius:16px;padding:12px 16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,0.03);border:1px solid rgba(0,0,0,0.02)}
+.skincare-summary-tags{display:flex;flex-wrap:wrap;gap:6px}
+.skincare-summary-tag{padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600}
+.skincare-summary-check{background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8}
+.skincare-summary-body{background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe}
+/* ===== checkbox 打勾列表 ===== */
+.skincare-check-list{display:flex;flex-direction:column}
+.skincare-check-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f5f5f4;cursor:pointer;transition:all 0.2s}
+.skincare-check-row:last-child{border-bottom:none}
+.skincare-check-label{font-size:0.92rem;color:#44403c;font-weight:500}
+.skincare-check-box{width:26px;height:26px;border-radius:8px;border:2px solid #d6d3d1;display:flex;align-items:center;justify-content:center;transition:all 0.2s;background:#fafaf9;flex-shrink:0}
+.skincare-check-on .skincare-check-box{background:linear-gradient(135deg,#ec4899,#8b5cf6);border-color:transparent;box-shadow:0 2px 8px rgba(236,72,153,0.3)}
+.skincare-check-on .skincare-check-label{color:#be185d;font-weight:600}
+.skincare-check-tick{font-size:16px;color:#fff;font-weight:800;line-height:1}
+/* ===== 紧凑弹窗照片入口 ===== */
+.skincare-photo-action-row{display:flex;gap:8px}
+.skincare-photo-action-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 4px;border-radius:12px;cursor:pointer;transition:all 0.2s}
+.skincare-photo-action-icon{font-size:20px}
+.skincare-photo-action-text{font-size:0.72rem;font-weight:600}
+.skincare-photo-view-btn{background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8}
+.skincare-photo-upload-btn{background:#f5f3ff;color:#6d28d9;border:1px solid #ddd6fe}
+.skincare-photo-delete-btn{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.skincare-photo-upload-mini{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;padding:10px 16px;border-radius:100px;background:#fafaf9;border:2px dashed #d6d3d1;cursor:pointer}
+.skincare-photo-upload-mini-icon{font-size:18px}
+.skincare-photo-upload-mini-text{font-size:0.78rem;color:#78716c;font-weight:500}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/cos-js-sdk-v5/dist/cos-js-sdk-v5.min.js"></script>
 </head>
@@ -638,6 +740,21 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
     <div class="card-title">📊 完整记录表</div>
     <div id="recordAccordion"></div>
   </div>
+
+  <!-- 升级版入口卡片 -->
+  <div class="card beauty-entry-card" onclick="openBeautyUpgrade();playClick()" style="cursor:pointer;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border:1.5px solid rgba(139,92,246,0.15);margin-top:12px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="font-size:2rem">✨</span>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:1.1rem;font-weight:700;color:#8b5cf6">100天变美日记</span>
+          <span style="font-size:0.65rem;padding:2px 10px;border-radius:100rpx;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:600">升级版</span>
+        </div>
+        <div style="font-size:0.78rem;color:#78716c;margin-top:4px">护肤打卡 · 心情记录 · 月友圈</div>
+      </div>
+      <span style="font-size:1.5rem;color:#c4b5fd">›</span>
+    </div>
+  </div>
 </div>
 
 <!-- ===== Page 1: 趋势统计 ===== -->
@@ -749,9 +866,25 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
   <div class="card">
     <div class="card-title">🔐 管理后台 <span class="sub">Moon 专属</span></div>
     <div class="admin-stat">
-      <div class="admin-stat-item admin-stat-clickable" onclick="showAllUsers()">
+      <div class="admin-stat-item admin-stat-clickable" onclick="showUsersByType('free')">
+        <div class="admin-stat-num" id="adminFree">0</div>
+        <div class="admin-stat-lbl">免费用户 · 点击查看</div>
+      </div>
+      <div class="admin-stat-item admin-stat-clickable" onclick="showUsersByType('trial')">
+        <div class="admin-stat-num" id="adminTrial">0</div>
+        <div class="admin-stat-lbl">试用未充值 · 点击查看</div>
+      </div>
+      <div class="admin-stat-item admin-stat-clickable" onclick="showUsersByType('vipBasic')">
+        <div class="admin-stat-num" id="adminVipBasic">0</div>
+        <div class="admin-stat-lbl">VIP基础版 · 点击查看</div>
+      </div>
+      <div class="admin-stat-item admin-stat-clickable" id="adminUpgradeStat" onclick="showUsersByType('vipUpgrade')">
+        <div class="admin-stat-num" id="adminVipUpgrade">0</div>
+        <div class="admin-stat-lbl">VIP升级版 · 点击查看</div>
+      </div>
+      <div class="admin-stat-item admin-stat-clickable admin-stat-wide admin-stat-total" onclick="showAllUsers()">
         <div class="admin-stat-num" id="adminTotal">0</div>
-        <div class="admin-stat-lbl">总用户数 · 点击查看</div>
+        <div class="admin-stat-lbl">总人数 · 点击查看</div>
       </div>
     </div>
     <div id="keyListSearch" style="margin-bottom:12px">
@@ -812,6 +945,253 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
     <div class="modal-actions">
       <button class="btn btn-outline" id="editHistoryBtn" onclick="editHistoryData();playClick()" style="display:none">更改历史数据</button>
       <button class="btn btn-primary" onclick="document.getElementById('dayDetailModal').classList.remove('show');playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 升级版首页弹窗 -->
+<div class="modal-overlay" id="beautyHomeModal">
+  <div class="modal" style="max-width:500px">
+    <div style="background:linear-gradient(135deg,#8b5cf6,#ec4899,#f43f5e);border-radius:16px 16px 0 0;margin:-20px -20px 20px;padding:40px 20px;text-align:center">
+      <div style="font-size:3rem">✨</div>
+      <h2 style="color:#fff;font-size:1.5rem;font-weight:800;letter-spacing:2px;margin-top:8px">100天变美日记</h2>
+      <div style="color:rgba(255,255,255,0.85);font-size:0.8rem;letter-spacing:1px;margin-top:4px">UPGRADE · 更美的自己</div>
+    </div>
+    <div id="beautySections">
+      <div onclick="openBeautySkincare();playClick()" style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:12px;background:#f5f3ff;cursor:pointer;margin-bottom:12px;transition:all 0.2s" onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
+        <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#fbcfe8,#f9a8d4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">💄</div>
+        <div style="flex:1">
+          <div style="font-size:1rem;font-weight:700;color:#1c1917">护肤日记</div>
+          <div style="font-size:0.75rem;color:#78716c">每日护肤打卡 · 日历照片 · do脸记录</div>
+        </div>
+        <span style="font-size:1.2rem;color:#c4b5fd">›</span>
+      </div>
+      <div onclick="openBeautyMood();playClick()" style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:12px;background:#fce7f3;cursor:pointer;margin-bottom:12px;transition:all 0.2s" onmouseover="this.style.background='#fbcfe8'" onmouseout="this.style.background='#fce7f3'">
+        <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#f9a8d4,#f472b6);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">💖</div>
+        <div style="flex:1">
+          <div style="font-size:1rem;font-weight:700;color:#1c1917">心情日记</div>
+          <div style="font-size:0.75rem;color:#78716c">心情记录 · 冥想音乐 · 自律打卡</div>
+        </div>
+        <span style="font-size:1.2rem;color:#c4b5fd">›</span>
+      </div>
+      <div onclick="openBeautyCommunity();playClick()" style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:12px;background:#ede9fe;cursor:pointer;margin-bottom:12px;transition:all 0.2s" onmouseover="this.style.background='#ddd6fe'" onmouseout="this.style.background='#ede9fe'">
+        <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">🌙</div>
+        <div style="flex:1">
+          <div style="font-size:1rem;font-weight:700;color:#1c1917">月友圈</div>
+          <div style="font-size:0.75rem;color:#78716c">分享变美日记 · 互相点赞评论</div>
+        </div>
+        <span style="font-size:1.2rem;color:#c4b5fd">›</span>
+      </div>
+    </div>
+    <div id="beautyLockMsg" style="display:none;text-align:center;padding:20px;background:#fef3c7;border-radius:12px;margin-top:12px">
+      <div style="font-size:2rem">🔒</div>
+      <div style="font-size:0.9rem;font-weight:600;color:#92400e;margin-top:8px">升级版会员专享</div>
+      <div style="font-size:0.78rem;color:#a8a29e;margin-top:4px">29.9元永久使用，解锁全部变美功能</div>
+      <button class="btn btn-primary" style="margin-top:12px;background:linear-gradient(135deg,#8b5cf6,#ec4899)" onclick="payBeautyUpgrade();playClick()">立即开通 29.9元永久</button>
+    </div>
+    <div style="text-align:center;margin-top:12px">
+      <span style="font-size:0.78rem;color:#a8a29e">升级版会员 · 29.9元永久使用 · 全功能解锁</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="document.getElementById('beautyHomeModal').classList.remove('show');playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 护肤日记弹窗 -->
+<div class="modal-overlay" id="beautySkincareModal">
+  <div class="modal" style="max-width:550px;max-height:85vh;overflow-y:auto">
+    <div id="skincareContent">
+      <!-- 倒计时卡片+皮肤状态小字（JS动态填充） -->
+      <div id="skincareCountdown"></div>
+
+      <!-- 今日打卡（护理项目 + 打勾项） -->
+      <div style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:4px">📋 今日打卡</div>
+
+        <!-- 护理项目（多选标签） -->
+        <div id="bodyCareTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;margin-bottom:12px">
+          <span class="beauty-tag" data-key="faceCare" onclick="toggleBodyCare(this,'faceCare')">面部护理</span>
+          <span class="beauty-tag" data-key="oralCare" onclick="toggleBodyCare(this,'oralCare')">口腔护理</span>
+          <span class="beauty-tag" data-key="neckCare" onclick="toggleBodyCare(this,'neckCare')">颈部护理</span>
+          <span class="beauty-tag" data-key="bodyCare" onclick="toggleBodyCare(this,'bodyCare')">身体护理</span>
+          <span class="beauty-tag" data-key="handCare" onclick="toggleBodyCare(this,'handCare')">手部护理</span>
+          <span class="beauty-tag" data-key="footCare" onclick="toggleBodyCare(this,'footCare')">脚部护理</span>
+        </div>
+
+        <div class="skincare-check-list">
+          <div class="skincare-check-row" id="check-salon" onclick="toggleSkincareCheck('salon');playClick()">
+            <span class="skincare-check-label">💆 美容院护理</span>
+            <span class="skincare-check-box"><span class="skincare-check-tick" style="display:none">✓</span></span>
+          </div>
+          <div class="skincare-check-row" id="check-cosmetic" onclick="toggleSkincareCheck('cosmetic');playClick()">
+            <span class="skincare-check-label">💉 do脸日记</span>
+            <span class="skincare-check-box"><span class="skincare-check-tick" style="display:none">✓</span></span>
+          </div>
+        </div>
+        <input type="text" id="beautySalonNote" placeholder="护理心得..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;display:none" oninput="autoSaveSkincare()">
+        <input type="text" id="beautyCosmeticNote" placeholder="do脸项目感受..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;display:none" oninput="autoSaveSkincare()">
+      </div>
+
+      <!-- 护肤日历 -->
+      <div style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:4px">📅 护肤日历</div>
+        <div style="font-size:0.75rem;color:#a8a29e;text-align:center;margin-bottom:10px">点击日期查看/编辑当日记录</div>
+        <div id="skincareCalendar"></div>
+      </div>
+
+      <!-- 备注📝（日历下方） -->
+      <div style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:8px">📝 备注</div>
+        <textarea id="beautyNote" placeholder="记录今天的备注..." style="width:100%;min-height:80px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('beautySkincareModal').classList.remove('show');document.getElementById('beautyHomeModal').classList.add('show');playClick()">返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- 护肤日历日期详情弹窗 -->
+<div class="modal-overlay" id="skincareDayDetailModal">
+  <div class="modal" style="max-width:420px;max-height:75vh;overflow-y:auto">
+    <h2 id="skincareDayDetailTitle">📅 日期详情</h2>
+    <div id="skincareDayDetailContent"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('skincareDayDetailModal').classList.remove('show');playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 心情日记弹窗 -->
+<div class="modal-overlay" id="beautyMoodModal">
+  <div class="modal" style="max-width:550px;max-height:85vh;overflow-y:auto">
+    <h2>💖 心情日记</h2>
+    <div style="margin-bottom:16px">
+      <label style="font-size:0.8rem;color:var(--text-l)">📝 当前状态</label>
+      <input type="text" id="moodStatus" placeholder="此刻的感受，一句话记录..." maxlength="50" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;outline:none;background:linear-gradient(135deg,#fdf4ff,#fef3f8);margin-top:6px">
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:0.8rem;color:var(--text-l)">今日心情</label>
+      <div id="moodEmojiGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+        <span class="beauty-emoji-card" onclick="selectMoodEmoji('ecstatic',this)">🥰<small>幸福</small></span>
+        <span class="beauty-emoji-card" onclick="selectMoodEmoji('happy',this)">😊<small>开心</small></span>
+        <span class="beauty-emoji-card" onclick="selectMoodEmoji('calm',this)">😌<small>平静</small></span>
+        <span class="beauty-emoji-card" onclick="selectMoodEmoji('grateful',this)">🙏<small>感恩</small></span>
+        <span class="beauty-emoji-card" onclick="selectMoodEmoji('neutral',this)">😐<small>一般</small></span>
+        <span class="beauty-emoji-card" onclick="selectMoodEmoji('tired',this)">😪<small>疲惫</small></span>
+        <span class="beauty-emoji-card" onclick="selectMoodEmoji('anxious',this)">😰<small>焦虑</small></span>
+        <span class="beauty-emoji-card" onclick="selectMoodEmoji('sad',this)">😢<small>难过</small></span>
+        <span class="beauty-emoji-card" onclick="selectMoodEmoji('angry',this)">😤<small>生气</small></span>
+        <span class="beauty-emoji-card" onclick="selectMoodEmoji('stressed',this)">🤯<small>压力</small></span>
+      </div>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:0.8rem;color:var(--text-l)">📔 心情日记</label>
+      <textarea id="moodDiary" placeholder="今天发生了什么？记录下你的感受和想法..." maxlength="1000" style="width:100%;min-height:120px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;resize:vertical;outline:none;font-family:inherit;margin-top:6px"></textarea>
+      <div style="text-align:right;font-size:0.72rem;color:#c8c4c0" id="moodCharCount">0/1000</div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="font-weight:600;font-size:0.9rem;margin-bottom:8px">🧘 冥想打卡</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'meditation_done')">今日冥想</span>
+        <input type="number" id="meditationMinutes" placeholder="15" style="width:80px;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;text-align:center;outline:none">
+        <span style="font-size:0.85rem;color:var(--text-l)">分钟</span>
+      </div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="font-weight:600;font-size:0.9rem;margin-bottom:8px">🎵 冥想音乐</div>
+      <select id="meditationMusicSelect" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;outline:none;background:#fff">
+        <optgroup label="🌿 自然之声">
+          <option value="n1">晨曦微露 (15:00)</option>
+          <option value="n2">林间漫步 (20:00)</option>
+          <option value="n3">草原之风 (18:00)</option>
+        </optgroup>
+        <optgroup label="🌧️ 雨声">
+          <option value="r1">轻柔细雨 (30:00)</option>
+          <option value="r2">雨打芭蕉 (25:00)</option>
+          <option value="r3">暴雨雷鸣 (20:00)</option>
+        </optgroup>
+        <optgroup label="🌊 海洋之声">
+          <option value="o1">海浪轻拍 (30:00)</option>
+          <option value="o2">潮起潮落 (25:00)</option>
+        </optgroup>
+        <optgroup label="🌳 森林之声">
+          <option value="f1">竹林深处 (20:00)</option>
+          <option value="f2">松涛阵阵 (18:00)</option>
+        </optgroup>
+        <optgroup label="🌌 宇宙冥想">
+          <option value="s1">星际之旅 (30:00)</option>
+          <option value="s2">宇宙回响 (25:00)</option>
+        </optgroup>
+        <optgroup label="🧘 禅修冥想">
+          <option value="z1">禅茶一味 (20:00)</option>
+          <option value="z2">空山新雨 (25:00)</option>
+        </optgroup>
+        <optgroup label="🎹 钢琴轻音">
+          <option value="p1">月光奏鸣曲 (15:00)</option>
+          <option value="p2">梦中的婚礼 (12:00)</option>
+        </optgroup>
+        <optgroup label="🔔 颂钵音疗">
+          <option value="b1">喜马拉雅颂钵 (30:00)</option>
+          <option value="b2">水晶钵共鸣 (25:00)</option>
+        </optgroup>
+      </select>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-outline" style="flex:1;padding:10px" onclick="playMeditationMusic();playClick()">▶ 播放</button>
+        <button class="btn btn-outline" style="flex:1;padding:10px" onclick="stopMeditationMusic();playClick()">⏹ 停止</button>
+      </div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="font-weight:600;font-size:0.9rem;margin-bottom:8px">⭐ 自律打卡</div>
+      <div id="disciplineGrid" style="display:flex;flex-wrap:wrap;gap:8px">
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_tidyRoom')">🧹 收拾房间</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_declutter')">📦 断舍离</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_read')">📖 阅读</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_exercise')">🏃 运动</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_cook')">🍳 做饭</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_noPhone')">📵 减少手机</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_earlySleep')">🛏️ 早睡</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_gratitude')">✨ 感恩记录</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_meditation')">🧘 冥想</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_skincare')">💄 护肤</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_water')">💧 喝水</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_journal')">✏️ 写日记</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#ec4899);padding:14px;font-size:1rem;font-weight:700" onclick="saveBeautyMood();playClick()">保存今日心情日记</button>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('beautyMoodModal').classList.remove('show');document.getElementById('beautyHomeModal').classList.add('show');playClick()">返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- 月友圈弹窗 -->
+<div class="modal-overlay" id="beautyCommunityModal">
+  <div class="modal" style="max-width:550px;max-height:85vh;overflow-y:auto">
+    <h2>🌙 月友圈</h2>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabHot" onclick="switchCommTab('hot');playClick()">热门</button>
+      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabNew" onclick="switchCommTab('new');playClick()">最新</button>
+      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabMine" onclick="switchCommTab('mine');playClick()">我的</button>
+    </div>
+    <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#ec4899);padding:12px;margin-bottom:16px" onclick="showPostEditor();playClick()">✏️ 发布动态</button>
+    <div id="communityPosts" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div id="communityEmpty" style="text-align:center;padding:40px 0;color:var(--text-l);font-size:0.85rem;display:none">还没有内容，快来发布第一条吧 🌙</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('beautyCommunityModal').classList.remove('show');document.getElementById('beautyHomeModal').classList.add('show');playClick()">返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- 发布动态弹窗 -->
+<div class="modal-overlay" id="postEditorModal">
+  <div class="modal" style="max-width:500px">
+    <h2>✏️ 发布动态</h2>
+    <textarea id="postContent" placeholder="分享你的变美心得、护肤经验、心情故事..." maxlength="500" style="width:100%;min-height:100px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;resize:vertical;outline:none;font-family:inherit;margin-bottom:12px"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('postEditorModal').classList.remove('show');playClick()">取消</button>
+      <button class="btn btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)" onclick="publishPost();playClick()">发布</button>
     </div>
   </div>
 </div>
@@ -913,6 +1293,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 <div class="modal-overlay" id="keyEditModal">
   <div class="modal">
     <h2 id="keyEditTitle">用户信息</h2>
+    <div id="keyEditMeta" style="background:var(--grad-soft);border-radius:12px;padding:14px;margin-bottom:14px;display:none"></div>
     <div class="input-group"><label>手机号</label><input type="tel" id="keyPhoneInput" maxlength="11" inputmode="numeric" placeholder="如 13800138000" style="letter-spacing:2px"></div>
     <div class="input-group"><label>性别（可选）</label><select id="keyGenderInput"><option value="">未选择</option><option value="男">男</option><option value="女">女</option></select></div>
     <div class="input-group"><label>年龄（可选）</label><input type="number" id="keyAgeInput" placeholder="如 25" min="1" max="150"></div>
@@ -1345,6 +1726,8 @@ function tryLogin() {
   if (isPresetKey(k)) {
     const pi = loadPresetInfo();
     const info = pi[k];
+    /* 检查是否已被停用/作废 */
+    if (info && info.revoked) { err.textContent = '该密钥已被停用，请联系管理员'; return; }
     if (info && info.activated) {
       /* 已启用：仅绑定手机号可登录 */
       if (info.phone !== phone) { err.textContent = '该密钥已绑定其他手机号，登录失败'; return; }
@@ -1374,7 +1757,7 @@ function tryLogin() {
   /* 动态密钥：从本地密钥池验证 */
   const keys = loadKeys();
   if (!keys[k]) { err.textContent = '密钥无效，请联系 Moon 获取'; return; }
-  if (keys[k].revoked) { err.textContent = '该密钥已被停用'; return; }
+  if (keys[k].revoked) { err.textContent = '该密钥已被停用，请联系管理员'; return; }
   if (isUsedKey(k) && keys[k].phone && keys[k].phone !== phone) {
     err.textContent = '该密钥已绑定其他手机号，登录失败'; return;
   }
@@ -2910,6 +3293,23 @@ function editKeyNote(k) {
   document.getElementById('keyGenderInput').value = info.gender || '';
   document.getElementById('keyAgeInput').value = info.age || '';
   document.getElementById('keyNoteInput').value = info.note || '';
+  /* 填充 meta 信息：类型、注册时间、永久 */
+  var metaDiv = document.getElementById('keyEditMeta');
+  var regDate = info.activatedAt ? new Date(info.activatedAt).toLocaleDateString() : (info.createdAt ? new Date(info.createdAt).toLocaleDateString() : '未注册');
+  var metaHtml = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+  metaHtml += '<span style="font-size:0.75rem;color:var(--text-l)">类型</span>';
+  metaHtml += '<span style="font-size:0.8rem;font-weight:700;color:var(--rose-600)">免费用户</span>';
+  metaHtml += '</div>';
+  metaHtml += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+  metaHtml += '<span style="font-size:0.75rem;color:var(--text-l)">注册时间</span>';
+  metaHtml += '<span style="font-size:0.8rem;font-weight:600">' + regDate + '</span>';
+  metaHtml += '</div>';
+  metaHtml += '<div style="display:flex;justify-content:space-between;align-items:center">';
+  metaHtml += '<span style="font-size:0.75rem;color:var(--text-l)">有效期</span>';
+  metaHtml += '<span style="font-size:0.8rem;font-weight:700;color:#16a34a">永久</span>';
+  metaHtml += '</div>';
+  metaDiv.innerHTML = metaHtml;
+  metaDiv.style.display = 'block';
   document.getElementById('keyEditModal').classList.add('show');
 }
 function closeKeyEdit() { document.getElementById('keyEditModal').classList.remove('show'); keyEditingNote = null; }
@@ -2995,27 +3395,30 @@ function renderKeyList() {
       const phone = info && info.phone ? info.phone : '';
       if (phone.indexOf(searchTerm) === -1) return;
     }
-    let isOn, toggleBtn, statusText;
+    /* 类型标注：免费用户 */
+    var userType = '免费用户';
+    let toggleBtn;
     if (revoked) {
-      toggleBtn = '<button class="key-toggle key-toggle-revoked" onclick="togglePresetKey(\'' + k + '\')">已作废</button>';
-    } else if (activated) {
-      toggleBtn = '<button class="key-toggle key-toggle-on" onclick="togglePresetKey(\'' + k + '\')">已启用</button>';
-    } else if (used) {
-      /* 已使用但非管理员启用——用户已登录过，可继续使用 */
-      toggleBtn = '<button class="key-toggle key-toggle-on" onclick="togglePresetKey(\'' + k + '\')">已启用</button>';
+      toggleBtn = '<button class="key-toggle key-toggle-revoked" onclick="togglePresetKey(\'' + k + '\')">已停用</button>';
+    } else if (activated || used) {
+      toggleBtn = '<button class="key-toggle key-toggle-on" onclick="togglePresetKey(\'' + k + '\')">已启用 · 点击停用</button>';
     } else {
       toggleBtn = '<button class="key-toggle key-toggle-off" onclick="togglePresetKey(\'' + k + '\')">未启用</button>';
     }
-    const infoText = (info && info.phone ? '📱' + info.phone : '未填写') + (info && info.gender ? ' · ' + info.gender : '') + (info && info.age ? ' · ' + info.age + '岁' : '') + (info && info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '');
+    /* 外面只显示：电话、性别、年龄、昵称 */
+    const infoText = (info && info.phone ? '📱' + info.phone : '未填写') + (info && info.gender ? ' · ' + info.gender : '') + (info && info.age ? ' · ' + info.age + '岁' : '') + (ud.name ? ' · ' + ud.name : '');
     html += '<div class="key-row-v2">'
       + '<div class="key-row-main">'
         + '<div class="key-code">' + k + '</div>'
-        + toggleBtn
+        + '<span class="key-badge active">' + userType + '</span>'
       + '</div>'
       + '<div class="key-row-info" onclick="editKeyNote(\'' + k + '\')">'
         + '<span class="key-info-icon">👤</span>'
         + '<span class="key-info-text">' + infoText + '</span>'
         + '<span class="key-info-arrow">编辑 ›</span>'
+      + '</div>'
+      + '<div class="key-row-action">'
+        + toggleBtn
       + '</div>'
     + '</div>';
   });
@@ -3024,32 +3427,131 @@ function renderKeyList() {
     html += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:0.75rem;font-weight:700;color:var(--text-l);margin-bottom:8px">动态密钥</div>';
     arr.forEach(([k, info]) => {
       const ud = getUserData(k);
-      const infoText = (info.phone ? '📱' + info.phone : '未填写') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : ' · 未登录');
+      /* 外面只显示：电话、性别、年龄、昵称 */
+      const infoText = (info.phone ? '📱' + info.phone : '未填写') + (info.gender ? ' · ' + info.gender : '') + (info.age ? ' · ' + info.age + '岁' : '') + (ud.name ? ' · ' + ud.name : ' · 未登录');
       const isOn = !info.revoked;
       const toggleBtn = isOn
-        ? '<button class="key-toggle key-toggle-on" onclick="revokeKey(\'' + k + '\')">已启用</button>'
-        : '<button class="key-toggle key-toggle-off" onclick="restoreKey(\'' + k + '\')">未启用</button>';
+        ? '<button class="key-toggle key-toggle-on" onclick="revokeKey(\'' + k + '\')">已启用 · 点击停用</button>'
+        : '<button class="key-toggle key-toggle-off" onclick="restoreKey(\'' + k + '\')">已停用 · 点击恢复</button>';
       html += '<div class="key-row-v2">'
         + '<div class="key-row-main">'
           + '<div class="key-code">' + k + '</div>'
-          + toggleBtn
+          + '<span class="key-badge active">免费用户</span>'
         + '</div>'
         + '<div class="key-row-info" onclick="editKeyNote(\'' + k + '\')">'
           + '<span class="key-info-icon">👤</span>'
           + '<span class="key-info-text">' + infoText + '</span>'
           + '<span class="key-info-arrow">编辑 ›</span>'
         + '</div>'
+        + '<div class="key-row-action">'
+          + toggleBtn
+        + '</div>'
       + '</div>';
     });
     html += '</div>';
   }
   if (searchTerm && html === '') {
-    html = '<div style="text-align:center;padding:20px;color:var(--text-l);font-size:0.85rem">未找到匹配的用户</div>';
+    html = '<div style="text-align:center;padding:20px;color:var(--text-l);font-size:0.85rem">正在搜索微信用户...</div>';
   }
   document.getElementById('keyList').innerHTML = html;
-  /* 更新统计：总用户数 = 有手机号信息的预设密钥数 + 动态密钥数 */
-  const totalWithInfo = PRESET_KEYS.filter(k => pi[k] && pi[k].phone).length + arr.filter(([k,i]) => i.phone).length;
-  document.getElementById('adminTotal').textContent = totalWithInfo;
+  /* 更新统计：分别统计免费用户、试用未充值、VIP基础版 */
+  const freeCount = PRESET_KEYS.filter(k => pi[k] && pi[k].phone).length + arr.filter(([k,i]) => i.phone).length;
+  document.getElementById('adminFree').textContent = freeCount;
+  /* 异步读取微信用户数据并统计试用/VIP */
+  loadFromCloud('_wx_users', function(wxUsers) {
+    var trialCount = 0, vipBasicCount = 0, vipUpgradeCount = 0;
+    var now = Date.now();
+    var trialMs = 24 * 60 * 60 * 1000;
+    var wxMatchHtml = '';
+    if (wxUsers) {
+      Object.keys(wxUsers).forEach(function(uk) {
+        var u = wxUsers[uk];
+        if (!u) return;
+        var firstLogin = u.firstLoginTime || now;
+        var paidUntil = u.paidUntil || null;
+        var isVipBasic = paidUntil && paidUntil > now;
+        var isTrial = (now - firstLogin < trialMs) && !isVipBasic;
+
+        if (isVipBasic) vipBasicCount++;
+        else if (isTrial) trialCount++;
+
+        /* 搜索过滤微信用户 */
+        if (searchTerm) {
+          var phone = u.phone || '';
+          if (phone.indexOf(searchTerm) !== -1) {
+            var userType = isVipBasic ? 'VIP基础版' : (isTrial ? '试用未充值' : '已过期');
+            var remainText = '';
+            if (isTrial) {
+              var remainH = Math.floor((trialMs - (now - firstLogin)) / (60*60*1000));
+              remainText = ' · 剩余' + remainH + 'h';
+            }
+            if (isVipBasic) {
+              var daysLeft = Math.ceil((paidUntil - now) / (24*60*60*1000));
+              remainText = ' · 剩余' + daysLeft + '天';
+            }
+            var regDate = new Date(firstLogin).toLocaleDateString();
+            var isDisabled = u.disabled === true;
+            var toggleBtn = isDisabled
+              ? '<button class="key-toggle key-toggle-revoked" onclick="toggleWxUserDisabled(\'' + uk + '\')">已停用 · 点击恢复</button>'
+              : '<button class="key-toggle key-toggle-on" onclick="toggleWxUserDisabled(\'' + uk + '\')">已启用 · 点击停用</button>';
+            wxMatchHtml += '<div class="key-row-v2">'
+              + '<div class="key-row-main">'
+                + '<div class="key-code">' + uk + '</div>'
+                + '<span class="key-badge active">' + userType + '</span>'
+              + '</div>'
+              + '<div class="key-row-info">'
+                + '<span class="key-info-icon">📱</span>'
+                + '<span class="key-info-text">' + (phone || '未绑定') + ' · ' + userType + ' · 注册' + regDate + remainText + '</span>'
+              + '</div>'
+              + '<div class="key-row-action">'
+                + toggleBtn
+              + '</div>'
+            + '</div>';
+          }
+        }
+      });
+    }
+    /* 如果搜索了且有微信用户匹配，追加到列表 */
+    if (searchTerm && wxMatchHtml) {
+      var curHtml = document.getElementById('keyList').innerHTML;
+      if (curHtml.indexOf('正在搜索微信用户') !== -1) {
+        curHtml = '';
+      }
+      curHtml += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:0.75rem;font-weight:700;color:var(--text-l);margin-bottom:8px">微信用户</div>' + wxMatchHtml + '</div>';
+      document.getElementById('keyList').innerHTML = curHtml || '<div style="text-align:center;padding:20px;color:var(--text-l);font-size:0.85rem">未找到匹配的用户</div>';
+    } else if (searchTerm && document.getElementById('keyList').innerHTML.indexOf('正在搜索微信用户') !== -1) {
+      document.getElementById('keyList').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-l);font-size:0.85rem">未找到匹配的用户</div>';
+    }
+    document.getElementById('adminTrial').textContent = trialCount;
+    document.getElementById('adminVipBasic').textContent = vipBasicCount;
+    document.getElementById('adminVipUpgrade').textContent = vipUpgradeCount;
+    document.getElementById('adminTotal').textContent = freeCount + trialCount + vipBasicCount;
+  });
+}
+
+/* 停用/恢复微信用户权限 */
+function toggleWxUserDisabled(userKey) {
+  loadFromCloud('_wx_users', function(wxUsers) {
+    if (!wxUsers) { showToast('用户数据不存在'); return; }
+    var u = wxUsers[userKey];
+    if (!u) { showToast('用户不存在'); return; }
+    var isDisabled = u.disabled === true;
+    if (isDisabled) {
+      if (!confirm('确定恢复该用户的权限？')) return;
+      u.disabled = false;
+      u.disabledAt = null;
+      showToast('✅ 已恢复用户权限');
+    } else {
+      if (!confirm('确定停用该用户的权限？停用后该用户无法使用小程序。')) return;
+      u.disabled = true;
+      u.disabledAt = new Date().toISOString();
+      showToast('⚠️ 已停用用户权限');
+    }
+    wxUsers[userKey] = u;
+    saveToCloudImmediate('_wx_users', wxUsers);
+    /* 刷新列表 */
+    setTimeout(function() { renderKeyList(); }, 500);
+  });
 }
 
 /* 切换预设密钥启用状态 */
@@ -3108,6 +3610,92 @@ function showAllUsers() {
     }
   });
   if (count === 0) html = '<p style="color:var(--text-l);font-size:0.82rem;text-align:center;padding:20px">暂无已填写手机号的用户</p>';
+  document.getElementById('allUsersList').innerHTML = html;
+  document.getElementById('allUsersModal').classList.add('show');
+}
+
+/* 按类型显示用户手机号 */
+function showUsersByType(type) {
+  var titleMap = {
+    'free': '免费用户',
+    'trial': '试用未充值用户',
+    'vipBasic': 'VIP基础版用户',
+    'vipUpgrade': 'VIP升级版用户'
+  };
+  var pi = loadPresetInfo();
+  var keys = loadKeys();
+  var now = Date.now();
+  var trialMs = 24 * 60 * 60 * 1000;
+  var html = '';
+  var count = 0;
+
+  if (type === 'free') {
+    /* 免费用户：有手机号的预设密钥 + 动态密钥 */
+    PRESET_KEYS.forEach(function(k) {
+      var info = pi[k];
+      if (info && info.phone) {
+        var ud = getUserData(k);
+        var status = info.activated ? '已启用' : (isUsedKey(k) ? '已使用' : '未启用');
+        html += '<div class="user-info-row"><div><div class="user-info-phone">📱 ' + info.phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + (info.activated?'revoked':'active') + '">' + status + '</span></div>';
+        count++;
+      }
+    });
+    Object.entries(keys).forEach(function(entry) {
+      var k = entry[0], info = entry[1];
+      if (info.phone) {
+        var ud = getUserData(k);
+        html += '<div class="user-info-row"><div><div class="user-info-phone">📱 ' + info.phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + (info.revoked?'revoked':'active') + '">' + (info.revoked?'已停用':'使用中') + '</span></div>';
+        count++;
+      }
+    });
+  } else {
+    /* 微信用户类型：需要异步读取 _wx_users */
+    loadFromCloud('_wx_users', function(wxUsers) {
+      if (!wxUsers) {
+        document.getElementById('allUsersList').innerHTML = '<p style="color:var(--text-l);font-size:0.82rem;text-align:center;padding:20px">暂无' + titleMap[type] + '</p>';
+        document.getElementById('allUsersModal').classList.add('show');
+        return;
+      }
+      Object.keys(wxUsers).forEach(function(uk) {
+        var u = wxUsers[uk];
+        if (!u) return;
+        var firstLogin = u.firstLoginTime || now;
+        var paidUntil = u.paidUntil || null;
+        var isTrial = (now - firstLogin < trialMs) && !(paidUntil && paidUntil > now);
+        var isVipBasic = paidUntil && paidUntil > now;
+        var isVipUpgrade = false; /* 暂无升级版 */
+        /* if (u.upgradePaid && u.upgradePaidUntil > now) isVipUpgrade = true; */
+
+        var match = false;
+        if (type === 'trial' && isTrial) match = true;
+        if (type === 'vipBasic' && isVipBasic) match = true;
+        if (type === 'vipUpgrade' && isVipUpgrade) match = true;
+
+        if (match) {
+          var phone = u.phone || '未绑定手机号';
+          var remainText = '';
+          if (isTrial) {
+            var remainMs = trialMs - (now - firstLogin);
+            var remainH = Math.floor(remainMs / (60*60*1000));
+            remainText = ' · 剩余' + remainH + 'h';
+          }
+          if (isVipBasic) {
+            var daysLeft = Math.ceil((paidUntil - now) / (24*60*60*1000));
+            remainText = ' · 剩余' + daysLeft + '天';
+          }
+          var regDate = new Date(firstLogin).toLocaleDateString();
+          html += '<div class="user-info-row"><div><div class="user-info-phone">📱 ' + phone + '</div><div class="user-info-meta">注册: ' + regDate + remainText + ' · ' + uk + '</div></div><span class="key-badge active">' + titleMap[type].replace('用户','') + '</span></div>';
+          count++;
+        }
+      });
+      if (count === 0) html = '<p style="color:var(--text-l);font-size:0.82rem;text-align:center;padding:20px">暂无' + titleMap[type] + '</p>';
+      document.getElementById('allUsersList').innerHTML = html;
+      document.getElementById('allUsersModal').classList.add('show');
+    });
+    return;
+  }
+
+  if (count === 0) html = '<p style="color:var(--text-l);font-size:0.82rem;text-align:center;padding:20px">暂无' + titleMap[type] + '</p>';
   document.getElementById('allUsersList').innerHTML = html;
   document.getElementById('allUsersModal').classList.add('show');
 }
@@ -3677,6 +4265,800 @@ function renderAll() {
   switchGate('user');
   setTimeout(() => { const el = document.getElementById('keyInput'); if (el) el.focus(); }, 100);
 })();
+
+/* ===== 升级版功能 ===== */
+var beautySkinData = null;
+var beautyMoodData = null;
+var beautyMoodState = { mood: '', status: '', diary: '', meditation: false, meditationMinutes: 0, discipline: {} };
+var beautySkincareState = {
+  startDate: null,
+  endDate: null,
+  currentDay: 1,
+  totalDays: 100,
+  skinType: '',
+  morningSkincare: false,
+  nightSkincare: false,
+  bodyCare: [],
+  salon: false, salonNote: '',
+  cosmetic: false, cosmeticNote: '',
+  note: ''
+};
+var skincareCheckItems = [
+  { key: 'morningSkincare', label: '晨间护肤', icon: '🌅' },
+  { key: 'nightSkincare', label: '晚间护肤', icon: '🌙' },
+  { key: 'salon', label: '美容院护理', icon: '💆' },
+  { key: 'cosmetic', label: 'do脸日记', icon: '💉' }
+];
+var meditationAudio = null;
+var commCurrentTab = 'hot';
+
+function openBeautyUpgrade() {
+  /* 检查升级版权限 */
+  var loginType = sessionStorage.getItem(SESSION_KEY) || '';
+  var isAdmin = sessionStorage.getItem(ADMIN_SESSION) === '1';
+  var lockMsg = document.getElementById('beautyLockMsg');
+  var sections = document.getElementById('beautySections');
+  if (loginType === 'admin' || isAdmin || (loginType && loginType.length === 6)) {
+    /* 管理员和密钥用户免费使用 */
+    lockMsg.style.display = 'none';
+    sections.style.display = 'block';
+  } else {
+    /* 微信用户检查升级版付费状态 */
+    var wxPhone = localStorage.getItem('moondiary_wx_phone');
+    if (wxPhone) {
+      loadFromCloud('_wx_users', function(data) {
+        if (data && data[wxPhone] && data[wxPhone].upgradePaidUntil && data[wxPhone].upgradePaidUntil > Date.now()) {
+          lockMsg.style.display = 'none';
+          sections.style.display = 'block';
+        } else {
+          lockMsg.style.display = 'block';
+          sections.style.display = 'block';
+        }
+      });
+    } else {
+      lockMsg.style.display = 'block';
+      sections.style.display = 'block';
+    }
+  }
+  document.getElementById('beautyHomeModal').classList.add('show');
+}
+
+function payBeautyUpgrade() {
+  showToast('升级版支付功能即将开通，请使用小程序开通');
+}
+
+/* === 护肤日记 === */
+function openBeautySkincare() {
+  document.getElementById('beautyHomeModal').classList.remove('show');
+  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  loadFromCloud('beauty/skincare/' + userKey, function(data) {
+    beautySkinData = data || { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
+    if (!beautySkinData.dailyRecords) beautySkinData.dailyRecords = [];
+    if (!beautySkinData.startDate) beautySkinData.startDate = formatDateStr(new Date());
+    if (!beautySkinData.endDate) {
+      /* 默认结束日期为起始日期+99天（100天计划） */
+      var d = new Date(beautySkinData.startDate);
+      d.setDate(d.getDate() + 99);
+      beautySkinData.endDate = formatDateStr(d);
+    }
+
+    var startTs = new Date(beautySkinData.startDate).getTime();
+    var endTs = new Date(beautySkinData.endDate).getTime();
+    var nowTs = new Date(formatDateStr(new Date())).getTime();
+    var dayDiff = Math.floor((nowTs - startTs) / 86400000) + 1;
+    if (dayDiff < 1) dayDiff = 1;
+    var totalDays = Math.floor((endTs - startTs) / 86400000) + 1;
+    if (totalDays < 1) totalDays = 1;
+    if (dayDiff > totalDays) dayDiff = totalDays;
+
+    beautySkincareState.startDate = beautySkinData.startDate;
+    beautySkincareState.endDate = beautySkinData.endDate;
+    beautySkincareState.totalDays = totalDays;
+    beautySkincareState.currentDay = dayDiff;
+    beautySkincareState.skinType = (beautySkinData.skinProfile && beautySkinData.skinProfile.type) || '';
+
+    /* 加载今日记录 */
+    var today = formatDateStr(new Date());
+    var record = null;
+    for (var i = 0; i < beautySkinData.dailyRecords.length; i++) {
+      if (beautySkinData.dailyRecords[i].date === today) { record = beautySkinData.dailyRecords[i]; break; }
+    }
+    if (record) {
+      beautySkincareState.morningSkincare = !!record.morningSkincare;
+      beautySkincareState.nightSkincare = !!record.nightSkincare;
+      beautySkincareState.bodyCare = record.bodyCare || [];
+      beautySkincareState.salon = !!record.salon;
+      beautySkincareState.salonNote = record.salonNote || '';
+      beautySkincareState.cosmetic = !!record.cosmetic;
+      beautySkincareState.cosmeticNote = record.cosmeticNote || '';
+      beautySkincareState.note = record.note || '';
+    }
+
+    updateSkincareUI();
+    renderSkincareCalendar();
+  });
+  document.getElementById('beautySkincareModal').classList.add('show');
+}
+
+function updateSkincareUI() {
+  var progress = (beautySkincareState.currentDay / beautySkincareState.totalDays * 100).toFixed(0);
+  var now = new Date();
+  var nowStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+
+  /* 计算皮肤状态标签 */
+  var skinTypeLabels = {dry:'干性',oily:'油性',combination:'混合',sensitive:'敏感'};
+  var skinTypeLabel = skinTypeLabels[beautySkincareState.skinType] || '未设置';
+
+  /* 3D立体倒计时卡片 + 皮肤状态小字 */
+  var countdownHtml = '<div class="skincare-countdown-card">';
+  countdownHtml += '<div class="skincare-countdown-glow"></div>';
+  countdownHtml += '<div class="skincare-countdown-top">';
+  /* 3D圆环 */
+  countdownHtml += '<div class="skincare-circle-3d">';
+  countdownHtml += '<div class="skincare-circle-ring skincare-outer-ring"></div>';
+  countdownHtml += '<div class="skincare-circle-ring skincare-middle-ring"></div>';
+  countdownHtml += '<div class="skincare-circle-inner">';
+  countdownHtml += '<span class="skincare-countdown-num">'+beautySkincareState.currentDay+'</span>';
+  countdownHtml += '<span class="skincare-countdown-total">/'+beautySkincareState.totalDays+'天</span>';
+  countdownHtml += '</div></div>';
+  /* 信息区 — 大标题用区别色 + 皮肤状态小字旁 */
+  countdownHtml += '<div class="skincare-countdown-info">';
+  countdownHtml += '<div class="skincare-title-row"><span class="skincare-countdown-title">护肤打卡</span>';
+  countdownHtml += '<span class="skincare-skin-badge" onclick="onSkinTypeChange();playClick()">'+skinTypeLabel+'</span></div>';
+  countdownHtml += '<div class="skincare-countdown-desc">第'+beautySkincareState.currentDay+'天，坚持变美！</div>';
+  countdownHtml += '<div class="skincare-countdown-progress">';
+  countdownHtml += '<div class="skincare-progress-bar"><div class="skincare-progress-fill" style="width:'+progress+'%"></div></div>';
+  countdownHtml += '<div class="skincare-progress-text">'+beautySkincareState.currentDay+' / '+beautySkincareState.totalDays+'</div>';
+  countdownHtml += '</div></div></div>';
+  /* 日期选择 */
+  countdownHtml += '<div class="skincare-date-row">';
+  countdownHtml += '<div class="skincare-date-item"><span class="skincare-date-label">起始日期</span><input type="date" class="skincare-date-input" value="'+beautySkincareState.startDate+'" onchange="onStartDateChange(this.value)" /></div>';
+  countdownHtml += '<span class="skincare-date-sep">→</span>';
+  countdownHtml += '<div class="skincare-date-item"><span class="skincare-date-label">结束日期</span><input type="date" class="skincare-date-input" value="'+beautySkincareState.endDate+'" onchange="onEndDateChange(this.value)" /></div>';
+  countdownHtml += '</div>';
+  countdownHtml += '<div class="skincare-today-datetime">'+nowStr+'</div>';
+  countdownHtml += '</div>';
+  document.getElementById('skincareCountdown').innerHTML = countdownHtml;
+
+  /* checkbox 打勾状态更新 */
+  skincareCheckItems.forEach(function(item) {
+    var row = document.getElementById('check-' + item.key);
+    if (!row) return;
+    var isOn = !!beautySkincareState[item.key];
+    row.classList.toggle('skincare-check-on', isOn);
+    var tick = row.querySelector('.skincare-check-tick');
+    if (tick) tick.style.display = isOn ? 'block' : 'none';
+  });
+  /* 美容院/do脸文本框：打勾后显示 */
+  var salonNoteEl = document.getElementById('beautySalonNote');
+  var cosmeticNoteEl = document.getElementById('beautyCosmeticNote');
+  if (salonNoteEl) {
+    salonNoteEl.style.display = beautySkincareState.salon ? 'block' : 'none';
+    salonNoteEl.value = beautySkincareState.salonNote;
+  }
+  if (cosmeticNoteEl) {
+    cosmeticNoteEl.style.display = beautySkincareState.cosmetic ? 'block' : 'none';
+    cosmeticNoteEl.value = beautySkincareState.cosmeticNote;
+  }
+  /* 顶部摘要：只显示已选项目 */
+  updateSkincareSummary();
+  document.querySelectorAll('#bodyCareTags .beauty-tag').forEach(function(el) {
+    el.classList.toggle('beauty-tag-active', beautySkincareState.bodyCare.indexOf(el.dataset.key) > -1);
+  });
+  if (document.getElementById('beautyNote')) document.getElementById('beautyNote').value = beautySkincareState.note;
+}
+
+function updateSkincareSummary() {
+  var tags = [];
+  skincareCheckItems.forEach(function(item) {
+    if (beautySkincareState[item.key]) {
+      tags.push({ label: item.icon + ' ' + item.label, type: 'check' });
+    }
+  });
+  var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理'};
+  beautySkincareState.bodyCare.forEach(function(k) {
+    tags.push({ label: bodyCareLabels[k] || k, type: 'body' });
+  });
+  var el = document.getElementById('skincareSummary');
+  if (!el) return;
+  if (tags.length === 0) { el.innerHTML = ''; return; }
+  var html = '<div class="skincare-summary-card"><div class="skincare-summary-tags">';
+  tags.forEach(function(t) {
+    html += '<span class="skincare-summary-tag ' + (t.type === 'check' ? 'skincare-summary-check' : 'skincare-summary-body') + '">' + t.label + '</span>';
+  });
+  html += '</div></div>';
+  el.innerHTML = html;
+}
+
+function onStartDateChange(dateStr) {
+  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return;
+  playClick();
+  beautySkincareState.startDate = dateStr;
+  if (beautySkinData) {
+    beautySkinData.startDate = dateStr;
+    var startTs = new Date(dateStr).getTime();
+    var endTs = new Date(beautySkincareState.endDate).getTime();
+    var total = Math.floor((endTs - startTs) / 86400000) + 1;
+    if (total < 1) total = 1;
+    beautySkincareState.totalDays = total;
+    saveToCloudImmediate('beauty/skincare/' + (sessionStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
+  }
+  updateSkincareUI();
+  renderSkincareCalendar();
+}
+
+function onEndDateChange(dateStr) {
+  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return;
+  playClick();
+  beautySkincareState.endDate = dateStr;
+  if (beautySkinData) {
+    beautySkinData.endDate = dateStr;
+    var startTs = new Date(beautySkincareState.startDate).getTime();
+    var endTs = new Date(dateStr).getTime();
+    var total = Math.floor((endTs - startTs) / 86400000) + 1;
+    if (total < 1) total = 1;
+    beautySkincareState.totalDays = total;
+    saveToCloudImmediate('beauty/skincare/' + (sessionStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
+  }
+  updateSkincareUI();
+  renderSkincareCalendar();
+}
+
+function toggleSkincareCheck(field) {
+  beautySkincareState[field] = !beautySkincareState[field];
+  var row = document.getElementById('check-' + field);
+  if (row) {
+    var isOn = beautySkincareState[field];
+    row.classList.toggle('skincare-check-on', isOn);
+    var tick = row.querySelector('.skincare-check-tick');
+    if (tick) tick.style.display = isOn ? 'block' : 'none';
+  }
+  /* 美容院/do脸文本框联动 */
+  if (field === 'salon') {
+    var el = document.getElementById('beautySalonNote');
+    if (el) el.style.display = beautySkincareState.salon ? 'block' : 'none';
+  }
+  if (field === 'cosmetic') {
+    var el2 = document.getElementById('beautyCosmeticNote');
+    if (el2) el2.style.display = beautySkincareState.cosmetic ? 'block' : 'none';
+  }
+  updateSkincareSummary();
+  autoSaveSkincare();
+}
+
+function toggleBodyCare(el, key) {
+  var idx = beautySkincareState.bodyCare.indexOf(key);
+  if (idx > -1) beautySkincareState.bodyCare.splice(idx, 1);
+  else beautySkincareState.bodyCare.push(key);
+  el.classList.toggle('beauty-tag-active');
+  playClick();
+  autoSaveSkincare();
+}
+
+function onSkinTypeChange() {
+  var options = [['dry','干性'],['oily','油性'],['combination','混合'],['sensitive','敏感']];
+  var labels = options.map(function(o) { return o[1]; });
+  // 使用简单的下拉选择
+  var html = '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;display:flex;align-items:flex-end;justify-content:center" onclick="this.remove()">';
+  html += '<div style="background:#fff;border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:400px" onclick="event.stopPropagation()">';
+  html += '<div style="font-size:1rem;font-weight:700;text-align:center;margin-bottom:16px">选择皮肤状态</div>';
+  options.forEach(function(o) {
+    html += '<div onclick="selectSkinType(\''+o[0]+'\');playClick()" style="padding:14px;text-align:center;font-size:0.95rem;cursor:pointer;border-bottom:1px solid #f5f5f4;color:'+(beautySkincareState.skinType===o[0]?'#7c3aed;font-weight:700':'#44403c')+'">'+o[1]+(beautySkincareState.skinType===o[0]?' ✓':'')+'</div>';
+  });
+  html += '<div onclick="this.parentElement.parentElement.remove()" style="padding:14px;text-align:center;font-size:0.9rem;color:#a8a29e;cursor:pointer;margin-top:8px">取消</div>';
+  html += '</div></div>';
+  var div = document.createElement('div');
+  div.innerHTML = html;
+  document.body.appendChild(div.firstChild);
+}
+
+function selectSkinType(val) {
+  beautySkincareState.skinType = val;
+  // 关闭弹窗
+  var overlay = document.querySelector('[style*="z-index:9999"]');
+  if (overlay) overlay.remove();
+  updateSkincareUI();
+  autoSaveSkincare();
+  playClick();
+}
+
+var _skincareSaveTimer = null;
+function autoSaveSkincare() {
+  if (_skincareSaveTimer) clearTimeout(_skincareSaveTimer);
+  _skincareSaveTimer = setTimeout(function() {
+    saveBeautySkincare();
+  }, 1500);
+}
+
+function saveBeautySkincare() {
+  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  if (!beautySkinData) beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
+  var today = formatDateStr(new Date());
+  beautySkincareState.salonNote = document.getElementById('beautySalonNote') ? document.getElementById('beautySalonNote').value : '';
+  beautySkincareState.cosmeticNote = document.getElementById('beautyCosmeticNote') ? document.getElementById('beautyCosmeticNote').value : '';
+  beautySkincareState.note = document.getElementById('beautyNote') ? document.getElementById('beautyNote').value : '';
+
+  var record = Object.assign({ date: today }, beautySkincareState);
+  delete record.totalDays; delete record.currentDay;
+  record.updatedAt = Date.now();
+
+  beautySkinData.skinProfile = { type: beautySkincareState.skinType, updatedAt: Date.now() };
+  beautySkinData.startDate = beautySkincareState.startDate;
+  beautySkinData.endDate = beautySkincareState.endDate;
+
+  var found = false;
+  for (var i = 0; i < beautySkinData.dailyRecords.length; i++) {
+    if (beautySkinData.dailyRecords[i].date === today) {
+      record.createdAt = beautySkinData.dailyRecords[i].createdAt || Date.now();
+      /* 保留日历中编辑过的字段 */
+      record.photo = beautySkinData.dailyRecords[i].photo || record.photo;
+      record.salonNote = beautySkinData.dailyRecords[i].salonNote || record.salonNote;
+      record.cosmeticNote = beautySkinData.dailyRecords[i].cosmeticNote || record.cosmeticNote;
+      beautySkinData.dailyRecords[i] = record;
+      found = true; break;
+    }
+  }
+  if (!found) { record.createdAt = Date.now(); beautySkinData.dailyRecords.push(record); }
+  saveToCloudImmediate('beauty/skincare/' + userKey, beautySkinData);
+  renderSkincareCalendar();
+}
+
+/* === 护肤日历 === */
+var skincareCalMonth = null;
+
+function renderSkincareCalendar() {
+  if (!beautySkinData) return;
+  var calEl = document.getElementById('skincareCalendar');
+  if (!calEl) return;
+  var now = new Date();
+  if (!skincareCalMonth) skincareCalMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  var y = skincareCalMonth.getFullYear();
+  var m = skincareCalMonth.getMonth();
+
+  var monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
+  html += '<span onclick="skincareCalPrev();playClick()" style="cursor:pointer;font-size:1.2rem;color:#8b5cf6;padding:4px 12px">‹</span>';
+  html += '<span style="font-weight:600;color:#44403c">'+y+'年 '+monthNames[m]+'</span>';
+  html += '<span onclick="skincareCalNext();playClick()" style="cursor:pointer;font-size:1.2rem;color:#8b5cf6;padding:4px 12px">›</span>';
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center">';
+  ['日','一','二','三','四','五','六'].forEach(function(w) {
+    html += '<div style="font-size:0.72rem;color:#a8a29e;padding:4px 0">'+w+'</div>';
+  });
+  var firstDay = new Date(y, m, 1).getDay();
+  var daysInMonth = new Date(y, m+1, 0).getDate();
+  var todayStr = formatDateStr(new Date());
+  var recordsMap = {};
+  if (beautySkinData.dailyRecords) {
+    beautySkinData.dailyRecords.forEach(function(r) { recordsMap[r.date] = r; });
+  }
+  for (var i = 0; i < firstDay; i++) {
+    html += '<div></div>';
+  }
+  for (var d = 1; d <= daysInMonth; d++) {
+    var ds = y + '-' + String(m+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    var isToday = ds === todayStr;
+    var rec = recordsMap[ds];
+    var hasRecord = !!rec && isDayCheckedWeb(rec);
+    var hasPhoto = rec && rec.photo;
+    var todayBg = isToday ? 'background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:700;' : '';
+    var recColor = hasRecord && !isToday ? 'color:#8b5cf6;font-weight:600;' : 'color:#44403c;font-weight:400;';
+    html += '<div onclick="openSkincareDayDetail(\''+ds+'\');playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;gap:1px;'+todayBg+'">';
+    /* 📷在数字上方 */
+    if (hasPhoto) {
+      html += '<span style="font-size:0.6rem;line-height:1">📷</span>';
+    } else {
+      html += '<span style="font-height:0;line-height:1;font-size:0.6rem">&nbsp;</span>';
+    }
+    /* 日期数字 */
+    if (isToday) {
+      html += '<span style="width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:700;font-size:0.82rem;box-shadow:0 2px 6px rgba(139,92,246,0.3)">'+d+'</span>';
+    } else {
+      html += '<span style="font-size:0.82rem;'+recColor+'">'+d+'</span>';
+    }
+    /* 底部打勾标记（不分早晚） */
+    html += '<div style="height:14px;display:flex;gap:2px">';
+    if (hasRecord) html += '<span style="font-size:0.65rem;color:#10b981">✓</span>';
+    html += '</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+  /* 图例 */
+  html += '<div style="display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid #f5f5f4;flex-wrap:wrap">';
+  html += '<span style="font-size:0.72rem;color:#a8a29e;display:flex;align-items:center;gap:4px">📷 有照片</span>';
+  html += '<span style="font-size:0.72rem;color:#a8a29e;display:flex;align-items:center;gap:4px">✓ 已打卡</span>';
+  html += '</div>';
+  calEl.innerHTML = html;
+}
+
+/* 判断某天是否有打卡（晨间/晚间/美容院/do脸/护理项目 任一即可） */
+function isDayCheckedWeb(rec) {
+  if (!rec) return false;
+  if (rec.morningSkincare) return true;
+  if (rec.nightSkincare) return true;
+  if (rec.salon) return true;
+  if (rec.cosmetic) return true;
+  if (rec.bodyCare && rec.bodyCare.length > 0) return true;
+  return false;
+}
+
+function skincareCalPrev() {
+  if (!skincareCalMonth) return;
+  skincareCalMonth.setMonth(skincareCalMonth.getMonth() - 1);
+  renderSkincareCalendar();
+}
+
+function skincareCalNext() {
+  if (!skincareCalMonth) return;
+  skincareCalMonth.setMonth(skincareCalMonth.getMonth() + 1);
+  renderSkincareCalendar();
+}
+
+var skincareDayDetailDate = null;
+var skincareDayDetailState = {};
+
+function openSkincareDayDetail(dateStr) {
+  skincareDayDetailDate = dateStr;
+  var record = null;
+  if (beautySkinData && beautySkinData.dailyRecords) {
+    for (var i = 0; i < beautySkinData.dailyRecords.length; i++) {
+      if (beautySkinData.dailyRecords[i].date === dateStr) { record = beautySkinData.dailyRecords[i]; break; }
+    }
+  }
+  skincareDayDetailState = {
+    note: record ? (record.note || '') : '',
+    salonNote: record ? (record.salonNote || '') : '',
+    cosmeticNote: record ? (record.cosmeticNote || '') : '',
+    photo: record ? (record.photo || '') : '',
+    record: record || null
+  };
+
+  document.getElementById('skincareDayDetailTitle').textContent = '📅 ' + dateStr + ' 详情';
+
+  var html = '';
+  /* 备注📝 */
+  html += '<div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">📝 备注</div>';
+  html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:70px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit">'+skincareDayDetailState.note+'</textarea></div>';
+  /* 美容院护理心得 */
+  html += '<div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">💆 美容院护理心得</div>';
+  html += '<input type="text" id="skincareDetailSalonNote" placeholder="护理心得..." value="'+skincareDayDetailState.salonNote.replace(/"/g,'&quot;')+'" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fff"></div>';
+  /* do脸项目感受 */
+  html += '<div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">💉 do脸项目感受</div>';
+  html += '<input type="text" id="skincareDetailCosmeticNote" placeholder="do脸项目感受..." value="'+skincareDayDetailState.cosmeticNote.replace(/"/g,'&quot;')+'" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fff"></div>';
+  /* 当日已选打卡数据（只显示已选，更简洁） */
+  if (skincareDayDetailState.record) {
+    var r = skincareDayDetailState.record;
+    var hasAnyCheck = r.morningSkincare || r.nightSkincare || r.salon || r.cosmetic;
+    var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理'};
+    var hasBodyCare = r.bodyCare && r.bodyCare.length > 0;
+    if (hasAnyCheck || hasBodyCare) {
+      html += '<div style="margin-bottom:14px"><div style="display:flex;flex-wrap:wrap;gap:6px">';
+      if (r.morningSkincare) html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8">晨间护肤 ✓</span>';
+      if (r.nightSkincare) html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8">晚间护肤 ✓</span>';
+      if (r.salon) html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8">美容院护理 ✓</span>';
+      if (r.cosmetic) html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8">do脸日记 ✓</span>';
+      if (hasBodyCare) {
+        r.bodyCare.forEach(function(k) {
+          html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe">'+(bodyCareLabels[k]||k)+' ✓</span>';
+        });
+      }
+      html += '</div></div>';
+    }
+  }
+  /* 照片区域（最下端，紧凑入口） */
+  html += '<div style="margin-bottom:14px">';
+  if (skincareDayDetailState.photo) {
+    /* 有照片：查看照片 + 更换 + 删除 三个紧凑按钮 */
+    html += '<div class="skincare-photo-action-row">';
+    html += '<div class="skincare-photo-action-btn skincare-photo-view-btn" onclick="viewSkincareDayPhoto();playClick()"><span class="skincare-photo-action-icon">👁</span><span class="skincare-photo-action-text">查看照片</span></div>';
+    html += '<div class="skincare-photo-action-btn skincare-photo-upload-btn" onclick="uploadSkincareDayPhoto();playClick()"><span class="skincare-photo-action-icon">📷</span><span class="skincare-photo-action-text">更换</span></div>';
+    html += '<div class="skincare-photo-action-btn skincare-photo-delete-btn" onclick="deleteSkincareDayPhoto();playClick()"><span class="skincare-photo-action-icon">🗑</span><span class="skincare-photo-action-text">删除</span></div>';
+    html += '</div>';
+  } else {
+    /* 无照片：小上传入口 */
+    html += '<div class="skincare-photo-upload-mini" onclick="uploadSkincareDayPhoto();playClick()"><span class="skincare-photo-upload-mini-icon">📷</span><span class="skincare-photo-upload-mini-text">上传照片</span></div>';
+  }
+  html += '</div>';
+  /* 保存按钮 */
+  html += '<button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#f43f5e,#ec4899);padding:12px;font-size:0.95rem;font-weight:700" onclick="saveSkincareDayDetail();playClick()">保存</button>';
+
+  document.getElementById('skincareDayDetailContent').innerHTML = html;
+  document.getElementById('skincareDayDetailModal').classList.add('show');
+}
+
+function uploadSkincareDayPhoto() {
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      skincareDayDetailState.photo = ev.target.result;
+      openSkincareDayDetail(skincareDayDetailDate);
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function deleteSkincareDayPhoto() {
+  skincareDayDetailState.photo = '';
+  openSkincareDayDetail(skincareDayDetailDate);
+}
+
+function viewSkincareDayPhoto() {
+  if (skincareDayDetailState.photo) {
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:pointer';
+    overlay.onclick = function() { overlay.remove(); };
+    var img = document.createElement('img');
+    img.src = skincareDayDetailState.photo;
+    img.style.cssText = 'max-width:90%;max-height:90%;border-radius:8px';
+    overlay.appendChild(img);
+    document.body.appendChild(overlay);
+  }
+}
+
+function saveSkincareDayDetail() {
+  if (!beautySkinData) beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
+  if (!beautySkinData.dailyRecords) beautySkinData.dailyRecords = [];
+  skincareDayDetailState.note = document.getElementById('skincareDetailNote') ? document.getElementById('skincareDetailNote').value : '';
+  skincareDayDetailState.salonNote = document.getElementById('skincareDetailSalonNote') ? document.getElementById('skincareDetailSalonNote').value : '';
+  skincareDayDetailState.cosmeticNote = document.getElementById('skincareDetailCosmeticNote') ? document.getElementById('skincareDetailCosmeticNote').value : '';
+
+  var found = false;
+  for (var i = 0; i < beautySkinData.dailyRecords.length; i++) {
+    if (beautySkinData.dailyRecords[i].date === skincareDayDetailDate) {
+      /* 保留原有打卡数据，只更新日历编辑的字段 */
+      beautySkinData.dailyRecords[i].note = skincareDayDetailState.note;
+      beautySkinData.dailyRecords[i].salonNote = skincareDayDetailState.salonNote;
+      beautySkinData.dailyRecords[i].cosmeticNote = skincareDayDetailState.cosmeticNote;
+      beautySkinData.dailyRecords[i].photo = skincareDayDetailState.photo;
+      beautySkinData.dailyRecords[i].updatedAt = Date.now();
+      found = true; break;
+    }
+  }
+  if (!found) {
+    beautySkinData.dailyRecords.push({
+      date: skincareDayDetailDate,
+      morningSkincare: false,
+      nightSkincare: false,
+      bodyCare: [],
+      salon: false,
+      cosmetic: false,
+      note: skincareDayDetailState.note,
+      salonNote: skincareDayDetailState.salonNote,
+      cosmeticNote: skincareDayDetailState.cosmeticNote,
+      photo: skincareDayDetailState.photo,
+      createdAt: Date.now()
+    });
+  }
+  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  saveToCloudImmediate('beauty/skincare/' + userKey, beautySkinData);
+  showToast('✅ 保存成功');
+  renderSkincareCalendar();
+}
+
+/* === 心情日记 === */
+function openBeautyMood() {
+  document.getElementById('beautyHomeModal').classList.remove('show');
+  beautyMoodState = { mood: '', status: '', diary: '', meditation: false, meditationMinutes: 0, discipline: {} };
+  document.getElementById('moodStatus').value = '';
+  document.getElementById('moodDiary').value = '';
+  document.getElementById('meditationMinutes').value = '';
+  document.getElementById('moodCharCount').textContent = '0/1000';
+  document.querySelectorAll('#moodEmojiGrid .beauty-emoji-card').forEach(function(el) { el.classList.remove('beauty-emoji-card-active'); });
+  document.querySelectorAll('#disciplineGrid .beauty-check').forEach(function(el) { el.classList.remove('beauty-check-active'); });
+  /* 加载数据 */
+  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  loadFromCloud('beauty/mood/' + userKey, function(data) {
+    beautyMoodData = data || { version: 1, dailyRecords: [] };
+    if (!beautyMoodData.dailyRecords) beautyMoodData.dailyRecords = [];
+    var today = formatDateStr(new Date());
+    var record = null;
+    for (var i = 0; i < beautyMoodData.dailyRecords.length; i++) {
+      if (beautyMoodData.dailyRecords[i].date === today) { record = beautyMoodData.dailyRecords[i]; break; }
+    }
+    if (record) {
+      beautyMoodState.mood = record.mood || '';
+      beautyMoodState.status = record.status || '';
+      beautyMoodState.diary = record.diary || '';
+      beautyMoodState.meditation = record.meditation || false;
+      beautyMoodState.meditationMinutes = record.meditationMinutes || 0;
+      beautyMoodState.discipline = record.discipline || {};
+      document.getElementById('moodStatus').value = beautyMoodState.status;
+      document.getElementById('moodDiary').value = beautyMoodState.diary;
+      document.getElementById('moodCharCount').textContent = beautyMoodState.diary.length + '/1000';
+      document.getElementById('meditationMinutes').value = beautyMoodState.meditationMinutes || '';
+    }
+  });
+  document.getElementById('beautyMoodModal').classList.add('show');
+}
+
+function selectMoodEmoji(val, el) {
+  beautyMoodState.mood = val;
+  document.querySelectorAll('#moodEmojiGrid .beauty-emoji-card').forEach(function(e) { e.classList.remove('beauty-emoji-card-active'); });
+  el.classList.add('beauty-emoji-card-active');
+  playClick();
+}
+
+function playMeditationMusic() {
+  var select = document.getElementById('meditationMusicSelect');
+  var trackId = select.value;
+  if (!trackId) { showToast('请选择音乐'); return; }
+  if (meditationAudio) { try { meditationAudio.pause(); } catch(e) {} }
+  meditationAudio = new Audio('https://' + COS_CONFIG.Bucket + '.cos.' + COS_CONFIG.Region + '.myqcloud.com/beauty/music/' + trackId + '.mp3');
+  meditationAudio.volume = 0.5;
+  meditationAudio.play().catch(function() { showToast('音频加载中，请稍后重试'); });
+  beautyMoodState.meditation = true;
+  if (!beautyMoodState.meditationMinutes) {
+    document.getElementById('meditationMinutes').value = 15;
+    beautyMoodState.meditationMinutes = 15;
+  }
+  showToast('🎵 开始播放');
+}
+
+function stopMeditationMusic() {
+  if (meditationAudio) { try { meditationAudio.pause(); meditationAudio = null; } catch(e) {} }
+  showToast('⏹ 已停止');
+}
+
+function saveBeautyMood() {
+  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  if (!beautyMoodData) beautyMoodData = { version: 1, dailyRecords: [] };
+  var today = formatDateStr(new Date());
+  beautyMoodState.status = document.getElementById('moodStatus').value;
+  beautyMoodState.diary = document.getElementById('moodDiary').value;
+  beautyMoodState.meditationMinutes = parseInt(document.getElementById('meditationMinutes').value) || 0;
+  var record = Object.assign({ date: today, createdAt: Date.now(), updatedAt: Date.now() }, beautyMoodState);
+  var found = false;
+  for (var i = 0; i < beautyMoodData.dailyRecords.length; i++) {
+    if (beautyMoodData.dailyRecords[i].date === today) {
+      record.createdAt = beautyMoodData.dailyRecords[i].createdAt || Date.now();
+      beautyMoodData.dailyRecords[i] = record;
+      found = true; break;
+    }
+  }
+  if (!found) { beautyMoodData.dailyRecords.push(record); }
+  saveToCloudImmediate('beauty/mood/' + userKey, beautyMoodData);
+  showToast('✅ 保存成功');
+}
+
+/* 心情日记字数统计 */
+document.addEventListener('input', function(e) {
+  if (e.target && e.target.id === 'moodDiary') {
+    document.getElementById('moodCharCount').textContent = e.target.value.length + '/1000';
+  }
+});
+
+/* === 月友圈 === */
+function openBeautyCommunity() {
+  document.getElementById('beautyHomeModal').classList.remove('show');
+  commCurrentTab = 'hot';
+  document.getElementById('beautyCommunityModal').classList.add('show');
+  loadCommunityPosts();
+}
+
+function switchCommTab(tab) {
+  commCurrentTab = tab;
+  ['Hot','New','Mine'].forEach(function(t) {
+    var el = document.getElementById('commTab' + t);
+    if (el) { el.style.background = ''; el.style.color = ''; }
+  });
+  var active = document.getElementById('commTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+  if (active) { active.style.background = 'linear-gradient(135deg,#8b5cf6,#ec4899)'; active.style.color = '#fff'; }
+  loadCommunityPosts();
+}
+
+function loadCommunityPosts() {
+  loadFromCloud('beauty/community/posts', function(data) {
+    var posts = (data && data.posts) ? data.posts : [];
+    var container = document.getElementById('communityPosts');
+    var empty = document.getElementById('communityEmpty');
+    if (commCurrentTab === 'hot') {
+      posts.sort(function(a,b) { return (b.likeCount||0) - (a.likeCount||0); });
+    } else if (commCurrentTab === 'new') {
+      posts.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
+    } else if (commCurrentTab === 'mine') {
+      var userKey = sessionStorage.getItem(SESSION_KEY) || '';
+      posts = posts.filter(function(p) { return p.userKey === userKey; });
+    }
+    if (posts.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    var html = '';
+    posts.forEach(function(p) {
+      var isLiked = p.likedBy && p.likedBy.indexOf(sessionStorage.getItem(SESSION_KEY)) > -1;
+      html += '<div class="comm-post">' +
+        '<div class="comm-post-header">' +
+          '<div class="comm-post-avatar">' + (p.nickname ? p.nickname[0] : '月') + '</div>' +
+          '<div><div class="comm-post-nick">' + (p.nickname||'月友') + '</div>' +
+          '<div class="comm-post-time">' + formatCommTime(p.createdAt) + '</div></div>' +
+        '</div>' +
+        (p.content ? '<div class="comm-post-content">' + p.content + '</div>' : '') +
+        '<div class="comm-post-actions">' +
+          '<span class="comm-post-action" onclick="likePost(\'' + p.id + '\');playClick()">' + (isLiked?'❤️':'🤍') + ' ' + (p.likeCount||0) + '</span>' +
+          '<span class="comm-post-action">💬 ' + (p.commentCount||0) + '</span>' +
+        '</div></div>';
+    });
+    container.innerHTML = html;
+  });
+}
+
+function formatCommTime(ts) {
+  if (!ts) return '';
+  var diff = Date.now() - ts;
+  if (diff < 60000) return '刚刚';
+  if (diff < 3600000) return Math.floor(diff/60000) + '分钟前';
+  if (diff < 86400000) return Math.floor(diff/3600000) + '小时前';
+  if (diff < 2592000000) return Math.floor(diff/86400000) + '天前';
+  var d = new Date(ts); return (d.getMonth()+1) + '月' + d.getDate() + '日';
+}
+
+function showPostEditor() {
+  document.getElementById('postContent').value = '';
+  document.getElementById('postEditorModal').classList.add('show');
+}
+
+function publishPost() {
+  var content = document.getElementById('postContent').value.trim();
+  if (!content) { showToast('请输入内容'); return; }
+  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var nickname = localStorage.getItem('moondiary_nick') || '月友';
+  var postId = 'post_' + Date.now() + '_' + Math.random().toString(36).substring(2,6);
+  var newPost = {
+    id: postId, userKey: userKey, nickname: nickname, avatar: '',
+    content: content, images: [], likeCount: 0, commentCount: 0,
+    likedBy: [], createdAt: Date.now(), version: 1
+  };
+  loadFromCloud('beauty/community/posts', function(data) {
+    if (!data || !data.posts) data = { version: 1, posts: [] };
+    data.posts.unshift(newPost);
+    saveToCloudImmediate('beauty/community/posts', data);
+    document.getElementById('postEditorModal').classList.remove('show');
+    showToast('✅ 发布成功');
+    loadCommunityPosts();
+  });
+}
+
+function likePost(postId) {
+  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  loadFromCloud('beauty/community/posts', function(data) {
+    if (!data || !data.posts) return;
+    for (var i = 0; i < data.posts.length; i++) {
+      if (data.posts[i].id === postId) {
+        var likedBy = data.posts[i].likedBy || [];
+        var idx = likedBy.indexOf(userKey);
+        if (idx > -1) { likedBy.splice(idx, 1); data.posts[i].likeCount = Math.max(0, (data.posts[i].likeCount||0)-1); }
+        else { likedBy.push(userKey); data.posts[i].likeCount = (data.posts[i].likeCount||0)+1; }
+        data.posts[i].likedBy = likedBy;
+        break;
+      }
+    }
+    saveToCloudImmediate('beauty/community/posts', data);
+    loadCommunityPosts();
+  });
+}
+
+/* 通用打卡切换 */
+function toggleBeautyCheck(el, key) {
+  el.classList.toggle('beauty-check-active');
+  var isActive = el.classList.contains('beauty-check-active');
+  if (el.closest('#beautyMoodModal')) {
+    if (!beautyMoodState.discipline) beautyMoodState.discipline = {};
+    var discKey = key.replace('disc_', '');
+    beautyMoodState.discipline[discKey] = isActive;
+  }
+  playClick();
+}
+
+function formatDateStr(d) {
+  var y = d.getFullYear();
+  var m = String(d.getMonth()+1).padStart(2,'0');
+  var day = String(d.getDate()).padStart(2,'0');
+  return y + '-' + m + '-' + day;
+}
 </script>
 </body>
 </html>
