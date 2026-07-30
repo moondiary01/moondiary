@@ -4284,8 +4284,6 @@ var beautySkincareState = {
   note: ''
 };
 var skincareCheckItems = [
-  { key: 'morningSkincare', label: '晨间护肤', icon: '🌅' },
-  { key: 'nightSkincare', label: '晚间护肤', icon: '🌙' },
   { key: 'salon', label: '美容院护理', icon: '💆' },
   { key: 'cosmetic', label: 'do脸日记', icon: '💉' }
 ];
@@ -4728,13 +4726,11 @@ function openSkincareDayDetail(dateStr) {
   /* 当日已选打卡数据（只显示已选，更简洁） */
   if (skincareDayDetailState.record) {
     var r = skincareDayDetailState.record;
-    var hasAnyCheck = r.morningSkincare || r.nightSkincare || r.salon || r.cosmetic;
+    var hasAnyCheck = r.salon || r.cosmetic;
     var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理'};
     var hasBodyCare = r.bodyCare && r.bodyCare.length > 0;
     if (hasAnyCheck || hasBodyCare) {
       html += '<div style="margin-bottom:14px"><div style="display:flex;flex-wrap:wrap;gap:6px">';
-      if (r.morningSkincare) html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8">晨间护肤 ✓</span>';
-      if (r.nightSkincare) html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8">晚间护肤 ✓</span>';
       if (r.salon) html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8">美容院护理 ✓</span>';
       if (r.cosmetic) html += '<span style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8">do脸日记 ✓</span>';
       if (hasBodyCare) {
