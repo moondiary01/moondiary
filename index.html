@@ -2077,8 +2077,20 @@ function initDays() {
 
 /* ---------- 存取 ---------- */
 function loadState() {
-  const sk = userStorageKey(getCurrentPhone());
-  const saved = localStorage.getItem(sk);
+  var phone = getCurrentPhone();
+  var sk = userStorageKey(phone);
+  var saved = localStorage.getItem(sk);
+  /* 降级：如果手机号路径没有本地数据，尝试从密钥路径读取（兼容旧版本） */
+  if (!saved && currentKey && currentKey !== ADMIN_SESSION && currentKey !== 'local') {
+    var oldKey = userStorageKey(currentKey);
+    var oldSaved = localStorage.getItem(oldKey);
+    if (oldSaved) {
+      saved = oldSaved;
+      /* 迁移到新路径 */
+      try { localStorage.setItem(sk, oldSaved); } catch(e) {}
+      console.log('数据已从密钥路径 ' + currentKey + ' 迁移到手机号路径 ' + phone);
+    }
+  }
   if (saved) {
     try {
       const p = JSON.parse(saved);
@@ -2112,7 +2124,22 @@ function loadState() {
     showToast('欢迎首次使用，请点击右上角 ⚙️ 完善信息');
   }
   /* 从云端同步最新数据 */
-  loadFromCloud(getCurrentPhone(), function(cloudData) {
+  var cloudPhone = getCurrentPhone();
+  loadFromCloud(cloudPhone, function(cloudData) {
+    if (!cloudData && currentKey && currentKey !== ADMIN_SESSION && currentKey !== 'local' && currentKey !== cloudPhone) {
+      /* 降级：手机号路径云端无数据，尝试从密钥路径读取 */
+      loadFromCloud(currentKey, function(oldCloudData) {
+        if (oldCloudData) {
+          console.log('云端数据从密钥路径 ' + currentKey + ' 恢复到手机号路径 ' + cloudPhone);
+          saveToCloudImmediate(cloudPhone, oldCloudData);
+          applyCloudData(oldCloudData);
+        }
+      });
+    } else if (cloudData) {
+      applyCloudData(cloudData);
+    }
+  });
+  function applyCloudData(cloudData) {
     if (cloudData) {
       /* 只覆盖云端有值的字段，避免 null/undefined 覆盖本地有效数据 */
       Object.keys(cloudData).forEach(function(key) {
@@ -2138,7 +2165,7 @@ function loadState() {
       if (typeof renderAll === 'function') renderAll();
       console.log('云端数据已同步');
     }
-  });
+  }
 }
 
 function saveState() {
@@ -4538,11 +4565,37 @@ function renderAll() {
   /* 检查是否已登录过（首次密钥登录后本设备自动记住，后续直接进入） */
   const savedKey = localStorage.getItem(SESSION_KEY);
   const savedPhone = localStorage.getItem(SESSION_PHONE);
-  if (savedKey && savedPhone) {
+  if (savedKey) {
     currentKey = savedKey;
-    currentPhone = savedPhone;
+    /* 兼容旧版本：如果没有 SESSION_PHONE，尝试从手机号绑定中查找 */
+    if (savedPhone) {
+      currentPhone = savedPhone;
+    } else if (savedKey === ADMIN_SESSION) {
+      currentPhone = 'admin';
+    } else {
+      /* 旧用户：通过密钥反查手机号 */
+      var pi = loadPresetInfo();
+      if (pi[savedKey] && pi[savedKey].phone) {
+        currentPhone = pi[savedKey].phone;
+        localStorage.setItem(SESSION_PHONE, currentPhone);
+      } else {
+        var keys = loadKeys();
+        if (keys[savedKey] && keys[savedKey].phone) {
+          currentPhone = keys[savedKey].phone;
+          localStorage.setItem(SESSION_PHONE, currentPhone);
+        }
+      }
+      /* 如果找到了手机号，执行数据迁移 */
+      if (currentPhone && currentPhone !== 'admin') {
+        migrateDataIfNeeded(currentPhone, savedKey, function() {
+          /* 迁移完成后重新加载数据 */
+          if (typeof loadState === 'function') loadState();
+          if (typeof renderAll === 'function') renderAll();
+        });
+      }
+    }
     sessionStorage.setItem(SESSION_KEY, savedKey);
-    sessionStorage.setItem(SESSION_PHONE, savedPhone);
+    if (currentPhone) sessionStorage.setItem(SESSION_PHONE, currentPhone);
     const isAdmin = (savedKey === ADMIN_SESSION);
     if (isAdmin) {
       sessionStorage.setItem(ADMIN_SESSION, '1');
@@ -4637,6 +4690,34 @@ function openBeautySkincare() {
           beautySkinData = JSON.parse(cached);
           saveToCloudImmediate('beauty/skincare/' + userKey, beautySkinData);
         } else {
+          /* 降级：尝试从密钥路径读取旧数据 */
+          var oldKeyForSkincare = currentKey || sessionStorage.getItem(SESSION_KEY);
+          if (oldKeyForSkincare && oldKeyForSkincare !== userKey && oldKeyForSkincare !== 'admin') {
+            loadFromCloud('beauty/skincare/' + oldKeyForSkincare, function(oldSkincareData) {
+              if (oldSkincareData && oldSkincareData.dailyRecords && oldSkincareData.dailyRecords.length > 0) {
+                beautySkinData = oldSkincareData;
+                try { localStorage.setItem(localCacheKey, JSON.stringify(oldSkincareData)); } catch(e) {}
+                saveToCloudImmediate('beauty/skincare/' + userKey, oldSkincareData);
+                console.log('护肤日记数据已从密钥路径 ' + oldKeyForSkincare + ' 迁移到 ' + userKey);
+              } else {
+                /* 尝试从 'local' 迁移旧数据 */
+                loadFromCloud('beauty/skincare/local', function(oldData) {
+                  if (oldData && oldData.dailyRecords && oldData.dailyRecords.length > 0) {
+                    beautySkinData = oldData;
+                    try { localStorage.setItem(localCacheKey, JSON.stringify(oldData)); } catch(e) {}
+                    saveToCloudImmediate('beauty/skincare/' + userKey, oldData);
+                    console.log('护肤日记数据已从 local 迁移到 ' + userKey);
+                  } else {
+                    beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
+                  }
+                  finishSkincareLoad();
+                });
+                return;
+              }
+              finishSkincareLoad();
+            });
+            return;
+          }
           /* 尝试从 'local' 迁移旧数据（原版所有用户数据存在 local 下） */
           loadFromCloud('beauty/skincare/local', function(oldData) {
             if (oldData && oldData.dailyRecords && oldData.dailyRecords.length > 0) {
