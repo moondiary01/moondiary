@@ -598,8 +598,8 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .post-detail-comment-send{padding:7px 16px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;border:none;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;box-shadow:0 2px 6px rgba(139,92,246,0.25)}
 .post-detail-comment-send:active{transform:scale(0.93)}
 
-/* 评论抽屉——position:fixed 紧贴键盘上方，JS 通过 visualViewport 实时更新 bottom */
-.comm-reply-drawer{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#fff;border-top:1.5px solid #ede9fe;border-radius:16px 16px 0 0;box-shadow:0 -4px 16px rgba(0,0,0,0.08);padding:10px 14px 12px;display:none;transition:bottom 0.1s ease-out}
+/* 评论抽屉——sticky 定位，放在弹窗滚动容器内部末尾，键盘弹出时浏览器原生推到键盘上方 */
+.comm-reply-drawer{position:-webkit-sticky;position:sticky;bottom:0;z-index:50;background:#fff;border-top:1.5px solid #ede9fe;border-radius:16px 16px 0 0;box-shadow:0 -4px 16px rgba(0,0,0,0.08);padding:10px 14px 12px;display:none;margin-top:10px}
 .comm-reply-drawer.show{display:block}
 .comm-reply-drawer-context{max-height:100px;overflow-y:auto;margin-bottom:8px;padding:6px 10px;background:#f5f3ff;border-radius:8px;font-size:0.75rem;color:#57534e;line-height:1.4}
 .comm-reply-drawer-context .ctx-nick{font-weight:700;color:#8b5cf6}
@@ -610,8 +610,8 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .comm-reply-drawer-send{padding:8px 16px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;border:none;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:transform 0.2s;box-shadow:0 2px 6px rgba(139,92,246,0.25)}
 .comm-reply-drawer-send:active{transform:scale(0.93)}
 .comm-reply-drawer-cancel{padding:8px 12px;border-radius:20px;background:#f5f3ff;color:#8b5cf6;font-size:0.75rem;border:1px solid #e9d5ff;cursor:pointer;white-space:nowrap}
-.comm-reply-drawer-overlay{position:fixed;inset:0;z-index:9998;background:transparent;display:none}
-.comm-reply-drawer-overlay.show{display:block}
+/* 评论抽屉遮罩——不使用全屏遮罩，避免阻挡弹窗内交互 */
+.comm-reply-drawer-overlay{display:none !important}
 .image-viewer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column}
 .image-viewer-img{max-width:90vw;max-height:80vh;border-radius:8px}
 .image-viewer-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer}
@@ -3031,12 +3031,10 @@ document.addEventListener('touchend', e => {
   if (commModal.classList.contains('show') && commModal.contains(e.target)) return;
   var beautyHome = document.getElementById('beautyHomeModal');
   if (beautyHome && beautyHome.classList.contains('show') && beautyHome.contains(e.target)) return;
-  /* 评论抽屉打开时：右滑关闭抽屉（需明显右滑且在遮罩区域），不触发Tab切换 */
+  /* 评论抽屉打开时：右滑关闭抽屉，不触发Tab切换 */
   var replyDrawer = document.getElementById('replyDrawer');
   if (replyDrawer && replyDrawer.classList.contains('show')) {
-    var replyOverlay = document.getElementById('replyDrawerOverlay');
-    /* 只有点击在遮罩区域（非抽屉本身）才允许右滑关闭 */
-    if (diffX < 0 && replyOverlay && replyOverlay.contains(e.target)) { closeReplyDrawer(); playClick(); }
+    if (diffX < 0) { closeReplyDrawer(); playClick(); }
     return;
   }
 
@@ -7461,6 +7459,20 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
   var sendBtn = document.getElementById('replyDrawerSend');
   if (!drawer || !input) return;
 
+  /* 找到当前打开的弹窗，把抽屉移到其 .modal 滚动容器内部末尾 */
+  var activeModal = null;
+  var candidates = ['postDetailModal', 'profileModal', 'beautyCommunityModal', 'beautyHomeModal'];
+  for (var i = 0; i < candidates.length; i++) {
+    var el = document.getElementById(candidates[i]);
+    if (el && el.classList.contains('show')) { activeModal = el; break; }
+  }
+  if (activeModal) {
+    var modalInner = activeModal.querySelector('.modal');
+    if (modalInner && drawer.parentElement !== modalInner) {
+      modalInner.appendChild(drawer);
+    }
+  }
+
   /* 填充被回复评论上下文 */
   if (isReply && nickname) {
     ctxEl.innerHTML = '<div class="ctx-nick">回复 @' + escapeHtml(nickname) + '</div>' +
@@ -7476,7 +7488,7 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
   }
   input.value = '';
 
-  /* 显示抽屉——直接显示在底部，键盘弹出后自动上移 */
+  /* 显示抽屉 */
   drawer.classList.add('show');
   overlay.classList.add('show');
 
@@ -7509,54 +7521,22 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
     }
   }
 
-  /* 绑定键盘监听（必须在 focus 之前绑定） */
-  _bindKeyboardListener();
-  /* 聚焦输入框触发键盘 */
+  /* 聚焦输入框触发键盘——sticky 定位下浏览器原生会把抽屉推到键盘上方 */
   input.focus({ preventScroll: true });
-  /* 键盘弹出动画约300ms，延迟更新位置 + 滚动评论 */
-  setTimeout(function() {
-    _updateDrawerBottom();
-    if (isReply) {
+  /* 300ms 后滚动被回复评论到中间（等键盘弹出动画完成） */
+  if (isReply) {
+    setTimeout(function() {
       if (cssPrefix === 'post-detail-comment') {
         _scrollDetailCommentToCenter(commentId_current);
       } else {
         _scrollCommentToCenter(commentId_current);
       }
-    }
-  }, 300);
-}
-
-/* 更新抽屉 bottom 到键盘上方 */
-function _updateDrawerBottom() {
-  var drawer = document.getElementById('replyDrawer');
-  if (!drawer || !drawer.classList.contains('show')) return;
-  var keyboardHeight = 0;
-  if (window.visualViewport) {
-    keyboardHeight = window.innerHeight - window.visualViewport.height;
-  }
-  drawer.style.bottom = (keyboardHeight > 10 ? keyboardHeight : 0) + 'px';
-}
-
-/* 绑定键盘监听——只用事件，不用轮询 */
-function _bindKeyboardListener() {
-  _unbindKeyboardListener();
-  _replyDrawerVVPHandler = _updateDrawerBottom;
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', _replyDrawerVVPHandler);
-  }
-  window.addEventListener('resize', _replyDrawerVVPHandler);
-}
-
-/* 解除键盘监听 */
-function _unbindKeyboardListener() {
-  if (_replyDrawerVVPHandler) {
-    if (window.visualViewport) {
-      window.visualViewport.removeEventListener('resize', _replyDrawerVVPHandler);
-    }
-    window.removeEventListener('resize', _replyDrawerVVPHandler);
-    _replyDrawerVVPHandler = null;
+    }, 300);
   }
 }
+
+/* 更新抽屉 bottom（sticky 方案下不需要，保留空函数避免报错） */
+function _updateDrawerBottom() {}
 
 /* 列表模式：滚动被回复评论到输入框上方与屏幕顶部之间的中间位置 */
 function _scrollCommentToCenter(commentId) {
@@ -7613,11 +7593,9 @@ function closeReplyDrawer() {
   var overlay = document.getElementById('replyDrawerOverlay');
   if (drawer) {
     drawer.classList.remove('show');
-    drawer.style.bottom = '0px';
+    drawer.style.bottom = '';
   }
   if (overlay) overlay.classList.remove('show');
-  /* 解除键盘监听 */
-  _unbindKeyboardListener();
   /* 清除回复状态 */
   commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
   commentId_current = '';
@@ -7657,10 +7635,8 @@ function submitReplyDrawer() {
   /* 先关闭抽屉，提升体验流畅度 */
   var drawerEl = document.getElementById('replyDrawer');
   var overlayEl = document.getElementById('replyDrawerOverlay');
-  if (drawerEl) { drawerEl.classList.remove('show'); drawerEl.style.bottom = '0px'; }
+  if (drawerEl) { drawerEl.classList.remove('show'); drawerEl.style.bottom = ''; }
   if (overlayEl) overlayEl.classList.remove('show');
-  /* 解除键盘监听 */
-  _unbindKeyboardListener();
 
   loadFromCloud('beauty/community/posts', function(data) {
     if (!data || !data.posts) return;
