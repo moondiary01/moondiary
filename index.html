@@ -1466,16 +1466,19 @@ function initCos() {
     if (typeof COS !== 'undefined') {
       cos = new COS({ SecretId: COS_CONFIG.SecretId, SecretKey: COS_CONFIG.SecretKey });
       console.log('COS 初始化成功');
-    } else { console.warn('COS SDK 未加载'); }
-  } catch(e) { console.error('COS 初始化失败:', e); }
+    } else {
+      console.warn('COS SDK 未加载，300ms后重试');
+      setTimeout(initCos, 300);
+    }
+  } catch(e) { console.error('COS 初始化失败:', e); setTimeout(initCos, 500); }
 }
 function saveToCloud(key, data) {
-  if (!cos || !key) return;
+  if (!cos || !key) { console.warn('saveToCloud skipped: cos=', !!cos, 'key=', key); return; }
   clearTimeout(cloudSaveTimer);
   cloudSaveTimer = setTimeout(function() { saveToCloudImmediate(key, data); }, 800);
 }
 function saveToCloudImmediate(key, data) {
-  if (!cos || !key) return;
+  if (!cos || !key) { console.warn('saveToCloudImmediate skipped: cos=', !!cos, 'key=', key); return; }
   try {
     cos.putObject({
       Bucket: COS_CONFIG.Bucket, Region: COS_CONFIG.Region,
@@ -2086,7 +2089,6 @@ function loadState() {
     var oldSaved = localStorage.getItem(oldKey);
     if (oldSaved) {
       saved = oldSaved;
-      /* 迁移到新路径 */
       try { localStorage.setItem(sk, oldSaved); } catch(e) {}
       console.log('数据已从密钥路径 ' + currentKey + ' 迁移到手机号路径 ' + phone);
     }
@@ -2106,7 +2108,7 @@ function loadState() {
       if (!state.avatar) state.avatar = MOON_AVATAR;
     } catch(e) { initDays(); }
   } else {
-    /* 全新用户：完全重置 state，确保每个用户独立填写自己的计划 */
+    /* 本地无数据：先不保存，等云端数据加载完成后再决定是否初始化 */
     state = {
       version: 3, name: '', gender: '', age: null, height: null,
       startDate: '', targetDate: '', startWeight: null, targetWeight: null,
@@ -2120,10 +2122,10 @@ function loadState() {
     state.startDate = localDateStr(today);
     state.targetDate = localDateStr(target);
     initDays();
-    saveState();
-    showToast('欢迎首次使用，请点击右上角 ⚙️ 完善信息');
+    /* 注意：此处不调用 saveState()，避免空数据覆盖云端 */
+    if (typeof renderAll === 'function') renderAll();
   }
-  /* 从云端同步最新数据 */
+  /* 从云端同步最新数据（优先级最高） */
   var cloudPhone = getCurrentPhone();
   loadFromCloud(cloudPhone, function(cloudData) {
     if (!cloudData && currentKey && currentKey !== ADMIN_SESSION && currentKey !== 'local' && currentKey !== cloudPhone) {
@@ -2133,10 +2135,18 @@ function loadState() {
           console.log('云端数据从密钥路径 ' + currentKey + ' 恢复到手机号路径 ' + cloudPhone);
           saveToCloudImmediate(cloudPhone, oldCloudData);
           applyCloudData(oldCloudData);
+        } else {
+          /* 云端和密钥路径都没有数据，说明是真正的新用户，保存初始 state */
+          saveState();
+          showToast('欢迎首次使用，请点击右上角 ⚙️ 完善信息');
         }
       });
     } else if (cloudData) {
       applyCloudData(cloudData);
+    } else {
+      /* 云端无数据且无密钥可降级，是真正的新用户 */
+      saveState();
+      showToast('欢迎首次使用，请点击右上角 ⚙️ 完善信息');
     }
   });
   function applyCloudData(cloudData) {
