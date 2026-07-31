@@ -2125,46 +2125,33 @@ function playClick() {
   } catch(e) {}
 }
 
-/* 点赞音效（沉稳高级——低八度温暖和弦+深沉衰减，有质感不刺耳） */
-/* 点赞音效（温暖马林巴琴——D4+A4+D5 三音，丰满共鸣有质感） */
+/* 点赞音效（短促柔和——A4+C5 双音，干脆不拖沓） */
 function playLike() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === 'suspended') ctx.resume();
     const t0 = ctx.currentTime;
-    /* D4(293.66) 低音基底，三角波模拟马林巴琴木质共鸣 */
+    /* A4(440Hz) 主体音，正弦波柔和触感 */
     var o1 = ctx.createOscillator();
     var g1 = ctx.createGain();
     var f1 = ctx.createBiquadFilter();
     o1.connect(f1); f1.connect(g1); g1.connect(ctx.destination);
-    o1.type = 'triangle'; o1.frequency.value = 293.66;
-    f1.type = 'lowpass'; f1.frequency.value = 1200; f1.Q.value = 1.5;
+    o1.type = 'sine'; o1.frequency.value = 440;
+    f1.type = 'lowpass'; f1.frequency.value = 2200; f1.Q.value = 0.6;
     g1.gain.setValueAtTime(0, t0);
-    g1.gain.linearRampToValueAtTime(0.16, t0 + 0.004);
-    g1.gain.exponentialRampToValueAtTime(0.001, t0 + 0.3);
-    o1.start(t0); o1.stop(t0 + 0.3);
-    /* A4(440) 五音，正弦波增加圆润感，微延迟 */
-    var t1 = t0 + 0.006;
+    g1.gain.linearRampToValueAtTime(0.16, t0 + 0.003);
+    g1.gain.exponentialRampToValueAtTime(0.001, t0 + 0.12);
+    o1.start(t0); o1.stop(t0 + 0.12);
+    /* C5(523.25Hz) 微延迟叠入，增加和谐感 */
+    var t1 = t0 + 0.004;
     var o2 = ctx.createOscillator();
     var g2 = ctx.createGain();
-    var f2 = ctx.createBiquadFilter();
-    o2.connect(f2); f2.connect(g2); g2.connect(ctx.destination);
-    o2.type = 'sine'; o2.frequency.value = 440;
-    f2.type = 'lowpass'; f2.frequency.value = 2000; f2.Q.value = 0.8;
+    o2.connect(g2); g2.connect(ctx.destination);
+    o2.type = 'sine'; o2.frequency.value = 523.25;
     g2.gain.setValueAtTime(0, t1);
-    g2.gain.linearRampToValueAtTime(0.13, t1 + 0.005);
-    g2.gain.exponentialRampToValueAtTime(0.001, t1 + 0.25);
-    o2.start(t1); o2.stop(t1 + 0.25);
-    /* D5(587.33) 高八度，延迟加入，明亮但不刺耳 */
-    var t2 = t0 + 0.012;
-    var o3 = ctx.createOscillator();
-    var g3 = ctx.createGain();
-    o3.connect(g3); g3.connect(ctx.destination);
-    o3.type = 'sine'; o3.frequency.value = 587.33;
-    g3.gain.setValueAtTime(0, t2);
-    g3.gain.linearRampToValueAtTime(0.10, t2 + 0.004);
-    g3.gain.exponentialRampToValueAtTime(0.001, t2 + 0.2);
-    o3.start(t2); o3.stop(t2 + 0.2);
+    g2.gain.linearRampToValueAtTime(0.10, t1 + 0.003);
+    g2.gain.exponentialRampToValueAtTime(0.001, t1 + 0.10);
+    o2.start(t1); o2.stop(t1 + 0.10);
   } catch(e) {}
 }
 
@@ -7404,7 +7391,10 @@ function startReplyComment(commentId, nickname, cssPrefix) {
     }
     commReplyState = { postId: postId, replyTo: commentId, replyToNickname: nickname, replyToUserKey: replyToUserKey, cssPrefix: cssPrefix, inputId: inputId };
     input.placeholder = '回复 @' + nickname;
-    input.focus();
+    setTimeout(function() {
+      input.focus({ preventScroll: true });
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
     var sendBtn = input.parentElement.querySelector('.' + cssPrefix + '-send');
     if (sendBtn) sendBtn.textContent = '回复';
     var hintId = 'replyHint-' + cssPrefix;
@@ -7498,7 +7488,11 @@ function _applyReplyState(postId, commentId, nickname, replyToUserKey, cssPrefix
   if (!input) return;
   commReplyState = { postId: postId, replyTo: commentId, replyToNickname: nickname, replyToUserKey: replyToUserKey, cssPrefix: cssPrefix, inputId: inputId };
   input.placeholder = '回复 @' + nickname;
-  input.focus();
+  /* 延迟聚焦+平滑滚动，避免页面直接置顶 */
+  setTimeout(function() {
+    input.focus({ preventScroll: true });
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
   var sendBtn = input.parentElement.querySelector('.' + cssPrefix + '-send');
   if (sendBtn) sendBtn.textContent = '回复';
   var hintId = 'replyHint-' + cssPrefix;
@@ -7814,7 +7808,13 @@ function toggleComments(postId) {
     el.innerHTML = commentsHtml + inputWrapHtml;
     el.style.display = 'block';
     var input = document.getElementById('commentInput-' + postId);
-    if (input) input.focus();
+    /* 延迟聚焦，等待弹窗滚动稳定，避免输入框直接置顶 */
+    if (input) {
+      setTimeout(function() {
+        input.focus({ preventScroll: true });
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+    }
   });
 }
 
