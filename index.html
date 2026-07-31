@@ -2115,49 +2115,57 @@ function playClick() {
   } catch(e) {}
 }
 
-/* 点赞音效（温暖水晶叮——C5+E5和弦+高八度泛音，带余韵） */
+/* 点赞音效（沉稳高级——低八度温暖和弦+深沉衰减，有质感不刺耳） */
 function playLike() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === 'suspended') ctx.resume();
     const t0 = ctx.currentTime;
-    /* 主和弦：C5(523.25) + E5(659.25) */
-    [523.25, 659.25].forEach(function(f) {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const filter = ctx.createBiquadFilter();
-      osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
-      osc.type = 'sine'; osc.frequency.value = f;
-      filter.type = 'lowpass'; filter.frequency.value = f * 3; filter.Q.value = 0.8;
-      gain.gain.setValueAtTime(0, t0);
-      gain.gain.linearRampToValueAtTime(0.18, t0 + 0.004);
-      gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.28);
-      osc.start(t0); osc.stop(t0 + 0.3);
-    });
-    /* 高八度泛音：C6(1046.50) 稍延迟加入，增加水晶光泽 */
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    const filter2 = ctx.createBiquadFilter();
-    osc2.connect(filter2); filter2.connect(gain2); gain2.connect(ctx.destination);
-    osc2.type = 'sine'; osc2.frequency.value = 1046.50;
-    filter2.type = 'lowpass'; filter2.frequency.value = 4200; filter2.Q.value = 1;
-    const t1 = t0 + 0.03;
-    gain2.gain.setValueAtTime(0, t1);
-    gain2.gain.linearRampToValueAtTime(0.12, t1 + 0.005);
-    gain2.gain.exponentialRampToValueAtTime(0.001, t1 + 0.35);
-    osc2.start(t1); osc2.stop(t1 + 0.35);
-    /* 回响层：延迟 60ms 的微弱重复 */
-    const t2 = t0 + 0.06;
-    [659.25, 1046.50].forEach(function(f) {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.type = 'sine'; osc.frequency.value = f;
-      gain.gain.setValueAtTime(0, t2);
-      gain.gain.linearRampToValueAtTime(0.06, t2 + 0.005);
-      gain.gain.exponentialRampToValueAtTime(0.001, t2 + 0.2);
-      osc.start(t2); osc.stop(t2 + 0.2);
-    });
+    /* 主体：A3(220Hz) 三角波作为温暖低音基底 */
+    const o1 = ctx.createOscillator();
+    const g1 = ctx.createGain();
+    const f1 = ctx.createBiquadFilter();
+    o1.connect(f1); f1.connect(g1); g1.connect(ctx.destination);
+    o1.type = 'triangle'; o1.frequency.value = 220;
+    f1.type = 'lowpass'; f1.frequency.value = 800; f1.Q.value = 0.5;
+    g1.gain.setValueAtTime(0, t0);
+    g1.gain.linearRampToValueAtTime(0.15, t0 + 0.015);
+    g1.gain.exponentialRampToValueAtTime(0.001, t0 + 0.5);
+    o1.start(t0); o1.stop(t0 + 0.5);
+    /* 中层：E4(329.63Hz) 正弦波增加和谐感，稍延迟 */
+    const t1 = t0 + 0.02;
+    const o2 = ctx.createOscillator();
+    const g2 = ctx.createGain();
+    const f2 = ctx.createBiquadFilter();
+    o2.connect(f2); f2.connect(g2); g2.connect(ctx.destination);
+    o2.type = 'sine'; o2.frequency.value = 329.63;
+    f2.type = 'lowpass'; f2.frequency.value = 1500; f2.Q.value = 0.7;
+    g2.gain.setValueAtTime(0, t1);
+    g2.gain.linearRampToValueAtTime(0.12, t1 + 0.01);
+    g2.gain.exponentialRampToValueAtTime(0.001, t1 + 0.45);
+    o2.start(t1); o2.stop(t1 + 0.45);
+    /* 高层：A4(440Hz) 正弦波点缀，延迟加入，轻柔不刺耳 */
+    const t2 = t0 + 0.05;
+    const o3 = ctx.createOscillator();
+    const g3 = ctx.createGain();
+    o3.connect(g3); g3.connect(ctx.destination);
+    o3.type = 'sine'; o3.frequency.value = 440;
+    g3.gain.setValueAtTime(0, t2);
+    g3.gain.linearRampToValueAtTime(0.08, t2 + 0.008);
+    g3.gain.exponentialRampToValueAtTime(0.001, t2 + 0.4);
+    o3.start(t2); o3.stop(t2 + 0.4);
+    /* 回响层：延迟 100ms 的微弱低音回响，增加空间深度感 */
+    const t3 = t0 + 0.1;
+    const o4 = ctx.createOscillator();
+    const g4 = ctx.createGain();
+    const f4 = ctx.createBiquadFilter();
+    o4.connect(f4); f4.connect(g4); g4.connect(ctx.destination);
+    o4.type = 'sine'; o4.frequency.value = 220;
+    f4.type = 'lowpass'; f4.frequency.value = 600; f4.Q.value = 0.5;
+    g4.gain.setValueAtTime(0, t3);
+    g4.gain.linearRampToValueAtTime(0.05, t3 + 0.01);
+    g4.gain.exponentialRampToValueAtTime(0.001, t3 + 0.35);
+    o4.start(t3); o4.stop(t3 + 0.35);
   } catch(e) {}
 }
 
@@ -7822,6 +7830,9 @@ function showMyProfile() {
 /* 个人主页返回月友圈或帖子详情 */
 function closeProfileToCommunity() {
   document.getElementById('profileModal').classList.remove('show');
+  /* 清空用户主页帖子DOM，避免DOM ID冲突 */
+  var profilePostsEl = document.getElementById('profilePosts');
+  if (profilePostsEl) profilePostsEl.innerHTML = '';
   /* 如果帖子详情弹窗还开着，返回帖子详情 */
   var postDetail = document.getElementById('postDetailModal');
   if (postDetail.classList.contains('show')) {
@@ -7949,6 +7960,9 @@ function showUserProfile(phone) {
       document.getElementById('beautyCommunityModal').classList.remove('show');
       document.getElementById('postDetailModal').classList.remove('show');
       document.getElementById('userListModal').classList.remove('show');
+      /* 清空月友圈帖子DOM，避免相同postId的DOM ID冲突导致用户主页中点赞/评论操作失效 */
+      var commPostsEl = document.getElementById('communityPosts');
+      if (commPostsEl) commPostsEl.innerHTML = '';
       var profileModal = document.getElementById('profileModal');
       profileModal.dataset.phone = phone;
       profileModal.classList.add('show');
@@ -8061,8 +8075,14 @@ function openPostDetail(postId) {
   if (profileModal.classList.contains('show')) {
     postDetailFromProfile = true;
     profileModal.classList.remove('show');
+    /* 清空用户主页帖子DOM，避免DOM ID冲突 */
+    var profilePostsEl = document.getElementById('profilePosts');
+    if (profilePostsEl) profilePostsEl.innerHTML = '';
   } else {
     postDetailFromProfile = false;
+    /* 清空月友圈帖子DOM，避免DOM ID冲突 */
+    var commPostsEl = document.getElementById('communityPosts');
+    if (commPostsEl) commPostsEl.innerHTML = '';
   }
   commModal.classList.remove('show');
   renderPostDetail(p);
