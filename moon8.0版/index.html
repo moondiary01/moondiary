@@ -1522,11 +1522,7 @@ _loadCosSdk(0);
     <div class="input-group"><label>目标日期</label><input type="date" id="setTargetDate"></div>
     <div class="input-group"><label>每日消耗热量目标 (kcal)</label><input type="number" id="setCalGoal" placeholder="如 1400"></div>
     <div class="input-group"><label>每日饮水目标 (ml)</label><input type="number" id="setWaterGoal" placeholder="如 2000"></div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="btn btn-outline" style="flex:1;font-size:0.8rem" onclick="exportAllData()">📤 备份数据</button>
-      <button class="btn btn-outline" style="flex:1;font-size:0.8rem" onclick="document.getElementById('importFile').click()">📥 恢复数据</button>
-      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importAllData(this)">
-    </div>
+    <div style="text-align:center;font-size:0.75rem;color:var(--text-l);padding:8px 0;margin-top:4px">☁️ 所有数据自动保存至云端</div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeSettings()">取消</button>
       <button class="btn btn-primary" onclick="saveSettings()">保存</button>
@@ -3761,32 +3757,7 @@ function exportReviewText() {
   showToast('文本已导出');
 }
 
-function exportAllData() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = '身材日记备份_' + (state.name||'') + '_' + new Date().toISOString().slice(0,10) + '.json';
-  a.click(); URL.revokeObjectURL(a.href);
-  showToast('数据已备份');
-}
-
-function importAllData(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!data.days || !Array.isArray(data.days)) { showToast('文件格式错误'); return; }
-      Object.assign(state, data);
-      saveState();
-      renderAll();
-      showToast('数据恢复成功！');
-    } catch(err) { showToast('文件解析失败'); }
-  };
-  reader.readAsText(file);
-  input.value = '';
-}
+/* 备份/恢复功能已取消，所有数据自动保存云端 */
 
 /* ---------- 三围编辑 ---------- */
 function editMeasure() {
