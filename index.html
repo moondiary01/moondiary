@@ -512,13 +512,16 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .post-image-preview img{width:100%;height:100%;object-fit:cover}
 .post-image-remove{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.65rem;cursor:pointer}
 .comm-publish-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.comm-publish-btn{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:300;cursor:pointer;flex-shrink:0;box-shadow:0 2px 8px rgba(139,92,246,0.3);transition:all 0.2s;border:none}
-.comm-publish-btn:active{transform:scale(0.92)}
-.comm-my-avatar{cursor:pointer;width:38px;height:38px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.05rem;font-weight:700;color:#8b5cf6;background:linear-gradient(135deg,#f5f3ff,#fce7f3);flex-shrink:0;box-shadow:0 2px 6px rgba(139,92,246,0.12);position:relative}
+.comm-publish-btn{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:300;cursor:pointer;flex-shrink:0;box-shadow:0 3px 10px rgba(124,58,237,0.35);transition:all 0.2s;border:none;line-height:1}
+.comm-publish-btn:active{transform:scale(0.9);box-shadow:0 1px 4px rgba(124,58,237,0.3)}
+.comm-publish-btn::before{content:'';position:absolute;width:14px;height:2px;background:#fff;border-radius:2px}
+.comm-publish-btn::after{content:'';position:absolute;width:2px;height:14px;background:#fff;border-radius:2px}
+.comm-my-avatar{cursor:pointer;width:36px;height:36px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.05rem;font-weight:700;color:#8b5cf6;background:linear-gradient(135deg,#f5f3ff,#fce7f3);flex-shrink:0;box-shadow:0 2px 6px rgba(139,92,246,0.12);position:relative;transition:transform 0.2s}
+.comm-my-avatar:active{transform:scale(0.92)}
 .comm-my-avatar img{width:100%;height:100%;object-fit:cover}
-.comm-my-avatar-label{font-size:0.6rem;color:#a8a29e;text-align:center;margin-top:3px;cursor:pointer;font-weight:500}
-.comm-post-delete{font-size:0.68rem;color:#ef4444;cursor:pointer;padding:2px 8px;border-radius:8px;background:#fef2f2;transition:all 0.2s;user-select:none}
-.comm-post-delete:active{transform:scale(0.95)}
+.comm-my-avatar-label{font-size:0.58rem;color:#a8a29e;text-align:center;margin-top:3px;cursor:pointer;font-weight:500}
+.comm-post-delete{font-size:0.68rem;color:#ef4444;cursor:pointer;padding:3px 10px;border-radius:100px;background:#fef2f2;transition:all 0.2s;user-select:none;display:flex;align-items:center;gap:3px}
+.comm-post-delete:active{transform:scale(0.93)}
 .image-viewer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column}
 .image-viewer-img{max-width:90vw;max-height:80vh;border-radius:8px}
 .image-viewer-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer}
@@ -1278,16 +1281,16 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 
 <!-- 月友圈弹窗 -->
 <div class="modal-overlay" id="beautyCommunityModal">
-  <div class="modal" style="max-width:550px;max-height:90vh;overflow-y:auto">
+  <div class="modal" style="max-width:550px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-behavior:smooth">
     <div class="comm-publish-bar">
-      <button class="comm-publish-btn" onclick="showPostEditor();playClick()">➕</button>
       <h2 style="margin:0;flex:1;font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🌙 月友圈</h2>
+      <button class="comm-publish-btn" onclick="showPostEditor();playClick()" style="position:relative"></button>
       <div style="display:flex;flex-direction:column;align-items:center">
         <div id="commMyAvatar" class="comm-my-avatar" onclick="showMyProfile();playClick()"></div>
         <span class="comm-my-avatar-label" onclick="showMyProfile();playClick()">我的主页</span>
       </div>
     </div>
-    <div id="communityPosts" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div id="communityPosts" style="display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain"></div>
     <div id="communityEmpty" style="text-align:center;padding:40px 0;color:#a8a29e;font-size:0.85rem;display:none">还没有内容，快来发布第一条吧 🌙</div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="document.getElementById('beautyCommunityModal').classList.remove('show');document.getElementById('beautyHomeModal').classList.add('show');playClick()">返回</button>
@@ -1331,7 +1334,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
     <div id="profilePosts" style="display:flex;flex-direction:column;gap:12px"></div>
     <div id="profileEmpty" style="text-align:center;padding:30px 0;color:#a8a29e;font-size:0.85rem;display:none">还没有发布任何动态</div>
     <div class="modal-actions">
-      <button class="btn btn-outline" onclick="document.getElementById('profileModal').classList.remove('show');playClick()">返回</button>
+      <button class="btn btn-outline" onclick="closeProfileToCommunity();playClick()">返回</button>
     </div>
   </div>
 </div>
@@ -6413,8 +6416,8 @@ function renderPostCard(p) {
         '</div></div>';
     }).join('');
   }
-  /* 删除按钮（自己的帖子才显示） */
-  var deleteBtnHtml = isMyPost ? '<span class="comm-post-delete" onclick="deletePost(\'' + p.id + '\');playClick()">删除</span>' : '';
+  /* 删除按钮放在actions栏（评论旁边） */
+  var deleteBtnHtml = isMyPost ? '<span class="comm-post-delete" onclick="deletePost(\'' + p.id + '\');playClick()">🗑 删除</span>' : '';
   return '<div class="comm-post" id="post-' + p.id + '">' +
     '<div class="comm-post-header">' +
       '<div class="comm-post-avatar" onclick="showUserProfile(\'' + p.userKey + '\');playClick()">' + avatarHtml + '</div>' +
@@ -6422,13 +6425,13 @@ function renderPostCard(p) {
         '<div class="comm-post-nick" onclick="showUserProfile(\'' + p.userKey + '\');playClick()">' + escapeHtml(p.nickname || '月友') + genderHtml + followBtnHtml + '</div>' +
         '<div class="comm-post-meta">' + formatCommTime(p.createdAt) + '</div>' +
       '</div>' +
-      deleteBtnHtml +
     '</div>' +
     imagesHtml +
     (p.content ? '<div class="comm-post-content">' + escapeHtml(p.content) + '</div>' : '') +
     '<div class="comm-post-actions">' +
       '<span class="comm-post-action' + (isLiked ? ' liked' : '') + '" onclick="likePost(\'' + p.id + '\');playClick()">' + (isLiked ? '❤️' : '🤍') + ' ' + (p.likeCount || 0) + '</span>' +
       '<span class="comm-post-action" onclick="toggleComments(\'' + p.id + '\');playClick()">💬 ' + (p.commentCount || 0) + '</span>' +
+      deleteBtnHtml +
     '</div>' +
     '<div class="comm-comments" id="comments-' + p.id + '" style="display:none">' +
       commentsHtml +
@@ -6727,6 +6730,12 @@ function submitComment(postId) {
 /* 个人主页 */
 function showMyProfile() {
   showUserProfile(getCurrentPhone());
+}
+
+/* 个人主页返回月友圈 */
+function closeProfileToCommunity() {
+  document.getElementById('profileModal').classList.remove('show');
+  document.getElementById('beautyCommunityModal').classList.add('show');
 }
 
 function showUserProfile(phone) {
