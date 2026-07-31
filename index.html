@@ -3253,7 +3253,14 @@ function renderTable() {
       // 当月始终显示；非当月有数据才显示
       if (!isCurrentMonth && !hasData) continue;
 
-      const openClass = isCurrentMonth ? 'open' : '';
+      // 月份展开状态：优先用用户手动操作的记录，否则当月默认展开、有数据的非当月默认折叠
+      var monthKey = year + '-' + month;
+      var openClass;
+      if (_monthOpenState[monthKey] !== undefined) {
+        openClass = _monthOpenState[monthKey] ? 'open' : '';
+      } else {
+        openClass = isCurrentMonth ? 'open' : '';
+      }
       const dataDaysCount = Object.keys(dateIndexMap).filter(k => k.startsWith(ym + '-')).length;
 
       let rowsHtml = '';
@@ -3309,16 +3316,25 @@ function renderTable() {
   document.getElementById('recordAccordion').innerHTML = html;
 }
 
+/* 记录用户手动展开/折叠的月份（持久化折叠状态，避免 renderTable 后重置） */
+var _monthOpenState = {}; /* key: "2026-8" → true/false */
+
 function toggleMonth(header) {
   const body = header.nextElementSibling;
   const arrow = header.querySelector('.month-arrow');
   const isOpen = body.classList.contains('open');
+  /* 记录月份key */
+  var titleText = header.querySelector('.month-title').textContent;
+  var match = titleText.match(/(\d+)年(\d+)月/);
+  var monthKey = match ? match[1] + '-' + match[2] : '';
   if (isOpen) {
     body.classList.remove('open');
     arrow.classList.remove('open');
+    if (monthKey) _monthOpenState[monthKey] = false;
   } else {
     body.classList.add('open');
     arrow.classList.add('open');
+    if (monthKey) _monthOpenState[monthKey] = true;
   }
   playClick();
 }
@@ -3382,6 +3398,10 @@ function _doSaveHistoryData() {
   if (dayDetailIdx < 0 || dayDetailIdx >= state.days.length) return;
   const d = state.days[dayDetailIdx];
   const u = state.unit || '斤';
+  /* 确保编辑的月份保持展开 */
+  var dd = new Date(d.date);
+  var editMonthKey = dd.getFullYear() + '-' + (dd.getMonth() + 1);
+  _monthOpenState[editMonthKey] = true;
   const am = parseFloat(document.getElementById('editWeightAM').value);
   const pm = parseFloat(document.getElementById('editWeightPM').value);
   d.weightAM = isNaN(am) ? null : (u === '斤' ? am / 2 : am);
@@ -3405,11 +3425,32 @@ function _doSaveHistoryData() {
   showSaveIndicator();
 }
 
-/* 关闭弹窗时即时保存，防止防抖未执行丢数据 */
+/* 关闭弹窗时即时保存，防止防抖未执行丢数据，并刷新当月列表 */
 function closeDayDetail() {
   if (_dayDetailSaveTimer) { clearTimeout(_dayDetailSaveTimer); _dayDetailSaveTimer = null; }
+  /* 记录编辑的日期所在月份，确保刷新后该月展开 */
+  var editMonthKey = '';
+  var editDateKey = '';
+  if (dayDetailIdx >= 0 && dayDetailIdx < state.days.length) {
+    var dd = new Date(state.days[dayDetailIdx].date);
+    editMonthKey = dd.getFullYear() + '-' + (dd.getMonth() + 1);
+    editDateKey = dd.getFullYear() + '-' + (dd.getMonth() + 1) + '-' + dd.getDate();
+    _monthOpenState[editMonthKey] = true;
+  }
   _doSaveHistoryData();
   document.getElementById('dayDetailModal').classList.remove('show');
+  /* 滚动到编辑的那一行 */
+  if (editDateKey) {
+    setTimeout(function() {
+      var rows = document.querySelectorAll('#recordAccordion tbody tr');
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].textContent.indexOf(editDateKey.split('-')[1] + '/' + editDateKey.split('-')[2]) > -1) {
+          rows[i].scrollIntoView({behavior:'smooth', block:'center'});
+          break;
+        }
+      }
+    }, 100);
+  }
 }
 
 /* 旧函数已废弃，保留空实现避免遗留调用报错 */
