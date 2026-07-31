@@ -893,6 +893,17 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
     <div id="keyList"></div>
   </div>
   <div class="card">
+    <div class="card-title">💰 付费管理 <span class="sub">手动开通用户</span></div>
+    <div class="input-group" style="margin-bottom:12px">
+      <input type="tel" id="paymentPhone" placeholder="输入用户手机号（11位）" maxlength="11" inputmode="numeric" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:1rem;outline:none;background:var(--bg-card)">
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-primary" style="flex:1;background:#10b981" onclick="adminGrantPayment('storage');playClick()">开通 19.9元<br><span style="font-size:0.7rem;opacity:0.85">云端存储</span></button>
+      <button class="btn btn-primary" style="flex:1;background:linear-gradient(135deg,#8b5cf6,#ec4899)" onclick="adminGrantPayment('beauty');playClick()">开通 29.9元<br><span style="font-size:0.7rem;opacity:0.85">变美计划</span></button>
+    </div>
+    <div id="paymentStatus" style="font-size:0.8rem;text-align:center;min-height:20px;color:var(--text-l)"></div>
+  </div>
+  <div class="card">
     <div class="card-title">🔑 管理员密码 <span class="sub">登录后可修改</span></div>
     <p style="font-size:0.8rem;color:var(--text-l);margin-bottom:12px;line-height:1.6">修改后将替换当前登录密码，下次登录请使用新密码。密码仅保存在本设备。</p>
     <div class="input-group" style="margin-bottom:10px"><label>当前密码</label><input type="password" id="oldPw" placeholder="输入当前管理员密码" autocomplete="off"></div>
@@ -983,11 +994,12 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
         <span style="font-size:1.2rem;color:#c4b5fd">›</span>
       </div>
     </div>
-    <div id="beautyLockMsg" style="display:none;text-align:center;padding:20px;background:#fef3c7;border-radius:12px;margin-top:12px">
-      <div style="font-size:2rem">🔒</div>
-      <div style="font-size:0.9rem;font-weight:600;color:#92400e;margin-top:8px">升级版会员专享</div>
-      <div style="font-size:0.78rem;color:#a8a29e;margin-top:4px">29.9元永久使用，解锁全部变美功能</div>
-      <button class="btn btn-primary" style="margin-top:12px;background:linear-gradient(135deg,#8b5cf6,#ec4899)" onclick="payBeautyUpgrade();playClick()">立即开通 29.9元永久</button>
+    <div id="beautyLockMsg" style="display:none;text-align:center;padding:24px 20px;background:linear-gradient(135deg,#fef3c7,#fce7f3);border-radius:16px;margin-top:12px">
+      <div style="font-size:2.5rem">🔒</div>
+      <div style="font-size:1rem;font-weight:700;color:#92400e;margin-top:10px">100天变美计划 · 会员专享</div>
+      <div style="font-size:0.8rem;color:#a8a29e;margin-top:6px;line-height:1.6">护肤日记 · 心情日记 · 月友圈<br>29.9元永久解锁全部变美功能</div>
+      <button class="btn btn-primary" style="margin-top:14px;background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none;padding:12px 32px;font-size:0.95rem" onclick="payBeautyUpgrade();playClick()">开通 29.9元永久</button>
+      <div style="font-size:0.72rem;color:#a8a29e;margin-top:10px">联系管理员开通 · 永久有效</div>
     </div>
     <div style="text-align:center;margin-top:12px">
       <span style="font-size:0.78rem;color:#a8a29e">升级版会员 · 29.9元永久使用 · 全功能解锁</span>
@@ -1453,6 +1465,9 @@ const DEFAULT_ADMIN_PW = 'moonmoondiaomeinv';
 const ADMIN_PHONE = '18680881810';
 const VERSION_STORE = 'moondiary_version';
 const APP_VERSION = '7.3';
+const SESSION_PHONE = 'moondiary_session_phone'; /* localStorage 中保存手机号用于自动登录 */
+const PAYMENT_STORE = 'moondiary_payments'; /* 付费状态本地存储 */
+const CLOUD_PAYMENT_PATH = '_payments'; /* 云端付费数据路径 */
 /* 预设密钥池：硬编码在代码里，任何设备打开页面都能验证这些密钥 */
 /* 格式：6位纯数字，无规律组合，不绑定具体手机号 */
 const PRESET_KEYS = [
@@ -1573,10 +1588,115 @@ var state = {
 };
 let saveTimer = null, editCallback = null, keyEditingNote = null, lastNewKey = null, selectedAvatar = '😊';
 var currentKey = null;
+var currentPhone = null; /* 当前用户手机号（数据存储主键） */
 
 function userStorageKey(key) { return 'bodydiary_user_' + key; }
 
-/* ---------- 登录 ---------- */
+/* ---------- 数据存储主键：手机号 ---------- */
+function isAdminUser() {
+  return currentKey === ADMIN_SESSION || sessionStorage.getItem(ADMIN_SESSION) === '1';
+}
+
+function getCurrentPhone() {
+  if (isAdminUser()) return 'admin';
+  if (currentPhone) return currentPhone;
+  var sp = sessionStorage.getItem(SESSION_PHONE) || localStorage.getItem(SESSION_PHONE);
+  if (sp) return sp;
+  /* 降级：用密钥作为路径（兼容旧数据） */
+  return currentKey || sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY) || 'local';
+}
+
+/* ---------- 付费状态管理 ---------- */
+function loadPayments() {
+  try { return JSON.parse(localStorage.getItem(PAYMENT_STORE)) || {}; }
+  catch(e) { return {}; }
+}
+function savePayments(payments) {
+  try { localStorage.setItem(PAYMENT_STORE, JSON.stringify(payments)); } catch(e) {}
+  saveToCloudImmediate(CLOUD_PAYMENT_PATH, payments);
+}
+
+/* 检查29.9元变美计划权限 */
+function hasBeautyPermission() {
+  if (isAdminUser()) return true;
+  var phone = getCurrentPhone();
+  if (phone === 'local' || !phone) return false;
+  var payments = loadPayments();
+  return !!(payments[phone] && payments[phone].beautyPaid);
+}
+
+/* 检查19.9元云端存储权限 */
+function hasCloudStoragePermission() {
+  if (isAdminUser()) return true;
+  var phone = getCurrentPhone();
+  if (phone === 'local' || !phone) return false;
+  var payments = loadPayments();
+  return !!(payments[phone] && payments[phone].storagePaid);
+}
+
+/* ---------- 数据迁移：密钥路径 → 手机号路径 ---------- */
+function migrateBeautyData(oldKey, phone, prefix) {
+  loadFromCloud(prefix + '/' + oldKey, function(data) {
+    if (data) {
+      saveToCloudImmediate(prefix + '/' + phone, data);
+      console.log(prefix + ' 数据已从 ' + oldKey + ' 迁移到 ' + phone);
+    }
+  });
+}
+
+function migrateDataIfNeeded(phone, key, callback) {
+  /* 1. 检查手机号路径下是否已有本地数据（已迁移过则跳过） */
+  var newLocalKey = userStorageKey(phone);
+  if (localStorage.getItem(newLocalKey)) {
+    if (callback) callback();
+    return;
+  }
+  /* 2. 检查旧密钥路径的本地数据 */
+  var oldLocalKey = userStorageKey(key);
+  var oldLocalData = null;
+  try { oldLocalData = JSON.parse(localStorage.getItem(oldLocalKey)); } catch(e) {}
+  /* 3. 检查云端旧路径 */
+  loadFromCloud(key, function(cloudOldData) {
+    var dataToMigrate = cloudOldData || oldLocalData;
+    if (dataToMigrate) {
+      try { localStorage.setItem(userStorageKey(phone), JSON.stringify(dataToMigrate)); } catch(e) {}
+      if (cloudOldData) saveToCloudImmediate(phone, dataToMigrate);
+      /* 迁移护肤日记和心情日记 */
+      migrateBeautyData(key, phone, 'beauty/skincare');
+      migrateBeautyData(key, phone, 'beauty/mood');
+      console.log('身材管理数据已从密钥路径 ' + key + ' 迁移到手机号路径 ' + phone);
+    }
+    /* 不删除旧数据，保留作为备份 */
+    if (callback) callback();
+  });
+}
+
+/* ---------- 管理员手动开通付费 ---------- */
+function adminGrantPayment(type) {
+  var phone = document.getElementById('paymentPhone') ? document.getElementById('paymentPhone').value.trim() : '';
+  if (!phone || !/^1\d{10}$/.test(phone)) {
+    showToast('请输入正确的11位手机号');
+    return;
+  }
+  var payments = loadPayments();
+  if (!payments[phone]) payments[phone] = { storagePaid: false, beautyPaid: false, storagePaidAt: null, beautyPaidAt: null, storagePaidBy: null, beautyPaidBy: null };
+  var label = '';
+  if (type === 'storage') {
+    payments[phone].storagePaid = true;
+    payments[phone].storagePaidAt = Date.now();
+    payments[phone].storagePaidBy = 'admin';
+    label = '19.9元云端存储';
+  } else if (type === 'beauty') {
+    payments[phone].beautyPaid = true;
+    payments[phone].beautyPaidAt = Date.now();
+    payments[phone].beautyPaidBy = 'admin';
+    label = '29.9元变美计划';
+  }
+  savePayments(payments);
+  var statusEl = document.getElementById('paymentStatus');
+  if (statusEl) statusEl.innerHTML = '<span style="color:#10b981">✅ 手机号 ' + phone + ' 已开通 ' + label + '</span>';
+  showToast('已开通 ' + label);
+}
 /* 默认显示管理员登录（手机号+密码），用户密钥登录通过链接切换 */
 
 /* 登录音效（Web Audio API合成，高级水晶音效） */
@@ -1721,7 +1841,10 @@ function adminLogin() {
   if (!pw) { err.textContent = '请输入密码'; return; }
   if (pw !== getAdminPw()) { err.textContent = '密码不正确'; return; }
   currentKey = ADMIN_SESSION;
+  currentPhone = 'admin';
   localStorage.setItem(SESSION_KEY, ADMIN_SESSION);
+  localStorage.setItem(SESSION_PHONE, 'admin');
+  sessionStorage.setItem(SESSION_PHONE, 'admin');
   playLoginSound();
   showSplash(() => { enterApp(true); });
 }
@@ -1748,8 +1871,13 @@ function tryLogin() {
       /* 已启用：仅绑定手机号可登录 */
       if (info.phone !== phone) { err.textContent = '该密钥已绑定其他手机号，登录失败'; return; }
       currentKey = k;
+      currentPhone = phone;
       localStorage.setItem(SESSION_KEY, k);
-      playLoginSound(); showSplash(() => { enterApp(false); });
+      localStorage.setItem(SESSION_PHONE, phone);
+      sessionStorage.setItem(SESSION_PHONE, phone);
+      migrateDataIfNeeded(phone, k, function() {
+        playLoginSound(); showSplash(() => { enterApp(false); });
+      });
       return;
     }
     /* 未启用：检查是否已被他人用过 */
@@ -1766,8 +1894,13 @@ function tryLogin() {
     savePresetInfo(pi2);
     const b1 = loadPhoneBindings(); b1[phone] = k; savePhoneBindings(b1);
     currentKey = k;
+    currentPhone = phone;
     localStorage.setItem(SESSION_KEY, k);
-    playLoginSound(); showSplash(() => { enterApp(false); });
+    localStorage.setItem(SESSION_PHONE, phone);
+    sessionStorage.setItem(SESSION_PHONE, phone);
+    migrateDataIfNeeded(phone, k, function() {
+      playLoginSound(); showSplash(() => { enterApp(false); });
+    });
     return;
   }
   /* 动态密钥：从本地密钥池验证 */
@@ -1788,7 +1921,14 @@ function tryLogin() {
   localStorage.setItem(SESSION_KEY, k);
   keys[k].lastLogin = new Date().toISOString();
   saveKeys(keys);
-  playLoginSound(); showSplash(() => { enterApp(false); });
+  currentKey = k;
+  currentPhone = phone;
+  localStorage.setItem(SESSION_KEY, k);
+  localStorage.setItem(SESSION_PHONE, phone);
+  sessionStorage.setItem(SESSION_PHONE, phone);
+  migrateDataIfNeeded(phone, k, function() {
+    playLoginSound(); showSplash(() => { enterApp(false); });
+  });
 }
 
 /* Splash 动画 */
@@ -1804,13 +1944,16 @@ function showSplash(callback) {
 function logout() {
   saveStateImmediate();
   /* 确保数据已上传到云端再退出 */
-  if (currentKey) {
-    try { localStorage.setItem(userStorageKey(currentKey), JSON.stringify(state)); } catch(e) {}
+  if (currentPhone) {
+    try { localStorage.setItem(userStorageKey(currentPhone), JSON.stringify(state)); } catch(e) {}
   }
   localStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(SESSION_PHONE);
   sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(SESSION_PHONE);
   sessionStorage.removeItem(ADMIN_SESSION);
   currentKey = null;
+  currentPhone = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('gate').style.display = 'flex';
   document.getElementById('userPhone').value = '';
@@ -1829,7 +1972,18 @@ function enterApp(isAdmin) {
   /* 同步 sessionStorage，保持和 localStorage 一致 */
   var savedKey = localStorage.getItem(SESSION_KEY);
   if (savedKey) sessionStorage.setItem(SESSION_KEY, savedKey);
-  if (isAdmin) sessionStorage.setItem(ADMIN_SESSION, '1');
+  if (isAdmin) {
+    sessionStorage.setItem(ADMIN_SESSION, '1');
+    currentPhone = 'admin';
+    sessionStorage.setItem(SESSION_PHONE, 'admin');
+  } else {
+    /* 非管理员：恢复手机号 */
+    var savedPhone = localStorage.getItem(SESSION_PHONE);
+    if (savedPhone) {
+      currentPhone = savedPhone;
+      sessionStorage.setItem(SESSION_PHONE, savedPhone);
+    }
+  }
   loadState();
   renderAll();
   updateClock();
@@ -1863,7 +2017,7 @@ function initDays() {
 
 /* ---------- 存取 ---------- */
 function loadState() {
-  const sk = userStorageKey(currentKey);
+  const sk = userStorageKey(getCurrentPhone());
   const saved = localStorage.getItem(sk);
   if (saved) {
     try {
@@ -1898,7 +2052,7 @@ function loadState() {
     showToast('欢迎首次使用，请点击右上角 ⚙️ 完善信息');
   }
   /* 从云端同步最新数据 */
-  loadFromCloud(currentKey, function(cloudData) {
+  loadFromCloud(getCurrentPhone(), function(cloudData) {
     if (cloudData) {
       /* 只覆盖云端有值的字段，避免 null/undefined 覆盖本地有效数据 */
       Object.keys(cloudData).forEach(function(key) {
@@ -1920,7 +2074,7 @@ function loadState() {
       if (!state.periods) state.periods = [];
       if (!state.avatar) state.avatar = MOON_AVATAR;
       if (!state.startFat) state.startFat = null;
-      try { localStorage.setItem(userStorageKey(currentKey), JSON.stringify(state)); } catch(e) {}
+      try { localStorage.setItem(userStorageKey(getCurrentPhone()), JSON.stringify(state)); } catch(e) {}
       if (typeof renderAll === 'function') renderAll();
       console.log('云端数据已同步');
     }
@@ -1929,15 +2083,16 @@ function loadState() {
 
 function saveState() {
   try {
-    localStorage.setItem(userStorageKey(currentKey), JSON.stringify(state));
+    localStorage.setItem(userStorageKey(getCurrentPhone()), JSON.stringify(state));
   } catch(e) {}
-  saveToCloud(currentKey, state);
+  saveToCloud(getCurrentPhone(), state);
   showSaveIndicator();
 }
 function saveStateImmediate() {
-  if (currentKey) {
-    try { localStorage.setItem(userStorageKey(currentKey), JSON.stringify(state)); } catch(e) {}
-    saveToCloudImmediate(currentKey, state);
+  var phone = getCurrentPhone();
+  if (phone && phone !== 'local') {
+    try { localStorage.setItem(userStorageKey(phone), JSON.stringify(state)); } catch(e) {}
+    saveToCloudImmediate(phone, state);
   }
 }
 
@@ -3405,6 +3560,7 @@ function renderKeyList() {
   const searchTerm = searchEl ? searchEl.value.trim() : '';
   let html = '';
   const pi = loadPresetInfo();
+  var payments = loadPayments(); /* 付费状态 */
   /* 预设密钥 */
   PRESET_KEYS.forEach(k => {
     const ud = getUserData(k);
@@ -3417,7 +3573,17 @@ function renderKeyList() {
       const phone = info && info.phone ? info.phone : '';
       if (phone.indexOf(searchTerm) === -1) return;
     }
-    /* 类型标注：免费用户 */
+    /* 付费状态标签 */
+    var phone = info && info.phone ? info.phone : '';
+    var paymentBadge = '';
+    if (phone && payments[phone]) {
+      if (payments[phone].beautyPaid) {
+        paymentBadge = ' <span class="key-badge" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-size:0.65rem">29.9元</span>';
+      } else if (payments[phone].storagePaid) {
+        paymentBadge = ' <span class="key-badge" style="background:#10b981;color:#fff;font-size:0.65rem">19.9元</span>';
+      }
+    }
+    /* 类型标注 */
     var userType = '免费用户';
     let toggleBtn;
     if (revoked) {
@@ -3432,7 +3598,7 @@ function renderKeyList() {
     html += '<div class="key-row-v2">'
       + '<div class="key-row-main">'
         + '<div class="key-code">' + k + '</div>'
-        + '<span class="key-badge active">' + userType + '</span>'
+        + '<span class="key-badge active">' + userType + '</span>' + paymentBadge
       + '</div>'
       + '<div class="key-row-info" onclick="editKeyNote(\'' + k + '\')">'
         + '<span class="key-info-icon">👤</span>'
@@ -3455,10 +3621,20 @@ function renderKeyList() {
       const toggleBtn = isOn
         ? '<button class="key-toggle key-toggle-on" onclick="revokeKey(\'' + k + '\')">已启用 · 点击停用</button>'
         : '<button class="key-toggle key-toggle-off" onclick="restoreKey(\'' + k + '\')">已停用 · 点击恢复</button>';
+      /* 付费状态标签 */
+      var dynPhone = info.phone || '';
+      var dynPayBadge = '';
+      if (dynPhone && payments[dynPhone]) {
+        if (payments[dynPhone].beautyPaid) {
+          dynPayBadge = ' <span class="key-badge" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-size:0.65rem">29.9元</span>';
+        } else if (payments[dynPhone].storagePaid) {
+          dynPayBadge = ' <span class="key-badge" style="background:#10b981;color:#fff;font-size:0.65rem">19.9元</span>';
+        }
+      }
       html += '<div class="key-row-v2">'
         + '<div class="key-row-main">'
           + '<div class="key-code">' + k + '</div>'
-          + '<span class="key-badge active">免费用户</span>'
+          + '<span class="key-badge active">免费用户</span>' + dynPayBadge
         + '</div>'
         + '<div class="key-row-info" onclick="editKeyNote(\'' + k + '\')">'
           + '<span class="key-info-icon">👤</span>'
@@ -3546,7 +3722,13 @@ function renderKeyList() {
     }
     document.getElementById('adminTrial').textContent = trialCount;
     document.getElementById('adminVipBasic').textContent = vipBasicCount;
-    document.getElementById('adminVipUpgrade').textContent = vipUpgradeCount;
+    /* 统计29.9元变美计划付费用户 */
+    var payCount = 0;
+    var allPayments = loadPayments();
+    Object.keys(allPayments).forEach(function(p) {
+      if (allPayments[p] && allPayments[p].beautyPaid) payCount++;
+    });
+    document.getElementById('adminVipUpgrade').textContent = payCount;
     document.getElementById('adminTotal').textContent = freeCount + trialCount + vipBasicCount;
   });
 }
@@ -3730,8 +3912,21 @@ function copyKey(k) {
 /* ---------- 管理员：用户总览 ---------- */
 function getUserData(k) {
   try {
-    const s = JSON.parse(localStorage.getItem(userStorageKey(k)));
-    return s || {};
+    /* 先尝试密钥路径（兼容旧数据） */
+    var s = localStorage.getItem(userStorageKey(k));
+    if (s) return JSON.parse(s) || {};
+    /* 再尝试手机号路径：通过密钥查找绑定的手机号 */
+    var pi = loadPresetInfo();
+    if (pi[k] && pi[k].phone) {
+      s = localStorage.getItem(userStorageKey(pi[k].phone));
+      if (s) return JSON.parse(s) || {};
+    }
+    var keys = loadKeys();
+    if (keys[k] && keys[k].phone) {
+      s = localStorage.getItem(userStorageKey(keys[k].phone));
+      if (s) return JSON.parse(s) || {};
+    }
+    return {};
   } catch(e) { return {}; }
 }
 function renderUserList() {
@@ -4269,13 +4464,30 @@ function renderAll() {
       } catch(e) {}
     }
   });
+  /* 同步云端付费数据 */
+  loadFromCloud(CLOUD_PAYMENT_PATH, function(cloudPayments) {
+    if (cloudPayments) {
+      try {
+        var localPayments = loadPayments();
+        var mergedPay = Object.assign({}, localPayments, cloudPayments);
+        localStorage.setItem(PAYMENT_STORE, JSON.stringify(mergedPay));
+        console.log('云端付费数据已同步');
+      } catch(e) {}
+    }
+  });
   /* 检查是否已登录过（首次密钥登录后本设备自动记住，后续直接进入） */
   const savedKey = localStorage.getItem(SESSION_KEY);
-  if (savedKey) {
+  const savedPhone = localStorage.getItem(SESSION_PHONE);
+  if (savedKey && savedPhone) {
     currentKey = savedKey;
+    currentPhone = savedPhone;
     sessionStorage.setItem(SESSION_KEY, savedKey);
+    sessionStorage.setItem(SESSION_PHONE, savedPhone);
     const isAdmin = (savedKey === ADMIN_SESSION);
-    if (isAdmin) sessionStorage.setItem(ADMIN_SESSION, '1');
+    if (isAdmin) {
+      sessionStorage.setItem(ADMIN_SESSION, '1');
+      currentPhone = 'admin';
+    }
     document.getElementById('gate').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     document.getElementById('adminTab').style.display = isAdmin ? 'inline-block' : 'none';
@@ -4317,44 +4529,32 @@ var meditationAudio = null;
 var commCurrentTab = 'hot';
 
 function openBeautyUpgrade() {
-  /* 检查升级版权限 */
-  var loginType = currentKey || localStorage.getItem(SESSION_KEY) || '';
-  var isAdmin = sessionStorage.getItem(ADMIN_SESSION) === '1' || loginType === 'admin';
   var lockMsg = document.getElementById('beautyLockMsg');
   var sections = document.getElementById('beautySections');
-  if (loginType === 'admin' || isAdmin || (loginType && loginType.length === 6)) {
-    /* 管理员和密钥用户免费使用 */
+  if (hasBeautyPermission()) {
+    /* 管理员或已购买29.9元变美计划 */
     lockMsg.style.display = 'none';
     sections.style.display = 'block';
   } else {
-    /* 微信用户检查升级版付费状态 */
-    var wxPhone = localStorage.getItem('moondiary_wx_phone');
-    if (wxPhone) {
-      loadFromCloud('_wx_users', function(data) {
-        if (data && data[wxPhone] && data[wxPhone].upgradePaidUntil && data[wxPhone].upgradePaidUntil > Date.now()) {
-          lockMsg.style.display = 'none';
-          sections.style.display = 'block';
-        } else {
-          lockMsg.style.display = 'block';
-          sections.style.display = 'block';
-        }
-      });
-    } else {
-      lockMsg.style.display = 'block';
-      sections.style.display = 'block';
-    }
+    /* 未购买29.9元：隐藏功能区，只显示购买提示 */
+    sections.style.display = 'none';
+    lockMsg.style.display = 'block';
   }
   document.getElementById('beautyHomeModal').classList.add('show');
 }
 
 function payBeautyUpgrade() {
-  showToast('升级版支付功能即将开通，请使用小程序开通');
+  showToast('请联系管理员开通 29.9元永久变美计划');
 }
 
 /* === 护肤日记 === */
 function openBeautySkincare() {
+  if (!hasBeautyPermission()) {
+    showToast('请先开通 29.9元变美计划');
+    return;
+  }
   document.getElementById('beautyHomeModal').classList.remove('show');
-  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
+  var userKey = getCurrentPhone();
   var localCacheKey = 'moondiary_skincare_' + userKey;
   loadFromCloud('beauty/skincare/' + userKey, function(data) {
     if (data) {
@@ -4684,7 +4884,7 @@ function onStartDateChange(dateStr) {
     var total = Math.floor((endTs - startTs) / 86400000) + 1;
     if (total < 1) total = 1;
     beautySkincareState.totalDays = total;
-    saveToCloudImmediate('beauty/skincare/' + (currentKey||sessionStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
+    saveToCloudImmediate('beauty/skincare/' + getCurrentPhone(), beautySkinData);
   }
   updateSkincareUI();
   renderSkincareCalendar();
@@ -4701,7 +4901,7 @@ function onEndDateChange(dateStr) {
     var total = Math.floor((endTs - startTs) / 86400000) + 1;
     if (total < 1) total = 1;
     beautySkincareState.totalDays = total;
-    saveToCloudImmediate('beauty/skincare/' + (currentKey||sessionStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
+    saveToCloudImmediate('beauty/skincare/' + getCurrentPhone(), beautySkinData);
   }
   updateSkincareUI();
   renderSkincareCalendar();
@@ -4774,7 +4974,7 @@ function autoSaveSkincare() {
 }
 
 function saveBeautySkincare() {
-  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
+  var userKey = getCurrentPhone();
   if (!beautySkinData) beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
   var today = formatDateStr(new Date());
   beautySkincareState.salonNote = document.getElementById('beautySalonNote') ? document.getElementById('beautySalonNote').value : '';
@@ -5343,7 +5543,7 @@ function saveSkincareDayDetail(silent) {
       createdAt: Date.now()
     });
   }
-  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
+  var userKey = getCurrentPhone();
   saveToCloudImmediate('beauty/skincare/' + userKey, beautySkinData);
   try { localStorage.setItem('moondiary_skincare_' + userKey, JSON.stringify(beautySkinData)); } catch(e) {}
   if (!silent) {
@@ -5356,6 +5556,10 @@ function saveSkincareDayDetail(silent) {
 
 /* === 心情日记 === */
 function openBeautyMood() {
+  if (!hasBeautyPermission()) {
+    showToast('请先开通 29.9元变美计划');
+    return;
+  }
   document.getElementById('beautyHomeModal').classList.remove('show');
   beautyMoodState = { mood: '', status: '', diary: '', meditation: false, meditationMinutes: 0, discipline: {} };
   document.getElementById('moodStatus').value = '';
@@ -5365,7 +5569,7 @@ function openBeautyMood() {
   document.querySelectorAll('#moodEmojiGrid .beauty-emoji-card').forEach(function(el) { el.classList.remove('beauty-emoji-card-active'); });
   document.querySelectorAll('#disciplineGrid .beauty-check').forEach(function(el) { el.classList.remove('beauty-check-active'); });
   /* 加载数据 */
-  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
+  var userKey = getCurrentPhone();
   loadFromCloud('beauty/mood/' + userKey, function(data) {
     beautyMoodData = data || { version: 1, dailyRecords: [] };
     if (!beautyMoodData.dailyRecords) beautyMoodData.dailyRecords = [];
@@ -5419,7 +5623,7 @@ function stopMeditationMusic() {
 }
 
 function saveBeautyMood() {
-  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
+  var userKey = getCurrentPhone();
   if (!beautyMoodData) beautyMoodData = { version: 1, dailyRecords: [] };
   var today = formatDateStr(new Date());
   beautyMoodState.status = document.getElementById('moodStatus').value;
@@ -5448,6 +5652,10 @@ document.addEventListener('input', function(e) {
 
 /* === 月友圈 === */
 function openBeautyCommunity() {
+  if (!hasBeautyPermission()) {
+    showToast('请先开通 29.9元变美计划');
+    return;
+  }
   document.getElementById('beautyHomeModal').classList.remove('show');
   commCurrentTab = 'hot';
   document.getElementById('beautyCommunityModal').classList.add('show');
@@ -5475,14 +5683,14 @@ function loadCommunityPosts() {
     } else if (commCurrentTab === 'new') {
       posts.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
     } else if (commCurrentTab === 'mine') {
-      var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || '');
+      var userKey = getCurrentPhone();
       posts = posts.filter(function(p) { return p.userKey === userKey; });
     }
     if (posts.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     var html = '';
     posts.forEach(function(p) {
-      var isLiked = p.likedBy && p.likedBy.indexOf(currentKey || sessionStorage.getItem(SESSION_KEY)) > -1;
+      var isLiked = p.likedBy && p.likedBy.indexOf(getCurrentPhone()) > -1;
       html += '<div class="comm-post">' +
         '<div class="comm-post-header">' +
           '<div class="comm-post-avatar">' + (p.nickname ? p.nickname[0] : '月') + '</div>' +
@@ -5517,7 +5725,7 @@ function showPostEditor() {
 function publishPost() {
   var content = document.getElementById('postContent').value.trim();
   if (!content) { showToast('请输入内容'); return; }
-  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
+  var userKey = getCurrentPhone();
   var nickname = localStorage.getItem('moondiary_nick') || '月友';
   var postId = 'post_' + Date.now() + '_' + Math.random().toString(36).substring(2,6);
   var newPost = {
@@ -5536,7 +5744,7 @@ function publishPost() {
 }
 
 function likePost(postId) {
-  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
+  var userKey = getCurrentPhone();
   loadFromCloud('beauty/community/posts', function(data) {
     if (!data || !data.posts) return;
     for (var i = 0; i < data.posts.length; i++) {
