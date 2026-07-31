@@ -598,8 +598,8 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .post-detail-comment-send{padding:7px 16px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;border:none;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;box-shadow:0 2px 6px rgba(139,92,246,0.25)}
 .post-detail-comment-send:active{transform:scale(0.93)}
 
-/* 评论抽屉——固定在屏幕底部，紧贴键盘上方 */
-.comm-reply-drawer{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#fff;border-top:1.5px solid #ede9fe;border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.1);padding:10px 14px 12px;display:none;transition:bottom 0.15s ease-out}
+/* 评论抽屉——用 top 定位到可视区域底部，键盘弹出时自动上移 */
+.comm-reply-drawer{position:fixed;left:0;right:0;z-index:9999;background:#fff;border-top:1.5px solid #ede9fe;border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.1);padding:10px 14px 12px;display:none}
 .comm-reply-drawer.show{display:block}
 .comm-reply-drawer-context{max-height:100px;overflow-y:auto;margin-bottom:8px;padding:6px 10px;background:#f5f3ff;border-radius:8px;font-size:0.75rem;color:#57534e;line-height:1.4}
 .comm-reply-drawer-context .ctx-nick{font-weight:700;color:#8b5cf6}
@@ -7564,34 +7564,29 @@ function _focusInputAndAdjust(input, isReply, cssPrefix) {
 /* 当前被回复的评论ID（供滚动定位使用） */
 var commentId_current = '';
 
-/* 调整抽屉位置：紧贴键盘上方
- * 多重检测：visualViewport + window.innerHeight 变化
+/* 调整抽屉位置：用 top 定位到可视区域底部（键盘弹出时可视区域缩小，抽屉自动上移）
+ * 核心思路：抽屉的 top = visualViewport.offsetTop + visualViewport.height - 抽屉自身高度
+ * 这样抽屉始终紧贴在可视区域（键盘上方）的底部
  */
 function _adjustDrawerForKeyboard() {
   var drawer = document.getElementById('replyDrawer');
   if (!drawer || !drawer.classList.contains('show')) return;
-  var keyboardHeight = 0;
-  /* 方法1: visualViewport API */
+  /* 先让抽屉显示以便测量高度 */
+  var drawerHeight = drawer.offsetHeight;
+  if (drawerHeight < 10) drawerHeight = 60;
+  var topPos;
   if (window.visualViewport) {
-    keyboardHeight = window.innerHeight - window.visualViewport.height;
-  }
-  /* 方法2: window.innerHeight 变化检测（更可靠） */
-  if (keyboardHeight < 10 && _drawerInitialHeight > 0) {
-    var currentHeight = window.innerHeight;
-    if (_drawerInitialHeight - currentHeight > 50) {
-      keyboardHeight = _drawerInitialHeight - currentHeight;
-    }
-  }
-  /* 方法3: 安卓 Chrome 的 visualViewport.offsetTop */
-  if (keyboardHeight < 10 && window.visualViewport && window.visualViewport.offsetTop > 10) {
-    keyboardHeight = window.visualViewport.offsetTop;
-  }
-  /* 设置抽屉位置 */
-  if (keyboardHeight > 10) {
-    drawer.style.bottom = keyboardHeight + 'px';
+    /* 可视区域的底部 = visualViewport.offsetTop + visualViewport.height
+     * 抽屉顶部 = 可视区域底部 - 抽屉高度 */
+    topPos = window.visualViewport.offsetTop + window.visualViewport.height - drawerHeight;
   } else {
-    drawer.style.bottom = '0px';
+    /* 没有 visualViewport 时，用 window.innerHeight */
+    topPos = window.innerHeight - drawerHeight;
   }
+  /* 确保不超出屏幕 */
+  if (topPos < 0) topPos = 0;
+  drawer.style.top = topPos + 'px';
+  drawer.style.bottom = 'auto';
 }
 
 /* 列表模式：滚动被回复评论到输入框上方与屏幕顶部之间的中间位置 */
@@ -7649,7 +7644,8 @@ function closeReplyDrawer() {
   var overlay = document.getElementById('replyDrawerOverlay');
   if (drawer) {
     drawer.classList.remove('show');
-    drawer.style.bottom = '0px';
+    drawer.style.top = '';
+    drawer.style.bottom = '';
   }
   if (overlay) overlay.classList.remove('show');
   /* 移除键盘监听 */
@@ -7701,7 +7697,7 @@ function submitReplyDrawer() {
   /* 先关闭抽屉，提升体验流畅度 */
   var drawerEl = document.getElementById('replyDrawer');
   var overlayEl = document.getElementById('replyDrawerOverlay');
-  if (drawerEl) { drawerEl.classList.remove('show'); drawerEl.style.bottom = '0px'; }
+  if (drawerEl) { drawerEl.classList.remove('show'); drawerEl.style.top = ''; drawerEl.style.bottom = ''; }
   if (overlayEl) overlayEl.classList.remove('show');
   if (_replyDrawerVVPHandler) {
     window.removeEventListener('resize', _replyDrawerVVPHandler);
