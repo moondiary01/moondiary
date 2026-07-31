@@ -184,7 +184,7 @@ body{
 .tab.active{color:var(--rose-600);border-bottom-color:var(--rose-500)}
 .tab:hover:not(.active){color:var(--rose-400)}
 .main{max-width:1100px;margin:0 auto;padding:12px 20px}
-.page{display:none;animation:fade 0.3s ease}
+.page{display:none}
 .page.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 /* ===== 卡片 ===== */
@@ -918,6 +918,16 @@ _loadCosSdk(0);
         <div style="font-size:0.78rem;color:#78716c;margin-top:4px">护肤日记 · 心情记录 · 月友圈</div>
       </div>
       <span style="font-size:1.5rem;color:#c4b5fd">›</span>
+    </div>
+  </div>
+  <div class="card" onclick="openCommunityDirect();playClick()" style="cursor:pointer;background:linear-gradient(135deg,#ede9fe,#c7d2fe);border:1.5px solid rgba(139,92,246,0.2);margin-top:10px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:1.6rem">🌙</span>
+      <div style="flex:1">
+        <div style="font-size:1rem;font-weight:700;color:#6d28d9">月友圈</div>
+        <div style="font-size:0.75rem;color:#78716c;margin-top:2px">分享变美日记 · 互相点赞评论</div>
+      </div>
+      <span style="font-size:1.3rem;color:#a78bfa">›</span>
     </div>
   </div>
 </div>
@@ -2955,7 +2965,8 @@ function switchTab(idx) {
   if (idx === 3) renderReview();
   if (idx === 4) renderCalendar();
   if (idx === 5) { renderKeyList(); renderVersionPanel(); }
-  window.scrollTo(0, 0);
+  /* 平滑滚动到顶部，避免瞬间跳闪 */
+  window.scrollTo({top: 0, behavior: 'instant'});
 }
 
 /* ---------- 左右滑动切换页面 ---------- */
@@ -2974,7 +2985,7 @@ document.addEventListener('touchend', e => {
   touchEndY = e.changedTouches[0].screenY;
   const diffX = touchStartX - touchEndX;
   const diffY = touchStartY - touchEndY;
-  if (Math.abs(diffX) < 120) return; /* 水平滑动太短忽略，提高阈值防误触 */
+  if (Math.abs(diffX) < 140) return; /* 水平滑动太短忽略，高阈值防误触 */
   /* 只有水平滑动明显大于垂直滑动时才切换页面，避免上下滚动误触发 */
   if (Math.abs(diffY) > Math.abs(diffX) * 0.5) return;
 
@@ -3004,9 +3015,9 @@ document.addEventListener('touchend', e => {
   var beautyHome = document.getElementById('beautyHomeModal');
   if (beautyHome && beautyHome.classList.contains('show') && beautyHome.contains(e.target)) return;
 
-  /* 防抖：500ms内只触发一次Tab切换 */
+  /* 防抖：600ms内只触发一次Tab切换，避免快速滑动连续跳页 */
   var now = Date.now();
-  if (window._lastTabSwipe && now - window._lastTabSwipe < 500) return;
+  if (window._lastTabSwipe && now - window._lastTabSwipe < 600) return;
   window._lastTabSwipe = now;
 
   /* 找当前tab */
@@ -6900,6 +6911,7 @@ function openBeautyCommunity() {
       showToast('请先开通 29.9元变美计划');
       return;
     }
+    /* 直接进入月友圈，不经过变美主页中间页 */
     document.getElementById('beautyHomeModal').classList.remove('show');
     var commModal = document.getElementById('beautyCommunityModal');
     commModal.classList.add('show');
@@ -6914,6 +6926,34 @@ function openBeautyCommunity() {
       avatarEl.textContent = myAvatar;
     }
     /* 头像下方显示昵称 */
+    var nameEl = document.getElementById('commMyNameLabel');
+    if (nameEl) nameEl.textContent = state.name || '月友';
+    loadCommunityPosts();
+    setupCommPullRefresh();
+    startCommAutoRefresh();
+  });
+}
+
+/* 从主页直接进入月友圈（跳过变美主页） */
+function openCommunityDirect() {
+  refreshPaymentsFromCloud(function() {
+    if (!hasBeautyPermission()) {
+      /* 未付费则显示变美主页（付费引导） */
+      openBeautyUpgrade();
+      return;
+    }
+    /* 已付费直接进入月友圈 */
+    var commModal = document.getElementById('beautyCommunityModal');
+    commModal.classList.add('show');
+    var commInner = commModal.querySelector('.modal');
+    if (commInner) commInner.scrollTop = 0;
+    var avatarEl = document.getElementById('commMyAvatar');
+    var myAvatar = state.avatar || MOON_AVATAR;
+    if (myAvatar.indexOf('data:image') === 0) {
+      avatarEl.innerHTML = '<img src="' + myAvatar + '" style="width:100%;height:100%;object-fit:cover">';
+    } else {
+      avatarEl.textContent = myAvatar;
+    }
     var nameEl = document.getElementById('commMyNameLabel');
     if (nameEl) nameEl.textContent = state.name || '月友';
     loadCommunityPosts();
