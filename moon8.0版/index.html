@@ -599,17 +599,17 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .post-detail-comment-send:active{transform:scale(0.93)}
 
 /* 评论抽屉——固定在屏幕底部，紧贴键盘上方 */
-.comm-reply-drawer{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#fff;border-top:1.5px solid #ede9fe;border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.1);padding:10px 14px;display:none}
+.comm-reply-drawer{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#fff;border-top:1.5px solid #ede9fe;border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.1);padding:10px 14px 12px;display:none;transition:bottom 0.15s ease-out}
 .comm-reply-drawer.show{display:block}
-.comm-reply-drawer-context{max-height:120px;overflow-y:auto;margin-bottom:8px;padding:6px 10px;background:#f5f3ff;border-radius:8px;font-size:0.75rem;color:#57534e;line-height:1.4}
+.comm-reply-drawer-context{max-height:100px;overflow-y:auto;margin-bottom:8px;padding:6px 10px;background:#f5f3ff;border-radius:8px;font-size:0.75rem;color:#57534e;line-height:1.4}
 .comm-reply-drawer-context .ctx-nick{font-weight:700;color:#8b5cf6}
 .comm-reply-drawer-context .ctx-text{color:#78716c;margin-top:2px}
 .comm-reply-drawer-bar{display:flex;gap:6px;align-items:center}
-.comm-reply-drawer-input{flex:1;padding:8px 14px;border:1.5px solid #ede9fe;border-radius:20px;font-size:0.82rem;outline:none;background:#fff;transition:border-color 0.2s}
+.comm-reply-drawer-input{flex:1;padding:9px 14px;border:1.5px solid #ede9fe;border-radius:20px;font-size:0.85rem;outline:none;background:#fff;transition:border-color 0.2s;-webkit-appearance:none;appearance:none}
 .comm-reply-drawer-input:focus{border-color:#c4b5fd}
-.comm-reply-drawer-send{padding:7px 16px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;border:none;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:transform 0.2s;box-shadow:0 2px 6px rgba(139,92,246,0.25)}
+.comm-reply-drawer-send{padding:8px 16px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;border:none;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:transform 0.2s;box-shadow:0 2px 6px rgba(139,92,246,0.25)}
 .comm-reply-drawer-send:active{transform:scale(0.93)}
-.comm-reply-drawer-cancel{padding:7px 12px;border-radius:20px;background:#f5f3ff;color:#8b5cf6;font-size:0.75rem;border:1px solid #e9d5ff;cursor:pointer;white-space:nowrap}
+.comm-reply-drawer-cancel{padding:8px 12px;border-radius:20px;background:#f5f3ff;color:#8b5cf6;font-size:0.75rem;border:1px solid #e9d5ff;cursor:pointer;white-space:nowrap}
 .comm-reply-drawer-overlay{position:fixed;inset:0;z-index:9998;background:transparent;display:none}
 .comm-reply-drawer-overlay.show{display:block}
 .image-viewer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column}
@@ -7399,7 +7399,7 @@ function renderCommentHtml(c, cssPrefix) {
   var safeNick = escapeHtml(c.nickname || '月友');
   var safeNickForAttr = escapeAttr(c.nickname || '月友');
   var safeId = escapeAttr(c.id || '');
-  return '<div class="' + cssPrefix + '-item" onclick="startReplyComment(\'' + safeId + '\',\'' + safeNickForAttr + '\',\'' + cssPrefix + '\')">' +
+  return '<div class="' + cssPrefix + '-item" data-cid="' + safeId + '" onclick="startReplyComment(\'' + safeId + '\',\'' + safeNickForAttr + '\',\'' + cssPrefix + '\')">' +
     '<div class="' + cssPrefix + '-avatar">' + cAvatar + '</div>' +
     '<div class="' + cssPrefix + '-body">' +
       '<div class="' + cssPrefix + '-nick">' + safeNick + '</div>' +
@@ -7508,33 +7508,45 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
   /* 聚焦输入框 + 适配键盘 + 滚动评论，统一在键盘弹出后处理 */
   _focusInputAndAdjust(input, isReply, cssPrefix);
 
-  if (window.visualViewport) {
-    if (_replyDrawerVVPHandler) {
+  /* 双保险监听键盘：visualViewport + window resize */
+  if (_replyDrawerVVPHandler) {
+    window.removeEventListener('resize', _replyDrawerVVPHandler);
+    if (window.visualViewport) {
       window.visualViewport.removeEventListener('resize', _replyDrawerVVPHandler);
       window.visualViewport.removeEventListener('scroll', _replyDrawerVVPHandler);
     }
-    _replyDrawerVVPHandler = function() {
-      _adjustDrawerForKeyboard();
-      /* 键盘弹出/收起时重新滚动评论到中间 */
-      if (isReply) {
-        if (cssPrefix === 'post-detail-comment') {
-          _scrollDetailCommentToCenter(commentId_current);
-        } else {
-          _scrollCommentToCenter(commentId_current);
-        }
+  }
+  _replyDrawerVVPHandler = function() {
+    _adjustDrawerForKeyboard();
+    if (isReply) {
+      if (cssPrefix === 'post-detail-comment') {
+        _scrollDetailCommentToCenter(commentId_current);
+      } else {
+        _scrollCommentToCenter(commentId_current);
       }
-    };
+    }
+  };
+  /* window resize 是最可靠的键盘检测方式 */
+  window.addEventListener('resize', _replyDrawerVVPHandler);
+  if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', _replyDrawerVVPHandler);
     window.visualViewport.addEventListener('scroll', _replyDrawerVVPHandler);
   }
 }
 
+/* 记录抽屉打开时的初始窗口高度（用于检测键盘弹出） */
+var _drawerInitialHeight = 0;
+
 /* 聚焦输入框，等待键盘弹出后再调整抽屉位置和滚动评论 */
 function _focusInputAndAdjust(input, isReply, cssPrefix) {
-  /* 先聚焦 */
+  /* 记录初始窗口高度 */
+  _drawerInitialHeight = window.innerHeight;
+  /* 先设置抽屉在屏幕底部（键盘弹出前） */
+  _adjustDrawerForKeyboard();
+  /* 聚焦触发键盘弹出 */
   input.focus({ preventScroll: true });
   /* 多次延迟检查键盘状态，确保键盘弹出后正确定位 */
-  var checks = [100, 300, 500, 800];
+  var checks = [50, 150, 300, 500, 800, 1200];
   checks.forEach(function(delay) {
     setTimeout(function() {
       _adjustDrawerForKeyboard();
@@ -7552,18 +7564,31 @@ function _focusInputAndAdjust(input, isReply, cssPrefix) {
 /* 当前被回复的评论ID（供滚动定位使用） */
 var commentId_current = '';
 
-/* 调整抽屉位置：紧贴键盘上方 */
+/* 调整抽屉位置：紧贴键盘上方
+ * 多重检测：visualViewport + window.innerHeight 变化
+ */
 function _adjustDrawerForKeyboard() {
   var drawer = document.getElementById('replyDrawer');
   if (!drawer || !drawer.classList.contains('show')) return;
+  var keyboardHeight = 0;
+  /* 方法1: visualViewport API */
   if (window.visualViewport) {
-    /* 键盘弹出后 visualViewport.height = 窗口高度 - 键盘高度 */
-    var keyboardHeight = window.innerHeight - window.visualViewport.height;
-    if (keyboardHeight > 10) {
-      drawer.style.bottom = keyboardHeight + 'px';
-    } else {
-      drawer.style.bottom = '0px';
+    keyboardHeight = window.innerHeight - window.visualViewport.height;
+  }
+  /* 方法2: window.innerHeight 变化检测（更可靠） */
+  if (keyboardHeight < 10 && _drawerInitialHeight > 0) {
+    var currentHeight = window.innerHeight;
+    if (_drawerInitialHeight - currentHeight > 50) {
+      keyboardHeight = _drawerInitialHeight - currentHeight;
     }
+  }
+  /* 方法3: 安卓 Chrome 的 visualViewport.offsetTop */
+  if (keyboardHeight < 10 && window.visualViewport && window.visualViewport.offsetTop > 10) {
+    keyboardHeight = window.visualViewport.offsetTop;
+  }
+  /* 设置抽屉位置 */
+  if (keyboardHeight > 10) {
+    drawer.style.bottom = keyboardHeight + 'px';
   } else {
     drawer.style.bottom = '0px';
   }
@@ -7572,15 +7597,8 @@ function _adjustDrawerForKeyboard() {
 /* 列表模式：滚动被回复评论到输入框上方与屏幕顶部之间的中间位置 */
 function _scrollCommentToCenter(commentId) {
   if (!commentId) return;
-  /* 在评论区容器中找到被回复的评论项 */
-  var commentsEls = document.querySelectorAll('.comm-comment-item');
-  var targetEl = null;
-  for (var i = 0; i < commentsEls.length; i++) {
-    if (commentsEls[i].getAttribute('onclick') && commentsEls[i].getAttribute('onclick').indexOf(commentId) > -1) {
-      targetEl = commentsEls[i];
-      break;
-    }
-  }
+  /* 用 data-cid 精确查找被回复评论项 */
+  var targetEl = document.querySelector('.comm-comment-item[data-cid="' + commentId + '"]');
   if (!targetEl) return;
   /* 计算目标位置：让评论显示在屏幕顶部和抽屉之间的中间区域 */
   var drawer = document.getElementById('replyDrawer');
@@ -7594,7 +7612,7 @@ function _scrollCommentToCenter(commentId) {
   var elRect = targetEl.getBoundingClientRect();
   var elCenter = elRect.top + elRect.height / 2;
   var scrollOffset = elCenter - targetCenter;
-  /* 只用一次滚动，避免scrollIntoView和scrollTop冲突 */
+  /* 只用一次滚动，避免冲突 */
   var scrollContainer = targetEl.closest('.modal-content') || targetEl.closest('.comm-posts-scroll') || document.scrollingElement || document.documentElement;
   if (scrollContainer && scrollContainer.scrollTop !== undefined) {
     scrollContainer.scrollTop += scrollOffset;
@@ -7606,14 +7624,7 @@ function _scrollCommentToCenter(commentId) {
 /* 详情页模式：滚动被回复评论到详情区中间偏上 */
 function _scrollDetailCommentToCenter(commentId) {
   if (!commentId) return;
-  var commentsEls = document.querySelectorAll('.post-detail-comment-item');
-  var targetEl = null;
-  for (var i = 0; i < commentsEls.length; i++) {
-    if (commentsEls[i].getAttribute('onclick') && commentsEls[i].getAttribute('onclick').indexOf(commentId) > -1) {
-      targetEl = commentsEls[i];
-      break;
-    }
-  }
+  var targetEl = document.querySelector('.post-detail-comment-item[data-cid="' + commentId + '"]');
   if (!targetEl) return;
   var drawer = document.getElementById('replyDrawer');
   var drawerRect = drawer.getBoundingClientRect();
@@ -7641,12 +7652,16 @@ function closeReplyDrawer() {
     drawer.style.bottom = '0px';
   }
   if (overlay) overlay.classList.remove('show');
-  /* 移除 visualViewport 监听 */
-  if (window.visualViewport && _replyDrawerVVPHandler) {
-    window.visualViewport.removeEventListener('resize', _replyDrawerVVPHandler);
-    window.visualViewport.removeEventListener('scroll', _replyDrawerVVPHandler);
+  /* 移除键盘监听 */
+  if (_replyDrawerVVPHandler) {
+    window.removeEventListener('resize', _replyDrawerVVPHandler);
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', _replyDrawerVVPHandler);
+      window.visualViewport.removeEventListener('scroll', _replyDrawerVVPHandler);
+    }
     _replyDrawerVVPHandler = null;
   }
+  _drawerInitialHeight = 0;
   /* 清除回复状态 */
   commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
   commentId_current = '';
@@ -7688,11 +7703,15 @@ function submitReplyDrawer() {
   var overlayEl = document.getElementById('replyDrawerOverlay');
   if (drawerEl) { drawerEl.classList.remove('show'); drawerEl.style.bottom = '0px'; }
   if (overlayEl) overlayEl.classList.remove('show');
-  if (window.visualViewport && _replyDrawerVVPHandler) {
-    window.visualViewport.removeEventListener('resize', _replyDrawerVVPHandler);
-    window.visualViewport.removeEventListener('scroll', _replyDrawerVVPHandler);
+  if (_replyDrawerVVPHandler) {
+    window.removeEventListener('resize', _replyDrawerVVPHandler);
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', _replyDrawerVVPHandler);
+      window.visualViewport.removeEventListener('scroll', _replyDrawerVVPHandler);
+    }
     _replyDrawerVVPHandler = null;
   }
+  _drawerInitialHeight = 0;
 
   loadFromCloud('beauty/community/posts', function(data) {
     if (!data || !data.posts) return;
