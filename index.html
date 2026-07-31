@@ -1143,7 +1143,7 @@ _loadCosSdk(0);
       <div class="edit-form" style="margin-bottom:12px"><label style="font-size:0.8rem;color:var(--text-l)">心情日记</label><textarea id="editNote" class="edit-field" placeholder="今天的心情..."></textarea></div>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-primary" onclick="document.getElementById('dayDetailModal').classList.remove('show');playClick()">关闭</button>
+      <button class="btn btn-primary" onclick="closeDayDetail();playClick()">关闭</button>
     </div>
   </div>
 </div>
@@ -3323,8 +3323,9 @@ function toggleMonth(header) {
   playClick();
 }
 
-/* 点击表格行直接展示历史数据编辑表单（仅展示，不保存） */
+/* 点击表格行直接展示历史数据编辑表单，编辑后自动保存并同步 */
 var dayDetailIdx = -1;
+var _dayDetailSaveTimer = null;
 function showDayDetail(idx) {
   if (idx < 0 || idx >= state.days.length) return;
   dayDetailIdx = idx;
@@ -3351,7 +3352,64 @@ function showDayDetail(idx) {
   contentEl.innerHTML = titleHtml;
   contentEl.style.display = '';
   document.getElementById('dayDetailEdit').style.display = '';
+  /* 绑定自动保存 */
+  _bindDayDetailAutoSave();
   document.getElementById('dayDetailModal').classList.add('show');
+}
+
+/* 绑定编辑表单自动保存（input/change 事件，防抖800ms） */
+function _bindDayDetailAutoSave() {
+  var fields = ['editWeightAM','editWeightPM','editBM','editWater','editDiet','editExercise','editFat','editBust','editWaist','editHip','editNote'];
+  fields.forEach(function(fid) {
+    var el = document.getElementById(fid);
+    if (!el) return;
+    el.oninput = _autoSaveHistoryData;
+    el.onchange = _autoSaveHistoryData;
+  });
+}
+
+/* 防抖自动保存 */
+function _autoSaveHistoryData() {
+  if (dayDetailIdx < 0 || dayDetailIdx >= state.days.length) return;
+  if (_dayDetailSaveTimer) clearTimeout(_dayDetailSaveTimer);
+  _dayDetailSaveTimer = setTimeout(function() {
+    _doSaveHistoryData();
+  }, 800);
+}
+
+/* 执行保存：写入state → 本地+云端 → 刷新页面 */
+function _doSaveHistoryData() {
+  if (dayDetailIdx < 0 || dayDetailIdx >= state.days.length) return;
+  const d = state.days[dayDetailIdx];
+  const u = state.unit || '斤';
+  const am = parseFloat(document.getElementById('editWeightAM').value);
+  const pm = parseFloat(document.getElementById('editWeightPM').value);
+  d.weightAM = isNaN(am) ? null : (u === '斤' ? am / 2 : am);
+  d.weightPM = isNaN(pm) ? null : (u === '斤' ? pm / 2 : pm);
+  d.bm = document.getElementById('editBM').value;
+  d.water = parseInt(document.getElementById('editWater').value) || 0;
+  d.diet = document.getElementById('editDiet').value;
+  d.exercise = document.getElementById('editExercise').value;
+  const fatVal = parseFloat(document.getElementById('editFat').value);
+  d.fat = isNaN(fatVal) ? null : fatVal;
+  d.bust = parseFloat(document.getElementById('editBust').value) || null;
+  d.waist = parseFloat(document.getElementById('editWaist').value) || null;
+  d.hip = parseFloat(document.getElementById('editHip').value) || null;
+  /* 三围同步到全局基本信息 */
+  if (d.bust) state.bust = d.bust;
+  if (d.waist) state.waist = d.waist;
+  if (d.hip) state.hip = d.hip;
+  d.note = document.getElementById('editNote').value;
+  saveState();
+  renderDashboard(); renderBmi(); renderTable(); renderHero(); renderPlan();
+  showSaveIndicator();
+}
+
+/* 关闭弹窗时即时保存，防止防抖未执行丢数据 */
+function closeDayDetail() {
+  if (_dayDetailSaveTimer) { clearTimeout(_dayDetailSaveTimer); _dayDetailSaveTimer = null; }
+  _doSaveHistoryData();
+  document.getElementById('dayDetailModal').classList.remove('show');
 }
 
 /* 旧函数已废弃，保留空实现避免遗留调用报错 */
