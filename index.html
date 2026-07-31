@@ -1026,7 +1026,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
         </div>
 
         <!-- 自定义打卡项目 -->
-        <input type="text" id="beautyCustomCheck" placeholder="自定义打卡项目，如：面膜" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-bottom:12px" oninput="autoSaveSkincare()">
+        <textarea id="beautyCustomCheck" placeholder="自定义打卡项目，如：面膜" style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-bottom:12px;resize:vertical;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
 
         <div class="skincare-check-list">
           <div class="skincare-check-row" id="check-salon" onclick="toggleSkincareCheck('salon');playClick()">
@@ -1039,7 +1039,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
             <span class="skincare-check-box"><span class="skincare-check-tick" style="display:none">✓</span></span>
           </div>
         </div>
-        <input type="text" id="beautyCosmeticNote" placeholder="do脸项目感受..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;display:none" oninput="autoSaveSkincare()">
+        <textarea id="beautyCosmeticNote" placeholder="do脸项目感受..." style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;display:none;resize:vertical;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
       </div>
 
       <!-- 自拍打卡 -->
@@ -4524,62 +4524,84 @@ function uploadTodayPhoto() {
   input.id = '_skincarePhotoInput';
   input.type = 'file';
   input.accept = 'image/*';
+  input.multiple = true;
   input.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
   document.body.appendChild(input);
   input.onchange = function(e) {
-    var file = e.target.files[0];
-    if (!file) { input.remove(); return; }
-    if (!file.type.startsWith('image/')) {
-      showToast('请选择图片文件');
-      input.remove();
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      showToast('图片太大，请选择 10MB 以内的图片');
+    var files = e.target.files;
+    if (!files || files.length === 0) { input.remove(); return; }
+    var remaining = Math.min(files.length, 4 - (beautySkincareState.photos || []).length);
+    if (remaining <= 0) {
+      showToast('最多只能上传4张照片');
       input.remove();
       return;
     }
     showToast('正在处理图片...');
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      var img = new Image();
-      img.onload = function() {
-        var maxW = 800, maxH = 800;
-        var w = img.width, h = img.height;
-        if (w > maxW || h > maxH) {
-          var ratio = Math.min(maxW / w, maxH / h);
-          w = Math.round(w * ratio);
-          h = Math.round(h * ratio);
-        }
-        var canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', 0.7);
-        if (compressed.length > 500 * 1024) {
-          compressed = canvas.toDataURL('image/jpeg', 0.5);
-        }
-        beautySkincareState.photos.push(compressed);
+    var processed = 0;
+    var total = files.length;
+    function processFile(file) {
+      if (!file.type.startsWith('image/')) {
+        processed++;
+        checkDone();
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        processed++;
+        checkDone();
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var maxW = 800, maxH = 800;
+          var w = img.width, h = img.height;
+          if (w > maxW || h > maxH) {
+            var ratio = Math.min(maxW / w, maxH / h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
+          }
+          var canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          var compressed = canvas.toDataURL('image/jpeg', 0.7);
+          if (compressed.length > 500 * 1024) {
+            compressed = canvas.toDataURL('image/jpeg', 0.5);
+          }
+          if ((beautySkincareState.photos || []).length < 4) {
+            beautySkincareState.photos.push(compressed);
+          }
+          processed++;
+          checkDone();
+        };
+        img.onerror = function() {
+          if ((beautySkincareState.photos || []).length < 4) {
+            beautySkincareState.photos.push(ev.target.result);
+          }
+          processed++;
+          checkDone();
+        };
+        img.src = ev.target.result;
+      };
+      reader.onerror = function() {
+        processed++;
+        checkDone();
+      };
+      reader.readAsDataURL(file);
+    }
+    function checkDone() {
+      if (processed >= total) {
         input.remove();
         renderTodayPhotoArea();
         autoSaveSkincare();
         showToast('✅ 照片已添加');
-      };
-      img.onerror = function() {
-        beautySkincareState.photos.push(ev.target.result);
-        input.remove();
-        renderTodayPhotoArea();
-        autoSaveSkincare();
-        showToast('✅ 照片已添加');
-      };
-      img.src = ev.target.result;
-    };
-    reader.onerror = function() {
-      showToast('图片读取失败，请重试');
-      input.remove();
-    };
-    reader.readAsDataURL(file);
+      }
+    }
+    for (var i = 0; i < files.length; i++) {
+      processFile(files[i]);
+    }
   };
   setTimeout(function() { input.click(); }, 100);
 }
@@ -4933,7 +4955,7 @@ function renderSkincareDayDetail() {
       html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe':'background:#fafaf9;color:#78716c;border:1px solid var(--border)')+'">'+bodyCareLabels[k]+'</span>';
     });
     /* 自定义预设标签紧接在护理项目后面 */
-    var customPresets = {mask:'面膜',eyeMask:'眼膜',lipsCare:'唇部护理',hairCare:'头发护理'};
+    var customPresets = {mask:'面膜',eyeMask:'眼膜',lipsCare:'唇部护理'};
     if (!s.customChecks) s.customChecks = s.customCheck ? s.customCheck.split('、').filter(function(x){return x.trim()}) : [];
     Object.keys(customPresets).forEach(function(k) {
       var active = s.customChecks.indexOf(customPresets[k]) > -1;
@@ -5092,60 +5114,67 @@ function uploadDetailPhoto() {
   input.id = '_skincareDetailPhotoInput';
   input.type = 'file';
   input.accept = 'image/*';
+  input.multiple = true;
   input.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
   document.body.appendChild(input);
   input.onchange = function(e) {
-    var file = e.target.files[0];
-    if (!file) { input.remove(); return; }
-    if (!file.type.startsWith('image/')) {
-      showToast('请选择图片文件');
-      input.remove();
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      showToast('图片太大，请选择 10MB 以内的图片');
-      input.remove();
-      return;
-    }
+    var files = e.target.files;
+    if (!files || files.length === 0) { input.remove(); return; }
     showToast('正在处理图片...');
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      var img = new Image();
-      img.onload = function() {
-        var maxW = 800, maxH = 800;
-        var w = img.width, h = img.height;
-        if (w > maxW || h > maxH) {
-          var ratio = Math.min(maxW / w, maxH / h);
-          w = Math.round(w * ratio);
-          h = Math.round(h * ratio);
-        }
-        var canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', 0.7);
-        if (compressed.length > 500 * 1024) {
-          compressed = canvas.toDataURL('image/jpeg', 0.5);
-        }
-        skincareDayDetailState.photos.push(compressed);
+    var processed = 0;
+    var total = files.length;
+    function processFile(file) {
+      if (!file.type.startsWith('image/')) { processed++; checkDone(); return; }
+      if (file.size > 10 * 1024 * 1024) { processed++; checkDone(); return; }
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var maxW = 800, maxH = 800;
+          var w = img.width, h = img.height;
+          if (w > maxW || h > maxH) {
+            var ratio = Math.min(maxW / w, maxH / h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
+          }
+          var canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          var compressed = canvas.toDataURL('image/jpeg', 0.7);
+          if (compressed.length > 500 * 1024) {
+            compressed = canvas.toDataURL('image/jpeg', 0.5);
+          }
+          if (skincareDayDetailState.photos.length < 4) {
+            skincareDayDetailState.photos.push(compressed);
+          }
+          processed++;
+          checkDone();
+        };
+        img.onerror = function() {
+          if (skincareDayDetailState.photos.length < 4) {
+            skincareDayDetailState.photos.push(ev.target.result);
+          }
+          processed++;
+          checkDone();
+        };
+        img.src = ev.target.result;
+      };
+      reader.onerror = function() { processed++; checkDone(); };
+      reader.readAsDataURL(file);
+    }
+    function checkDone() {
+      if (processed >= total) {
         input.remove();
         renderSkincareDayDetail();
+        autoSaveDetailSkincare();
         showToast('✅ 照片已添加');
-      };
-      img.onerror = function() {
-        skincareDayDetailState.photos.push(ev.target.result);
-        input.remove();
-        renderSkincareDayDetail();
-        showToast('✅ 照片已添加');
-      };
-      img.src = ev.target.result;
-    };
-    reader.onerror = function() {
-      showToast('图片读取失败，请重试');
-      input.remove();
-    };
-    reader.readAsDataURL(file);
+      }
+    }
+    for (var i = 0; i < files.length; i++) {
+      processFile(files[i]);
+    }
   };
   setTimeout(function() { input.click(); }, 100);
 }
