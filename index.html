@@ -2143,33 +2143,45 @@ function playClick() {
   } catch(e) {}
 }
 
-/* 点赞音效（短促柔和——A4+C5 双音，干脆不拖沓） */
+/* 点赞音效（温暖钢琴感——E4+A4+C5三音和弦，饱满舒服有质感） */
 function playLike() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === 'suspended') ctx.resume();
     const t0 = ctx.currentTime;
-    /* A4(440Hz) 主体音，正弦波柔和触感 */
+    /* 主音 E4(329.63Hz)——三角波温暖基底，音量充足 */
     var o1 = ctx.createOscillator();
     var g1 = ctx.createGain();
     var f1 = ctx.createBiquadFilter();
     o1.connect(f1); f1.connect(g1); g1.connect(ctx.destination);
-    o1.type = 'sine'; o1.frequency.value = 440;
-    f1.type = 'lowpass'; f1.frequency.value = 2200; f1.Q.value = 0.6;
+    o1.type = 'triangle'; o1.frequency.value = 329.63;
+    f1.type = 'lowpass'; f1.frequency.value = 2800; f1.Q.value = 0.8;
     g1.gain.setValueAtTime(0, t0);
-    g1.gain.linearRampToValueAtTime(0.16, t0 + 0.003);
-    g1.gain.exponentialRampToValueAtTime(0.001, t0 + 0.12);
-    o1.start(t0); o1.stop(t0 + 0.12);
-    /* C5(523.25Hz) 微延迟叠入，增加和谐感 */
-    var t1 = t0 + 0.004;
+    g1.gain.linearRampToValueAtTime(0.35, t0 + 0.004);
+    g1.gain.exponentialRampToValueAtTime(0.001, t0 + 0.28);
+    o1.start(t0); o1.stop(t0 + 0.28);
+    /* 中音 A4(440Hz) 微延迟叠入，增加厚度 */
+    var t1 = t0 + 0.006;
     var o2 = ctx.createOscillator();
     var g2 = ctx.createGain();
-    o2.connect(g2); g2.connect(ctx.destination);
-    o2.type = 'sine'; o2.frequency.value = 523.25;
+    var f2 = ctx.createBiquadFilter();
+    o2.connect(f2); f2.connect(g2); g2.connect(ctx.destination);
+    o2.type = 'triangle'; o2.frequency.value = 440;
+    f2.type = 'lowpass'; f2.frequency.value = 3000; f2.Q.value = 0.8;
     g2.gain.setValueAtTime(0, t1);
-    g2.gain.linearRampToValueAtTime(0.10, t1 + 0.003);
-    g2.gain.exponentialRampToValueAtTime(0.001, t1 + 0.10);
-    o2.start(t1); o2.stop(t1 + 0.10);
+    g2.gain.linearRampToValueAtTime(0.28, t1 + 0.004);
+    g2.gain.exponentialRampToValueAtTime(0.001, t1 + 0.24);
+    o2.start(t1); o2.stop(t1 + 0.24);
+    /* 高音 C5(523.25Hz) 正弦波点缀，清晰明亮 */
+    var t2 = t0 + 0.01;
+    var o3 = ctx.createOscillator();
+    var g3 = ctx.createGain();
+    o3.connect(g3); g3.connect(ctx.destination);
+    o3.type = 'sine'; o3.frequency.value = 523.25;
+    g3.gain.setValueAtTime(0, t2);
+    g3.gain.linearRampToValueAtTime(0.22, t2 + 0.004);
+    g3.gain.exponentialRampToValueAtTime(0.001, t2 + 0.20);
+    o3.start(t2); o3.stop(t2 + 0.20);
   } catch(e) {}
 }
 
