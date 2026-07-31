@@ -390,8 +390,10 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .avatar-option.selected{border-color:var(--rose-500);background:var(--rose-100)}
 /* ===== 弹窗 ===== */
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(28,25,23,0.4);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
-.modal-overlay.show{display:flex}
-.modal{background:#fff;border-radius:20px;padding:24px;max-width:440px;width:100%;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto}
+.modal-overlay.show{display:flex;animation:modalFadeIn 0.15s ease-out}
+.modal{background:#fff;border-radius:20px;padding:24px;max-width:440px;width:100%;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;animation:modalSlideUp 0.15s ease-out}
+@keyframes modalFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes modalSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .modal.wide{max-width:560px}
 .modal h2{font-size:1rem;color:var(--ink);margin-bottom:16px;font-weight:700}
 .modal .input-group{margin-bottom:12px}
@@ -6965,6 +6967,9 @@ function openCommunityDirect() {
     }
     var nameEl = document.getElementById('commMyNameLabel');
     if (nameEl) nameEl.textContent = state.name || '月友';
+    /* 先用缓存数据立即渲染，避免空白闪屏 */
+    renderCommunityPosts();
+    /* 异步刷新最新数据 */
     loadCommunityPosts();
     setupCommPullRefresh();
     startCommAutoRefresh();
@@ -7488,36 +7493,48 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
     }
   }
 
-  /* 被点击的评论滚动到输入框上方与屏幕顶部之间的中间位置 */
-  if (isReply && cssPrefix !== 'post-detail-comment') {
-    /* 列表模式：滚动被回复评论到视口中间偏上 */
-    setTimeout(function() {
-      _scrollCommentToCenter(commentId_current);
-    }, 50);
-  } else if (isReply && cssPrefix === 'post-detail-comment') {
-    /* 详情页模式：滚动被回复评论到详情区中间偏上 */
-    setTimeout(function() {
-      _scrollDetailCommentToCenter(commentId_current);
-    }, 50);
-  }
-
-  /* 聚焦输入框 */
-  setTimeout(function() {
-    input.focus({ preventScroll: true });
-  }, 150);
-
-  /* 使用 visualViewport 适配键盘高度，让抽屉紧贴键盘上方 */
-  _adjustDrawerForKeyboard();
+  /* 聚焦输入框 + 适配键盘 + 滚动评论，统一在键盘弹出后处理 */
+  _focusInputAndAdjust(input, isReply, cssPrefix);
 
   if (window.visualViewport) {
     if (_replyDrawerVVPHandler) {
       window.visualViewport.removeEventListener('resize', _replyDrawerVVPHandler);
       window.visualViewport.removeEventListener('scroll', _replyDrawerVVPHandler);
     }
-    _replyDrawerVVPHandler = function() { _adjustDrawerForKeyboard(); };
+    _replyDrawerVVPHandler = function() {
+      _adjustDrawerForKeyboard();
+      /* 键盘弹出/收起时重新滚动评论到中间 */
+      if (isReply) {
+        if (cssPrefix === 'post-detail-comment') {
+          _scrollDetailCommentToCenter(commentId_current);
+        } else {
+          _scrollCommentToCenter(commentId_current);
+        }
+      }
+    };
     window.visualViewport.addEventListener('resize', _replyDrawerVVPHandler);
     window.visualViewport.addEventListener('scroll', _replyDrawerVVPHandler);
   }
+}
+
+/* 聚焦输入框，等待键盘弹出后再调整抽屉位置和滚动评论 */
+function _focusInputAndAdjust(input, isReply, cssPrefix) {
+  /* 先聚焦 */
+  input.focus({ preventScroll: true });
+  /* 多次延迟检查键盘状态，确保键盘弹出后正确定位 */
+  var checks = [100, 300, 500, 800];
+  checks.forEach(function(delay) {
+    setTimeout(function() {
+      _adjustDrawerForKeyboard();
+      if (isReply) {
+        if (cssPrefix === 'post-detail-comment') {
+          _scrollDetailCommentToCenter(commentId_current);
+        } else {
+          _scrollCommentToCenter(commentId_current);
+        }
+      }
+    }, delay);
+  });
 }
 
 /* 当前被回复的评论ID（供滚动定位使用） */
@@ -7530,7 +7547,7 @@ function _adjustDrawerForKeyboard() {
   if (window.visualViewport) {
     /* 键盘弹出后 visualViewport.height = 窗口高度 - 键盘高度 */
     var keyboardHeight = window.innerHeight - window.visualViewport.height;
-    if (keyboardHeight > 0) {
+    if (keyboardHeight > 10) {
       drawer.style.bottom = keyboardHeight + 'px';
     } else {
       drawer.style.bottom = '0px';
@@ -7555,15 +7572,23 @@ function _scrollCommentToCenter(commentId) {
   if (!targetEl) return;
   /* 计算目标位置：让评论显示在屏幕顶部和抽屉之间的中间区域 */
   var drawer = document.getElementById('replyDrawer');
-  var drawerTop = drawer.getBoundingClientRect().top;
-  var viewportTop = 0;
-  var midPoint = viewportTop + (drawerTop - viewportTop) / 2;
-  var elTop = targetEl.getBoundingClientRect().top;
-  var scrollOffset = elTop - midPoint;
-  /* 滚动帖子列表容器 */
-  var scrollContainer = targetEl.closest('.comm-posts-scroll') || targetEl.closest('.modal-content') || document.documentElement;
-  scrollContainer.scrollTop += scrollOffset;
-  targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  var drawerRect = drawer.getBoundingClientRect();
+  var drawerTop = drawerRect.top;
+  /* 可见区域：从屏幕顶部(0)到抽屉顶部(drawerTop) */
+  var visibleHeight = drawerTop;
+  if (visibleHeight < 100) visibleHeight = window.innerHeight * 0.4;
+  /* 评论应该显示在这个可见区域的中间 */
+  var targetCenter = visibleHeight / 2;
+  var elRect = targetEl.getBoundingClientRect();
+  var elCenter = elRect.top + elRect.height / 2;
+  var scrollOffset = elCenter - targetCenter;
+  /* 只用一次滚动，避免scrollIntoView和scrollTop冲突 */
+  var scrollContainer = targetEl.closest('.modal-content') || targetEl.closest('.comm-posts-scroll') || document.scrollingElement || document.documentElement;
+  if (scrollContainer && scrollContainer.scrollTop !== undefined) {
+    scrollContainer.scrollTop += scrollOffset;
+  } else {
+    window.scrollBy(0, scrollOffset);
+  }
 }
 
 /* 详情页模式：滚动被回复评论到详情区中间偏上 */
@@ -7579,13 +7604,20 @@ function _scrollDetailCommentToCenter(commentId) {
   }
   if (!targetEl) return;
   var drawer = document.getElementById('replyDrawer');
-  var drawerTop = drawer.getBoundingClientRect().top;
-  var midPoint = drawerTop / 2;
-  var elTop = targetEl.getBoundingClientRect().top;
-  var scrollOffset = elTop - midPoint;
-  var scrollContainer = document.getElementById('postDetailContent') || document.documentElement;
-  scrollContainer.scrollTop += scrollOffset;
-  targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  var drawerRect = drawer.getBoundingClientRect();
+  var drawerTop = drawerRect.top;
+  var visibleHeight = drawerTop;
+  if (visibleHeight < 100) visibleHeight = window.innerHeight * 0.4;
+  var targetCenter = visibleHeight / 2;
+  var elRect = targetEl.getBoundingClientRect();
+  var elCenter = elRect.top + elRect.height / 2;
+  var scrollOffset = elCenter - targetCenter;
+  var scrollContainer = document.querySelector('#postDetailModal .modal') || document.getElementById('postDetailContent') || document.documentElement;
+  if (scrollContainer && scrollContainer.scrollTop !== undefined) {
+    scrollContainer.scrollTop += scrollOffset;
+  } else {
+    window.scrollBy(0, scrollOffset);
+  }
 }
 
 /* 关闭评论抽屉 */
@@ -8069,17 +8101,14 @@ function showMyProfile() {
 
 /* 个人主页返回月友圈或帖子详情 */
 function closeProfileToCommunity() {
-  document.getElementById('profileModal').classList.remove('show');
-  /* 清空用户主页帖子DOM，避免DOM ID冲突 */
+  /* 先显示月友圈弹窗，用缓存数据立即渲染，避免空白闪屏 */
+  document.getElementById('beautyCommunityModal').classList.add('show');
+  /* 立即用缓存数据渲染帖子列表 */
+  renderCommunityPosts();
+  /* 然后异步清空用户主页DOM（不影响月友圈显示） */
   var profilePostsEl = document.getElementById('profilePosts');
   if (profilePostsEl) profilePostsEl.innerHTML = '';
-  /* 如果帖子详情弹窗还开着，返回帖子详情 */
-  var postDetail = document.getElementById('postDetailModal');
-  if (postDetail.classList.contains('show')) {
-    return;
-  }
-  /* 返回月友圈，重新渲染帖子列表（因为进入用户主页时清空了communityPosts） */
-  document.getElementById('beautyCommunityModal').classList.add('show');
+  /* 异步从云端刷新最新数据 */
   loadCommunityPosts();
 }
 
@@ -8134,11 +8163,38 @@ function closeUserList() {
 function showUserProfile(phone) {
   if (!phone || phone === 'local') { showToast('请先登录'); return; }
   var isMe = (phone === getCurrentPhone());
-  /* 加载资料和关注数据 */
+  /* 先用缓存数据立即渲染并显示弹窗，避免空白闪屏 */
+  var profileModal = document.getElementById('profileModal');
+  profileModal.dataset.phone = phone;
+  /* 先隐藏其他弹窗 */
+  document.getElementById('beautyCommunityModal').classList.remove('show');
+  document.getElementById('postDetailModal').classList.remove('show');
+  document.getElementById('userListModal').classList.remove('show');
+  /* 清空月友圈帖子DOM，避免DOM ID冲突 */
+  var commPostsEl = document.getElementById('communityPosts');
+  if (commPostsEl) commPostsEl.innerHTML = '';
+  /* 用缓存数据先渲染一份 */
+  if (commProfileData && commProfileData.profiles && commProfileData.profiles[phone]) {
+    var cachedProfile = commProfileData.profiles[phone];
+    if (isMe) {
+      cachedProfile = {
+        nickname: state.name || '月友',
+        avatar: state.avatar || MOON_AVATAR,
+        gender: state.gender || '',
+        age: state.age || null,
+        bio: (commProfileData.profiles[phone] && commProfileData.profiles[phone].bio) || ''
+      };
+    }
+    _renderProfileUI(cachedProfile, isMe, phone);
+  }
+  /* 先显示弹窗 */
+  profileModal.classList.add('show');
+  var modalInner = profileModal.querySelector('.modal');
+  if (modalInner) modalInner.scrollTop = 0;
+  /* 异步加载最新数据并更新 */
   loadProfileData(function() {
     loadFollowData(function() {
       var profile = commProfileData.profiles[phone] || {};
-      /* 如果是自己，从state读取最新资料 */
       if (isMe) {
         profile = {
           nickname: state.name || '月友',
@@ -8148,28 +8204,8 @@ function showUserProfile(phone) {
           bio: (commProfileData.profiles[phone] && commProfileData.profiles[phone].bio) || ''
         };
       }
-      /* 渲染头部 */
-      var avatarEl = document.getElementById('profileAvatar');
-      var avatarContent = renderAvatarHtml(profile.avatar, profile.nickname);
-      if (profile.avatar && profile.avatar.indexOf('data:image') === 0) {
-        avatarEl.innerHTML = '<img src="' + profile.avatar + '">';
-      } else {
-        avatarEl.textContent = avatarContent;
-      }
-      document.getElementById('profileNickname').textContent = profile.nickname || '月友';
-      var infoParts = [];
-      if (profile.gender) infoParts.push(profile.gender);
-      if (profile.age) infoParts.push(profile.age + '岁');
-      document.getElementById('profileInfo').innerHTML = infoParts.join(' · ') || '<span style="color:rgba(252,231,243,0.25)">未设置</span>';
-      var bioEl = document.getElementById('profileBio');
-      if (isMe) {
-        /* 自己可以编辑bio */
-        bioEl.innerHTML = '<input type="text" placeholder="写一句个人简介..." maxlength="30" value="' + escapeHtml(profile.bio || '') + '" style="width:100%;max-width:300px;padding:6px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:20px;font-size:0.82rem;text-align:center;outline:none;background:rgba(0,0,0,0.12);color:#fce7f3" onfocus="this.style.borderColor=\'rgba(249,168,212,0.3)\'" onblur="this.style.borderColor=\'rgba(255,255,255,0.08)\';saveMyBio(this.value)"/>';
-      } else {
-        bioEl.textContent = profile.bio || '';
-        bioEl.style.display = profile.bio ? 'block' : 'none';
-      }
-      /* 始终从云端重新加载帖子数据，确保评论是最新的 */
+      _renderProfileUI(profile, isMe, phone);
+      /* 异步刷新帖子 */
       loadFromCloud('beauty/community/posts', function(data) {
         commAllPosts = (data && data.posts) ? data : { version: 2, posts: [] };
         if (!commAllPosts.posts) commAllPosts.posts = [];
@@ -8179,40 +8215,50 @@ function showUserProfile(phone) {
         document.getElementById('profileFollowingCount').textContent = getFollowingList(phone).length;
         renderProfilePosts(up, phone);
       });
-      /* 关注按钮 */
-      var btn = document.getElementById('profileFollowBtn');
-      if (isMe) {
-        btn.style.display = 'none';
-      } else {
-        btn.style.display = 'inline-block';
-        updateFollowBtn(phone);
-      }
-      /* 管理员拉黑按钮（非本人主页） */
-      var blockBtn = document.getElementById('profileBlockBtn');
-      if (blockBtn) {
-        if (isAdminUser() && !isMe && phone !== 'admin') {
-          blockBtn.style.display = 'inline-block';
-          blockBtn.onclick = function() { toggleBlockUser(phone, profile.nickname || '月友'); };
-          updateProfileBlockBtn(phone);
-        } else {
-          blockBtn.style.display = 'none';
-        }
-      }
-      /* 隐藏月友圈/帖子详情/用户列表弹窗，显示主页弹窗 */
-      document.getElementById('beautyCommunityModal').classList.remove('show');
-      document.getElementById('postDetailModal').classList.remove('show');
-      document.getElementById('userListModal').classList.remove('show');
-      /* 清空月友圈帖子DOM，避免相同postId的DOM ID冲突导致用户主页中点赞/评论操作失效 */
-      var commPostsEl = document.getElementById('communityPosts');
-      if (commPostsEl) commPostsEl.innerHTML = '';
-      var profileModal = document.getElementById('profileModal');
-      profileModal.dataset.phone = phone;
-      profileModal.classList.add('show');
-      /* 自动滚到顶部 */
-      var modalInner = profileModal.querySelector('.modal');
-      if (modalInner) modalInner.scrollTop = 0;
     });
   });
+}
+
+/* 渲染用户主页UI（提取为独立函数，支持缓存先渲染+异步更新） */
+function _renderProfileUI(profile, isMe, phone) {
+  var avatarEl = document.getElementById('profileAvatar');
+  var avatarContent = renderAvatarHtml(profile.avatar, profile.nickname);
+  if (profile.avatar && profile.avatar.indexOf('data:image') === 0) {
+    avatarEl.innerHTML = '<img src="' + profile.avatar + '">';
+  } else {
+    avatarEl.textContent = avatarContent;
+  }
+  document.getElementById('profileNickname').textContent = profile.nickname || '月友';
+  var infoParts = [];
+  if (profile.gender) infoParts.push(profile.gender);
+  if (profile.age) infoParts.push(profile.age + '岁');
+  document.getElementById('profileInfo').innerHTML = infoParts.join(' · ') || '<span style="color:rgba(252,231,243,0.25)">未设置</span>';
+  var bioEl = document.getElementById('profileBio');
+  if (isMe) {
+    bioEl.innerHTML = '<input type="text" placeholder="写一句个人简介..." maxlength="30" value="' + escapeHtml(profile.bio || '') + '" style="width:100%;max-width:300px;padding:6px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:20px;font-size:0.82rem;text-align:center;outline:none;background:rgba(0,0,0,0.12);color:#fce7f3" onfocus="this.style.borderColor=\'rgba(249,168,212,0.3)\'" onblur="this.style.borderColor=\'rgba(255,255,255,0.08)\';saveMyBio(this.value)"/>';
+  } else {
+    bioEl.textContent = profile.bio || '';
+    bioEl.style.display = profile.bio ? 'block' : 'none';
+  }
+  /* 关注按钮 */
+  var btn = document.getElementById('profileFollowBtn');
+  if (isMe) {
+    btn.style.display = 'none';
+  } else {
+    btn.style.display = 'inline-block';
+    updateFollowBtn(phone);
+  }
+  /* 管理员拉黑按钮 */
+  var blockBtn = document.getElementById('profileBlockBtn');
+  if (blockBtn) {
+    if (isAdminUser() && !isMe && phone !== 'admin') {
+      blockBtn.style.display = 'inline-block';
+      blockBtn.onclick = function() { toggleBlockUser(phone, profile.nickname || '月友'); };
+      updateProfileBlockBtn(phone);
+    } else {
+      blockBtn.style.display = 'none';
+    }
+  }
 }
 
 function renderProfilePosts(posts, phone) {
@@ -8316,32 +8362,44 @@ function openPostDetail(postId) {
   var commModal = document.getElementById('beautyCommunityModal');
   if (profileModal.classList.contains('show')) {
     postDetailFromProfile = true;
-    profileModal.classList.remove('show');
-    /* 清空用户主页帖子DOM，避免DOM ID冲突 */
-    var profilePostsEl = document.getElementById('profilePosts');
-    if (profilePostsEl) profilePostsEl.innerHTML = '';
   } else {
     postDetailFromProfile = false;
-    /* 清空月友圈帖子DOM，避免DOM ID冲突 */
-    var commPostsEl = document.getElementById('communityPosts');
-    if (commPostsEl) commPostsEl.innerHTML = '';
   }
-  commModal.classList.remove('show');
+  /* 先渲染详情页内容（不显示），再切换弹窗，避免闪屏 */
   renderPostDetail(p);
   var detailModal = document.getElementById('postDetailModal');
+  /* 先隐藏来源弹窗，再显示详情页（几乎同时） */
+  profileModal.classList.remove('show');
+  commModal.classList.remove('show');
   detailModal.classList.add('show');
   /* 自动滚到顶部 */
   var modalInner = detailModal.querySelector('.modal');
   if (modalInner) modalInner.scrollTop = 0;
+  /* 延迟清空来源弹窗DOM，避免DOM ID冲突（在详情页已显示后清空） */
+  setTimeout(function() {
+    if (postDetailFromProfile) {
+      var profilePostsEl = document.getElementById('profilePosts');
+      if (profilePostsEl) profilePostsEl.innerHTML = '';
+    } else {
+      var commPostsEl = document.getElementById('communityPosts');
+      if (commPostsEl) commPostsEl.innerHTML = '';
+    }
+  }, 50);
 }
 
 function closePostDetail() {
   document.getElementById('postDetailModal').classList.remove('show');
   /* 智能返回：从个人主页来就回个人主页，否则回月友圈 */
   if (postDetailFromProfile) {
+    /* 先用缓存数据立即渲染用户主页，避免空白闪屏 */
     document.getElementById('profileModal').classList.add('show');
-    /* 重新渲染用户主页帖子（因为进入详情页时清空了profilePosts） */
     var phone = document.getElementById('profileModal').dataset.phone || getCurrentPhone();
+    if (commAllPosts && commAllPosts.posts) {
+      var up = commAllPosts.posts.filter(function(p) { return p.userKey === phone; });
+      document.getElementById('profilePostCount').textContent = up.length;
+      renderProfilePosts(up, phone);
+    }
+    /* 异步刷新最新数据 */
     loadFromCloud('beauty/community/posts', function(data) {
       if (!data || !data.posts) return;
       commAllPosts = data;
@@ -8350,8 +8408,9 @@ function closePostDetail() {
       renderProfilePosts(up, phone);
     });
   } else {
-    /* 返回月友圈，重新渲染帖子列表 */
+    /* 返回月友圈，先用缓存立即渲染，避免空白闪屏 */
     document.getElementById('beautyCommunityModal').classList.add('show');
+    renderCommunityPosts();
     loadCommunityPosts();
   }
 }
