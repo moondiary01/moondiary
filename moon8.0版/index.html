@@ -610,6 +610,13 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .comm-reply-drawer-send{padding:8px 16px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;border:none;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:transform 0.2s;box-shadow:0 2px 6px rgba(139,92,246,0.25)}
 .comm-reply-drawer-send:active{transform:scale(0.93)}
 .comm-reply-drawer-cancel{padding:8px 12px;border-radius:20px;background:#f5f3ff;color:#8b5cf6;font-size:0.75rem;border:1px solid #e9d5ff;cursor:pointer;white-space:nowrap}
+/* 内联评论输入框——直接在评论下方展开 */
+.inline-comment-input-wrap{display:flex;gap:6px;margin:8px 0;padding:8px;background:#f5f3ff;border-radius:12px;align-items:center}
+.inline-comment-input{flex:1;padding:8px 14px;border:1.5px solid #ede9fe;border-radius:20px;font-size:0.85rem;outline:none;background:#fff;-webkit-appearance:none;appearance:none}
+.inline-comment-input:focus{border-color:#c4b5fd}
+.inline-comment-send{padding:7px 16px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;border:none;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(139,92,246,0.25)}
+.inline-comment-send:active{transform:scale(0.93)}
+
 /* 评论抽屉遮罩——不使用全屏遮罩，避免阻挡弹窗内交互 */
 .comm-reply-drawer-overlay{display:none !important}
 .image-viewer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column}
@@ -3031,10 +3038,10 @@ document.addEventListener('touchend', e => {
   if (commModal.classList.contains('show') && commModal.contains(e.target)) return;
   var beautyHome = document.getElementById('beautyHomeModal');
   if (beautyHome && beautyHome.classList.contains('show') && beautyHome.contains(e.target)) return;
-  /* 评论抽屉打开时：右滑关闭抽屉，不触发Tab切换 */
-  var replyDrawer = document.getElementById('replyDrawer');
-  if (replyDrawer && replyDrawer.classList.contains('show')) {
-    if (diffX < 0) { closeReplyDrawer(); playClick(); }
+  /* 内联输入框打开时：右滑关闭输入框，不触发Tab切换 */
+  var inlineInput = document.getElementById('inlineInputWrap');
+  if (inlineInput) {
+    if (diffX < 0) { _removeInlineInput(); playClick(); }
     return;
   }
 
@@ -7404,12 +7411,10 @@ function renderCommentHtml(c, cssPrefix) {
     '</div></div>';
 }
 
-/* 触发回复模式 */
+/* 触发回复模式——在该条评论下方直接展开输入框 */
 function startReplyComment(commentId, nickname, cssPrefix) {
-  /* 确定postId和被回复评论内容 */
   var postId = '';
   var replyToUserKey = '';
-  var ctxText = '';
   if (cssPrefix === 'post-detail-comment') {
     postId = document.getElementById('postDetailModal').dataset.postId || '';
   } else {
@@ -7420,19 +7425,123 @@ function startReplyComment(commentId, nickname, cssPrefix) {
   var p = findPostById(postId);
   if (p && p.comments) {
     for (var i = 0; i < p.comments.length; i++) {
-      if (p.comments[i].id === commentId) {
-        replyToUserKey = p.comments[i].userKey || '';
-        ctxText = p.comments[i].content || '';
-        break;
-      }
+      if (p.comments[i].id === commentId) { replyToUserKey = p.comments[i].userKey || ''; break; }
     }
   }
   /* 设置回复状态 */
-  commReplyState = { postId: postId, replyTo: commentId, replyToNickname: nickname, replyToUserKey: replyToUserKey, cssPrefix: cssPrefix, inputId: 'replyDrawerInput' };
-  /* 记录当前被回复评论ID，供滚动定位使用 */
-  commentId_current = commentId;
-  /* 打开评论抽屉，显示被回复评论上下文 */
-  openReplyDrawer(postId, nickname, ctxText, cssPrefix, true);
+  commReplyState = { postId: postId, replyTo: commentId, replyToNickname: nickname, replyToUserKey: replyToUserKey, cssPrefix: cssPrefix, inputId: 'inlineInput-' + commentId };
+  /* 在该条评论下方插入内联输入框 */
+  _showInlineInput(commentId, nickname, postId, cssPrefix);
+}
+
+/* 在评论下方/评论区底部显示内联输入框 */
+function _showInlineInput(commentId, nickname, postId, cssPrefix) {
+  /* 先移除已有的内联输入框 */
+  _removeInlineInput();
+  /* 找到被回复的评论项 */
+  var targetItem = null;
+  if (commentId) {
+    targetItem = document.querySelector('[data-cid="' + commentId + '"]');
+  }
+  /* 创建内联输入框 */
+  var inputWrap = document.createElement('div');
+  inputWrap.id = 'inlineInputWrap';
+  inputWrap.className = 'inline-comment-input-wrap';
+  inputWrap.onclick = function(e) { e.stopPropagation(); };
+  var placeholder = nickname ? '回复 @' + nickname : '写评论...';
+  inputWrap.innerHTML = '<input type="text" class="inline-comment-input" id="inlineInput" placeholder="' + escapeHtml(placeholder) + '" onkeydown="if(event.key===\'Enter\'){_submitInlineComment();playComment()}">' +
+    '<button class="inline-comment-send" onclick="_submitInlineComment();playComment()">' + (nickname ? '回复' : '发送') + '</button>';
+  if (targetItem) {
+    /* 插入到该条评论下方 */
+    targetItem.parentElement.insertBefore(inputWrap, targetItem.nextSibling);
+    /* 滚动该评论到输入框上方与顶部之间的中间位置 */
+    setTimeout(function() {
+      var drawerHeight = inputWrap.offsetHeight || 50;
+      var itemRect = targetItem.getBoundingClientRect();
+      var inputRect = inputWrap.getBoundingClientRect();
+      var inputTop = inputRect.top;
+      /* 可见区域：0 到 inputTop，评论应在中间 */
+      var targetCenter = inputTop / 2;
+      var itemCenter = itemRect.top + itemRect.height / 2;
+      var scrollOffset = itemCenter - targetCenter;
+      var scrollContainer = targetItem.closest('.modal') || document.scrollingElement || document.documentElement;
+      if (scrollContainer) scrollContainer.scrollTop += scrollOffset;
+    }, 50);
+  } else {
+    /* 没有指定评论，插入到评论区末尾 */
+    var commentsEl = document.getElementById('comments-' + postId) || document.getElementById('postDetailComments');
+    if (commentsEl) {
+      commentsEl.appendChild(inputWrap);
+    }
+  }
+}
+
+/* 移除内联输入框 */
+function _removeInlineInput() {
+  var existing = document.getElementById('inlineInputWrap');
+  if (existing) existing.remove();
+}
+
+/* 提交内联评论 */
+function _submitInlineComment() {
+  var input = document.getElementById('inlineInput');
+  if (!input) return;
+  var content = input.value.trim();
+  if (!content) { showToast('请输入评论内容'); return; }
+  var cssPrefix = commReplyState.cssPrefix || 'comm-comment';
+  var postId = commReplyState.postId;
+  var userKey = getCurrentPhone();
+  var comment = {
+    id: 'c_' + Date.now() + '_' + Math.random().toString(36).substring(2,5),
+    userKey: userKey,
+    nickname: state.name || '月友',
+    avatar: state.avatar || MOON_AVATAR,
+    content: content,
+    createdAt: Date.now()
+  };
+  if (commReplyState.replyTo && commReplyState.postId === postId) {
+    comment.replyTo = commReplyState.replyTo;
+    comment.replyToNickname = commReplyState.replyToNickname;
+    comment.replyToUserKey = commReplyState.replyToUserKey;
+  }
+  /* 先移除输入框 */
+  _removeInlineInput();
+  loadFromCloud('beauty/community/posts', function(data) {
+    if (!data || !data.posts) return;
+    commAllPosts = data;
+    for (var i = 0; i < data.posts.length; i++) {
+      if (data.posts[i].id === postId) {
+        if (!data.posts[i].comments) data.posts[i].comments = [];
+        data.posts[i].comments.push(comment);
+        data.posts[i].commentCount = data.posts[i].comments.length;
+        saveToCloudImmediate('beauty/community/posts', data);
+        var p = data.posts[i];
+        if (cssPrefix === 'post-detail-comment') {
+          var commentsEl = document.getElementById('postDetailComments');
+          if (commentsEl) commentsEl.innerHTML = p.comments.map(function(c) { return renderCommentHtml(c, 'post-detail-comment'); }).join('');
+          var countEl = document.getElementById('postDetailCommentCount');
+          if (countEl) countEl.textContent = p.commentCount;
+          var titleEl = document.querySelector('#postDetailContent .post-detail-comments-title');
+          if (titleEl) titleEl.textContent = '评论 (' + p.commentCount + ')';
+        } else {
+          var commentsEl2 = document.getElementById('comments-' + postId);
+          if (commentsEl2) {
+            commentsEl2.innerHTML = p.comments.map(function(c) { return renderCommentHtml(c, 'comm-comment'); }).join('');
+            commentsEl2.style.display = 'block';
+          }
+          markCommentViewed(postId);
+          var postEl = document.getElementById('post-' + postId);
+          if (postEl) {
+            var commentAction = postEl.querySelectorAll('.comm-post-action')[1];
+            if (commentAction) commentAction.innerHTML = '<span class="comment-icon">💬</span> ' + p.commentCount;
+          }
+        }
+        break;
+      }
+    }
+    commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
+    showToast('✅ 评论成功');
+  });
 }
 
 /* ===== 评论抽屉模式 ===== */
@@ -7584,16 +7693,8 @@ function _scrollDetailCommentToCenter(commentId) {
 
 /* 关闭评论抽屉 */
 function closeReplyDrawer() {
-  var drawer = document.getElementById('replyDrawer');
-  var overlay = document.getElementById('replyDrawerOverlay');
-  if (drawer) {
-    drawer.classList.remove('show');
-    drawer.style.bottom = '';
-  }
-  if (overlay) overlay.classList.remove('show');
-  /* 清除回复状态 */
+  _removeInlineInput();
   commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
-  commentId_current = '';
 }
 
 /* 提交评论抽屉中的评论 */
@@ -7949,8 +8050,8 @@ function updateLikeButton(postId, isLiked, likeCount) {
 function toggleComments(postId) {
   var el = document.getElementById('comments-' + postId);
   if (!el) return;
-  /* 如果当前是展开状态，收起 */
-  if (el.style.display === 'block') { el.style.display = 'none'; return; }
+  /* 如果当前是展开状态，收起并移除内联输入框 */
+  if (el.style.display === 'block') { el.style.display = 'none'; _removeInlineInput(); return; }
   /* 标记已查看，清除新评论高亮 */
   markCommentViewed(postId);
   var postEl = document.getElementById('post-' + postId);
@@ -7967,7 +8068,7 @@ function toggleComments(postId) {
       if (data.posts[i].id === postId) { p = data.posts[i]; break; }
     }
     if (!p) { el.style.display = 'block'; return; }
-    /* 重新渲染评论区（不再渲染内联输入框，改用抽屉模式） */
+    /* 渲染评论区 */
     var commentsHtml = '';
     if (p.comments && p.comments.length > 0) {
       commentsHtml = p.comments.map(function(c) {
@@ -7978,9 +8079,9 @@ function toggleComments(postId) {
     }
     el.innerHTML = commentsHtml;
     el.style.display = 'block';
-    /* 直接打开评论抽屉（新建评论模式） */
-    commentId_current = '';
-    openReplyDrawer(postId, '', '', 'comm-comment', false);
+    /* 在评论区底部显示内联输入框（新建评论模式） */
+    commReplyState = { postId: postId, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: 'comm-comment', inputId: 'inlineInput' };
+    _showInlineInput('', '', postId, 'comm-comment');
   });
 }
 
@@ -8052,7 +8153,9 @@ function showMyProfile() {
 
 /* 个人主页返回月友圈或帖子详情 */
 function closeProfileToCommunity() {
-  /* 先隐藏用户主页弹窗，避免两个弹窗叠加 */
+  /* 移除内联输入框 */
+  _removeInlineInput();
+  /* 隐藏用户主页弹窗 */
   document.getElementById('profileModal').classList.remove('show');
   /* 清空用户主页帖子DOM，避免DOM ID冲突 */
   var profilePostsEl = document.getElementById('profilePosts');
@@ -8340,6 +8443,7 @@ function openPostDetail(postId) {
 }
 
 function closePostDetail() {
+  _removeInlineInput();
   document.getElementById('postDetailModal').classList.remove('show');
   /* 智能返回：从个人主页来就回个人主页，否则回月友圈 */
   if (postDetailFromProfile) {
@@ -8437,14 +8541,10 @@ function renderPostDetail(p) {
   (p.content ? '<div class="post-detail-content">' + escapeHtml(p.content) + '</div>' : '') +
   '<div class="post-detail-actions">' +
     '<span class="post-detail-action' + (isLiked ? ' liked' : '') + '" onclick="likePostDetail(\'' + p.id + '\');playLike()">' + (isLiked ? '❤️' : '🤍') + ' <span id="postDetailLikeCount">' + (p.likeCount || 0) + '</span></span>' +
-    '<span class="post-detail-action" onclick="event.stopPropagation();commentId_current=\'\';openReplyDrawer(\'' + p.id + '\',\'\',\'\',\'post-detail-comment\',false);playClick()">💬 <span id="postDetailCommentCount">' + commentCount + '</span></span>' +
+    '<span class="post-detail-action" onclick="event.stopPropagation();_showInlineInput(\'\',\'\',\'' + p.id + '\',\'post-detail-comment\');playClick()">💬 <span id="postDetailCommentCount">' + commentCount + '</span></span>' +
   '</div>' +
   '<div class="post-detail-comments-title">评论 (' + commentCount + ')</div>' +
-  '<div class="post-detail-comments" id="postDetailComments">' + commentsHtml + '</div>' +
-  '<div class="post-detail-comment-input-wrap" style="cursor:pointer" onclick="event.stopPropagation();commentId_current=\'\';openReplyDrawer(\'' + p.id + '\',\'\',\'\',\'post-detail-comment\',false);playClick()">' +
-    '<input type="text" class="post-detail-comment-input" placeholder="写评论..." id="postDetailCommentInput" readonly style="cursor:pointer">' +
-    '<button class="post-detail-comment-send">写评论</button>' +
-  '</div>';
+  '<div class="post-detail-comments" id="postDetailComments">' + commentsHtml + '</div>';
   document.getElementById('postDetailContent').innerHTML = content;
   document.getElementById('postDetailModal').dataset.postId = p.id;
   /* 打开详情页即标记评论已查看 */
