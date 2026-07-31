@@ -598,8 +598,8 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .post-detail-comment-send{padding:7px 16px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;border:none;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;box-shadow:0 2px 6px rgba(139,92,246,0.25)}
 .post-detail-comment-send:active{transform:scale(0.93)}
 
-/* 评论抽屉——用 top 定位到可视区域底部，键盘弹出时自动上移 */
-.comm-reply-drawer{position:fixed;left:0;right:0;z-index:9999;background:#fff;border-top:1.5px solid #ede9fe;border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.1);padding:10px 14px 12px;display:none}
+/* 评论抽屉——position:sticky 放在弹窗滚动容器内部，键盘弹出时浏览器原生行为自动推到键盘上方 */
+.comm-reply-drawer{position:-webkit-sticky;position:sticky;bottom:0;left:0;right:0;z-index:50;background:#fff;border-top:1.5px solid #ede9fe;border-radius:16px 16px 0 0;box-shadow:0 -4px 16px rgba(0,0,0,0.08);padding:10px 14px calc(12px + env(safe-area-inset-bottom, 0px));display:none;flex-shrink:0;margin:0 -14px -24px;width:calc(100% + 28px);-webkit-transform:translateZ(0);transform:translateZ(0)}
 .comm-reply-drawer.show{display:block}
 .comm-reply-drawer-context{max-height:100px;overflow-y:auto;margin-bottom:8px;padding:6px 10px;background:#f5f3ff;border-radius:8px;font-size:0.75rem;color:#57534e;line-height:1.4}
 .comm-reply-drawer-context .ctx-nick{font-weight:700;color:#8b5cf6}
@@ -1496,7 +1496,7 @@ _loadCosSdk(0);
   <div class="image-viewer-nav image-viewer-next" id="imageViewerNext" onclick="event.stopPropagation();navImage(1);playClick()">›</div>
 </div>
 
-<!-- 评论抽屉——输入框紧贴键盘上方，被回复评论显示在中间 -->
+<!-- 评论抽屉——放在弹窗容器内部，用 sticky 定位，键盘弹出时浏览器自动推到键盘上方 -->
 <div class="comm-reply-drawer-overlay" id="replyDrawerOverlay" onclick="closeReplyDrawer()"></div>
 <div class="comm-reply-drawer" id="replyDrawer">
   <div class="comm-reply-drawer-context" id="replyDrawerContext"></div>
@@ -7449,6 +7449,10 @@ function startReplyComment(commentId, nickname, cssPrefix) {
  * isReply: true=回复模式, false=新建评论模式
  */
 var _replyDrawerVVPHandler = null;
+var _drawerOriginalParent = null; /* 抽屉原始父元素 */
+var _drawerOriginalNextSibling = null; /* 抽屉原始下一个兄弟 */
+var commentId_current = ''; /* 当前被回复的评论ID */
+
 function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
   var drawer = document.getElementById('replyDrawer');
   var overlay = document.getElementById('replyDrawerOverlay');
@@ -7456,6 +7460,23 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
   var input = document.getElementById('replyDrawerInput');
   var sendBtn = document.getElementById('replyDrawerSend');
   if (!drawer || !input) return;
+
+  /* 找到当前打开的弹窗（哪个弹窗show了就把抽屉放进去） */
+  var targetModal = _findActiveModal();
+  if (!targetModal) return;
+
+  /* 记录原始位置（用于关闭时还原） */
+  if (!drawer.parentElement || drawer.parentElement.id !== targetModal.id) {
+    _drawerOriginalParent = drawer.parentElement;
+    _drawerOriginalNextSibling = drawer.nextSibling;
+    /* 把抽屉移动到弹窗.modal内部，append到末尾确保在内容底部 */
+    var modalInner = targetModal.querySelector('.modal');
+    if (modalInner) {
+      modalInner.appendChild(drawer);
+    } else {
+      targetModal.appendChild(drawer);
+    }
+  }
 
   /* 填充被回复评论上下文 */
   if (isReply && nickname) {
@@ -7505,88 +7526,20 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
     }
   }
 
-  /* 聚焦输入框 + 适配键盘 + 滚动评论，统一在键盘弹出后处理 */
+  /* 聚焦输入框 + 滚动评论 */
   _focusInputAndAdjust(input, isReply, cssPrefix);
-
-  /* 双保险监听键盘：visualViewport + window resize */
-  if (_replyDrawerVVPHandler) {
-    window.removeEventListener('resize', _replyDrawerVVPHandler);
-    if (window.visualViewport) {
-      window.visualViewport.removeEventListener('resize', _replyDrawerVVPHandler);
-      window.visualViewport.removeEventListener('scroll', _replyDrawerVVPHandler);
-    }
-  }
-  _replyDrawerVVPHandler = function() {
-    _adjustDrawerForKeyboard();
-    if (isReply) {
-      if (cssPrefix === 'post-detail-comment') {
-        _scrollDetailCommentToCenter(commentId_current);
-      } else {
-        _scrollCommentToCenter(commentId_current);
-      }
-    }
-  };
-  /* window resize 是最可靠的键盘检测方式 */
-  window.addEventListener('resize', _replyDrawerVVPHandler);
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', _replyDrawerVVPHandler);
-    window.visualViewport.addEventListener('scroll', _replyDrawerVVPHandler);
-  }
 }
 
-/* 记录抽屉打开时的初始窗口高度（用于检测键盘弹出） */
-var _drawerInitialHeight = 0;
-
-/* 聚焦输入框，等待键盘弹出后再调整抽屉位置和滚动评论 */
-function _focusInputAndAdjust(input, isReply, cssPrefix) {
-  /* 记录初始窗口高度 */
-  _drawerInitialHeight = window.innerHeight;
-  /* 先设置抽屉在屏幕底部（键盘弹出前） */
-  _adjustDrawerForKeyboard();
-  /* 聚焦触发键盘弹出 */
-  input.focus({ preventScroll: true });
-  /* 多次延迟检查键盘状态，确保键盘弹出后正确定位 */
-  var checks = [50, 150, 300, 500, 800, 1200];
-  checks.forEach(function(delay) {
-    setTimeout(function() {
-      _adjustDrawerForKeyboard();
-      if (isReply) {
-        if (cssPrefix === 'post-detail-comment') {
-          _scrollDetailCommentToCenter(commentId_current);
-        } else {
-          _scrollCommentToCenter(commentId_current);
-        }
-      }
-    }, delay);
-  });
-}
-
-/* 当前被回复的评论ID（供滚动定位使用） */
-var commentId_current = '';
-
-/* 调整抽屉位置：用 top 定位到可视区域底部（键盘弹出时可视区域缩小，抽屉自动上移）
- * 核心思路：抽屉的 top = visualViewport.offsetTop + visualViewport.height - 抽屉自身高度
- * 这样抽屉始终紧贴在可视区域（键盘上方）的底部
- */
-function _adjustDrawerForKeyboard() {
-  var drawer = document.getElementById('replyDrawer');
-  if (!drawer || !drawer.classList.contains('show')) return;
-  /* 先让抽屉显示以便测量高度 */
-  var drawerHeight = drawer.offsetHeight;
-  if (drawerHeight < 10) drawerHeight = 60;
-  var topPos;
-  if (window.visualViewport) {
-    /* 可视区域的底部 = visualViewport.offsetTop + visualViewport.height
-     * 抽屉顶部 = 可视区域底部 - 抽屉高度 */
-    topPos = window.visualViewport.offsetTop + window.visualViewport.height - drawerHeight;
-  } else {
-    /* 没有 visualViewport 时，用 window.innerHeight */
-    topPos = window.innerHeight - drawerHeight;
+/* 查找当前打开的弹窗（优先顺序：详情页 > 用户主页 > 月友圈 > 其他） */
+function _findActiveModal() {
+  var candidates = ['postDetailModal', 'profileModal', 'beautyCommunityModal', 'beautyHomeModal'];
+  for (var i = 0; i < candidates.length; i++) {
+    var el = document.getElementById(candidates[i]);
+    if (el && el.classList.contains('show')) return el;
   }
-  /* 确保不超出屏幕 */
-  if (topPos < 0) topPos = 0;
-  drawer.style.top = topPos + 'px';
-  drawer.style.bottom = 'auto';
+  /* fallback: 第一个可见的modal-overlay */
+  var allModals = document.querySelectorAll('.modal-overlay.show');
+  return allModals.length > 0 ? allModals[0] : null;
 }
 
 /* 列表模式：滚动被回复评论到输入框上方与屏幕顶部之间的中间位置 */
@@ -7648,6 +7601,16 @@ function closeReplyDrawer() {
     drawer.style.bottom = '';
   }
   if (overlay) overlay.classList.remove('show');
+  /* 把抽屉还原到原始位置（不在弹窗内部） */
+  if (drawer && _drawerOriginalParent) {
+    if (_drawerOriginalNextSibling && _drawerOriginalNextSibling.parentElement === _drawerOriginalParent) {
+      _drawerOriginalParent.insertBefore(drawer, _drawerOriginalNextSibling);
+    } else {
+      _drawerOriginalParent.appendChild(drawer);
+    }
+    _drawerOriginalParent = null;
+    _drawerOriginalNextSibling = null;
+  }
   /* 移除键盘监听 */
   if (_replyDrawerVVPHandler) {
     window.removeEventListener('resize', _replyDrawerVVPHandler);
@@ -7662,6 +7625,28 @@ function closeReplyDrawer() {
   commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
   commentId_current = '';
 }
+
+/* 聚焦输入框（sticky 定位后浏览器原生处理键盘弹出，抽屉自动跟随） */
+function _focusInputAndAdjust(input, isReply, cssPrefix) {
+  /* 聚焦触发键盘弹出，sticky 定位会自动把抽屉推到键盘上方 */
+  input.focus({ preventScroll: true });
+  /* 多次延迟滚动评论到中间（处理键盘弹出动画过程） */
+  var checks = [50, 150, 300, 500, 800, 1200];
+  checks.forEach(function(delay) {
+    setTimeout(function() {
+      if (isReply) {
+        if (cssPrefix === 'post-detail-comment') {
+          _scrollDetailCommentToCenter(commentId_current);
+        } else {
+          _scrollCommentToCenter(commentId_current);
+        }
+      }
+    }, delay);
+  });
+}
+
+/* 记录抽屉打开时的初始窗口高度（保留以备后用） */
+var _drawerInitialHeight = 0;
 
 /* 提交评论抽屉中的评论 */
 function submitReplyDrawer() {
@@ -7699,6 +7684,16 @@ function submitReplyDrawer() {
   var overlayEl = document.getElementById('replyDrawerOverlay');
   if (drawerEl) { drawerEl.classList.remove('show'); drawerEl.style.top = ''; drawerEl.style.bottom = ''; }
   if (overlayEl) overlayEl.classList.remove('show');
+  /* 把抽屉还原到原始位置 */
+  if (drawerEl && _drawerOriginalParent) {
+    if (_drawerOriginalNextSibling && _drawerOriginalNextSibling.parentElement === _drawerOriginalParent) {
+      _drawerOriginalParent.insertBefore(drawerEl, _drawerOriginalNextSibling);
+    } else {
+      _drawerOriginalParent.appendChild(drawerEl);
+    }
+    _drawerOriginalParent = null;
+    _drawerOriginalNextSibling = null;
+  }
   if (_replyDrawerVVPHandler) {
     window.removeEventListener('resize', _replyDrawerVVPHandler);
     if (window.visualViewport) {
