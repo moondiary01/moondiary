@@ -7521,9 +7521,9 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
     }
   }
 
-  /* 聚焦输入框触发键盘——sticky 定位下浏览器原生会把抽屉推到键盘上方 */
-  input.focus({ preventScroll: true });
-  /* 300ms 后滚动被回复评论到中间（等键盘弹出动画完成） */
+  /* 不自动聚焦——让用户自己点击输入框时键盘才弹出
+   * 这样 sticky 输入框会在用户点击瞬间被浏览器原生推到键盘上方 */
+  /* 滚动被回复评论到中间 */
   if (isReply) {
     setTimeout(function() {
       if (cssPrefix === 'post-detail-comment') {
@@ -7531,7 +7531,7 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
       } else {
         _scrollCommentToCenter(commentId_current);
       }
-    }, 300);
+    }, 100);
   }
 }
 
