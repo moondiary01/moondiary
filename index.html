@@ -1479,6 +1479,20 @@ function saveToCloud(key, data) {
 }
 function saveToCloudImmediate(key, data) {
   if (!cos || !key) { console.warn('saveToCloudImmediate skipped: cos=', !!cos, 'key=', key); return; }
+  /* 防止空数据覆盖云端已有数据 */
+  if (data && typeof data === 'object' && data.days) {
+    var hasRealData = false;
+    if (data.name && data.name.trim()) hasRealData = true;
+    if (data.startWeight !== null && data.startWeight !== undefined) hasRealData = true;
+    for (var i = 0; i < data.days.length; i++) {
+      var d = data.days[i];
+      if (d && (d.weightAM || d.weightPM || d.diet || d.exercise || d.note || d.fat)) { hasRealData = true; break; }
+    }
+    if (!hasRealData) {
+      console.log('⚠️ saveToCloudImmediate: 数据为空，跳过保存以防止覆盖云端');
+      return;
+    }
+  }
   try {
     cos.putObject({
       Bucket: COS_CONFIG.Bucket, Region: COS_CONFIG.Region,
@@ -1498,11 +1512,17 @@ function loadFromCloud(key, callback) {
       Key: 'userdata/' + key + '.json'
     }, function(err, data) {
       if (err) {
-        console.error('云端读取失败:', key, err.statusCode || err.message || err);
-        if (err.statusCode === 403 || (err.message && err.message.indexOf('arrears') !== -1)) {
+        var statusCode = err.statusCode || 0;
+        console.error('云端读取失败:', key, statusCode || err.message || err);
+        if (statusCode === 403 || (err.message && err.message.indexOf('arrears') !== -1)) {
           console.error('⚠️ 腾讯云COS账户可能已欠费，请充值后恢复');
         }
-        if (callback) callback(null, {error: 'read_failed', statusCode: err.statusCode});
+        /* 404 = 文件不存在，是真正的新用户；其他错误（403欠费/500等）= 读取失败，不能覆盖 */
+        if (statusCode === 404) {
+          if (callback) callback(null, {error: 'not_found', statusCode: 404});
+        } else {
+          if (callback) callback(null, {error: 'read_failed', statusCode: statusCode});
+        }
       } else {
         try {
           var cloud = JSON.parse(data.Body.toString());
@@ -2132,16 +2152,30 @@ function loadState() {
   }
   /* 从云端同步最新数据（优先级最高） */
   var cloudPhone = getCurrentPhone();
-  loadFromCloud(cloudPhone, function(cloudData) {
+  loadFromCloud(cloudPhone, function(cloudData, errInfo) {
+    /* 如果是读取失败（欠费/网络错误等），绝对不能保存空数据覆盖云端 */
+    if (!cloudData && errInfo && errInfo.error !== 'not_found') {
+      console.error('⚠️ 云端读取失败(' + errInfo.error + ')，保留本地数据，不覆盖云端');
+      /* 如果本地也没有数据，提示用户 */
+      if (!saved) {
+        showToast('云端数据暂时无法读取，请稍后重试或检查网络');
+      }
+      return;
+    }
     if (!cloudData && currentKey && currentKey !== ADMIN_SESSION && currentKey !== 'local' && currentKey !== cloudPhone) {
       /* 降级：手机号路径云端无数据，尝试从密钥路径读取 */
-      loadFromCloud(currentKey, function(oldCloudData) {
+      loadFromCloud(currentKey, function(oldCloudData, errInfo2) {
+        /* 同样：如果是读取失败而非not_found，不覆盖 */
+        if (!oldCloudData && errInfo2 && errInfo2.error !== 'not_found') {
+          console.error('⚠️ 密钥路径云端也读取失败(' + errInfo2.error + ')，不覆盖');
+          return;
+        }
         if (oldCloudData) {
           console.log('云端数据从密钥路径 ' + currentKey + ' 恢复到手机号路径 ' + cloudPhone);
           saveToCloudImmediate(cloudPhone, oldCloudData);
           applyCloudData(oldCloudData);
         } else {
-          /* 云端和密钥路径都没有数据，说明是真正的新用户，保存初始 state */
+          /* 云端和密钥路径都没有数据（404），说明是真正的新用户，保存初始 state */
           saveState();
           showToast('欢迎首次使用，请点击右上角 ⚙️ 完善信息');
         }
@@ -2149,7 +2183,7 @@ function loadState() {
     } else if (cloudData) {
       applyCloudData(cloudData);
     } else {
-      /* 云端无数据且无密钥可降级，是真正的新用户 */
+      /* 云端无数据(404)且无密钥可降级，是真正的新用户 */
       saveState();
       showToast('欢迎首次使用，请点击右上角 ⚙️ 完善信息');
     }
@@ -2183,10 +2217,29 @@ function loadState() {
   }
 }
 
+/* 检查当前state是否有实际数据（防止空状态覆盖云端） */
+function isStateEmpty() {
+  if (!state) return true;
+  if (state.name && state.name.trim()) return false;
+  if (state.startWeight !== null && state.startWeight !== undefined) return false;
+  if (state.days && state.days.length > 0) {
+    for (var i = 0; i < state.days.length; i++) {
+      var d = state.days[i];
+      if (d && (d.weightAM || d.weightPM || d.diet || d.exercise || d.note || d.fat)) return false;
+    }
+  }
+  return true;
+}
+
 function saveState() {
   try {
     localStorage.setItem(userStorageKey(getCurrentPhone()), JSON.stringify(state));
   } catch(e) {}
+  /* 如果state是空状态，不保存到云端，避免覆盖已有数据 */
+  if (isStateEmpty()) {
+    console.log('⚠️ 当前state为空，跳过云端保存以防止覆盖已有数据');
+    return;
+  }
   saveToCloud(getCurrentPhone(), state);
   showSaveIndicator();
 }
