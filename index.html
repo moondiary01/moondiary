@@ -599,7 +599,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .post-detail-comment-send:active{transform:scale(0.93)}
 
 /* 评论抽屉——position:fixed 紧贴键盘上方，JS 通过 visualViewport 实时更新 bottom */
-.comm-reply-drawer{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#fff;border-top:1.5px solid #ede9fe;border-radius:16px 16px 0 0;box-shadow:0 -4px 16px rgba(0,0,0,0.08);padding:10px 14px 12px;display:none}
+.comm-reply-drawer{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#fff;border-top:1.5px solid #ede9fe;border-radius:16px 16px 0 0;box-shadow:0 -4px 16px rgba(0,0,0,0.08);padding:10px 14px 12px;display:none;transition:bottom 0.1s ease-out}
 .comm-reply-drawer.show{display:block}
 .comm-reply-drawer-context{max-height:100px;overflow-y:auto;margin-bottom:8px;padding:6px 10px;background:#f5f3ff;border-radius:8px;font-size:0.75rem;color:#57534e;line-height:1.4}
 .comm-reply-drawer-context .ctx-nick{font-weight:700;color:#8b5cf6}
@@ -7475,10 +7475,8 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
   }
   input.value = '';
 
-  /* 显示抽屉——先设为透明，等键盘弹出后再显示，避免先在底部闪一下 */
+  /* 显示抽屉——直接显示在底部，键盘弹出后自动上移 */
   drawer.classList.add('show');
-  drawer.style.opacity = '0';
-  drawer.style.transition = 'opacity 0.15s ease-out';
   overlay.classList.add('show');
 
   /* 记录抽屉上下文，供提交使用 */
@@ -7518,18 +7516,18 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
 
 /* 绑定 visualViewport resize 监听器，键盘弹出时实时更新抽屉 bottom */
 function _bindKeyboardListener() {
-  /* 先清除旧监听 */
   _unbindKeyboardListener();
   var updateDrawer = function() {
     var drawer = document.getElementById('replyDrawer');
     if (!drawer || !drawer.classList.contains('show')) return;
+    var keyboardHeight = 0;
     if (window.visualViewport) {
-      var keyboardHeight = window.innerHeight - window.visualViewport.height;
-      if (keyboardHeight > 10) {
-        /* 键盘已弹出——设置位置并显示 */
-        drawer.style.bottom = keyboardHeight + 'px';
-        drawer.style.opacity = '1';
-      }
+      keyboardHeight = window.innerHeight - window.visualViewport.height;
+    }
+    if (keyboardHeight > 10) {
+      drawer.style.bottom = keyboardHeight + 'px';
+    } else {
+      drawer.style.bottom = '0px';
     }
   };
   _replyDrawerVVPHandler = updateDrawer;
@@ -7537,22 +7535,13 @@ function _bindKeyboardListener() {
     window.visualViewport.addEventListener('resize', updateDrawer);
     window.visualViewport.addEventListener('scroll', updateDrawer);
   }
-  /* 同时监听 window resize 作为 fallback */
   window.addEventListener('resize', updateDrawer);
-  /* 轮询检测（处理某些浏览器不触发 resize 的情况） */
+  /* 轮询检测，500ms后停止（键盘弹出动画通常300ms内完成） */
+  var pollCount = 0;
   _drawerPollTimer = setInterval(function() {
-    var drawer = document.getElementById('replyDrawer');
-    if (!drawer || !drawer.classList.contains('show')) return;
-    if (window.visualViewport) {
-      var keyboardHeight = window.innerHeight - window.visualViewport.height;
-      if (keyboardHeight > 10) {
-        drawer.style.bottom = keyboardHeight + 'px';
-        drawer.style.opacity = '1';
-      }
-    } else {
-      /* 没有 visualViewport 时直接显示 */
-      drawer.style.opacity = '1';
-    }
+    pollCount++;
+    updateDrawer();
+    if (pollCount > 10) { clearInterval(_drawerPollTimer); _drawerPollTimer = null; }
   }, 100);
 }
 
@@ -7572,24 +7561,20 @@ function _unbindKeyboardListener() {
 /* 聚焦输入框 + 滚动评论到中间 */
 function _focusInputAndScroll(input, isReply, cssPrefix) {
   input.focus({ preventScroll: true });
-  /* 多次延迟检查：键盘弹出后立即显示抽屉 + 滚动评论 */
-  var checks = [50, 100, 200, 350, 500, 800, 1200];
+  /* 多次延迟检查：键盘弹出后更新抽屉位置 + 滚动评论 */
+  var checks = [50, 150, 300, 500, 800];
   checks.forEach(function(delay) {
     setTimeout(function() {
       var drawer = document.getElementById('replyDrawer');
-      if (drawer && drawer.classList.contains('show')) {
-        if (window.visualViewport) {
-          var keyboardHeight = window.innerHeight - window.visualViewport.height;
-          if (keyboardHeight > 10) {
-            drawer.style.bottom = keyboardHeight + 'px';
-            drawer.style.opacity = '1';
-          }
-        } else {
-          /* 没有 visualViewport 时直接显示 */
-          drawer.style.opacity = '1';
-        }
+      /* 抽屉已关闭则不再执行 */
+      if (!drawer || !drawer.classList.contains('show')) return;
+      var keyboardHeight = 0;
+      if (window.visualViewport) {
+        keyboardHeight = window.innerHeight - window.visualViewport.height;
       }
-      if (isReply) {
+      drawer.style.bottom = (keyboardHeight > 10 ? keyboardHeight : 0) + 'px';
+      /* 只在前几次延迟时滚动评论，后面不再滚动避免干扰 */
+      if (isReply && delay <= 300) {
         if (cssPrefix === 'post-detail-comment') {
           _scrollDetailCommentToCenter(commentId_current);
         } else {
@@ -7656,7 +7641,6 @@ function closeReplyDrawer() {
   if (drawer) {
     drawer.classList.remove('show');
     drawer.style.bottom = '0px';
-    drawer.style.opacity = '';
   }
   if (overlay) overlay.classList.remove('show');
   /* 解除键盘监听 */
@@ -7700,7 +7684,7 @@ function submitReplyDrawer() {
   /* 先关闭抽屉，提升体验流畅度 */
   var drawerEl = document.getElementById('replyDrawer');
   var overlayEl = document.getElementById('replyDrawerOverlay');
-  if (drawerEl) { drawerEl.classList.remove('show'); drawerEl.style.bottom = '0px'; drawerEl.style.opacity = ''; }
+  if (drawerEl) { drawerEl.classList.remove('show'); drawerEl.style.bottom = '0px'; }
   if (overlayEl) overlayEl.classList.remove('show');
   /* 解除键盘监听 */
   _unbindKeyboardListener();
