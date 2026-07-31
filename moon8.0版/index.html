@@ -584,7 +584,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .post-detail-comment-item{display:flex;gap:8px;margin-bottom:10px;padding:4px 0;cursor:pointer;transition:background 0.12s ease-out;border-radius:6px;-webkit-tap-highlight-color:transparent}
 .post-detail-comment-item:last-child{margin-bottom:0}
 .post-detail-comment-item:active{background:rgba(139,92,246,0.06)}
-.post-detail-comment-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;flex-shrink:0;overflow:hidden;transition:transform 0.12s ease-out;border:1.5px solid #fff;box-shadow:0 1px 4px rgba(139,92,246,0.1)}
+.post-detail-comment-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;flex-shrink:0;overflow:hidden;cursor:pointer;transition:transform 0.12s ease-out;border:1.5px solid #fff;box-shadow:0 1px 4px rgba(139,92,246,0.1);-webkit-tap-highlight-color:transparent}
 .post-detail-comment-avatar:active{transform:scale(0.88)}
 .post-detail-comment-avatar img{width:100%;height:100%;object-fit:cover}
 .post-detail-comment-body{flex:1;min-width:0}
@@ -7416,12 +7416,13 @@ function renderCommentHtml(c, cssPrefix) {
   if (c.replyTo && c.replyToNickname) {
     replyHtml = '<div class="' + cssPrefix + '-reply-to">回复 @' + escapeHtml(c.replyToNickname) + '</div>';
   }
-  /* 整条评论可点击触发回复（不跳转主页，只有帖子作者头像才进主页） */
+  /* 整条评论可点击触发回复；头像单独点击跳转用户主页 */
   var safeNick = escapeHtml(c.nickname || '月友');
   var safeNickForAttr = escapeAttr(c.nickname || '月友');
   var safeId = escapeAttr(c.id || '');
+  var safeUserKey = escapeAttr(c.userKey || '');
   return '<div class="' + cssPrefix + '-item" data-cid="' + safeId + '" onclick="startReplyComment(\'' + safeId + '\',\'' + safeNickForAttr + '\',\'' + cssPrefix + '\')">' +
-    '<div class="' + cssPrefix + '-avatar">' + cAvatar + '</div>' +
+    '<div class="' + cssPrefix + '-avatar" onclick="event.stopPropagation();showUserProfile(\'' + safeUserKey + '\');playClick()">' + cAvatar + '</div>' +
     '<div class="' + cssPrefix + '-body">' +
       '<div class="' + cssPrefix + '-nick">' + safeNick + '</div>' +
       replyHtml +
