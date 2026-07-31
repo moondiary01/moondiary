@@ -4318,8 +4318,8 @@ var commCurrentTab = 'hot';
 
 function openBeautyUpgrade() {
   /* 检查升级版权限 */
-  var loginType = sessionStorage.getItem(SESSION_KEY) || '';
-  var isAdmin = sessionStorage.getItem(ADMIN_SESSION) === '1';
+  var loginType = currentKey || localStorage.getItem(SESSION_KEY) || '';
+  var isAdmin = sessionStorage.getItem(ADMIN_SESSION) === '1' || loginType === 'admin';
   var lockMsg = document.getElementById('beautyLockMsg');
   var sections = document.getElementById('beautySections');
   if (loginType === 'admin' || isAdmin || (loginType && loginType.length === 6)) {
@@ -4354,7 +4354,7 @@ function payBeautyUpgrade() {
 /* === 护肤日记 === */
 function openBeautySkincare() {
   document.getElementById('beautyHomeModal').classList.remove('show');
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
   var localCacheKey = 'moondiary_skincare_' + userKey;
   loadFromCloud('beauty/skincare/' + userKey, function(data) {
     if (data) {
@@ -4367,15 +4367,32 @@ function openBeautySkincare() {
         var cached = localStorage.getItem(localCacheKey);
         if (cached) {
           beautySkinData = JSON.parse(cached);
-          /* 恢复后重新同步到云端 */
           saveToCloudImmediate('beauty/skincare/' + userKey, beautySkinData);
         } else {
-          beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
+          /* 尝试从 'local' 迁移旧数据（原版所有用户数据存在 local 下） */
+          loadFromCloud('beauty/skincare/local', function(oldData) {
+            if (oldData && oldData.dailyRecords && oldData.dailyRecords.length > 0) {
+              beautySkinData = oldData;
+              try { localStorage.setItem(localCacheKey, JSON.stringify(oldData)); } catch(e) {}
+              saveToCloudImmediate('beauty/skincare/' + userKey, oldData);
+              console.log('护肤日记数据已从 local 迁移到 ' + userKey);
+            } else {
+              beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
+            }
+            finishSkincareLoad();
+          });
+          return;
         }
       } catch(e) {
         beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
       }
     }
+    finishSkincareLoad();
+  });
+  document.getElementById('beautySkincareModal').classList.add('show');
+}
+
+function finishSkincareLoad() {
     if (!beautySkinData.dailyRecords) beautySkinData.dailyRecords = [];
     if (!beautySkinData.startDate) beautySkinData.startDate = formatDateStr(new Date());
     if (!beautySkinData.endDate) {
@@ -4420,8 +4437,6 @@ function openBeautySkincare() {
 
     updateSkincareUI();
     renderSkincareCalendar();
-  });
-  document.getElementById('beautySkincareModal').classList.add('show');
 }
 
 function updateSkincareUI() {
@@ -4669,7 +4684,7 @@ function onStartDateChange(dateStr) {
     var total = Math.floor((endTs - startTs) / 86400000) + 1;
     if (total < 1) total = 1;
     beautySkincareState.totalDays = total;
-    saveToCloudImmediate('beauty/skincare/' + (sessionStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
+    saveToCloudImmediate('beauty/skincare/' + (currentKey||sessionStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
   }
   updateSkincareUI();
   renderSkincareCalendar();
@@ -4686,7 +4701,7 @@ function onEndDateChange(dateStr) {
     var total = Math.floor((endTs - startTs) / 86400000) + 1;
     if (total < 1) total = 1;
     beautySkincareState.totalDays = total;
-    saveToCloudImmediate('beauty/skincare/' + (sessionStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
+    saveToCloudImmediate('beauty/skincare/' + (currentKey||sessionStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
   }
   updateSkincareUI();
   renderSkincareCalendar();
@@ -4759,7 +4774,7 @@ function autoSaveSkincare() {
 }
 
 function saveBeautySkincare() {
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
   if (!beautySkinData) beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
   var today = formatDateStr(new Date());
   beautySkincareState.salonNote = document.getElementById('beautySalonNote') ? document.getElementById('beautySalonNote').value : '';
@@ -5328,7 +5343,7 @@ function saveSkincareDayDetail(silent) {
       createdAt: Date.now()
     });
   }
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
   saveToCloudImmediate('beauty/skincare/' + userKey, beautySkinData);
   try { localStorage.setItem('moondiary_skincare_' + userKey, JSON.stringify(beautySkinData)); } catch(e) {}
   if (!silent) {
@@ -5350,7 +5365,7 @@ function openBeautyMood() {
   document.querySelectorAll('#moodEmojiGrid .beauty-emoji-card').forEach(function(el) { el.classList.remove('beauty-emoji-card-active'); });
   document.querySelectorAll('#disciplineGrid .beauty-check').forEach(function(el) { el.classList.remove('beauty-check-active'); });
   /* 加载数据 */
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
   loadFromCloud('beauty/mood/' + userKey, function(data) {
     beautyMoodData = data || { version: 1, dailyRecords: [] };
     if (!beautyMoodData.dailyRecords) beautyMoodData.dailyRecords = [];
@@ -5404,7 +5419,7 @@ function stopMeditationMusic() {
 }
 
 function saveBeautyMood() {
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
   if (!beautyMoodData) beautyMoodData = { version: 1, dailyRecords: [] };
   var today = formatDateStr(new Date());
   beautyMoodState.status = document.getElementById('moodStatus').value;
@@ -5460,14 +5475,14 @@ function loadCommunityPosts() {
     } else if (commCurrentTab === 'new') {
       posts.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
     } else if (commCurrentTab === 'mine') {
-      var userKey = sessionStorage.getItem(SESSION_KEY) || '';
+      var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || '');
       posts = posts.filter(function(p) { return p.userKey === userKey; });
     }
     if (posts.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     var html = '';
     posts.forEach(function(p) {
-      var isLiked = p.likedBy && p.likedBy.indexOf(sessionStorage.getItem(SESSION_KEY)) > -1;
+      var isLiked = p.likedBy && p.likedBy.indexOf(currentKey || sessionStorage.getItem(SESSION_KEY)) > -1;
       html += '<div class="comm-post">' +
         '<div class="comm-post-header">' +
           '<div class="comm-post-avatar">' + (p.nickname ? p.nickname[0] : '月') + '</div>' +
@@ -5502,7 +5517,7 @@ function showPostEditor() {
 function publishPost() {
   var content = document.getElementById('postContent').value.trim();
   if (!content) { showToast('请输入内容'); return; }
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
   var nickname = localStorage.getItem('moondiary_nick') || '月友';
   var postId = 'post_' + Date.now() + '_' + Math.random().toString(36).substring(2,6);
   var newPost = {
@@ -5521,7 +5536,7 @@ function publishPost() {
 }
 
 function likePost(postId) {
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = (currentKey || sessionStorage.getItem(SESSION_KEY) || 'local');
   loadFromCloud('beauty/community/posts', function(data) {
     if (!data || !data.posts) return;
     for (var i = 0; i < data.posts.length; i++) {
