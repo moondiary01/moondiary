@@ -503,6 +503,11 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .follow-btn-not{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;box-shadow:0 2px 8px rgba(139,92,246,0.3)}
 .follow-btn-following{background:#f5f5f4;color:#78716c}
 .follow-btn-mutual{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 2px 8px rgba(16,185,129,0.3)}
+.comm-follow-btn{display:inline-flex;align-items:center;gap:2px;padding:2px 8px;border-radius:100px;font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.2s;user-select:none;margin-left:6px;white-space:nowrap}
+.comm-follow-btn:active{transform:scale(0.95)}
+.comm-follow-not{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff}
+.comm-follow-following{background:#f5f5f4;color:#78716c}
+.comm-follow-mutual{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
 .post-image-preview{position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;flex-shrink:0}
 .post-image-preview img{width:100%;height:100%;object-fit:cover}
 .post-image-remove{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;cursor:pointer}
@@ -1240,8 +1245,25 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
       </div>
     </div>
     <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#ec4899);padding:14px;font-size:1rem;font-weight:700" onclick="saveBeautyMood();playClick()">保存今日心情日记</button>
+    <div style="margin-top:20px;margin-bottom:16px">
+      <div style="font-weight:600;font-size:0.9rem;margin-bottom:4px">📅 心情日历</div>
+      <div style="font-size:0.75rem;color:#a8a29e;text-align:center;margin-bottom:10px">点击日期查看当日记录</div>
+      <div id="moodCalendar"></div>
+    </div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="document.getElementById('beautyMoodModal').classList.remove('show');document.getElementById('beautyHomeModal').classList.add('show');playClick()">返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- 心情日历日期详情弹窗 -->
+<div class="modal-overlay" id="moodDayDetailModal">
+  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto">
+    <h2 id="moodDayDetailTitle">📅 日期详情</h2>
+    <div id="moodDayDetailContent"></div>
+    <div class="modal-actions" style="display:flex;gap:8px">
+      <button class="btn btn-outline" id="moodDetailEditBtn" onclick="toggleMoodDetailEdit();playClick()" style="flex:1">编辑</button>
+      <button class="btn btn-outline" onclick="document.getElementById('moodDayDetailModal').classList.remove('show');playClick()" style="flex:1">关闭</button>
     </div>
   </div>
 </div>
@@ -1251,12 +1273,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
   <div class="modal" style="max-width:550px;max-height:90vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       <h2 style="margin:0">🌙 月友圈</h2>
-      <button class="btn btn-outline" style="padding:6px 16px;font-size:0.82rem" onclick="showMyProfile();playClick()">🏠 我的主页</button>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:16px">
-      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabAll" onclick="switchCommTab('all');playClick()">全部</button>
-      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabFollowing" onclick="switchCommTab('following');playClick()">关注</button>
-      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabMine" onclick="switchCommTab('mine');playClick()">我的</button>
+      <div id="commMyAvatar" onclick="showMyProfile();playClick()" style="cursor:pointer;width:40px;height:40px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:#8b5cf6;background:linear-gradient(135deg,#f5f3ff,#fce7f3);flex-shrink:0"></div>
     </div>
     <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#ec4899);padding:12px;margin-bottom:16px" onclick="showPostEditor();playClick()">✏️ 发布动态</button>
     <div id="communityPosts" style="display:flex;flex-direction:column;gap:12px"></div>
@@ -4728,6 +4745,9 @@ function renderAll() {
 var beautySkinData = null;
 var beautyMoodData = null;
 var beautyMoodState = { mood: '', status: '', diary: '', discipline: {} };
+var moodCalMonth = null;
+var moodDayDetailDate = null;
+var moodDayDetailState = {};
 var beautySkincareState = {
   startDate: null,
   endDate: null,
@@ -5848,6 +5868,7 @@ function openBeautyMood() {
       document.getElementById('moodDiary').value = beautyMoodState.diary;
       document.getElementById('moodCharCount').textContent = beautyMoodState.diary.length + '/1000';
     }
+    renderMoodCalendar();
   });
   document.getElementById('beautyMoodModal').classList.add('show');
 }
@@ -5876,6 +5897,7 @@ function saveBeautyMood() {
   }
   if (!found) { beautyMoodData.dailyRecords.push(record); }
   saveToCloudImmediate('beauty/mood/' + userKey, beautyMoodData);
+  renderMoodCalendar();
   showToast('✅ 保存成功');
 }
 
@@ -5885,6 +5907,308 @@ document.addEventListener('input', function(e) {
     document.getElementById('moodCharCount').textContent = e.target.value.length + '/1000';
   }
 });
+
+/* === 心情日历 === */
+function renderMoodCalendar() {
+  if (!beautyMoodData) return;
+  var calEl = document.getElementById('moodCalendar');
+  if (!calEl) return;
+  var now = new Date();
+  if (!moodCalMonth) moodCalMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  var y = moodCalMonth.getFullYear();
+  var m = moodCalMonth.getMonth();
+  var monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
+  html += '<span onclick="moodCalPrev();playClick()" style="cursor:pointer;font-size:1.2rem;color:#8b5cf6;padding:4px 12px">‹</span>';
+  html += '<span style="font-weight:600;color:#44403c">'+y+'年 '+monthNames[m]+'</span>';
+  html += '<span onclick="moodCalNext();playClick()" style="cursor:pointer;font-size:1.2rem;color:#8b5cf6;padding:4px 12px">›</span>';
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center">';
+  ['日','一','二','三','四','五','六'].forEach(function(w) {
+    html += '<div style="font-size:0.72rem;color:#a8a29e;padding:4px 0">'+w+'</div>';
+  });
+  var firstDay = new Date(y, m, 1).getDay();
+  var daysInMonth = new Date(y, m+1, 0).getDate();
+  var todayStr = formatDateStr(new Date());
+  var recordsMap = {};
+  if (beautyMoodData.dailyRecords) {
+    beautyMoodData.dailyRecords.forEach(function(r) { recordsMap[r.date] = r; });
+  }
+  for (var i = 0; i < firstDay; i++) { html += '<div></div>'; }
+  for (var d = 1; d <= daysInMonth; d++) {
+    var ds = y + '-' + String(m+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    var isToday = ds === todayStr;
+    var rec = recordsMap[ds];
+    var hasRecord = !!rec && isMoodDayHasData(rec);
+    var hasPhoto = rec && rec.photos && rec.photos.length > 0;
+    var todayBg = isToday ? 'background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:700;' : '';
+    var recColor = hasRecord && !isToday ? 'color:#8b5cf6;font-weight:600;' : 'color:#44403c;font-weight:400;';
+    html += '<div onclick="openMoodDayDetail(\''+ds+'\');playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;gap:1px;'+todayBg+'">';
+    if (hasPhoto) {
+      html += '<span style="font-size:0.6rem;line-height:1">📷</span>';
+    } else {
+      html += '<span style="line-height:1;font-size:0.6rem">&nbsp;</span>';
+    }
+    if (isToday) {
+      html += '<span style="width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:700;font-size:0.82rem;box-shadow:0 2px 6px rgba(139,92,246,0.3)">'+d+'</span>';
+    } else {
+      html += '<span style="font-size:0.82rem;'+recColor+'">'+d+'</span>';
+    }
+    html += '<div style="height:14px;display:flex;gap:2px">';
+    if (hasRecord) html += '<span style="font-size:0.65rem;color:#10b981">✓</span>';
+    html += '</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+  html += '<div style="display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid #f5f5f4;flex-wrap:wrap">';
+  html += '<span style="font-size:0.72rem;color:#a8a29e;display:flex;align-items:center;gap:4px">📷 有照片</span>';
+  html += '<span style="font-size:0.72rem;color:#a8a29e;display:flex;align-items:center;gap:4px">✓ 有记录</span>';
+  html += '</div>';
+  calEl.innerHTML = html;
+}
+
+function isMoodDayHasData(rec) {
+  if (!rec) return false;
+  if (rec.mood) return true;
+  if (rec.status && rec.status.trim()) return true;
+  if (rec.diary && rec.diary.trim()) return true;
+  if (rec.discipline) {
+    for (var k in rec.discipline) { if (rec.discipline[k]) return true; }
+  }
+  return false;
+}
+
+function moodCalPrev() {
+  if (!moodCalMonth) return;
+  moodCalMonth.setMonth(moodCalMonth.getMonth() - 1);
+  renderMoodCalendar();
+}
+
+function moodCalNext() {
+  if (!moodCalMonth) return;
+  moodCalMonth.setMonth(moodCalMonth.getMonth() + 1);
+  renderMoodCalendar();
+}
+
+function openMoodDayDetail(dateStr) {
+  moodDayDetailDate = dateStr;
+  var record = null;
+  if (beautyMoodData && beautyMoodData.dailyRecords) {
+    for (var i = 0; i < beautyMoodData.dailyRecords.length; i++) {
+      if (beautyMoodData.dailyRecords[i].date === dateStr) { record = beautyMoodData.dailyRecords[i]; break; }
+    }
+  }
+  moodDayDetailState = {
+    mood: record ? (record.mood || '') : '',
+    status: record ? (record.status || '') : '',
+    diary: record ? (record.diary || '') : '',
+    discipline: record ? Object.assign({}, record.discipline || {}) : {},
+    photos: record ? (record.photos || []) : [],
+    record: record || null,
+    isEditing: false
+  };
+  renderMoodDayDetail();
+  document.getElementById('moodDayDetailModal').classList.add('show');
+}
+
+function renderMoodDayDetail() {
+  var dateStr = moodDayDetailDate;
+  var s = moodDayDetailState;
+  var editing = s.isEditing;
+  document.getElementById('moodDayDetailTitle').textContent = '📅 ' + dateStr;
+  var moodEmojis = {ecstatic:'🥰 幸福',happy:'😊 开心',calm:'😌 平静',grateful:'🙏 感恩',neutral:'😐 一般',tired:'😪 疲惫',anxious:'😰 焦虑',sad:'😢 难过',angry:'😤 生气',stressed:'🤯 压力'};
+  var html = '';
+
+  /* 照片展示 */
+  if (s.photos && s.photos.length > 0) {
+    html += '<div style="margin-bottom:16px">';
+    html += '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">';
+    for (var i = 0; i < s.photos.length; i++) {
+      html += '<div style="position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0" onclick="viewMoodDetailPhoto('+i+');playClick()">';
+      html += '<img src="'+s.photos[i]+'" style="width:100%;height:100%;object-fit:cover;display:block" />';
+      if (editing) {
+        html += '<div onclick="event.stopPropagation();deleteMoodDetailPhoto('+i+');playClick()" style="position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.6rem;cursor:pointer">✕</div>';
+      }
+      html += '</div>';
+    }
+    if (editing && s.photos.length < 4) {
+      html += '<div onclick="uploadMoodDetailPhoto();playClick()" style="width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #f0ebe8;border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
+      html += '<span style="font-size:1.2rem;color:#a8a29e">📷</span><span style="font-size:0.6rem;color:#a8a29e">添加</span></div>';
+    }
+    html += '</div></div>';
+  } else if (editing) {
+    html += '<div style="margin-bottom:16px;text-align:center">';
+    html += '<div onclick="uploadMoodDetailPhoto();playClick()" style="width:72px;height:72px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #f0ebe8;border-radius:10px;cursor:pointer;background:#fafaf9">';
+    html += '<span style="font-size:1.2rem;color:#a8a29e">📷</span><span style="font-size:0.6rem;color:#a8a29e">添加照片</span></div></div>';
+  }
+
+  if (editing) {
+    /* 编辑模式 */
+    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">📝 当前状态</label>';
+    html += '<input type="text" value="'+escapeHtml(s.status)+'" maxlength="50" placeholder="此刻的感受..." oninput="moodDayDetailState.status=this.value" style="width:100%;padding:8px 12px;border:1.5px solid #f0ebe8;border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:4px"></div>';
+    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">今日心情</label>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
+    Object.keys(moodEmojis).forEach(function(k) {
+      var isActive = s.mood === k;
+      html += '<span class="beauty-emoji-card'+(isActive?' beauty-emoji-card-active':'')+'" onclick="selectMoodDetailEmoji(\''+k+'\',this);playClick()" style="min-width:48px">'+moodEmojis[k].split(' ')[0]+'<small>'+moodEmojis[k].split(' ')[1]+'</small></span>';
+    });
+    html += '</div></div>';
+    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">📔 心情日记</label>';
+    html += '<textarea maxlength="1000" placeholder="记录你的感受..." oninput="moodDayDetailState.diary=this.value" style="width:100%;min-height:80px;padding:8px 12px;border:1.5px solid #f0ebe8;border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit;background:#fafaf9;margin-top:4px">'+escapeHtml(s.diary)+'</textarea></div>';
+    /* 自律打卡 */
+    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">⭐ 自律打卡</label>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
+    var discItems = [{key:'tidyRoom',icon:'🧹',label:'收拾房间'},{key:'declutter',icon:'📦',label:'断舍离'},{key:'read',icon:'📖',label:'阅读'},{key:'exercise',icon:'🏃',label:'运动'},{key:'cook',icon:'🍳',label:'做饭'},{key:'noPhone',icon:'📵',label:'减少手机'},{key:'earlySleep',icon:'🛏️',label:'早睡'},{key:'gratitude',icon:'✨',label:'感恩记录'},{key:'meditation',icon:'🧘',label:'冥想'},{key:'skincare',icon:'💄',label:'护肤'},{key:'water',icon:'💧',label:'喝水'},{key:'journal',icon:'✏️',label:'写日记'}];
+    discItems.forEach(function(item) {
+      var isActive = s.discipline && s.discipline[item.key];
+      html += '<span class="beauty-check'+(isActive?' beauty-check-active':'')+'" onclick="toggleMoodDetailCheck(this,\''+item.key+'\');playClick()">'+item.icon+' '+item.label+'</span>';
+    });
+    html += '</div></div>';
+  } else {
+    /* 只读模式 */
+    if (s.mood) {
+      html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border-radius:10px"><span style="font-size:0.8rem;color:#78716c">心情</span><div style="font-size:1.3rem;margin-top:4px">'+(moodEmojis[s.mood]||'')+'</div></div>';
+    }
+    if (s.status) {
+      html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c">📝 状态</span><div style="font-size:0.9rem;margin-top:4px;color:#44403c">'+escapeHtml(s.status)+'</div></div>';
+    }
+    if (s.diary) {
+      html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c">📔 日记</span><div style="font-size:0.88rem;margin-top:4px;color:#44403c;white-space:pre-wrap;line-height:1.6">'+escapeHtml(s.diary)+'</div></div>';
+    }
+    var discItems2 = [{key:'tidyRoom',icon:'🧹',label:'收拾房间'},{key:'declutter',icon:'📦',label:'断舍离'},{key:'read',icon:'📖',label:'阅读'},{key:'exercise',icon:'🏃',label:'运动'},{key:'cook',icon:'🍳',label:'做饭'},{key:'noPhone',icon:'📵',label:'减少手机'},{key:'earlySleep',icon:'🛏️',label:'早睡'},{key:'gratitude',icon:'✨',label:'感恩记录'},{key:'meditation',icon:'🧘',label:'冥想'},{key:'skincare',icon:'💄',label:'护肤'},{key:'water',icon:'💧',label:'喝水'},{key:'journal',icon:'✏️',label:'写日记'}];
+    var activeDisc = discItems2.filter(function(item) { return s.discipline && s.discipline[item.key]; });
+    if (activeDisc.length > 0) {
+      html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c">⭐ 自律打卡</span><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
+      activeDisc.forEach(function(item) {
+        html += '<span style="padding:4px 10px;border-radius:8px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);font-size:0.78rem;color:#8b5cf6;font-weight:600">'+item.icon+' '+item.label+'</span>';
+      });
+      html += '</div></div>';
+    }
+    if (!s.mood && !s.status && !s.diary && (!s.discipline || activeDisc.length === 0) && s.photos.length === 0) {
+      html += '<div style="text-align:center;padding:24px 0;color:#a8a29e;font-size:0.85rem">该日暂无记录</div>';
+    }
+  }
+  document.getElementById('moodDayDetailContent').innerHTML = html;
+  var btn = document.getElementById('moodDetailEditBtn');
+  if (btn) btn.textContent = editing ? '完成编辑' : '编辑';
+}
+
+function selectMoodDetailEmoji(val, el) {
+  moodDayDetailState.mood = val;
+  el.parentNode.querySelectorAll('.beauty-emoji-card').forEach(function(e) { e.classList.remove('beauty-emoji-card-active'); });
+  el.classList.add('beauty-emoji-card-active');
+}
+
+function toggleMoodDetailCheck(el, key) {
+  el.classList.toggle('beauty-check-active');
+  var isActive = el.classList.contains('beauty-check-active');
+  if (!moodDayDetailState.discipline) moodDayDetailState.discipline = {};
+  moodDayDetailState.discipline[key] = isActive;
+}
+
+function toggleMoodDetailEdit() {
+  moodDayDetailState.isEditing = !moodDayDetailState.isEditing;
+  if (!moodDayDetailState.isEditing) {
+    /* 退出编辑 = 保存 */
+    saveMoodDayDetail();
+  }
+  renderMoodDayDetail();
+}
+
+function saveMoodDayDetail() {
+  if (!beautyMoodData) beautyMoodData = { version: 1, dailyRecords: [] };
+  if (!beautyMoodData.dailyRecords) beautyMoodData.dailyRecords = [];
+  var s = moodDayDetailState;
+  var dateStr = moodDayDetailDate;
+  var record = {
+    date: dateStr,
+    mood: s.mood || '',
+    status: s.status || '',
+    diary: s.diary || '',
+    discipline: s.discipline || {},
+    photos: s.photos || [],
+    createdAt: s.record ? (s.record.createdAt || Date.now()) : Date.now(),
+    updatedAt: Date.now()
+  };
+  var found = false;
+  for (var i = 0; i < beautyMoodData.dailyRecords.length; i++) {
+    if (beautyMoodData.dailyRecords[i].date === dateStr) {
+      record.createdAt = beautyMoodData.dailyRecords[i].createdAt || Date.now();
+      beautyMoodData.dailyRecords[i] = record;
+      found = true; break;
+    }
+  }
+  if (!found) beautyMoodData.dailyRecords.push(record);
+  var userKey = getCurrentPhone();
+  saveToCloudImmediate('beauty/mood/' + userKey, beautyMoodData);
+  renderMoodCalendar();
+  showToast('✅ 保存成功');
+}
+
+function uploadMoodDetailPhoto() {
+  if (moodDayDetailState.photos.length >= 4) { showToast('最多4张照片'); return; }
+  var oldInput = document.getElementById('_moodDetailPhotoInput');
+  if (oldInput) oldInput.remove();
+  var input = document.createElement('input');
+  input.id = '_moodDetailPhotoInput';
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.multiple = true;
+  input.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(input);
+  input.onchange = function(e) {
+    var files = e.target.files;
+    if (!files || files.length === 0) { input.remove(); return; }
+    showToast('正在处理图片...');
+    var processed = 0;
+    var total = files.length;
+    function processFile(file) {
+      if (!file.type.startsWith('image/')) { processed++; checkDone(); return; }
+      if (file.size > 10 * 1024 * 1024) { processed++; checkDone(); return; }
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var maxW = 800, maxH = 800;
+          var w = img.width, h = img.height;
+          if (w > maxW || h > maxH) { var ratio = Math.min(maxW/w, maxH/h); w = Math.round(w*ratio); h = Math.round(h*ratio); }
+          var canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          var compressed = canvas.toDataURL('image/jpeg', 0.7);
+          if (compressed.length > 500 * 1024) { compressed = canvas.toDataURL('image/jpeg', 0.5); }
+          if (moodDayDetailState.photos.length < 4) { moodDayDetailState.photos.push(compressed); }
+          processed++; checkDone();
+        };
+        img.onerror = function() { if (moodDayDetailState.photos.length < 4) { moodDayDetailState.photos.push(ev.target.result); } processed++; checkDone(); };
+        img.src = ev.target.result;
+      };
+      reader.onerror = function() { processed++; checkDone(); };
+      reader.readAsDataURL(file);
+    }
+    function checkDone() {
+      if (processed >= total) {
+        input.remove();
+        renderMoodDayDetail();
+        saveMoodDayDetail();
+        showToast('✅ 照片已添加');
+      }
+    }
+    for (var i = 0; i < files.length; i++) { processFile(files[i]); }
+  };
+  setTimeout(function() { input.click(); }, 100);
+}
+
+function deleteMoodDetailPhoto(index) {
+  moodDayDetailState.photos.splice(index, 1);
+  renderMoodDayDetail();
+  saveMoodDayDetail();
+}
+
+function viewMoodDetailPhoto(index) {
+  showImageViewer(moodDayDetailState.photos, index);
+}
 
 /* === 月友圈（朋友圈模式） === */
 var imageViewerImages = [];
@@ -5896,20 +6220,20 @@ function openBeautyCommunity() {
     return;
   }
   document.getElementById('beautyHomeModal').classList.remove('show');
-  commCurrentTab = 'all';
   document.getElementById('beautyCommunityModal').classList.add('show');
+  /* 渲染右上角个人头像 */
+  var avatarEl = document.getElementById('commMyAvatar');
+  var myAvatar = state.avatar || MOON_AVATAR;
+  if (myAvatar.indexOf('data:image') === 0) {
+    avatarEl.innerHTML = '<img src="' + myAvatar + '" style="width:100%;height:100%;object-fit:cover">';
+  } else {
+    avatarEl.textContent = myAvatar;
+  }
   loadCommunityPosts();
 }
 
 function switchCommTab(tab) {
-  commCurrentTab = tab;
-  ['All','Following','Mine'].forEach(function(t) {
-    var el = document.getElementById('commTab' + t);
-    if (el) { el.style.background = ''; el.style.color = ''; el.classList.remove('beauty-tag-active'); }
-  });
-  var active = document.getElementById('commTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
-  if (active) { active.style.background = 'linear-gradient(135deg,#8b5cf6,#ec4899)'; active.style.color = '#fff'; }
-  loadCommunityPosts();
+  /* 已废弃，保留空函数防止报错 */
 }
 
 /* 加载关注数据 */
@@ -6031,18 +6355,8 @@ function renderCommunityPosts() {
   var posts = (commAllPosts && commAllPosts.posts) ? commAllPosts.posts.slice() : [];
   var container = document.getElementById('communityPosts');
   var empty = document.getElementById('communityEmpty');
-  /* 按时间倒序 */
+  /* 按时间倒序，显示全部帖子 */
   posts.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
-  if (commCurrentTab === 'following') {
-    var me = getCurrentPhone();
-    posts = posts.filter(function(p) {
-      if (p.userKey === me) return true; /* 包含自己的 */
-      return isFollowing(p.userKey);
-    });
-  } else if (commCurrentTab === 'mine') {
-    var me2 = getCurrentPhone();
-    posts = posts.filter(function(p) { return p.userKey === me2; });
-  }
   if (posts.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
   var html = '';
@@ -6056,6 +6370,17 @@ function renderPostCard(p) {
   var isLiked = p.likedBy && p.likedBy.indexOf(me) > -1;
   var avatarHtml = renderAvatarHtml(p.avatar, p.nickname);
   var genderHtml = p.gender ? '<span class="comm-post-gender ' + (p.gender === '男' ? 'male' : 'female') + '">' + p.gender + '</span>' : '';
+  /* 关注按钮（自己帖子不显示） */
+  var followBtnHtml = '';
+  if (p.userKey !== me) {
+    if (isMutualFollowing(p.userKey)) {
+      followBtnHtml = '<span class="comm-follow-btn comm-follow-mutual" onclick="event.stopPropagation();toggleFollow(\'' + p.userKey + '\');refreshPostFollow(\'' + p.id + '\');playClick()">🤝 互相关注</span>';
+    } else if (isFollowing(p.userKey)) {
+      followBtnHtml = '<span class="comm-follow-btn comm-follow-following" onclick="event.stopPropagation();toggleFollow(\'' + p.userKey + '\');refreshPostFollow(\'' + p.id + '\');playClick()">✓ 已关注</span>';
+    } else {
+      followBtnHtml = '<span class="comm-follow-btn comm-follow-not" onclick="event.stopPropagation();toggleFollow(\'' + p.userKey + '\');refreshPostFollow(\'' + p.id + '\');playClick()">➕ 关注</span>';
+    }
+  }
   var imagesHtml = '';
   if (p.images && p.images.length > 0) {
     var cls = p.images.length === 1 ? 'single' : (p.images.length === 2 ? 'dual' : 'triple');
@@ -6080,7 +6405,7 @@ function renderPostCard(p) {
     '<div class="comm-post-header">' +
       '<div class="comm-post-avatar" onclick="showUserProfile(\'' + p.userKey + '\');playClick()">' + avatarHtml + '</div>' +
       '<div class="comm-post-info">' +
-        '<div class="comm-post-nick" onclick="showUserProfile(\'' + p.userKey + '\');playClick()">' + escapeHtml(p.nickname || '月友') + genderHtml + '</div>' +
+        '<div class="comm-post-nick" onclick="showUserProfile(\'' + p.userKey + '\');playClick()">' + escapeHtml(p.nickname || '月友') + genderHtml + followBtnHtml + '</div>' +
         '<div class="comm-post-meta">' + formatCommTime(p.createdAt) + '</div>' +
       '</div>' +
     '</div>' +
@@ -6098,6 +6423,36 @@ function renderPostCard(p) {
       '</div>' +
     '</div>' +
   '</div>';
+}
+
+/* 关注/取关后局部刷新帖子卡片中的关注按钮 */
+function refreshPostFollow(postId) {
+  var postEl = document.getElementById('post-' + postId);
+  if (!postEl) return;
+  /* 找到帖子数据 */
+  if (!commAllPosts || !commAllPosts.posts) return;
+  var p = null;
+  for (var i = 0; i < commAllPosts.posts.length; i++) {
+    if (commAllPosts.posts[i].id === postId) { p = commAllPosts.posts[i]; break; }
+  }
+  if (!p) return;
+  var me = getCurrentPhone();
+  var followBtnHtml = '';
+  if (p.userKey !== me) {
+    if (isMutualFollowing(p.userKey)) {
+      followBtnHtml = '<span class="comm-follow-btn comm-follow-mutual" onclick="event.stopPropagation();toggleFollow(\'' + p.userKey + '\');refreshPostFollow(\'' + p.id + '\');playClick()">🤝 互相关注</span>';
+    } else if (isFollowing(p.userKey)) {
+      followBtnHtml = '<span class="comm-follow-btn comm-follow-following" onclick="event.stopPropagation();toggleFollow(\'' + p.userKey + '\');refreshPostFollow(\'' + p.id + '\');playClick()">✓ 已关注</span>';
+    } else {
+      followBtnHtml = '<span class="comm-follow-btn comm-follow-not" onclick="event.stopPropagation();toggleFollow(\'' + p.userKey + '\');refreshPostFollow(\'' + p.id + '\');playClick()">➕ 关注</span>';
+    }
+  }
+  /* 找到 nick 元素并更新 */
+  var nickEl = postEl.querySelector('.comm-post-nick');
+  if (nickEl) {
+    var genderHtml = p.gender ? '<span class="comm-post-gender ' + (p.gender === '男' ? 'male' : 'female') + '">' + p.gender + '</span>' : '';
+    nickEl.innerHTML = escapeHtml(p.nickname || '月友') + genderHtml + followBtnHtml;
+  }
 }
 
 /* 渲染头像HTML */
