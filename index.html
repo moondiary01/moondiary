@@ -7475,8 +7475,10 @@ function openReplyDrawer(postId, nickname, ctxText, cssPrefix, isReply) {
   }
   input.value = '';
 
-  /* 显示抽屉 */
+  /* 显示抽屉——先设为透明，等键盘弹出后再显示，避免先在底部闪一下 */
   drawer.classList.add('show');
+  drawer.style.opacity = '0';
+  drawer.style.transition = 'opacity 0.15s ease-out';
   overlay.classList.add('show');
 
   /* 记录抽屉上下文，供提交使用 */
@@ -7524,9 +7526,9 @@ function _bindKeyboardListener() {
     if (window.visualViewport) {
       var keyboardHeight = window.innerHeight - window.visualViewport.height;
       if (keyboardHeight > 10) {
+        /* 键盘已弹出——设置位置并显示 */
         drawer.style.bottom = keyboardHeight + 'px';
-      } else {
-        drawer.style.bottom = '0px';
+        drawer.style.opacity = '1';
       }
     }
   };
@@ -7538,7 +7540,20 @@ function _bindKeyboardListener() {
   /* 同时监听 window resize 作为 fallback */
   window.addEventListener('resize', updateDrawer);
   /* 轮询检测（处理某些浏览器不触发 resize 的情况） */
-  _drawerPollTimer = setInterval(updateDrawer, 200);
+  _drawerPollTimer = setInterval(function() {
+    var drawer = document.getElementById('replyDrawer');
+    if (!drawer || !drawer.classList.contains('show')) return;
+    if (window.visualViewport) {
+      var keyboardHeight = window.innerHeight - window.visualViewport.height;
+      if (keyboardHeight > 10) {
+        drawer.style.bottom = keyboardHeight + 'px';
+        drawer.style.opacity = '1';
+      }
+    } else {
+      /* 没有 visualViewport 时直接显示 */
+      drawer.style.opacity = '1';
+    }
+  }, 100);
 }
 
 /* 解除键盘监听 */
@@ -7557,16 +7572,21 @@ function _unbindKeyboardListener() {
 /* 聚焦输入框 + 滚动评论到中间 */
 function _focusInputAndScroll(input, isReply, cssPrefix) {
   input.focus({ preventScroll: true });
-  /* 多次延迟滚动评论（处理键盘弹出动画过程） */
-  var checks = [100, 300, 500, 800, 1200];
+  /* 多次延迟检查：键盘弹出后立即显示抽屉 + 滚动评论 */
+  var checks = [50, 100, 200, 350, 500, 800, 1200];
   checks.forEach(function(delay) {
     setTimeout(function() {
-      /* 每次都更新抽屉位置 */
-      if (window.visualViewport) {
-        var drawer = document.getElementById('replyDrawer');
-        if (drawer && drawer.classList.contains('show')) {
+      var drawer = document.getElementById('replyDrawer');
+      if (drawer && drawer.classList.contains('show')) {
+        if (window.visualViewport) {
           var keyboardHeight = window.innerHeight - window.visualViewport.height;
-          drawer.style.bottom = (keyboardHeight > 10 ? keyboardHeight : 0) + 'px';
+          if (keyboardHeight > 10) {
+            drawer.style.bottom = keyboardHeight + 'px';
+            drawer.style.opacity = '1';
+          }
+        } else {
+          /* 没有 visualViewport 时直接显示 */
+          drawer.style.opacity = '1';
         }
       }
       if (isReply) {
@@ -7636,6 +7656,7 @@ function closeReplyDrawer() {
   if (drawer) {
     drawer.classList.remove('show');
     drawer.style.bottom = '0px';
+    drawer.style.opacity = '';
   }
   if (overlay) overlay.classList.remove('show');
   /* 解除键盘监听 */
@@ -7679,7 +7700,7 @@ function submitReplyDrawer() {
   /* 先关闭抽屉，提升体验流畅度 */
   var drawerEl = document.getElementById('replyDrawer');
   var overlayEl = document.getElementById('replyDrawerOverlay');
-  if (drawerEl) { drawerEl.classList.remove('show'); drawerEl.style.bottom = '0px'; }
+  if (drawerEl) { drawerEl.classList.remove('show'); drawerEl.style.bottom = '0px'; drawerEl.style.opacity = ''; }
   if (overlayEl) overlayEl.classList.remove('show');
   /* 解除键盘监听 */
   _unbindKeyboardListener();
