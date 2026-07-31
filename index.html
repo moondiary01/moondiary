@@ -899,7 +899,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
     </div>
     <div style="display:flex;gap:8px;margin-bottom:12px">
       <button class="btn btn-primary" style="flex:1;background:#10b981" onclick="adminGrantPayment('storage');playClick()">开通 19.9元<br><span style="font-size:0.7rem;opacity:0.85">云端存储</span></button>
-      <button class="btn btn-primary" style="flex:1;background:linear-gradient(135deg,#8b5cf6,#ec4899)" onclick="adminGrantPayment('beauty');playClick()">开通 29.9元<br><span style="font-size:0.7rem;opacity:0.85">变美计划</span></button>
+      <button class="btn btn-primary" style="flex:1;background:linear-gradient(135deg,#8b5cf6,#ec4899)" onclick="adminGrantPayment('beauty');playClick()">开通 29.9元<br><span style="font-size:0.7rem;opacity:0.85">变美计划+云存储</span></button>
     </div>
     <div id="paymentStatus" style="font-size:0.8rem;text-align:center;min-height:20px;color:var(--text-l)"></div>
   </div>
@@ -1000,12 +1000,63 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
       <div style="font-size:0.8rem;color:#a8a29e;margin-top:6px;line-height:1.6">护肤日记 · 心情日记 · 月友圈<br>29.9元永久解锁全部变美功能</div>
       <button class="btn btn-primary" style="margin-top:14px;background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none;padding:12px 32px;font-size:0.95rem" onclick="payBeautyUpgrade();playClick()">开通 29.9元永久</button>
       <div style="font-size:0.72rem;color:#a8a29e;margin-top:10px">联系管理员开通 · 永久有效</div>
+      <div style="margin-top:14px;display:flex;gap:16px;justify-content:center">
+        <a href="#" onclick="showPurchaseNotice();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:underline">购买须知</a>
+        <a href="#" onclick="showPrivacyNotice();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:underline">隐私说明</a>
+      </div>
     </div>
     <div style="text-align:center;margin-top:12px">
       <span style="font-size:0.78rem;color:#a8a29e">升级版会员 · 29.9元永久使用 · 全功能解锁</span>
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="document.getElementById('beautyHomeModal').classList.remove('show');playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 购买须知弹窗 -->
+<div class="modal-overlay" id="purchaseNoticeModal">
+  <div class="modal" style="max-width:450px;max-height:80vh;overflow-y:auto">
+    <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:14px">📋 购买须知</h3>
+    <div style="font-size:0.82rem;color:var(--text-d);line-height:1.8">
+      <p><b>1. 会员档位</b></p>
+      <p style="margin-left:12px">• <b>19.9元 永久云端存储</b>：身材管理日记数据的永久云端存储，不含100天变美计划功能。</p>
+      <p style="margin-left:12px">• <b>29.9元 永久升级版</b>：包含云端存储 + 100天变美计划（护肤日记、心情日记、月友圈），永久有效。</p>
+      <p><b>2. 退款政策</b></p>
+      <p style="margin-left:12px">• 数字商品一经开通，不支持退款。</p>
+      <p><b>3. 使用期限</b></p>
+      <p style="margin-left:12px">• 均为<b>永久有效</b>，一次购买终身使用。</p>
+      <p><b>4. 开通方式</b></p>
+      <p style="margin-left:12px">• 联系管理员手动开通，开通后立即生效。</p>
+      <p><b>5. 数据安全</b></p>
+      <p style="margin-left:12px">• 您的数据仅存储在您的个人云端空间，其他用户无法访问。</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="document.getElementById('purchaseNoticeModal').classList.remove('show');playClick()">我知道了</button>
+    </div>
+  </div>
+</div>
+
+<!-- 隐私说明弹窗 -->
+<div class="modal-overlay" id="privacyNoticeModal">
+  <div class="modal" style="max-width:450px;max-height:80vh;overflow-y:auto">
+    <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:14px">🔒 隐私说明</h3>
+    <div style="font-size:0.82rem;color:var(--text-d);line-height:1.8">
+      <p><b>1. 数据收集</b></p>
+      <p style="margin-left:12px">• 我们仅收集您主动输入的身材数据、护肤记录、心情日记及自拍照片。</p>
+      <p style="margin-left:12px">• 手机号仅用于身份识别和数据绑定，不向第三方分享。</p>
+      <p><b>2. 数据存储</b></p>
+      <p style="margin-left:12px">• 您的数据存储在加密的云端服务器（腾讯云COS），仅您本人可访问。</p>
+      <p style="margin-left:12px">• 照片数据经压缩处理后存储，不会用于其他用途。</p>
+      <p><b>3. 数据隔离</b></p>
+      <p style="margin-left:12px">• 每个用户的数据独立存储，互不可见。一手机号一份数据。</p>
+      <p><b>4. 数据删除</b></p>
+      <p style="margin-left:12px">• 您可随时联系管理员删除所有个人数据。</p>
+      <p><b>5. 联系方式</b></p>
+      <p style="margin-left:12px">• 如有隐私相关问题，请联系管理员处理。</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="document.getElementById('privacyNoticeModal').classList.remove('show');playClick()">我知道了</button>
     </div>
   </div>
 </div>
@@ -1621,6 +1672,8 @@ function hasBeautyPermission() {
   if (isAdminUser()) return true;
   var phone = getCurrentPhone();
   if (phone === 'local' || !phone) return false;
+  /* 密钥用户免费使用所有功能 */
+  if (currentKey && currentKey.length === 6) return true;
   var payments = loadPayments();
   return !!(payments[phone] && payments[phone].beautyPaid);
 }
@@ -1630,7 +1683,11 @@ function hasCloudStoragePermission() {
   if (isAdminUser()) return true;
   var phone = getCurrentPhone();
   if (phone === 'local' || !phone) return false;
+  /* 密钥用户免费使用所有功能 */
+  if (currentKey && currentKey.length === 6) return true;
   var payments = loadPayments();
+  /* 29.9元用户自动包含云端存储 */
+  if (payments[phone] && payments[phone].beautyPaid) return true;
   return !!(payments[phone] && payments[phone].storagePaid);
 }
 
@@ -1690,6 +1747,10 @@ function adminGrantPayment(type) {
     payments[phone].beautyPaid = true;
     payments[phone].beautyPaidAt = Date.now();
     payments[phone].beautyPaidBy = 'admin';
+    /* 29.9元升级版自动包含云端存储 */
+    payments[phone].storagePaid = true;
+    payments[phone].storagePaidAt = Date.now();
+    payments[phone].storagePaidBy = 'admin';
     label = '29.9元变美计划';
   }
   savePayments(payments);
@@ -4545,6 +4606,14 @@ function openBeautyUpgrade() {
 
 function payBeautyUpgrade() {
   showToast('请联系管理员开通 29.9元永久变美计划');
+}
+function showPurchaseNotice() {
+  document.getElementById('purchaseNoticeModal').classList.add('show');
+  playClick();
+}
+function showPrivacyNotice() {
+  document.getElementById('privacyNoticeModal').classList.add('show');
+  playClick();
 }
 
 /* === 护肤日记 === */
