@@ -1672,8 +1672,7 @@ function hasBeautyPermission() {
   if (isAdminUser()) return true;
   var phone = getCurrentPhone();
   if (phone === 'local' || !phone) return false;
-  /* 密钥用户免费使用所有功能 */
-  if (currentKey && currentKey.length === 6) return true;
+  /* 100天变美计划需29.9元购买，密钥用户也不例外 */
   var payments = loadPayments();
   return !!(payments[phone] && payments[phone].beautyPaid);
 }
@@ -1683,7 +1682,7 @@ function hasCloudStoragePermission() {
   if (isAdminUser()) return true;
   var phone = getCurrentPhone();
   if (phone === 'local' || !phone) return false;
-  /* 密钥用户免费使用所有功能 */
+  /* 密钥用户免费使用身材管理（含云端存储） */
   if (currentKey && currentKey.length === 6) return true;
   var payments = loadPayments();
   /* 29.9元用户自动包含云端存储 */
