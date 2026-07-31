@@ -1491,21 +1491,26 @@ function saveToCloudImmediate(key, data) {
   } catch(e) { console.error('云端保存异常:', e); }
 }
 function loadFromCloud(key, callback) {
-  if (!cos || !key) { if (callback) callback(null); return; }
+  if (!cos || !key) { if (callback) callback(null, {error: 'cos_not_ready'}); return; }
   try {
     cos.getObject({
       Bucket: COS_CONFIG.Bucket, Region: COS_CONFIG.Region,
       Key: 'userdata/' + key + '.json'
     }, function(err, data) {
-      if (err) { if (callback) callback(null); }
-      else {
+      if (err) {
+        console.error('云端读取失败:', key, err.statusCode || err.message || err);
+        if (err.statusCode === 403 || (err.message && err.message.indexOf('arrears') !== -1)) {
+          console.error('⚠️ 腾讯云COS账户可能已欠费，请充值后恢复');
+        }
+        if (callback) callback(null, {error: 'read_failed', statusCode: err.statusCode});
+      } else {
         try {
           var cloud = JSON.parse(data.Body.toString());
-          if (callback) callback(cloud);
-        } catch(e) { if (callback) callback(null); }
+          if (callback) callback(cloud, null);
+        } catch(e) { if (callback) callback(null, {error: 'parse_failed'}); }
       }
     });
-  } catch(e) { if (callback) callback(null); }
+  } catch(e) { if (callback) callback(null, {error: 'exception'}); }
 }
 
 const WEEKDAY = ['日','一','二','三','四','五','六'];
