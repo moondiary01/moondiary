@@ -389,9 +389,9 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .avatar-option:hover{transform:scale(1.1)}
 .avatar-option.selected{border-color:var(--rose-500);background:var(--rose-100)}
 /* ===== 弹窗 ===== */
-.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(28,25,23,0.4);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(28,25,23,0.4);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .modal-overlay.show{display:flex;animation:modalFadeIn 0.15s ease-out}
-.modal{background:#fff;border-radius:20px;padding:24px;max-width:440px;width:100%;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;animation:modalSlideUp 0.15s ease-out}
+.modal{background:#fff;border-radius:20px;padding:24px;max-width:440px;width:100%;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;animation:modalSlideUp 0.15s ease-out}
 @keyframes modalFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes modalSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .modal.wide{max-width:560px}
@@ -3370,6 +3370,8 @@ function showDayDetail(idx) {
   document.getElementById('dayDetailEdit').style.display = '';
   /* 绑定自动保存 */
   _bindDayDetailAutoSave();
+  /* 锁定背景页面滚动 */
+  document.body.style.overflow = 'hidden';
   document.getElementById('dayDetailModal').classList.add('show');
 }
 
@@ -3438,6 +3440,8 @@ function closeDayDetail() {
     _monthOpenState[editMonthKey] = true;
   }
   _doSaveHistoryData();
+  /* 恢复背景页面滚动 */
+  document.body.style.overflow = '';
   document.getElementById('dayDetailModal').classList.remove('show');
   /* 滚动到编辑的那一行 */
   if (editDateKey) {
@@ -7806,16 +7810,32 @@ function doPublishPost(content, userKey) {
     content: content, images: postImages.slice(), likeCount: 0, commentCount: 0,
     comments: [], likedBy: [], createdAt: Date.now(), version: 3
   };
+  /* 乐观更新：先插入本地缓存并立即渲染，让用户马上看到自己的帖子 */
+  if (!commAllPosts) commAllPosts = { version: 2, posts: [] };
+  if (!commAllPosts.posts) commAllPosts.posts = [];
+  commAllPosts.posts.unshift(newPost);
+  postCache[postId] = newPost;
+  renderCommunityPosts();
+  /* 关闭编辑器并清空 */
+  document.getElementById('postEditorModal').classList.remove('show');
+  document.getElementById('postContent').value = '';
+  postImages = [];
+  showToast('✅ 发布成功');
+  /* 异步保存到云端，成功后从云端刷新（确保数据一致） */
   loadFromCloud('beauty/community/posts', function(data) {
     if (!data || !data.posts) data = { version: 2, posts: [] };
-    data.posts.unshift(newPost);
+    /* 如果云端没有这条帖子（并发情况），插入到最前 */
+    var exists = false;
+    for (var i = 0; i < data.posts.length; i++) {
+      if (data.posts[i].id === postId) { exists = true; break; }
+    }
+    if (!exists) data.posts.unshift(newPost);
     saveToCloudImmediate('beauty/community/posts', data);
+    /* 保存后再刷新一次，确保显示云端最新状态 */
+    commAllPosts = data;
+    renderCommunityPosts();
     /* 同步自己的资料到profiles */
     syncMyProfile();
-    document.getElementById('postEditorModal').classList.remove('show');
-    showToast('✅ 发布成功');
-    postImages = [];
-    loadCommunityPosts();
   });
 }
 
