@@ -6928,33 +6928,28 @@ var imageViewerImages = [];
 var imageViewerIndex = 0;
 
 function openBeautyCommunity() {
-  /* 先从云端刷新付费数据，确保实时感知管理员操作 */
-  refreshPaymentsFromCloud(function() {
-    if (!hasBeautyPermission()) {
-      showToast('请先开通 29.9元变美计划');
-      return;
-    }
-    /* 直接进入月友圈，不经过变美主页中间页 */
-    document.getElementById('beautyHomeModal').classList.remove('show');
-    var commModal = document.getElementById('beautyCommunityModal');
-    commModal.classList.add('show');
-    var commInner = commModal.querySelector('.modal');
-    if (commInner) commInner.scrollTop = 0;
-    /* 渲染右上角个人头像 */
-    var avatarEl = document.getElementById('commMyAvatar');
-    var myAvatar = state.avatar || MOON_AVATAR;
-    if (myAvatar.indexOf('data:image') === 0) {
-      avatarEl.innerHTML = '<img src="' + myAvatar + '" style="width:100%;height:100%;object-fit:cover">';
-    } else {
-      avatarEl.textContent = myAvatar;
-    }
-    /* 头像下方显示昵称 */
-    var nameEl = document.getElementById('commMyNameLabel');
-    if (nameEl) nameEl.textContent = state.name || '月友';
-    loadCommunityPosts();
-    setupCommPullRefresh();
-    startCommAutoRefresh();
-  });
+  /* 已经从变美主页进入，说明付费状态已知，同步直接进入月友圈，避免异步等待导致闪烁 */
+  document.getElementById('beautyHomeModal').classList.remove('show');
+  var commModal = document.getElementById('beautyCommunityModal');
+  commModal.classList.add('show');
+  var commInner = commModal.querySelector('.modal');
+  if (commInner) commInner.scrollTop = 0;
+  /* 渲染右上角个人头像 */
+  var avatarEl = document.getElementById('commMyAvatar');
+  var myAvatar = state.avatar || MOON_AVATAR;
+  if (myAvatar.indexOf('data:image') === 0) {
+    avatarEl.innerHTML = '<img src="' + myAvatar + '" style="width:100%;height:100%;object-fit:cover">';
+  } else {
+    avatarEl.textContent = myAvatar;
+  }
+  /* 头像下方显示昵称 */
+  var nameEl = document.getElementById('commMyNameLabel');
+  if (nameEl) nameEl.textContent = state.name || '月友';
+  /* 先用缓存数据立即渲染，避免空白闪屏 */
+  renderCommunityPosts();
+  loadCommunityPosts();
+  setupCommPullRefresh();
+  startCommAutoRefresh();
 }
 
 /* 从主页直接进入月友圈（跳过变美主页） */
@@ -8057,13 +8052,14 @@ function showMyProfile() {
 
 /* 个人主页返回月友圈或帖子详情 */
 function closeProfileToCommunity() {
-  /* 先显示月友圈弹窗，用缓存数据立即渲染，避免空白闪屏 */
-  document.getElementById('beautyCommunityModal').classList.add('show');
-  /* 立即用缓存数据渲染帖子列表 */
-  renderCommunityPosts();
-  /* 然后异步清空用户主页DOM（不影响月友圈显示） */
+  /* 先隐藏用户主页弹窗，避免两个弹窗叠加 */
+  document.getElementById('profileModal').classList.remove('show');
+  /* 清空用户主页帖子DOM，避免DOM ID冲突 */
   var profilePostsEl = document.getElementById('profilePosts');
   if (profilePostsEl) profilePostsEl.innerHTML = '';
+  /* 显示月友圈弹窗，先用缓存数据立即渲染，避免空白闪屏 */
+  document.getElementById('beautyCommunityModal').classList.add('show');
+  renderCommunityPosts();
   /* 异步从云端刷新最新数据 */
   loadCommunityPosts();
 }
