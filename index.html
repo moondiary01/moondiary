@@ -1021,6 +1021,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
           <span class="beauty-tag" data-key="eyeCare" onclick="toggleBodyCare(this,'eyeCare')">护眼</span>
           <span class="beauty-tag" data-key="chestCare" onclick="toggleBodyCare(this,'chestCare')">胸部护理</span>
           <span class="beauty-tag" data-key="intimateCare" onclick="toggleBodyCare(this,'intimateCare')">私处护理</span>
+          <span class="beauty-tag" data-key="hairCare" onclick="toggleBodyCare(this,'hairCare')">头发护理</span>
           <span class="beauty-tag" data-key="nailCare" onclick="toggleBodyCare(this,'nailCare')">美甲</span>
         </div>
 
@@ -4309,7 +4310,7 @@ var commCurrentTab = 'hot';
 
 function openBeautyUpgrade() {
   /* 检查升级版权限 */
-  var loginType = sessionStorage.getItem(SESSION_KEY) || '';
+  var loginType = localStorage.getItem(SESSION_KEY) || '';
   var isAdmin = sessionStorage.getItem(ADMIN_SESSION) === '1';
   var lockMsg = document.getElementById('beautyLockMsg');
   var sections = document.getElementById('beautySections');
@@ -4345,13 +4346,31 @@ function payBeautyUpgrade() {
 /* === 护肤日记 === */
 function openBeautySkincare() {
   document.getElementById('beautyHomeModal').classList.remove('show');
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = localStorage.getItem(SESSION_KEY) || 'local';
+  var localCacheKey = 'moondiary_skincare_' + userKey;
   loadFromCloud('beauty/skincare/' + userKey, function(data) {
-    beautySkinData = data || { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
+    if (data) {
+      /* 云端有数据，同时更新本地缓存 */
+      beautySkinData = data;
+      try { localStorage.setItem(localCacheKey, JSON.stringify(data)); } catch(e) {}
+    } else {
+      /* 云端无数据，尝试从本地缓存恢复 */
+      try {
+        var cached = localStorage.getItem(localCacheKey);
+        if (cached) {
+          beautySkinData = JSON.parse(cached);
+          /* 恢复后重新同步到云端 */
+          saveToCloudImmediate('beauty/skincare/' + userKey, beautySkinData);
+        } else {
+          beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
+        }
+      } catch(e) {
+        beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
+      }
+    }
     if (!beautySkinData.dailyRecords) beautySkinData.dailyRecords = [];
     if (!beautySkinData.startDate) beautySkinData.startDate = formatDateStr(new Date());
     if (!beautySkinData.endDate) {
-      /* 默认结束日期为起始日期+99天（100天计划） */
       var d = new Date(beautySkinData.startDate);
       d.setDate(d.getDate() + 99);
       beautySkinData.endDate = formatDateStr(d);
@@ -4594,7 +4613,7 @@ function updateSkincareSummary() {
       tags.push({ label: item.icon + ' ' + item.label, type: 'check' });
     }
   });
-  var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',lipsCare:'护唇',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理',eyeCare:'护眼',chestCare:'胸部护理',intimateCare:'私处护理',nailCare:'美甲'};
+  var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',lipsCare:'护唇',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理',eyeCare:'护眼',chestCare:'胸部护理',intimateCare:'私处护理',hairCare:'头发护理',nailCare:'美甲'};
   beautySkincareState.bodyCare.forEach(function(k) {
     tags.push({ label: bodyCareLabels[k] || k, type: 'body' });
   });
@@ -4620,7 +4639,7 @@ function onStartDateChange(dateStr) {
     var total = Math.floor((endTs - startTs) / 86400000) + 1;
     if (total < 1) total = 1;
     beautySkincareState.totalDays = total;
-    saveToCloudImmediate('beauty/skincare/' + (sessionStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
+    saveToCloudImmediate('beauty/skincare/' + (localStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
   }
   updateSkincareUI();
   renderSkincareCalendar();
@@ -4637,7 +4656,7 @@ function onEndDateChange(dateStr) {
     var total = Math.floor((endTs - startTs) / 86400000) + 1;
     if (total < 1) total = 1;
     beautySkincareState.totalDays = total;
-    saveToCloudImmediate('beauty/skincare/' + (sessionStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
+    saveToCloudImmediate('beauty/skincare/' + (localStorage.getItem(SESSION_KEY)||'local'), beautySkinData);
   }
   updateSkincareUI();
   renderSkincareCalendar();
@@ -4710,7 +4729,7 @@ function autoSaveSkincare() {
 }
 
 function saveBeautySkincare() {
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = localStorage.getItem(SESSION_KEY) || 'local';
   if (!beautySkinData) beautySkinData = { version: 2, startDate: formatDateStr(new Date()), endDate: null, skinProfile: {}, dailyRecords: [] };
   var today = formatDateStr(new Date());
   beautySkincareState.salonNote = document.getElementById('beautySalonNote') ? document.getElementById('beautySalonNote').value : '';
@@ -4739,7 +4758,9 @@ function saveBeautySkincare() {
     }
   }
   if (!found) { record.createdAt = Date.now(); beautySkinData.dailyRecords.push(record); }
+  /* 同时保存到云端和本地缓存 */
   saveToCloudImmediate('beauty/skincare/' + userKey, beautySkinData);
+  try { localStorage.setItem('moondiary_skincare_' + userKey, JSON.stringify(beautySkinData)); } catch(e) {}
   renderSkincareCalendar();
 }
 
@@ -4868,7 +4889,7 @@ function renderSkincareDayDetail() {
   var editing = s.isEditing;
   document.getElementById('skincareDayDetailTitle').textContent = '📅 ' + dateStr;
 
-  var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',lipsCare:'护唇',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理',eyeCare:'护眼',chestCare:'胸部护理',intimateCare:'私处护理',nailCare:'美甲'};
+  var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',lipsCare:'护唇',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理',eyeCare:'护眼',chestCare:'胸部护理',intimateCare:'私处护理',hairCare:'头发护理',nailCare:'美甲'};
   var html = '';
 
   /* 顶部：照片展示（不要边框，4张一排缩小） */
@@ -4906,7 +4927,7 @@ function renderSkincareDayDetail() {
     /* 护理项目 + 自定义打卡项目（同一区域，不单独一排） */
     html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:6px">打卡项目</div>';
     html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
-    var allBodyCares = ['faceCare','oralCare','neckCare','lipsCare','bodyCare','handCare','footCare','eyeCare','chestCare','intimateCare','nailCare'];
+    var allBodyCares = ['faceCare','oralCare','neckCare','lipsCare','bodyCare','handCare','footCare','eyeCare','chestCare','intimateCare','hairCare','nailCare'];
     allBodyCares.forEach(function(k) {
       var active = s.bodyCare.indexOf(k) > -1;
       html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe':'background:#fafaf9;color:#78716c;border:1px solid var(--border)')+'">'+bodyCareLabels[k]+'</span>';
@@ -5270,8 +5291,9 @@ function saveSkincareDayDetail(silent) {
       createdAt: Date.now()
     });
   }
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = localStorage.getItem(SESSION_KEY) || 'local';
   saveToCloudImmediate('beauty/skincare/' + userKey, beautySkinData);
+  try { localStorage.setItem('moondiary_skincare_' + userKey, JSON.stringify(beautySkinData)); } catch(e) {}
   if (!silent) {
     skincareDayDetailState.isEditing = false;
     renderSkincareDayDetail();
@@ -5291,7 +5313,7 @@ function openBeautyMood() {
   document.querySelectorAll('#moodEmojiGrid .beauty-emoji-card').forEach(function(el) { el.classList.remove('beauty-emoji-card-active'); });
   document.querySelectorAll('#disciplineGrid .beauty-check').forEach(function(el) { el.classList.remove('beauty-check-active'); });
   /* 加载数据 */
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = localStorage.getItem(SESSION_KEY) || 'local';
   loadFromCloud('beauty/mood/' + userKey, function(data) {
     beautyMoodData = data || { version: 1, dailyRecords: [] };
     if (!beautyMoodData.dailyRecords) beautyMoodData.dailyRecords = [];
@@ -5345,7 +5367,7 @@ function stopMeditationMusic() {
 }
 
 function saveBeautyMood() {
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = localStorage.getItem(SESSION_KEY) || 'local';
   if (!beautyMoodData) beautyMoodData = { version: 1, dailyRecords: [] };
   var today = formatDateStr(new Date());
   beautyMoodState.status = document.getElementById('moodStatus').value;
@@ -5401,14 +5423,14 @@ function loadCommunityPosts() {
     } else if (commCurrentTab === 'new') {
       posts.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
     } else if (commCurrentTab === 'mine') {
-      var userKey = sessionStorage.getItem(SESSION_KEY) || '';
+      var userKey = localStorage.getItem(SESSION_KEY) || '';
       posts = posts.filter(function(p) { return p.userKey === userKey; });
     }
     if (posts.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     var html = '';
     posts.forEach(function(p) {
-      var isLiked = p.likedBy && p.likedBy.indexOf(sessionStorage.getItem(SESSION_KEY)) > -1;
+      var isLiked = p.likedBy && p.likedBy.indexOf(localStorage.getItem(SESSION_KEY)) > -1;
       html += '<div class="comm-post">' +
         '<div class="comm-post-header">' +
           '<div class="comm-post-avatar">' + (p.nickname ? p.nickname[0] : '月') + '</div>' +
@@ -5443,7 +5465,7 @@ function showPostEditor() {
 function publishPost() {
   var content = document.getElementById('postContent').value.trim();
   if (!content) { showToast('请输入内容'); return; }
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = localStorage.getItem(SESSION_KEY) || 'local';
   var nickname = localStorage.getItem('moondiary_nick') || '月友';
   var postId = 'post_' + Date.now() + '_' + Math.random().toString(36).substring(2,6);
   var newPost = {
@@ -5462,7 +5484,7 @@ function publishPost() {
 }
 
 function likePost(postId) {
-  var userKey = sessionStorage.getItem(SESSION_KEY) || 'local';
+  var userKey = localStorage.getItem(SESSION_KEY) || 'local';
   loadFromCloud('beauty/community/posts', function(data) {
     if (!data || !data.posts) return;
     for (var i = 0; i < data.posts.length; i++) {
