@@ -2116,56 +2116,41 @@ function playClick() {
 }
 
 /* 点赞音效（沉稳高级——低八度温暖和弦+深沉衰减，有质感不刺耳） */
+/* 点赞音效（柔和钢琴和弦——C5+E5+G5大三和弦，圆润温暖有高级感） */
 function playLike() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === 'suspended') ctx.resume();
     const t0 = ctx.currentTime;
-    /* 主体：A3(220Hz) 三角波作为温暖低音基底 */
-    const o1 = ctx.createOscillator();
-    const g1 = ctx.createGain();
-    const f1 = ctx.createBiquadFilter();
-    o1.connect(f1); f1.connect(g1); g1.connect(ctx.destination);
-    o1.type = 'triangle'; o1.frequency.value = 220;
-    f1.type = 'lowpass'; f1.frequency.value = 800; f1.Q.value = 0.5;
-    g1.gain.setValueAtTime(0, t0);
-    g1.gain.linearRampToValueAtTime(0.15, t0 + 0.015);
-    g1.gain.exponentialRampToValueAtTime(0.001, t0 + 0.5);
-    o1.start(t0); o1.stop(t0 + 0.5);
-    /* 中层：E4(329.63Hz) 正弦波增加和谐感，稍延迟 */
-    const t1 = t0 + 0.02;
-    const o2 = ctx.createOscillator();
-    const g2 = ctx.createGain();
-    const f2 = ctx.createBiquadFilter();
-    o2.connect(f2); f2.connect(g2); g2.connect(ctx.destination);
-    o2.type = 'sine'; o2.frequency.value = 329.63;
-    f2.type = 'lowpass'; f2.frequency.value = 1500; f2.Q.value = 0.7;
+    /* C5+E5+G5 大三和弦，用正弦波模拟钢琴柔和触键 */
+    var notes = [
+      { f: 523.25, t: 0,     v: 0.14, d: 0.4 },  /* C5 根音 */
+      { f: 659.25, t: 0.008, v: 0.12, d: 0.38 }, /* E5 三音，微延迟更自然 */
+      { f: 783.99, t: 0.016, v: 0.10, d: 0.35 }, /* G5 五音 */
+    ];
+    notes.forEach(function(n) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      var filter = ctx.createBiquadFilter();
+      osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine'; osc.frequency.value = n.f;
+      filter.type = 'lowpass'; filter.frequency.value = n.f * 2.5; filter.Q.value = 0.6;
+      var t = t0 + n.t;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(n.v, t + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + n.d);
+      osc.start(t); osc.stop(t + n.d);
+    });
+    /* 柔和泛音：C6(1046.50) 延迟加入，增加光泽但不刺耳 */
+    var t1 = t0 + 0.04;
+    var o2 = ctx.createOscillator();
+    var g2 = ctx.createGain();
+    o2.connect(g2); g2.connect(ctx.destination);
+    o2.type = 'sine'; o2.frequency.value = 1046.50;
     g2.gain.setValueAtTime(0, t1);
-    g2.gain.linearRampToValueAtTime(0.12, t1 + 0.01);
-    g2.gain.exponentialRampToValueAtTime(0.001, t1 + 0.45);
-    o2.start(t1); o2.stop(t1 + 0.45);
-    /* 高层：A4(440Hz) 正弦波点缀，延迟加入，轻柔不刺耳 */
-    const t2 = t0 + 0.05;
-    const o3 = ctx.createOscillator();
-    const g3 = ctx.createGain();
-    o3.connect(g3); g3.connect(ctx.destination);
-    o3.type = 'sine'; o3.frequency.value = 440;
-    g3.gain.setValueAtTime(0, t2);
-    g3.gain.linearRampToValueAtTime(0.08, t2 + 0.008);
-    g3.gain.exponentialRampToValueAtTime(0.001, t2 + 0.4);
-    o3.start(t2); o3.stop(t2 + 0.4);
-    /* 回响层：延迟 100ms 的微弱低音回响，增加空间深度感 */
-    const t3 = t0 + 0.1;
-    const o4 = ctx.createOscillator();
-    const g4 = ctx.createGain();
-    const f4 = ctx.createBiquadFilter();
-    o4.connect(f4); f4.connect(g4); g4.connect(ctx.destination);
-    o4.type = 'sine'; o4.frequency.value = 220;
-    f4.type = 'lowpass'; f4.frequency.value = 600; f4.Q.value = 0.5;
-    g4.gain.setValueAtTime(0, t3);
-    g4.gain.linearRampToValueAtTime(0.05, t3 + 0.01);
-    g4.gain.exponentialRampToValueAtTime(0.001, t3 + 0.35);
-    o4.start(t3); o4.stop(t3 + 0.35);
+    g2.gain.linearRampToValueAtTime(0.06, t1 + 0.008);
+    g2.gain.exponentialRampToValueAtTime(0.001, t1 + 0.3);
+    o2.start(t1); o2.stop(t1 + 0.3);
   } catch(e) {}
 }
 
@@ -2988,6 +2973,29 @@ document.addEventListener('touchend', e => {
   if (Math.abs(diffX) < 80) return; /* 水平滑动太短忽略 */
   /* 只有水平滑动明显大于垂直滑动时才切换页面，避免上下滚动误触发 */
   if (Math.abs(diffY) > Math.abs(diffX) * 0.4) return;
+
+  /* 弹窗打开时：右滑返回上一级，不触发Tab切换 */
+  var imageViewer = document.getElementById('imageViewerOverlay');
+  if (imageViewer && imageViewer.style.display !== 'none' && imageViewer.contains(e.target)) return; /* 大图查看器有自己的滑动翻页 */
+  var postDetail = document.getElementById('postDetailModal');
+  if (postDetail.classList.contains('show') && postDetail.contains(e.target)) {
+    /* 帖子详情页：右滑返回 */
+    if (diffX < 0) { closePostDetail(); playClick(); }
+    return;
+  }
+  var profileModal = document.getElementById('profileModal');
+  if (profileModal.classList.contains('show') && profileModal.contains(e.target)) {
+    /* 用户主页：右滑返回月友圈 */
+    if (diffX < 0) { closeProfileToCommunity(); playClick(); }
+    return;
+  }
+  var userList = document.getElementById('userListModal');
+  if (userList.classList.contains('show') && userList.contains(e.target)) {
+    /* 用户列表：右滑返回用户主页 */
+    if (diffX < 0) { closeUserList(); playClick(); }
+    return;
+  }
+
   /* 找当前tab */
   let cur = 0;
   document.querySelectorAll('.tab').forEach((t,i) => { if (t.classList.contains('active')) cur = i; });
@@ -7838,7 +7846,9 @@ function closeProfileToCommunity() {
   if (postDetail.classList.contains('show')) {
     return;
   }
+  /* 返回月友圈，重新渲染帖子列表（因为进入用户主页时清空了communityPosts） */
   document.getElementById('beautyCommunityModal').classList.add('show');
+  loadCommunityPosts();
 }
 
 /* 显示用户列表（关注者/关注中） */
@@ -8098,8 +8108,19 @@ function closePostDetail() {
   /* 智能返回：从个人主页来就回个人主页，否则回月友圈 */
   if (postDetailFromProfile) {
     document.getElementById('profileModal').classList.add('show');
+    /* 重新渲染用户主页帖子（因为进入详情页时清空了profilePosts） */
+    var phone = document.getElementById('profileModal').dataset.phone || getCurrentPhone();
+    loadFromCloud('beauty/community/posts', function(data) {
+      if (!data || !data.posts) return;
+      commAllPosts = data;
+      var up = data.posts.filter(function(p) { return p.userKey === phone; });
+      document.getElementById('profilePostCount').textContent = up.length;
+      renderProfilePosts(up, phone);
+    });
   } else {
+    /* 返回月友圈，重新渲染帖子列表 */
     document.getElementById('beautyCommunityModal').classList.add('show');
+    loadCommunityPosts();
   }
 }
 
