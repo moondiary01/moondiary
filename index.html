@@ -452,14 +452,66 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .beauty-date-label{font-size:0.7rem;color:rgba(255,255,255,0.7);display:block}
 .beauty-date-value{font-size:0.82rem;font-weight:600;color:#fff;padding:4px 12px;border-radius:100px;background:rgba(255,255,255,0.15);display:inline-block;margin-top:4px}
 .beauty-entry-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,92,246,0.12)}
-.comm-post{background:var(--bg-card);border-radius:14px;padding:16px;border:1px solid var(--border)}
+.comm-post{background:#fff;border-radius:14px;padding:16px;border:1px solid #f0ebe8;box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:box-shadow 0.2s}
+.comm-post:hover{box-shadow:0 4px 16px rgba(139,92,246,0.08)}
 .comm-post-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.comm-post-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#f5f3ff,#fce7f3);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#8b5cf6;flex-shrink:0}
-.comm-post-nick{font-size:0.9rem;font-weight:600;color:var(--text)}
-.comm-post-time{font-size:0.72rem;color:var(--text-l)}
-.comm-post-content{font-size:0.88rem;color:var(--text);line-height:1.6;margin-bottom:8px}
-.comm-post-actions{display:flex;gap:20px;padding-top:8px;border-top:1px solid #f5f5f4}
-.comm-post-action{display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--text-l);cursor:pointer}
+.comm-post-avatar{width:42px;height:42px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:#8b5cf6;flex-shrink:0;cursor:pointer;background:linear-gradient(135deg,#f5f3ff,#fce7f3)}
+.comm-post-avatar img{width:100%;height:100%;object-fit:cover}
+.comm-post-info{flex:1;min-width:0}
+.comm-post-nick{font-size:0.9rem;font-weight:600;color:#1c1917;cursor:pointer;display:flex;align-items:center;gap:4px}
+.comm-post-nick:hover{color:#8b5cf6}
+.comm-post-gender{font-size:0.7rem;padding:1px 6px;border-radius:8px;font-weight:500}
+.comm-post-gender.male{background:#dbeafe;color:#3b82f6}
+.comm-post-gender.female{background:#fce7f3;color:#ec4899}
+.comm-post-meta{font-size:0.72rem;color:#a8a29e;margin-top:1px}
+.comm-post-content{font-size:0.88rem;color:#44403c;line-height:1.6;margin-bottom:10px;white-space:pre-wrap;word-break:break-word}
+.comm-post-images{display:grid;gap:6px;margin-bottom:10px}
+.comm-post-images.single{grid-template-columns:1fr;max-width:300px}
+.comm-post-images.dual{grid-template-columns:1fr 1fr}
+.comm-post-images.triple{grid-template-columns:repeat(3,1fr)}
+.comm-post-images img{width:100%;border-radius:8px;aspect-ratio:1;object-fit:cover;cursor:pointer;transition:transform 0.2s}
+.comm-post-images img:active{transform:scale(0.96)}
+.comm-post-actions{display:flex;gap:20px;padding-top:10px;border-top:1px solid #f5f5f4}
+.comm-post-action{display:flex;align-items:center;gap:6px;font-size:0.8rem;color:#78716c;cursor:pointer;transition:all 0.2s;user-select:none}
+.comm-post-action:active{transform:scale(0.95)}
+.comm-post-action.liked{color:#ec4899}
+.comm-comments{margin-top:10px;padding:10px 12px;background:#fafaf9;border-radius:10px}
+.comm-comment-item{display:flex;gap:8px;margin-bottom:8px;padding:4px 0}
+.comm-comment-item:last-child{margin-bottom:0}
+.comm-comment-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;flex-shrink:0;overflow:hidden}
+.comm-comment-avatar img{width:100%;height:100%;object-fit:cover}
+.comm-comment-body{flex:1;min-width:0}
+.comm-comment-nick{font-size:0.78rem;font-weight:600;color:#44403c;cursor:pointer}
+.comm-comment-text{font-size:0.82rem;color:#57534e;margin-top:1px;word-break:break-word}
+.comm-comment-input-wrap{display:flex;gap:8px;margin-top:8px}
+.comm-comment-input{flex:1;padding:8px 14px;border:1.5px solid #f0ebe8;border-radius:20px;font-size:0.82rem;outline:none;background:#fff;transition:border-color 0.2s}
+.comm-comment-input:focus{border-color:#c4b5fd}
+.comm-comment-send{padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-size:0.8rem;font-weight:600;border:none;cursor:pointer;white-space:nowrap}
+.comm-comment-send:active{transform:scale(0.95)}
+.profile-header{text-align:center;padding:24px 20px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border-radius:16px;margin-bottom:16px}
+.profile-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2.5rem;border:3px solid #fff;box-shadow:0 4px 12px rgba(139,92,246,0.15);background:linear-gradient(135deg,#f5f3ff,#fce7f3)}
+.profile-avatar img{width:100%;height:100%;object-fit:cover}
+.profile-nick{font-size:1.2rem;font-weight:700;color:#1c1917}
+.profile-info{font-size:0.85rem;color:#78716c;margin-top:4px;display:flex;justify-content:center;gap:8px;align-items:center}
+.profile-bio{font-size:0.82rem;color:#78716c;margin-top:8px;line-height:1.5}
+.profile-stats{display:flex;justify-content:center;gap:32px;margin-top:16px}
+.profile-stat{text-align:center;cursor:pointer}
+.profile-stat-num{font-size:1.2rem;font-weight:700;color:#1c1917}
+.profile-stat-label{font-size:0.7rem;color:#a8a29e;margin-top:2px}
+.follow-btn{padding:8px 24px;border-radius:100px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;margin-top:16px}
+.follow-btn:active{transform:scale(0.95)}
+.follow-btn-not{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;box-shadow:0 2px 8px rgba(139,92,246,0.3)}
+.follow-btn-following{background:#f5f5f4;color:#78716c}
+.follow-btn-mutual{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 2px 8px rgba(16,185,129,0.3)}
+.post-image-preview{position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;flex-shrink:0}
+.post-image-preview img{width:100%;height:100%;object-fit:cover}
+.post-image-remove{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;cursor:pointer}
+.image-viewer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.image-viewer-img{max-width:90vw;max-height:80vh;border-radius:8px}
+.image-viewer-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer}
+.image-viewer-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer}
+.image-viewer-prev{left:16px}
+.image-viewer-next{right:16px}
 
 /* ===== 高级质感深色倒计时卡片 ===== */
 .skincare-countdown-card{position:relative;background:linear-gradient(135deg,#1a1a2e 0%,#2d1b4e 50%,#4a1942 100%);border-radius:20px;padding:24px 20px;margin-bottom:16px;overflow:hidden;box-shadow:0 8px 28px rgba(26,26,46,0.4),0 2px 8px rgba(74,25,66,0.2),inset 0 1px 4px rgba(255,255,255,0.08)}
@@ -981,7 +1033,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
         <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#f9a8d4,#f472b6);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">💖</div>
         <div style="flex:1">
           <div style="font-size:1rem;font-weight:700;color:#1c1917">心情日记</div>
-          <div style="font-size:0.75rem;color:#78716c">心情记录 · 冥想音乐 · 自律打卡</div>
+          <div style="font-size:0.75rem;color:#78716c">心情记录 · 自律打卡</div>
         </div>
         <span style="font-size:1.2rem;color:#c4b5fd">›</span>
       </div>
@@ -1171,57 +1223,6 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
       <div style="text-align:right;font-size:0.72rem;color:#c8c4c0" id="moodCharCount">0/1000</div>
     </div>
     <div style="margin-bottom:16px">
-      <div style="font-weight:600;font-size:0.9rem;margin-bottom:8px">🧘 冥想打卡</div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <span class="beauty-check" onclick="toggleBeautyCheck(this,'meditation_done')">今日冥想</span>
-        <input type="number" id="meditationMinutes" placeholder="15" style="width:80px;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;text-align:center;outline:none">
-        <span style="font-size:0.85rem;color:var(--text-l)">分钟</span>
-      </div>
-    </div>
-    <div style="margin-bottom:16px">
-      <div style="font-weight:600;font-size:0.9rem;margin-bottom:8px">🎵 冥想音乐</div>
-      <select id="meditationMusicSelect" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;outline:none;background:#fff">
-        <optgroup label="🌿 自然之声">
-          <option value="n1">晨曦微露 (15:00)</option>
-          <option value="n2">林间漫步 (20:00)</option>
-          <option value="n3">草原之风 (18:00)</option>
-        </optgroup>
-        <optgroup label="🌧️ 雨声">
-          <option value="r1">轻柔细雨 (30:00)</option>
-          <option value="r2">雨打芭蕉 (25:00)</option>
-          <option value="r3">暴雨雷鸣 (20:00)</option>
-        </optgroup>
-        <optgroup label="🌊 海洋之声">
-          <option value="o1">海浪轻拍 (30:00)</option>
-          <option value="o2">潮起潮落 (25:00)</option>
-        </optgroup>
-        <optgroup label="🌳 森林之声">
-          <option value="f1">竹林深处 (20:00)</option>
-          <option value="f2">松涛阵阵 (18:00)</option>
-        </optgroup>
-        <optgroup label="🌌 宇宙冥想">
-          <option value="s1">星际之旅 (30:00)</option>
-          <option value="s2">宇宙回响 (25:00)</option>
-        </optgroup>
-        <optgroup label="🧘 禅修冥想">
-          <option value="z1">禅茶一味 (20:00)</option>
-          <option value="z2">空山新雨 (25:00)</option>
-        </optgroup>
-        <optgroup label="🎹 钢琴轻音">
-          <option value="p1">月光奏鸣曲 (15:00)</option>
-          <option value="p2">梦中的婚礼 (12:00)</option>
-        </optgroup>
-        <optgroup label="🔔 颂钵音疗">
-          <option value="b1">喜马拉雅颂钵 (30:00)</option>
-          <option value="b2">水晶钵共鸣 (25:00)</option>
-        </optgroup>
-      </select>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn btn-outline" style="flex:1;padding:10px" onclick="playMeditationMusic();playClick()">▶ 播放</button>
-        <button class="btn btn-outline" style="flex:1;padding:10px" onclick="stopMeditationMusic();playClick()">⏹ 停止</button>
-      </div>
-    </div>
-    <div style="margin-bottom:16px">
       <div style="font-weight:600;font-size:0.9rem;margin-bottom:8px">⭐ 自律打卡</div>
       <div id="disciplineGrid" style="display:flex;flex-wrap:wrap;gap:8px">
         <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_tidyRoom')">🧹 收拾房间</span>
@@ -1247,16 +1248,19 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 
 <!-- 月友圈弹窗 -->
 <div class="modal-overlay" id="beautyCommunityModal">
-  <div class="modal" style="max-width:550px;max-height:85vh;overflow-y:auto">
-    <h2>🌙 月友圈</h2>
+  <div class="modal" style="max-width:550px;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h2 style="margin:0">🌙 月友圈</h2>
+      <button class="btn btn-outline" style="padding:6px 16px;font-size:0.82rem" onclick="showMyProfile();playClick()">🏠 我的主页</button>
+    </div>
     <div style="display:flex;gap:8px;margin-bottom:16px">
-      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabHot" onclick="switchCommTab('hot');playClick()">热门</button>
-      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabNew" onclick="switchCommTab('new');playClick()">最新</button>
+      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabAll" onclick="switchCommTab('all');playClick()">全部</button>
+      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabFollowing" onclick="switchCommTab('following');playClick()">关注</button>
       <button class="btn btn-outline" style="flex:1;padding:8px;font-size:0.85rem" id="commTabMine" onclick="switchCommTab('mine');playClick()">我的</button>
     </div>
     <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#ec4899);padding:12px;margin-bottom:16px" onclick="showPostEditor();playClick()">✏️ 发布动态</button>
     <div id="communityPosts" style="display:flex;flex-direction:column;gap:12px"></div>
-    <div id="communityEmpty" style="text-align:center;padding:40px 0;color:var(--text-l);font-size:0.85rem;display:none">还没有内容，快来发布第一条吧 🌙</div>
+    <div id="communityEmpty" style="text-align:center;padding:40px 0;color:#a8a29e;font-size:0.85rem;display:none">还没有内容，快来发布第一条吧 🌙</div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="document.getElementById('beautyCommunityModal').classList.remove('show');document.getElementById('beautyHomeModal').classList.add('show');playClick()">返回</button>
     </div>
@@ -1267,12 +1271,49 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 <div class="modal-overlay" id="postEditorModal">
   <div class="modal" style="max-width:500px">
     <h2>✏️ 发布动态</h2>
-    <textarea id="postContent" placeholder="分享你的变美心得、护肤经验、心情故事..." maxlength="500" style="width:100%;min-height:100px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;resize:vertical;outline:none;font-family:inherit;margin-bottom:12px"></textarea>
+    <textarea id="postContent" placeholder="分享你的变美心得、护肤经验、心情故事..." maxlength="500" style="width:100%;min-height:100px;padding:10px 12px;border:1.5px solid #f0ebe8;border-radius:10px;font-size:0.9rem;resize:vertical;outline:none;font-family:inherit;margin-bottom:12px"></textarea>
+    <div style="margin-bottom:12px">
+      <div style="font-size:0.8rem;color:#78716c;margin-bottom:6px">📷 添加图片（最多3张）</div>
+      <div id="postImagePreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div>
+      <button id="addImageBtn" class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem" onclick="document.getElementById('postImageFile').click();playClick()">📷 添加图片</button>
+      <input type="file" id="postImageFile" accept="image/*" style="display:none" onchange="addPostImage(event)">
+    </div>
     <div class="modal-actions">
-      <button class="btn btn-outline" onclick="document.getElementById('postEditorModal').classList.remove('show');playClick()">取消</button>
+      <button class="btn btn-outline" onclick="closePostEditor();playClick()">取消</button>
       <button class="btn btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)" onclick="publishPost();playClick()">发布</button>
     </div>
   </div>
+</div>
+
+<!-- 个人主页弹窗 -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal" style="max-width:500px;max-height:85vh;overflow-y:auto">
+    <div class="profile-header">
+      <div class="profile-avatar" id="profileAvatar"></div>
+      <div class="profile-nick" id="profileNickname"></div>
+      <div class="profile-info" id="profileInfo"></div>
+      <div class="profile-bio" id="profileBio"></div>
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="profile-stat-num" id="profilePostCount">0</div><div class="profile-stat-label">动态</div></div>
+        <div class="profile-stat"><div class="profile-stat-num" id="profileFollowerCount">0</div><div class="profile-stat-label">关注者</div></div>
+        <div class="profile-stat"><div class="profile-stat-num" id="profileFollowingCount">0</div><div class="profile-stat-label">关注中</div></div>
+      </div>
+      <button class="follow-btn" id="profileFollowBtn" style="display:none"></button>
+    </div>
+    <div id="profilePosts" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div id="profileEmpty" style="text-align:center;padding:30px 0;color:#a8a29e;font-size:0.85rem;display:none">还没有发布任何动态</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('profileModal').classList.remove('show');playClick()">返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- 大图查看器 -->
+<div class="image-viewer-overlay" id="imageViewerOverlay" style="display:none" onclick="closeImageViewer()">
+  <div class="image-viewer-close" onclick="closeImageViewer();playClick()">✕</div>
+  <div class="image-viewer-nav image-viewer-prev" id="imageViewerPrev" onclick="event.stopPropagation();navImage(-1);playClick()">‹</div>
+  <img class="image-viewer-img" id="imageViewerImg" src="">
+  <div class="image-viewer-nav image-viewer-next" id="imageViewerNext" onclick="event.stopPropagation();navImage(1);playClick()">›</div>
 </div>
 
 </main>
@@ -4686,7 +4727,7 @@ function renderAll() {
 /* ===== 升级版功能 ===== */
 var beautySkinData = null;
 var beautyMoodData = null;
-var beautyMoodState = { mood: '', status: '', diary: '', meditation: false, meditationMinutes: 0, discipline: {} };
+var beautyMoodState = { mood: '', status: '', diary: '', discipline: {} };
 var beautySkincareState = {
   startDate: null,
   endDate: null,
@@ -4706,8 +4747,12 @@ var skincareCheckItems = [
   { key: 'salon', label: '美容院护理', icon: '💆' },
   { key: 'cosmetic', label: 'do脸小记', icon: '💉' }
 ];
-var meditationAudio = null;
-var commCurrentTab = 'hot';
+var meditationAudio = null; /* 已废弃，保留兼容 */
+var commCurrentTab = 'all';
+var postImages = []; /* 发布动态时的图片数组 */
+var commFollowData = null; /* 关注关系数据 */
+var commProfileData = null; /* 用户公开资料 */
+var commAllPosts = null; /* 所有帖子缓存 */
 
 function openBeautyUpgrade() {
   var lockMsg = document.getElementById('beautyLockMsg');
@@ -5778,10 +5823,9 @@ function openBeautyMood() {
     return;
   }
   document.getElementById('beautyHomeModal').classList.remove('show');
-  beautyMoodState = { mood: '', status: '', diary: '', meditation: false, meditationMinutes: 0, discipline: {} };
+  beautyMoodState = { mood: '', status: '', diary: '', discipline: {} };
   document.getElementById('moodStatus').value = '';
   document.getElementById('moodDiary').value = '';
-  document.getElementById('meditationMinutes').value = '';
   document.getElementById('moodCharCount').textContent = '0/1000';
   document.querySelectorAll('#moodEmojiGrid .beauty-emoji-card').forEach(function(el) { el.classList.remove('beauty-emoji-card-active'); });
   document.querySelectorAll('#disciplineGrid .beauty-check').forEach(function(el) { el.classList.remove('beauty-check-active'); });
@@ -5799,13 +5843,10 @@ function openBeautyMood() {
       beautyMoodState.mood = record.mood || '';
       beautyMoodState.status = record.status || '';
       beautyMoodState.diary = record.diary || '';
-      beautyMoodState.meditation = record.meditation || false;
-      beautyMoodState.meditationMinutes = record.meditationMinutes || 0;
       beautyMoodState.discipline = record.discipline || {};
       document.getElementById('moodStatus').value = beautyMoodState.status;
       document.getElementById('moodDiary').value = beautyMoodState.diary;
       document.getElementById('moodCharCount').textContent = beautyMoodState.diary.length + '/1000';
-      document.getElementById('meditationMinutes').value = beautyMoodState.meditationMinutes || '';
     }
   });
   document.getElementById('beautyMoodModal').classList.add('show');
@@ -5818,34 +5859,12 @@ function selectMoodEmoji(val, el) {
   playClick();
 }
 
-function playMeditationMusic() {
-  var select = document.getElementById('meditationMusicSelect');
-  var trackId = select.value;
-  if (!trackId) { showToast('请选择音乐'); return; }
-  if (meditationAudio) { try { meditationAudio.pause(); } catch(e) {} }
-  meditationAudio = new Audio('https://' + COS_CONFIG.Bucket + '.cos.' + COS_CONFIG.Region + '.myqcloud.com/beauty/music/' + trackId + '.mp3');
-  meditationAudio.volume = 0.5;
-  meditationAudio.play().catch(function() { showToast('音频加载中，请稍后重试'); });
-  beautyMoodState.meditation = true;
-  if (!beautyMoodState.meditationMinutes) {
-    document.getElementById('meditationMinutes').value = 15;
-    beautyMoodState.meditationMinutes = 15;
-  }
-  showToast('🎵 开始播放');
-}
-
-function stopMeditationMusic() {
-  if (meditationAudio) { try { meditationAudio.pause(); meditationAudio = null; } catch(e) {} }
-  showToast('⏹ 已停止');
-}
-
 function saveBeautyMood() {
   var userKey = getCurrentPhone();
   if (!beautyMoodData) beautyMoodData = { version: 1, dailyRecords: [] };
   var today = formatDateStr(new Date());
   beautyMoodState.status = document.getElementById('moodStatus').value;
   beautyMoodState.diary = document.getElementById('moodDiary').value;
-  beautyMoodState.meditationMinutes = parseInt(document.getElementById('meditationMinutes').value) || 0;
   var record = Object.assign({ date: today, createdAt: Date.now(), updatedAt: Date.now() }, beautyMoodState);
   var found = false;
   for (var i = 0; i < beautyMoodData.dailyRecords.length; i++) {
@@ -5867,61 +5886,237 @@ document.addEventListener('input', function(e) {
   }
 });
 
-/* === 月友圈 === */
+/* === 月友圈（朋友圈模式） === */
+var imageViewerImages = [];
+var imageViewerIndex = 0;
+
 function openBeautyCommunity() {
   if (!hasBeautyPermission()) {
     showToast('请先开通 29.9元变美计划');
     return;
   }
   document.getElementById('beautyHomeModal').classList.remove('show');
-  commCurrentTab = 'hot';
+  commCurrentTab = 'all';
   document.getElementById('beautyCommunityModal').classList.add('show');
   loadCommunityPosts();
 }
 
 function switchCommTab(tab) {
   commCurrentTab = tab;
-  ['Hot','New','Mine'].forEach(function(t) {
+  ['All','Following','Mine'].forEach(function(t) {
     var el = document.getElementById('commTab' + t);
-    if (el) { el.style.background = ''; el.style.color = ''; }
+    if (el) { el.style.background = ''; el.style.color = ''; el.classList.remove('beauty-tag-active'); }
   });
   var active = document.getElementById('commTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
   if (active) { active.style.background = 'linear-gradient(135deg,#8b5cf6,#ec4899)'; active.style.color = '#fff'; }
   loadCommunityPosts();
 }
 
-function loadCommunityPosts() {
-  loadFromCloud('beauty/community/posts', function(data) {
-    var posts = (data && data.posts) ? data.posts : [];
-    var container = document.getElementById('communityPosts');
-    var empty = document.getElementById('communityEmpty');
-    if (commCurrentTab === 'hot') {
-      posts.sort(function(a,b) { return (b.likeCount||0) - (a.likeCount||0); });
-    } else if (commCurrentTab === 'new') {
-      posts.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
-    } else if (commCurrentTab === 'mine') {
-      var userKey = getCurrentPhone();
-      posts = posts.filter(function(p) { return p.userKey === userKey; });
-    }
-    if (posts.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
-    empty.style.display = 'none';
-    var html = '';
-    posts.forEach(function(p) {
-      var isLiked = p.likedBy && p.likedBy.indexOf(getCurrentPhone()) > -1;
-      html += '<div class="comm-post">' +
-        '<div class="comm-post-header">' +
-          '<div class="comm-post-avatar">' + (p.nickname ? p.nickname[0] : '月') + '</div>' +
-          '<div><div class="comm-post-nick">' + (p.nickname||'月友') + '</div>' +
-          '<div class="comm-post-time">' + formatCommTime(p.createdAt) + '</div></div>' +
-        '</div>' +
-        (p.content ? '<div class="comm-post-content">' + p.content + '</div>' : '') +
-        '<div class="comm-post-actions">' +
-          '<span class="comm-post-action" onclick="likePost(\'' + p.id + '\');playClick()">' + (isLiked?'❤️':'🤍') + ' ' + (p.likeCount||0) + '</span>' +
-          '<span class="comm-post-action">💬 ' + (p.commentCount||0) + '</span>' +
-        '</div></div>';
-    });
-    container.innerHTML = html;
+/* 加载关注数据 */
+function loadFollowData(callback) {
+  loadFromCloud('beauty/community/follows', function(data) {
+    commFollowData = (data && data.follows) ? data : { version: 1, follows: {} };
+    if (!commFollowData.follows) commFollowData.follows = {};
+    if (callback) callback();
   });
+}
+
+/* 加载用户资料 */
+function loadProfileData(callback) {
+  loadFromCloud('beauty/community/profiles', function(data) {
+    commProfileData = (data && data.profiles) ? data : { version: 1, profiles: {} };
+    if (!commProfileData.profiles) commProfileData.profiles = {};
+    if (callback) callback();
+  });
+}
+
+/* 同步自己的资料到profiles */
+function syncMyProfile() {
+  var phone = getCurrentPhone();
+  if (!phone || phone === 'local') return;
+  if (!commProfileData) commProfileData = { version: 1, profiles: {} };
+  if (!commProfileData.profiles) commProfileData.profiles = {};
+  commProfileData.profiles[phone] = {
+    nickname: state.name || '月友',
+    avatar: state.avatar || MOON_AVATAR,
+    gender: state.gender || '',
+    age: state.age || null,
+    bio: (commProfileData.profiles[phone] && commProfileData.profiles[phone].bio) || '',
+    updatedAt: Date.now()
+  };
+  saveToCloudImmediate('beauty/community/profiles', commProfileData);
+}
+
+/* 判断互相关注 */
+function isMutualFollowing(phone) {
+  if (!commFollowData || !commFollowData.follows) return false;
+  var me = getCurrentPhone();
+  var iFollow = commFollowData.follows[me] && commFollowData.follows[me].indexOf(phone) > -1;
+  var theyFollow = commFollowData.follows[phone] && commFollowData.follows[phone].indexOf(me) > -1;
+  return iFollow && theyFollow;
+}
+
+/* 判断我是否关注对方 */
+function isFollowing(phone) {
+  if (!commFollowData || !commFollowData.follows) return false;
+  var me = getCurrentPhone();
+  return commFollowData.follows[me] && commFollowData.follows[me].indexOf(phone) > -1;
+}
+
+/* 获取关注列表 */
+function getFollowingList(phone) {
+  if (!commFollowData || !commFollowData.follows) return [];
+  return commFollowData.follows[phone] || [];
+}
+
+/* 获取粉丝列表 */
+function getFollowerList(phone) {
+  if (!commFollowData || !commFollowData.follows) return [];
+  var followers = [];
+  Object.keys(commFollowData.follows).forEach(function(k) {
+    if (commFollowData.follows[k].indexOf(phone) > -1) followers.push(k);
+  });
+  return followers;
+}
+
+/* 关注/取关 */
+function toggleFollow(phone) {
+  if (!commFollowData) commFollowData = { version: 1, follows: {} };
+  if (!commFollowData.follows) commFollowData.follows = {};
+  var me = getCurrentPhone();
+  if (!commFollowData.follows[me]) commFollowData.follows[me] = [];
+  var idx = commFollowData.follows[me].indexOf(phone);
+  if (idx > -1) {
+    commFollowData.follows[me].splice(idx, 1);
+    showToast('已取消关注');
+  } else {
+    commFollowData.follows[me].push(phone);
+    showToast(isFollowing(phone) && commFollowData.follows[phone] && commFollowData.follows[phone].indexOf(me) > -1 ? '✅ 互相关注成功' : '✅ 关注成功');
+  }
+  saveToCloudImmediate('beauty/community/follows', commFollowData);
+  /* 刷新主页按钮 */
+  updateFollowBtn(phone);
+}
+
+function updateFollowBtn(phone) {
+  var btn = document.getElementById('profileFollowBtn');
+  if (!btn) return;
+  if (isMutualFollowing(phone)) {
+    btn.textContent = '互相关注';
+    btn.className = 'follow-btn follow-btn-mutual';
+    btn.onclick = function() { toggleFollow(phone); playClick(); };
+  } else if (isFollowing(phone)) {
+    btn.textContent = '已关注';
+    btn.className = 'follow-btn follow-btn-following';
+    btn.onclick = function() { toggleFollow(phone); playClick(); };
+  } else {
+    btn.textContent = '+ 关注';
+    btn.className = 'follow-btn follow-btn-not';
+    btn.onclick = function() { toggleFollow(phone); playClick(); };
+  }
+}
+
+/* 加载帖子列表 */
+function loadCommunityPosts() {
+  loadFollowData(function() {
+    loadFromCloud('beauty/community/posts', function(data) {
+      commAllPosts = (data && data.posts) ? data : { version: 2, posts: [] };
+      if (!commAllPosts.posts) commAllPosts.posts = [];
+      renderCommunityPosts();
+    });
+  });
+}
+
+function renderCommunityPosts() {
+  var posts = (commAllPosts && commAllPosts.posts) ? commAllPosts.posts.slice() : [];
+  var container = document.getElementById('communityPosts');
+  var empty = document.getElementById('communityEmpty');
+  /* 按时间倒序 */
+  posts.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
+  if (commCurrentTab === 'following') {
+    var me = getCurrentPhone();
+    posts = posts.filter(function(p) {
+      if (p.userKey === me) return true; /* 包含自己的 */
+      return isFollowing(p.userKey);
+    });
+  } else if (commCurrentTab === 'mine') {
+    var me2 = getCurrentPhone();
+    posts = posts.filter(function(p) { return p.userKey === me2; });
+  }
+  if (posts.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  var html = '';
+  posts.forEach(function(p) { html += renderPostCard(p); });
+  container.innerHTML = html;
+}
+
+/* 渲染单个帖子卡片 */
+function renderPostCard(p) {
+  var me = getCurrentPhone();
+  var isLiked = p.likedBy && p.likedBy.indexOf(me) > -1;
+  var avatarHtml = renderAvatarHtml(p.avatar, p.nickname);
+  var genderHtml = p.gender ? '<span class="comm-post-gender ' + (p.gender === '男' ? 'male' : 'female') + '">' + p.gender + '</span>' : '';
+  var imagesHtml = '';
+  if (p.images && p.images.length > 0) {
+    var cls = p.images.length === 1 ? 'single' : (p.images.length === 2 ? 'dual' : 'triple');
+    var imgs = p.images.map(function(img, i) {
+      return '<img src="' + img + '" onclick="showImageViewer(' + JSON.stringify(p.images) + ',' + i + ');playClick()">';
+    }).join('');
+    imagesHtml = '<div class="comm-post-images ' + cls + '">' + imgs + '</div>';
+  }
+  var commentsHtml = '';
+  if (p.comments && p.comments.length > 0) {
+    commentsHtml = p.comments.map(function(c) {
+      var cAvatar = renderAvatarHtml(c.avatar, c.nickname);
+      return '<div class="comm-comment-item">' +
+        '<div class="comm-comment-avatar" onclick="showUserProfile(\'' + c.userKey + '\');playClick()">' + cAvatar + '</div>' +
+        '<div class="comm-comment-body">' +
+          '<div class="comm-comment-nick" onclick="showUserProfile(\'' + c.userKey + '\');playClick()">' + escapeHtml(c.nickname || '月友') + '</div>' +
+          '<div class="comm-comment-text">' + escapeHtml(c.content) + '</div>' +
+        '</div></div>';
+    }).join('');
+  }
+  return '<div class="comm-post" id="post-' + p.id + '">' +
+    '<div class="comm-post-header">' +
+      '<div class="comm-post-avatar" onclick="showUserProfile(\'' + p.userKey + '\');playClick()">' + avatarHtml + '</div>' +
+      '<div class="comm-post-info">' +
+        '<div class="comm-post-nick" onclick="showUserProfile(\'' + p.userKey + '\');playClick()">' + escapeHtml(p.nickname || '月友') + genderHtml + '</div>' +
+        '<div class="comm-post-meta">' + formatCommTime(p.createdAt) + '</div>' +
+      '</div>' +
+    '</div>' +
+    (p.content ? '<div class="comm-post-content">' + escapeHtml(p.content) + '</div>' : '') +
+    imagesHtml +
+    '<div class="comm-post-actions">' +
+      '<span class="comm-post-action' + (isLiked ? ' liked' : '') + '" onclick="likePost(\'' + p.id + '\');playClick()">' + (isLiked ? '❤️' : '🤍') + ' ' + (p.likeCount || 0) + '</span>' +
+      '<span class="comm-post-action" onclick="toggleComments(\'' + p.id + '\');playClick()">💬 ' + (p.commentCount || 0) + '</span>' +
+    '</div>' +
+    '<div class="comm-comments" id="comments-' + p.id + '" style="display:none">' +
+      commentsHtml +
+      '<div class="comm-comment-input-wrap">' +
+        '<input type="text" class="comm-comment-input" placeholder="写评论..." id="commentInput-' + p.id + '" onkeydown="if(event.key===\'Enter\'){submitComment(\'' + p.id + '\')}">' +
+        '<button class="comm-comment-send" onclick="submitComment(\'' + p.id + '\');playClick()">发送</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* 渲染头像HTML */
+function renderAvatarHtml(avatar, nickname) {
+  if (avatar && avatar.indexOf('data:image') === 0) {
+    return '<img src="' + avatar + '">';
+  } else if (avatar && avatar.length <= 4) {
+    return avatar; /* emoji */
+  } else {
+    return escapeHtml(nickname ? nickname[0] : '月');
+  }
+}
+
+/* HTML转义 */
+function escapeHtml(text) {
+  if (!text) return '';
+  var div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 function formatCommTime(ts) {
@@ -5934,36 +6129,105 @@ function formatCommTime(ts) {
   var d = new Date(ts); return (d.getMonth()+1) + '月' + d.getDate() + '日';
 }
 
+/* 发布动态 */
 function showPostEditor() {
   document.getElementById('postContent').value = '';
+  postImages = [];
+  renderPostImagePreview();
   document.getElementById('postEditorModal').classList.add('show');
+}
+
+function closePostEditor() {
+  document.getElementById('postEditorModal').classList.remove('show');
+}
+
+function renderPostImagePreview() {
+  var container = document.getElementById('postImagePreview');
+  var addBtn = document.getElementById('addImageBtn');
+  var html = '';
+  postImages.forEach(function(img, i) {
+    html += '<div class="post-image-preview"><img src="' + img + '"><div class="post-image-remove" onclick="removePostImage(' + i + ');playClick()">✕</div></div>';
+  });
+  container.innerHTML = html;
+  addBtn.style.display = postImages.length >= 3 ? 'none' : 'inline-block';
+}
+
+/* 图片压缩 */
+function compressImage(file, maxWidth, quality, callback) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var w = img.width, h = img.height;
+      if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      var dataUrl = canvas.toDataURL('image/jpeg', quality);
+      /* 检查大小，如果>200KB降低quality */
+      var sizeKB = Math.round(dataUrl.length * 0.75 / 1024);
+      if (sizeKB > 200 && quality > 0.3) {
+        compressImage(file, maxWidth, quality - 0.15, callback);
+      } else {
+        callback(dataUrl);
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function addPostImage(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('图片不能超过5MB'); return; }
+  if (postImages.length >= 3) { showToast('最多3张图片'); return; }
+  compressImage(file, 800, 0.7, function(dataUrl) {
+    postImages.push(dataUrl);
+    renderPostImagePreview();
+  });
+  event.target.value = '';
+}
+
+function removePostImage(index) {
+  postImages.splice(index, 1);
+  renderPostImagePreview();
 }
 
 function publishPost() {
   var content = document.getElementById('postContent').value.trim();
-  if (!content) { showToast('请输入内容'); return; }
+  if (!content && postImages.length === 0) { showToast('请输入内容或添加图片'); return; }
   var userKey = getCurrentPhone();
-  var nickname = localStorage.getItem('moondiary_nick') || '月友';
+  /* 从state读取昵称/头像/性别作为快照 */
+  var nickname = state.name || '月友';
+  var avatar = state.avatar || MOON_AVATAR;
+  var gender = state.gender || '';
   var postId = 'post_' + Date.now() + '_' + Math.random().toString(36).substring(2,6);
   var newPost = {
-    id: postId, userKey: userKey, nickname: nickname, avatar: '',
-    content: content, images: [], likeCount: 0, commentCount: 0,
-    likedBy: [], createdAt: Date.now(), version: 1
+    id: postId, userKey: userKey, nickname: nickname, avatar: avatar, gender: gender,
+    content: content, images: postImages.slice(), likeCount: 0, commentCount: 0,
+    comments: [], likedBy: [], createdAt: Date.now(), version: 2
   };
   loadFromCloud('beauty/community/posts', function(data) {
-    if (!data || !data.posts) data = { version: 1, posts: [] };
+    if (!data || !data.posts) data = { version: 2, posts: [] };
     data.posts.unshift(newPost);
     saveToCloudImmediate('beauty/community/posts', data);
+    /* 同步自己的资料到profiles */
+    syncMyProfile();
     document.getElementById('postEditorModal').classList.remove('show');
     showToast('✅ 发布成功');
+    postImages = [];
     loadCommunityPosts();
   });
 }
 
+/* 点赞 */
 function likePost(postId) {
   var userKey = getCurrentPhone();
   loadFromCloud('beauty/community/posts', function(data) {
     if (!data || !data.posts) return;
+    commAllPosts = data;
     for (var i = 0; i < data.posts.length; i++) {
       if (data.posts[i].id === postId) {
         var likedBy = data.posts[i].likedBy || [];
@@ -5975,8 +6239,229 @@ function likePost(postId) {
       }
     }
     saveToCloudImmediate('beauty/community/posts', data);
-    loadCommunityPosts();
+    /* 局部刷新该帖子 */
+    var postEl = document.getElementById('post-' + postId);
+    if (postEl) {
+      var p = data.posts.find(function(x) { return x.id === postId; });
+      if (p) {
+        var isLiked = p.likedBy && p.likedBy.indexOf(userKey) > -1;
+        var actions = postEl.querySelector('.comm-post-actions');
+        if (actions) {
+          actions.innerHTML = '<span class="comm-post-action' + (isLiked ? ' liked' : '') + '" onclick="likePost(\'' + p.id + '\');playClick()">' + (isLiked ? '❤️' : '🤍') + ' ' + (p.likeCount || 0) + '</span>' +
+            '<span class="comm-post-action" onclick="toggleComments(\'' + p.id + '\');playClick()">💬 ' + (p.commentCount || 0) + '</span>';
+        }
+      }
+    }
   });
+}
+
+/* 展开/收起评论 */
+function toggleComments(postId) {
+  var el = document.getElementById('comments-' + postId);
+  if (!el) return;
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    var input = document.getElementById('commentInput-' + postId);
+    if (input) input.focus();
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+/* 提交评论 */
+function submitComment(postId) {
+  var input = document.getElementById('commentInput-' + postId);
+  if (!input) return;
+  var content = input.value.trim();
+  if (!content) { showToast('请输入评论内容'); return; }
+  var userKey = getCurrentPhone();
+  var comment = {
+    id: 'c_' + Date.now() + '_' + Math.random().toString(36).substring(2,5),
+    userKey: userKey,
+    nickname: state.name || '月友',
+    avatar: state.avatar || MOON_AVATAR,
+    content: content,
+    createdAt: Date.now()
+  };
+  loadFromCloud('beauty/community/posts', function(data) {
+    if (!data || !data.posts) return;
+    commAllPosts = data;
+    for (var i = 0; i < data.posts.length; i++) {
+      if (data.posts[i].id === postId) {
+        if (!data.posts[i].comments) data.posts[i].comments = [];
+        data.posts[i].comments.push(comment);
+        data.posts[i].commentCount = data.posts[i].comments.length;
+        break;
+      }
+    }
+    saveToCloudImmediate('beauty/community/posts', data);
+    /* 局部刷新该帖子的评论区和操作栏 */
+    var postEl = document.getElementById('post-' + postId);
+    if (postEl) {
+      var p = data.posts.find(function(x) { return x.id === postId; });
+      if (p) {
+        var commentsEl = document.getElementById('comments-' + postId);
+        if (commentsEl) {
+          var commentsHtml = p.comments.map(function(c) {
+            var cAvatar = renderAvatarHtml(c.avatar, c.nickname);
+            return '<div class="comm-comment-item">' +
+              '<div class="comm-comment-avatar" onclick="showUserProfile(\'' + c.userKey + '\');playClick()">' + cAvatar + '</div>' +
+              '<div class="comm-comment-body">' +
+                '<div class="comm-comment-nick" onclick="showUserProfile(\'' + c.userKey + '\');playClick()">' + escapeHtml(c.nickname || '月友') + '</div>' +
+                '<div class="comm-comment-text">' + escapeHtml(c.content) + '</div>' +
+              '</div></div>';
+          }).join('');
+          commentsEl.innerHTML = commentsHtml +
+            '<div class="comm-comment-input-wrap">' +
+              '<input type="text" class="comm-comment-input" placeholder="写评论..." id="commentInput-' + postId + '" onkeydown="if(event.key===\'Enter\'){submitComment(\'' + postId + '\')}">' +
+              '<button class="comm-comment-send" onclick="submitComment(\'' + postId + '\');playClick()">发送</button>' +
+            '</div>';
+        }
+        /* 更新评论数 */
+        var actions = postEl.querySelector('.comm-post-actions');
+        if (actions) {
+          var isLiked = p.likedBy && p.likedBy.indexOf(getCurrentPhone()) > -1;
+          actions.innerHTML = '<span class="comm-post-action' + (isLiked ? ' liked' : '') + '" onclick="likePost(\'' + p.id + '\');playClick()">' + (isLiked ? '❤️' : '🤍') + ' ' + (p.likeCount || 0) + '</span>' +
+            '<span class="comm-post-action" onclick="toggleComments(\'' + p.id + '\');playClick()">💬 ' + (p.commentCount || 0) + '</span>';
+        }
+      }
+    }
+    input.value = '';
+    showToast('✅ 评论成功');
+  });
+}
+
+/* 个人主页 */
+function showMyProfile() {
+  showUserProfile(getCurrentPhone());
+}
+
+function showUserProfile(phone) {
+  if (!phone || phone === 'local') { showToast('请先登录'); return; }
+  var isMe = (phone === getCurrentPhone());
+  /* 加载资料和关注数据 */
+  loadProfileData(function() {
+    loadFollowData(function() {
+      var profile = commProfileData.profiles[phone] || {};
+      /* 如果是自己，从state读取最新资料 */
+      if (isMe) {
+        profile = {
+          nickname: state.name || '月友',
+          avatar: state.avatar || MOON_AVATAR,
+          gender: state.gender || '',
+          age: state.age || null,
+          bio: (commProfileData.profiles[phone] && commProfileData.profiles[phone].bio) || ''
+        };
+      }
+      /* 渲染头部 */
+      var avatarEl = document.getElementById('profileAvatar');
+      var avatarContent = renderAvatarHtml(profile.avatar, profile.nickname);
+      if (profile.avatar && profile.avatar.indexOf('data:image') === 0) {
+        avatarEl.innerHTML = '<img src="' + profile.avatar + '">';
+      } else {
+        avatarEl.textContent = avatarContent;
+      }
+      document.getElementById('profileNickname').textContent = profile.nickname || '月友';
+      var infoParts = [];
+      if (profile.gender) infoParts.push(profile.gender);
+      if (profile.age) infoParts.push(profile.age + '岁');
+      document.getElementById('profileInfo').innerHTML = infoParts.join(' · ') || '<span style="color:#d6d3d1">未设置</span>';
+      var bioEl = document.getElementById('profileBio');
+      if (isMe) {
+        /* 自己可以编辑bio */
+        bioEl.innerHTML = '<input type="text" placeholder="写一句个人简介..." maxlength="30" value="' + escapeHtml(profile.bio || '') + '" style="width:100%;max-width:300px;padding:6px 12px;border:1.5px solid #f0ebe8;border-radius:20px;font-size:0.82rem;text-align:center;outline:none" onblur="saveMyBio(this.value)">';
+      } else {
+        bioEl.textContent = profile.bio || '';
+        bioEl.style.display = profile.bio ? 'block' : 'none';
+      }
+      /* 统计 */
+      var userPosts = [];
+      if (commAllPosts && commAllPosts.posts) {
+        userPosts = commAllPosts.posts.filter(function(p) { return p.userKey === phone; });
+      } else {
+        /* 如果没有缓存，从云端加载 */
+        loadFromCloud('beauty/community/posts', function(data) {
+          commAllPosts = data || { version: 2, posts: [] };
+          var up = commAllPosts.posts.filter(function(p) { return p.userKey === phone; });
+          document.getElementById('profilePostCount').textContent = up.length;
+          renderProfilePosts(up, phone);
+        });
+      }
+      document.getElementById('profilePostCount').textContent = userPosts.length;
+      document.getElementById('profileFollowerCount').textContent = getFollowerList(phone).length;
+      document.getElementById('profileFollowingCount').textContent = getFollowingList(phone).length;
+      renderProfilePosts(userPosts, phone);
+      /* 关注按钮 */
+      var btn = document.getElementById('profileFollowBtn');
+      if (isMe) {
+        btn.style.display = 'none';
+      } else {
+        btn.style.display = 'inline-block';
+        updateFollowBtn(phone);
+      }
+      /* 隐藏月友圈弹窗，显示主页弹窗 */
+      document.getElementById('beautyCommunityModal').classList.remove('show');
+      document.getElementById('profileModal').classList.add('show');
+    });
+  });
+}
+
+function renderProfilePosts(posts, phone) {
+  var container = document.getElementById('profilePosts');
+  var emptyEl = document.getElementById('profileEmpty');
+  if (!posts || posts.length === 0) {
+    container.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  posts.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
+  var html = '';
+  posts.forEach(function(p) { html += renderPostCard(p); });
+  container.innerHTML = html;
+}
+
+function saveMyBio(bio) {
+  var phone = getCurrentPhone();
+  if (!phone || phone === 'local') return;
+  if (!commProfileData) commProfileData = { version: 1, profiles: {} };
+  if (!commProfileData.profiles) commProfileData.profiles = {};
+  if (!commProfileData.profiles[phone]) {
+    commProfileData.profiles[phone] = { nickname: state.name || '月友', avatar: state.avatar || MOON_AVATAR, gender: state.gender || '', age: state.age || null };
+  }
+  commProfileData.profiles[phone].bio = bio;
+  commProfileData.profiles[phone].updatedAt = Date.now();
+  saveToCloudImmediate('beauty/community/profiles', commProfileData);
+  showToast('✅ 简介已保存');
+}
+
+/* 大图查看器 */
+function showImageViewer(images, index) {
+  imageViewerImages = images || [];
+  imageViewerIndex = index || 0;
+  var overlay = document.getElementById('imageViewerOverlay');
+  var img = document.getElementById('imageViewerImg');
+  var prev = document.getElementById('imageViewerPrev');
+  var next = document.getElementById('imageViewerNext');
+  if (imageViewerImages.length <= 1) {
+    prev.style.display = 'none';
+    next.style.display = 'none';
+  } else {
+    prev.style.display = 'flex';
+    next.style.display = 'flex';
+  }
+  img.src = imageViewerImages[imageViewerIndex];
+  overlay.style.display = 'flex';
+}
+
+function navImage(dir) {
+  if (imageViewerImages.length <= 1) return;
+  imageViewerIndex = (imageViewerIndex + dir + imageViewerImages.length) % imageViewerImages.length;
+  document.getElementById('imageViewerImg').src = imageViewerImages[imageViewerIndex];
+}
+
+function closeImageViewer() {
+  document.getElementById('imageViewerOverlay').style.display = 'none';
 }
 
 /* 通用打卡切换 */
