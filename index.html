@@ -2993,9 +2993,9 @@ document.addEventListener('touchend', e => {
   touchEndY = e.changedTouches[0].screenY;
   const diffX = touchStartX - touchEndX;
   const diffY = touchStartY - touchEndY;
-  if (Math.abs(diffX) < 140) return; /* 水平滑动太短忽略，高阈值防误触 */
+  if (Math.abs(diffX) < 80) return; /* 水平滑动距离阈值 */
   /* 只有水平滑动明显大于垂直滑动时才切换页面，避免上下滚动误触发 */
-  if (Math.abs(diffY) > Math.abs(diffX) * 0.5) return;
+  if (Math.abs(diffY) > Math.abs(diffX) * 0.6) return;
 
   /* 大图查看器有自己的滑动翻页，不拦截 */
   var imageViewer = document.getElementById('imageViewerOverlay');
@@ -3029,9 +3029,9 @@ document.addEventListener('touchend', e => {
     return;
   }
 
-  /* 防抖：600ms内只触发一次Tab切换，避免快速滑动连续跳页 */
+  /* 防抖：350ms内只触发一次Tab切换，避免快速滑动连续跳页 */
   var now = Date.now();
-  if (window._lastTabSwipe && now - window._lastTabSwipe < 600) return;
+  if (window._lastTabSwipe && now - window._lastTabSwipe < 350) return;
   window._lastTabSwipe = now;
 
   /* 找当前tab */
