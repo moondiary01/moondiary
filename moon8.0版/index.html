@@ -569,6 +569,22 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .profile-notice-clear{font-size:0.66rem;color:#a8a29e;cursor:pointer;padding:2px 6px;border-radius:8px}
 .profile-notice-clear:active{background:rgba(0,0,0,0.05)}
 .comm-comments{margin-top:8px;padding:8px 10px;background:linear-gradient(135deg,#fafaff,#f5f3ff);border-radius:10px}
+/* 提醒页面 */
+.notice-item{background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.notice-item-comment{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:linear-gradient(135deg,#fafaff,#f5f3ff);border-radius:10px;margin-bottom:8px}
+.notice-item-comment-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.62rem;background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;flex-shrink:0;overflow:hidden;font-weight:600}
+.notice-item-comment-body{flex:1;min-width:0}
+.notice-item-comment-nick{font-size:0.74rem;font-weight:600;color:#8b5cf6}
+.notice-item-comment-text{font-size:0.76rem;color:#44403c;line-height:1.4;margin-top:2px}
+.notice-item-comment-time{font-size:0.62rem;color:#a8a29e;margin-top:3px}
+.notice-item-post{background:rgba(0,0,0,0.02);border-radius:8px;padding:8px 10px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.notice-item-post:active{background:rgba(139,92,246,0.06)}
+.notice-item-post-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;display:flex;align-items:center;justify-content:center;font-size:0.55rem;flex-shrink:0;font-weight:600}
+.notice-item-post-text{flex:1;min-width:0;font-size:0.7rem;color:#78716c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.notice-item-post-arrow{color:#c4b5fd;font-size:0.8rem;flex-shrink:0}
+.notice-item-actions{display:flex;gap:8px;margin-top:8px}
+.notice-item-reply-btn{font-size:0.7rem;color:#8b5cf6;cursor:pointer;padding:3px 10px;border:1px solid #ede9fe;border-radius:14px;background:#fff}
+.notice-item-reply-btn:active{background:#faf5ff}
 .comm-comment-item{display:flex;gap:7px;margin-bottom:3px;padding:2px 0;cursor:pointer;transition:background 0.12s ease-out;border-radius:6px;-webkit-tap-highlight-color:transparent}
 .comm-comment-item:last-child{margin-bottom:0}
 .comm-comment-item:active{background:rgba(139,92,246,0.06)}
@@ -1505,22 +1521,12 @@ _loadCosSdk(0);
 <div class="modal-overlay" id="beautyCommunityModal">
   <div class="modal" style="max-width:550px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-behavior:smooth;background:linear-gradient(180deg,#fdf2f8 0%,#fae8ff 40%,#f5f0fa 100%)">
     <div class="comm-publish-bar">
-      <h2 style="margin:0;font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,#f9a8d4,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:8px">月友圈<button class="comm-publish-btn" onclick="event.stopPropagation();showPostEditor();playClick()"></button></h2>
+      <h2 style="margin:0;font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,#f9a8d4,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:8px">月友圈<button class="comm-publish-btn" onclick="event.stopPropagation();showPostEditor();playClick()"></button><!-- 提醒入口 --><span id="commNoticeBadge" onclick="event.stopPropagation();openNoticePage();playClick()" style="display:none;cursor:pointer;background:linear-gradient(135deg,#fff,#faf5ff);border:1px solid #ede9fe;border-radius:20px;padding:3px 10px;font-size:0.68rem;font-weight:600;color:#8b5cf6;-webkit-text-fill-color:#8b5cf6;display:none;align-items:center;gap:4px;line-height:1.4;flex-shrink:0">🔔 <span id="commNoticeCount">0</span>条未读</span></h2>
       <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;margin-left:auto" onclick="showMyProfile();playClick()">
         <div id="commMyAvatar" class="comm-my-avatar"></div>
         <span class="comm-my-avatar-label" id="commMyNameLabel"></span>
         <span class="comm-my-sublabel">我的主页</span>
       </div>
-    </div>
-    <!-- 月友圈主页互动提醒入口 -->
-    <div id="commNoticeBar" onclick="showMyProfile();playClick()" style="display:none;cursor:pointer;background:linear-gradient(135deg,#fff,#faf5ff);border:1px solid #ede9fe;border-radius:12px;padding:10px 14px;margin-bottom:10px;display:none;align-items:center;gap:10px;transition:transform 0.15s ease-out">
-      <div id="commNoticeAvatar" style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;flex-shrink:0;overflow:hidden">🔔</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:0.8rem;font-weight:600;color:#8b5cf6">互动提醒</div>
-        <div id="commNoticeText" style="font-size:0.72rem;color:#78716c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">有新的评论回复</div>
-      </div>
-      <div id="commNoticeBadge" style="background:#ec4899;color:#fff;font-size:0.62rem;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 5px;flex-shrink:0">0</div>
-      <span style="color:#a8a29e;font-size:0.9rem;flex-shrink:0">›</span>
     </div>
     <div id="communityPosts" style="display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain"></div>
     <div id="communityEmpty" style="text-align:center;padding:50px 20px;color:#a8a29e;font-size:0.85rem;display:none">
@@ -1531,6 +1537,25 @@ _loadCosSdk(0);
     <div id="commPullHint" style="text-align:center;padding:10px;color:#a8a29e;font-size:0.75rem;display:none">↓ 下拉刷新</div>
   </div>
   <button class="float-back-fab" onclick="stopCommAutoRefresh();document.getElementById('beautyCommunityModal').classList.remove('show');document.getElementById('beautyHomeModal').classList.add('show');playClick()">←</button>
+</div>
+
+<!-- 互动提醒页面 -->
+<div class="modal-overlay" id="noticePageModal">
+  <div class="modal" style="max-width:520px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-behavior:smooth;background:linear-gradient(180deg,#fdf2f8 0%,#fae8ff 40%,#f5f0fa 100%)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px;border-bottom:1px solid #f5f3ff;margin-bottom:12px">
+      <span style="font-size:1rem;font-weight:700;color:#44403c;display:flex;align-items:center;gap:6px">🔔 互动提醒</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span onclick="clearAllProfileNotice();playClick()" style="font-size:0.7rem;color:#a8a29e;cursor:pointer;padding:3px 8px;border-radius:8px;background:rgba(0,0,0,0.03)">全部已读</span>
+        <span onclick="closeNoticePage();playClick()" style="font-size:1.3rem;color:#a8a29e;cursor:pointer;line-height:1">×</span>
+      </div>
+    </div>
+    <div id="noticePageContent" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div id="noticePageEmpty" style="text-align:center;padding:40px 0;color:#a8a29e;font-size:0.85rem;display:none">
+      <div style="font-size:2.5rem;margin-bottom:10px;opacity:0.4">📭</div>
+      <div>暂无新的评论提醒</div>
+    </div>
+  </div>
+  <button class="float-back-fab" onclick="closeNoticePage();playClick()">←</button>
 </div>
 
 <!-- 发布动态弹窗 -->
@@ -7562,14 +7587,14 @@ function _refreshProfileIfOpen(phone) {
 }
 
 /* 更新月友圈主页的互动提醒入口 */
+/* 更新月友圈标题栏的未读提醒徽章 */
 function updateCommNoticeBar() {
-  var bar = document.getElementById('commNoticeBar');
-  if (!bar) return;
+  var badge = document.getElementById('commNoticeBadge');
+  if (!badge) return;
   var me = getCurrentPhone();
-  if (!me || me === 'local') { bar.style.display = 'none'; return; }
+  if (!me || me === 'local') { badge.style.display = 'none'; return; }
   /* 扫描我所有帖子，统计未查看的新评论数 */
   var count = 0;
-  var latestComment = null;
   if (commAllPosts && commAllPosts.posts) {
     commAllPosts.posts.forEach(function(p) {
       if (p.userKey !== me) return;
@@ -7577,36 +7602,17 @@ function updateCommNoticeBar() {
       var lastView = getCommentViewTime(p.id);
       p.comments.forEach(function(c) {
         if (c.userKey === me) return;
-        if ((c.createdAt || 0) > lastView) {
-          count++;
-          if (!latestComment || (c.createdAt || 0) > (latestComment.createdAt || 0)) {
-            latestComment = c;
-          }
-        }
+        if ((c.createdAt || 0) > lastView) count++;
       });
     });
   }
   if (count === 0) {
-    bar.style.display = 'none';
+    badge.style.display = 'none';
     return;
   }
-  bar.style.display = 'flex';
-  /* 更新提醒文案 */
-  var textEl = document.getElementById('commNoticeText');
-  var badgeEl = document.getElementById('commNoticeBadge');
-  var avatarEl = document.getElementById('commNoticeAvatar');
-  if (badgeEl) badgeEl.textContent = count > 99 ? '99+' : String(count);
-  if (latestComment) {
-    if (textEl) textEl.textContent = (latestComment.nickname || '月友') + ' 评论了你的帖子';
-    if (avatarEl) {
-      var aHtml = renderAvatarHtml(latestComment.avatar, latestComment.nickname);
-      if (latestComment.avatar && latestComment.avatar.indexOf('data:image') === 0) {
-        avatarEl.innerHTML = '<img src="' + latestComment.avatar + '" style="width:100%;height:100%;object-fit:cover">';
-      } else {
-        avatarEl.textContent = aHtml;
-      }
-    }
-  }
+  var countEl = document.getElementById('commNoticeCount');
+  if (countEl) countEl.textContent = count > 99 ? '99+' : String(count);
+  badge.style.display = 'flex';
 }
 
 function renderCommunityPosts() {
@@ -8183,6 +8189,11 @@ function _submitInlineComment() {
     }
     commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
     showToast('✅ 评论成功');
+    /* 如果提醒页面打开，刷新提醒列表 */
+    if (document.getElementById('noticePageModal').classList.contains('show')) {
+      renderNoticePage();
+    }
+    updateCommNoticeBar();
   });
 }
 
@@ -8563,7 +8574,7 @@ function toggleComments(postId) {
         if (pLocal.comments && pLocal.comments.length > 0) {
           htmlLocal = renderCommentsTree(pLocal.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
         } else {
-          htmlLocal = '<div style="text-align:center;color:#a8a29e;font-size:0.8rem;padding:12px 0">还没有评论，快来抢沙发</div>';
+          htmlLocal = '<div style="text-align:center;color:#8b5cf6;font-size:0.8rem;padding:12px 0;cursor:pointer" onclick="event.stopPropagation();_showInlineInput(\'\',\'\',\'' + postId + '\',\'comm-comment\');commReplyState={postId:\'' + postId + '\',replyTo:null,replyToNickname:\'\',replyToUserKey:\'\',cssPrefix:\'comm-comment\',inputId:\'inlineInput\'};playClick()">还没有评论，快来抢沙发 💬</div>';
         }
         el.innerHTML = htmlLocal;
       }
@@ -8585,11 +8596,11 @@ function toggleComments(postId) {
         if (pLocal2.comments && pLocal2.comments.length > 0) {
           htmlLocal2 = renderCommentsTree(pLocal2.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
         } else {
-          htmlLocal2 = '<div style="text-align:center;color:#a8a29e;font-size:0.8rem;padding:12px 0">还没有评论，快来抢沙发</div>';
+          htmlLocal2 = '<div style="text-align:center;color:#8b5cf6;font-size:0.8rem;padding:12px 0;cursor:pointer" onclick="event.stopPropagation();_showInlineInput(\'\',\'\',\'' + postId + '\',\'comm-comment\');commReplyState={postId:\'' + postId + '\',replyTo:null,replyToNickname:\'\',replyToUserKey:\'\',cssPrefix:\'comm-comment\',inputId:\'inlineInput\'};playClick()">还没有评论，快来抢沙发 💬</div>';
         }
         el.innerHTML = htmlLocal2;
       } else {
-        el.innerHTML = '<div style="text-align:center;color:#a8a29e;font-size:0.8rem;padding:12px 0">还没有评论，快来抢沙发</div>';
+        el.innerHTML = '<div style="text-align:center;color:#8b5cf6;font-size:0.8rem;padding:12px 0;cursor:pointer" onclick="event.stopPropagation();_showInlineInput(\'\',\'\',\'' + postId + '\',\'comm-comment\');commReplyState={postId:\'' + postId + '\',replyTo:null,replyToNickname:\'\',replyToUserKey:\'\',cssPrefix:\'comm-comment\',inputId:\'inlineInput\'};playClick()">还没有评论，快来抢沙发 💬</div>';
       }
       el.style.display = 'block';
       commReplyState = { postId: postId, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: 'comm-comment', inputId: 'inlineInput' };
@@ -8601,7 +8612,7 @@ function toggleComments(postId) {
     if (p.comments && p.comments.length > 0) {
       commentsHtml = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
     } else {
-      commentsHtml = '<div style="text-align:center;color:#a8a29e;font-size:0.8rem;padding:12px 0">还没有评论，快来抢沙发</div>';
+      commentsHtml = '<div style="text-align:center;color:#8b5cf6;font-size:0.8rem;padding:12px 0;cursor:pointer" onclick="event.stopPropagation();_showInlineInput(\'\',\'\',\'' + postId + '\',\'comm-comment\');commReplyState={postId:\'' + postId + '\',replyTo:null,replyToNickname:\'\',replyToUserKey:\'\',cssPrefix:\'comm-comment\',inputId:\'inlineInput\'};playClick()">还没有评论，快来抢沙发 💬</div>';
     }
     el.innerHTML = commentsHtml;
     el.style.display = 'block';
@@ -8977,7 +8988,178 @@ function clearAllProfileNotice() {
   });
   var up = commAllPosts.posts.filter(function(pp) { return pp.userKey === me; });
   renderProfileNotice(up);
+  /* 同步刷新提醒页面和徽章 */
+  if (document.getElementById('noticePageModal').classList.contains('show')) {
+    renderNoticePage();
+  }
+  updateCommNoticeBar();
   showToast('✅ 全部已读');
+}
+
+/* 打开互动提醒页面 */
+function openNoticePage() {
+  _removeInlineInput();
+  document.getElementById('beautyCommunityModal').classList.remove('show');
+  var modal = document.getElementById('noticePageModal');
+  modal.classList.add('show');
+  var inner = modal.querySelector('.modal');
+  if (inner) inner.scrollTop = 0;
+  renderNoticePage();
+}
+
+/* 关闭提醒页面，返回月友圈 */
+function closeNoticePage() {
+  _removeInlineInput();
+  document.getElementById('noticePageModal').classList.remove('show');
+  document.getElementById('beautyCommunityModal').classList.add('show');
+  renderCommunityPosts();
+  loadCommunityPosts();
+}
+
+/* 渲染提醒页面内容 */
+function renderNoticePage() {
+  var container = document.getElementById('noticePageContent');
+  var emptyEl = document.getElementById('noticePageEmpty');
+  if (!container) return;
+  var me = getCurrentPhone();
+  if (!me || me === 'local') {
+    container.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  /* 收集所有未查看的新评论 */
+  var notices = [];
+  if (commAllPosts && commAllPosts.posts) {
+    commAllPosts.posts.forEach(function(p) {
+      if (p.userKey !== me) return;
+      if (!p.comments || p.comments.length === 0) return;
+      var lastView = getCommentViewTime(p.id);
+      p.comments.forEach(function(c) {
+        if (c.userKey === me) return;
+        if ((c.createdAt || 0) > lastView) {
+          notices.push({ comment: c, post: p });
+        }
+      });
+    });
+  }
+  notices.sort(function(a,b) { return (b.comment.createdAt||0) - (a.comment.createdAt||0); });
+  if (notices.length === 0) {
+    container.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  var html = '';
+  notices.forEach(function(n) {
+    var c = n.comment;
+    var p = n.post;
+    var cAvatarHtml = renderAvatarHtml(c.avatar, c.nickname);
+    var cAvatarContent = (c.avatar && c.avatar.indexOf('data:image') === 0) ?
+      '<img src="' + c.avatar + '" style="width:100%;height:100%;object-fit:cover">' : cAvatarHtml;
+    var pAvatarHtml = renderAvatarHtml(p.avatar, p.nickname);
+    var postPreview = p.content ? escapeHtml(p.content) : (p.images && p.images.length ? '[图片动态]' : '[动态]');
+    if (postPreview.length > 40) postPreview = postPreview.substring(0, 40) + '...';
+    var replyLabel = c.replyToNickname ? '回复 @' + escapeHtml(c.replyToNickname) : '评论了你的帖子';
+    html += '<div class="notice-item" id="notice-item-' + c.id + '">' +
+      '<div class="notice-item-comment">' +
+        '<div class="notice-item-comment-avatar">' + cAvatarContent + '</div>' +
+        '<div class="notice-item-comment-body">' +
+          '<div class="notice-item-comment-nick">' + escapeHtml(c.nickname || '月友') + '</div>' +
+          '<div class="notice-item-comment-text">' + escapeHtml(c.content) + '</div>' +
+          '<div class="notice-item-comment-time">' + formatCommTime(c.createdAt) + ' · ' + replyLabel + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="notice-item-post" onclick="noticeItemOpenPost(\'' + p.id + '\',\'' + c.id + '\');playClick()">' +
+        '<div class="notice-item-post-avatar">' + pAvatarHtml + '</div>' +
+        '<div class="notice-item-post-text">' + postPreview + '</div>' +
+        '<span class="notice-item-post-arrow">查看帖子 ›</span>' +
+      '</div>' +
+      '<div class="notice-item-actions">' +
+        '<span class="notice-item-reply-btn" onclick="event.stopPropagation();noticeItemReply(\'' + p.id + '\',\'' + escapeAttr(c.id) + '\',\'' + escapeAttr(c.nickname || '月友') + '\');playClick()">回复</span>' +
+      '</div>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+}
+
+/* 提醒页面：点击帖子缩略打开帖子详情 */
+function noticeItemOpenPost(postId, commentId) {
+  /* 标记该帖子评论已查看 */
+  markCommentViewed(postId);
+  openPostDetail(postId);
+  /* 详情页打开后高亮目标评论 */
+  setTimeout(function() {
+    var commentsEl = document.getElementById('postDetailComments');
+    if (commentsEl) {
+      /* 展开所有折叠的子评论 */
+      commentsEl.querySelectorAll('[id*="-hidden-"]').forEach(function(hc) {
+        if (hc.style.display === 'none') {
+          var targetId = hc.id;
+          hc.style.display = 'block';
+          var toggles = commentsEl.querySelectorAll('[data-target="' + targetId + '"]');
+          toggles.forEach(function(t) {
+            if (t.getAttribute('data-mode') === 'collapsed') t.style.display = 'none';
+            else t.style.display = 'block';
+          });
+        }
+      });
+      /* 高亮目标评论 */
+      if (commentId) {
+        var targetEl = commentsEl.querySelector('[data-cid="' + commentId + '"]');
+        if (targetEl) {
+          var scrollParent = targetEl.closest('.modal');
+          if (scrollParent) {
+            var tRect = targetEl.getBoundingClientRect();
+            if (tRect.bottom > window.innerHeight - 10 || tRect.top < 10) {
+              var delta = tRect.bottom - (window.innerHeight - 60);
+              scrollParent.scrollTop += delta;
+            }
+          }
+          targetEl.style.transition = 'background 0.3s';
+          targetEl.style.background = 'rgba(139,92,246,0.15)';
+          setTimeout(function() { targetEl.style.background = ''; }, 2000);
+        }
+      }
+    }
+  }, 500);
+  /* 刷新提醒页面和徽章 */
+  updateCommNoticeBar();
+}
+
+/* 提醒页面：就地回复评论 */
+function noticeItemReply(postId, commentId, nickname) {
+  /* 在提醒项下方显示内联输入框 */
+  var itemEl = document.getElementById('notice-item-' + commentId);
+  if (!itemEl) return;
+  /* 移除已有输入框 */
+  _removeInlineInput();
+  /* 设置回复状态 */
+  var p = findPostById(postId);
+  var replyToUserKey = '';
+  if (p && p.comments) {
+    for (var i = 0; i < p.comments.length; i++) {
+      if (p.comments[i].id === commentId) { replyToUserKey = p.comments[i].userKey || ''; break; }
+    }
+  }
+  commReplyState = { postId: postId, replyTo: commentId, replyToNickname: nickname, replyToUserKey: replyToUserKey, cssPrefix: 'comm-comment', inputId: 'inlineInput-' + commentId };
+  _lastReplyCommentId = commentId;
+  /* 创建输入框 */
+  var inputWrap = document.createElement('div');
+  inputWrap.id = 'inlineInputWrap';
+  inputWrap.className = 'inline-comment-input-wrap';
+  inputWrap.onclick = function(e) { e.stopPropagation(); };
+  inputWrap.innerHTML = '<input type="text" class="inline-comment-input" id="inlineInput" placeholder="回复 @' + escapeHtml(nickname) + '" onkeydown="if(event.key===\'Enter\'){_submitInlineComment();playComment()}">' +
+    '<button class="inline-comment-send" onclick="_submitInlineComment();playComment()">回复</button>';
+  var actionsEl = itemEl.querySelector('.notice-item-actions');
+  if (actionsEl) {
+    actionsEl.appendChild(inputWrap);
+  } else {
+    itemEl.appendChild(inputWrap);
+  }
+  setTimeout(function() {
+    var inputEl = document.getElementById('inlineInput');
+    if (inputEl) inputEl.focus({ preventScroll: true });
+  }, 120);
 }
 
 function renderProfilePosts(posts, phone) {
