@@ -1807,7 +1807,15 @@ function loadPhoneBindings() {
 }
 function savePhoneBindings(bindings) {
   try { localStorage.setItem(PHONE_BINDING_STORE, JSON.stringify(bindings)); } catch(e) {}
-  saveToCloudImmediate('_phone_bindings', bindings);
+  /* 先从云端读取最新数据合并，防止本地旧数据覆盖云端 */
+  loadFromCloud('_phone_bindings', function(cloudPb) {
+    var toSave = bindings;
+    if (cloudPb) {
+      toSave = Object.assign({}, cloudPb, bindings);
+      localStorage.setItem(PHONE_BINDING_STORE, JSON.stringify(toSave));
+    }
+    saveToCloudImmediate('_phone_bindings', toSave);
+  });
 }
 
 /* 检查密钥是否属于预设池 */
@@ -1890,7 +1898,23 @@ function loadPresetInfo() {
 }
 function savePresetInfo(info) {
   try { localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(info)); } catch(e) {}
-  saveToCloudImmediate('_preset_info', info);
+  /* 先从云端读取最新数据，合并后再保存，防止本地旧数据覆盖云端 */
+  loadFromCloud('_preset_info', function(cloudPi) {
+    var toSave = info;
+    if (cloudPi) {
+      /* 深度合并：以传入的info为准，但保留云端有而本地没有的key */
+      toSave = JSON.parse(JSON.stringify(cloudPi));
+      for (var k in info) {
+        if (!info.hasOwnProperty(k)) continue;
+        if (!toSave[k]) toSave[k] = {};
+        for (var field in info[k]) {
+          if (info[k].hasOwnProperty(field)) toSave[k][field] = info[k][field];
+        }
+      }
+      localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(toSave));
+    }
+    saveToCloudImmediate('_preset_info', toSave);
+  });
 }
 
 /* ---------- 用户状态 ---------- */
@@ -2341,21 +2365,25 @@ function tryLogin() {
       }
     }
     markKeyUsed(k, phone);
-    /* 激活密钥并绑定手机号，保留管理员编辑的gender/age/note等信息 */
-    const pi2 = loadPresetInfo();
-    if (!pi2[k]) pi2[k] = {};
-    pi2[k].activated = true;
-    pi2[k].phone = phone;
-    pi2[k].activatedAt = new Date().toISOString();
-    savePresetInfo(pi2);
-    const b1 = loadPhoneBindings(); b1[phone] = k; savePhoneBindings(b1);
-    currentKey = k;
-    currentPhone = phone;
-    localStorage.setItem(SESSION_KEY, k);
-    localStorage.setItem(SESSION_PHONE, phone);
-    sessionStorage.setItem(SESSION_PHONE, phone);
-    migrateDataIfNeeded(phone, k, function() {
-      playLoginSound(); showSplash(() => { enterApp(false); });
+    /* 激活密钥并绑定手机号——先从云端读取最新数据，避免本地旧数据覆盖云端 */
+    loadFromCloud('_preset_info', function(cloudPi) {
+      var pi2 = cloudPi || loadPresetInfo();
+      if (!pi2) pi2 = {};
+      if (!pi2[k]) pi2[k] = {};
+      pi2[k].activated = true;
+      pi2[k].phone = phone;
+      pi2[k].activatedAt = new Date().toISOString();
+      localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(pi2));
+      savePresetInfo(pi2);
+      var b1 = loadPhoneBindings(); b1[phone] = k; savePhoneBindings(b1);
+      currentKey = k;
+      currentPhone = phone;
+      localStorage.setItem(SESSION_KEY, k);
+      localStorage.setItem(SESSION_PHONE, phone);
+      sessionStorage.setItem(SESSION_PHONE, phone);
+      migrateDataIfNeeded(phone, k, function() {
+        playLoginSound(); showSplash(() => { enterApp(false); });
+      });
     });
     return;
   }
