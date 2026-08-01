@@ -4,48 +4,41 @@ var audio = require('../../../utils/audio.js')
 
 Page({
   data: {
-    postId: '',
+    viewMode: 'detail', // detail / profile
+    loading: true,
     post: null,
+    postId: '',
+    profileUserKey: '',
+    // 评论
     comments: [],
     commentText: '',
-    loading: true,
-    canUseUpgrade: false,
     replyingTo: null,
     replyPlaceholder: '写评论...',
-    // 用户主页模式
-    viewMode: 'detail', // detail / profile
-    profileUserKey: '',
-    profileData: null,
-    profilePosts: []
+    replyToNickname: '',
+    // 用户主页
+    profilePosts: [],
+    profileInfo: null
   },
 
   onLoad: function (options) {
     audio.playEnter()
-
     if (options.view === 'profile' && options.userKey) {
-      // 用户主页模式
-      this.setData({
-        viewMode: 'profile',
-        profileUserKey: options.userKey,
-        canUseUpgrade: app.globalData.canUseUpgrade || false
-      })
-      this.loadUserProfile(options.userKey)
-      this.loadUserPosts(options.userKey)
-    } else {
-      // 帖子详情模式
-      this.setData({
-        postId: options.id,
-        canUseUpgrade: app.globalData.canUseUpgrade || false
-      })
+      this.setData({ viewMode: 'profile', profileUserKey: options.userKey })
+      this.loadProfile()
+    } else if (options.id) {
+      this.setData({ viewMode: 'detail', postId: options.id })
       this.loadPostDetail()
     }
   },
 
-  // ===== 帖子详情 =====
+  onUnload: function () {
+    if (this._refreshTimer) { clearInterval(this._refreshTimer); this._refreshTimer = null }
+  },
+
+  // ===== 加载帖子详情 =====
   loadPostDetail: function () {
     var self = this
     var postId = this.data.postId
-
     beautyStore.loadPosts(function (data) {
       if (!data || !data.posts) {
         self.setData({ loading: false })
@@ -53,75 +46,95 @@ Page({
       }
       var post = null
       for (var i = 0; i < data.posts.length; i++) {
-        if (data.posts[i].id === postId) {
-          post = data.posts[i]
-          break
-        }
+        if (data.posts[i].id === postId) { post = data.posts[i]; break }
       }
-      if (post) {
-        post.timeText = self.formatTime(post.createdAt)
-        var userKey = app.globalData.userKey
-        post.isLiked = post.likedBy && post.likedBy.indexOf(userKey) > -1
-        self.setData({ post: post, loading: false })
-      } else {
+      if (!post) {
         self.setData({ loading: false })
         wx.showToast({ title: '帖子不存在', icon: 'none' })
+        return
       }
-      self.loadComments()
-    })
-  },
+      var userKey = app.globalData.userKey
+      post.isLiked = post.likedBy && post.likedBy.indexOf(userKey) > -1
+      post.commentCount = (post.comments && post.comments.length) || 0
 
-  loadComments: function () {
-    var self = this
-    var postId = this.data.postId
-    beautyStore.loadComments(postId, function (data) {
-      if (!data || !data.comments) {
-        data = { version: 1, comments: [] }
-      }
-      var comments = data.comments.slice()
+      // 处理评论：构建嵌套树
+      var comments = (post.comments || []).slice()
       comments.sort(function (a, b) { return (a.createdAt || 0) - (b.createdAt || 0) })
-      for (var i = 0; i < comments.length; i++) {
-        comments[i].timeText = self.formatTime(comments[i].createdAt)
-      }
-      self.setData({ comments: comments })
+      comments.forEach(function (c) {
+        c.timeText = self.formatTime(c.createdAt)
+      })
+
+      self.setData({ post: post, comments: comments, loading: false })
     })
   },
 
-  onLikePost: function () {
-    audio.playClick()
+  // ===== 加载用户主页 =====
+  loadProfile: function () {
     var self = this
-    var postId = this.data.postId
-    var userKey = app.globalData.userKey
-
+    var userKey = this.data.profileUserKey
+    var store = require('../../../utils/store.js')
+    // 加载资料
+    store.loadFromCloud('beauty/community/profiles', function (profData) {
+      var profile = (profData && profData[userKey]) || { nickname: '月友', avatar: '' }
+      self.setData({ profileInfo: profile })
+    })
+    // 加载帖子
     beautyStore.loadPosts(function (data) {
       if (!data || !data.posts) return
-      for (var i = 0; i < data.posts.length; i++) {
-        if (data.posts[i].id === postId) {
-          var likedBy = data.posts[i].likedBy || []
+      var posts = data.posts.filter(function (p) { return p.userKey === userKey })
+      posts.sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0) })
+      posts.forEach(function (p) {
+        p.timeText = self.formatTime(p.createdAt)
+        p.commentCount = (p.comments && p.comments.length) || 0
+        p.isLiked = p.likedBy && p.likedBy.indexOf(app.globalData.userKey) > -1
+      })
+      self.setData({ profilePosts: posts, loading: false })
+    })
+  },
+
+  // ===== 点赞 =====
+  onLikePost: function (e) {
+    audio.playClick()
+    var self = this
+    var postId = e.currentTarget.dataset.id || this.data.postId
+    var userKey = app.globalData.userKey
+
+    beautyStore.safeMergeAndSave(function (cloudData) {
+      if (!cloudData.posts) return null
+      for (var i = 0; i < cloudData.posts.length; i++) {
+        if (cloudData.posts[i].id === postId) {
+          var likedBy = cloudData.posts[i].likedBy || []
           var idx = likedBy.indexOf(userKey)
           if (idx > -1) {
             likedBy.splice(idx, 1)
-            data.posts[i].likeCount = Math.max(0, (data.posts[i].likeCount || 0) - 1)
           } else {
             likedBy.push(userKey)
-            data.posts[i].likeCount = (data.posts[i].likeCount || 0) + 1
           }
-          data.posts[i].likedBy = likedBy
+          cloudData.posts[i].likedBy = likedBy
+          cloudData.posts[i].likeCount = likedBy.length
+          cloudData.posts[i].lastLikeAt = Date.now()
           break
         }
       }
-      beautyStore.savePosts(data, function (success) {
-        if (success) { self.loadPostDetail() }
-      })
+      return cloudData
+    }, function (success) {
+      if (success) {
+        if (self.data.viewMode === 'detail') {
+          self.loadPostDetail()
+        } else {
+          self.loadProfile()
+        }
+      }
     })
   },
 
+  // ===== 评论 =====
   onCommentInput: function (e) {
     this.setData({ commentText: e.detail.value })
   },
 
   onFocusComment: function () {
-    this.setData({ replyingTo: null, replyPlaceholder: '写评论...' })
+    this.setData({ replyingTo: null, replyPlaceholder: '写评论...', replyToNickname: '' })
   },
 
   onReplyComment: function (e) {
@@ -130,7 +143,8 @@ Page({
     var cid = e.currentTarget.dataset.cid
     this.setData({
       replyingTo: cid,
-      replyPlaceholder: '回复 ' + nickname + '...'
+      replyPlaceholder: '回复 ' + nickname + '...',
+      replyToNickname: nickname
     })
   },
 
@@ -141,106 +155,64 @@ Page({
       wx.showToast({ title: '请输入评论内容', icon: 'none' })
       return
     }
-
     var postId = this.data.postId
-    var userInfo = app.globalData.wxUserInfo || {}
+    var wxUserInfo = app.globalData.wxUserInfo || {}
 
     wx.showLoading({ title: '发送中...' })
-    beautyStore.loadComments(postId, function (data) {
-      if (!data || !data.comments) {
-        data = { version: 1, comments: [] }
-      }
 
-      var newComment = {
-        id: 'c_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
-        userKey: app.globalData.userKey,
-        nickname: userInfo.nickname || '月友',
-        avatar: userInfo.avatarUrl || '',
-        content: content,
-        replyTo: self.data.replyingTo || null,
-        createdAt: Date.now()
-      }
+    var newComment = {
+      id: beautyStore.generateCommentId(),
+      userKey: app.globalData.userKey,
+      nickname: wxUserInfo.nickname || '月友',
+      avatar: wxUserInfo.avatarUrl || '',
+      content: content,
+      createdAt: Date.now()
+    }
+    if (self.data.replyingTo) {
+      newComment.replyTo = self.data.replyingTo
+      newComment.replyToNickname = self.data.replyToNickname
+    }
 
-      data.comments.push(newComment)
-      beautyStore.saveComments(postId, data, function (success) {
-        wx.hideLoading()
-        if (success) {
-          self.setData({ commentText: '', replyingTo: null, replyPlaceholder: '写评论...' })
-          self.loadComments()
-          self.updateCommentCount()
-        } else {
-          wx.showToast({ title: '发送失败', icon: 'none' })
-        }
-      })
-    })
-  },
+    // 乐观更新本地
+    var post = self.data.post
+    if (post) {
+      if (!post.comments) post.comments = []
+      post.comments.push(newComment)
+      post.commentCount = post.comments.length
+      var comments = post.comments.slice()
+      comments.forEach(function (c) { c.timeText = self.formatTime(c.createdAt) })
+      self.setData({ post: post, comments: comments, commentText: '', replyingTo: null, replyPlaceholder: '写评论...', replyToNickname: '' })
+    }
 
-  updateCommentCount: function () {
-    var self = this
-    beautyStore.loadPosts(function (data) {
-      if (!data || !data.posts) return
-      for (var i = 0; i < data.posts.length; i++) {
-        if (data.posts[i].id === self.data.postId) {
-          data.posts[i].commentCount = (data.posts[i].commentCount || 0) + 1
+    // safeMergeAndSave 写入云端
+    beautyStore.safeMergeAndSave(function (cloudData) {
+      if (!cloudData.posts) cloudData.posts = []
+      // 找到目标帖子，合并评论
+      for (var i = 0; i < cloudData.posts.length; i++) {
+        if (cloudData.posts[i].id === postId) {
+          if (!cloudData.posts[i].comments) cloudData.posts[i].comments = []
+          var exists = false
+          for (var j = 0; j < cloudData.posts[i].comments.length; j++) {
+            if (cloudData.posts[i].comments[j].id === newComment.id) { exists = true; break }
+          }
+          if (!exists) cloudData.posts[i].comments.push(newComment)
+          cloudData.posts[i].commentCount = cloudData.posts[i].comments.length
           break
         }
       }
-      beautyStore.savePosts(data, function () { self.loadPostDetail() })
-    })
-  },
-
-  onPreviewImage: function (e) {
-    var urls = this.data.post.images
-    var current = e.currentTarget.dataset.src
-    wx.previewImage({ current: current, urls: urls })
-  },
-
-  // ===== 用户主页 =====
-  loadUserProfile: function (userKey) {
-    var self = this
-    var store = require('../../../utils/store.js')
-    store.loadFromCloud('beauty/community/profiles', function (data) {
-      if (data && data[userKey]) {
-        self.setData({ profileData: data[userKey], loading: false })
+      return cloudData
+    }, function (success) {
+      wx.hideLoading()
+      if (success) {
+        self.loadPostDetail()
       } else {
-        // 从帖子中获取基本信息
-        beautyStore.loadPosts(function (postData) {
-          if (postData && postData.posts) {
-            for (var i = 0; i < postData.posts.length; i++) {
-              if (postData.posts[i].userKey === userKey) {
-                self.setData({
-                  profileData: {
-                    nickname: postData.posts[i].nickname || '月友',
-                    avatar: postData.posts[i].avatar || '',
-                    gender: postData.posts[i].gender || '',
-                    age: postData.posts[i].age || '',
-                    signature: postData.posts[i].signature || ''
-                  },
-                  loading: false
-                })
-                return
-              }
-            }
-          }
-          self.setData({ profileData: { nickname: '月友' }, loading: false })
-        })
+        wx.showToast({ title: '发送失败', icon: 'none' })
+        self.loadPostDetail()
       }
     })
   },
 
-  loadUserPosts: function (userKey) {
-    var self = this
-    beautyStore.loadPosts(function (data) {
-      if (!data || !data.posts) return
-      var posts = data.posts.filter(function (p) { return p.userKey === userKey })
-      posts.sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0) })
-      for (var i = 0; i < posts.length; i++) {
-        posts[i].timeText = self.formatTime(posts[i].createdAt)
-      }
-      self.setData({ profilePosts: posts })
-    })
-  },
-
+  // ===== 查看帖子详情 =====
   onTapPost: function (e) {
     audio.playPageFlip()
     var postId = e.currentTarget.dataset.id
@@ -249,12 +221,14 @@ Page({
     })
   },
 
-  onPreviewImageInProfile: function (e) {
+  // ===== 预览图片 =====
+  onPreviewImage: function (e) {
     var urls = e.currentTarget.dataset.urls
     var current = e.currentTarget.dataset.src
     wx.previewImage({ current: current, urls: urls })
   },
 
+  // ===== 格式化时间 =====
   formatTime: function (ts) {
     if (!ts) return ''
     var now = Date.now()

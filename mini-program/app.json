@@ -20,7 +20,8 @@
         "pages/skincare/skincare",
         "pages/mood/mood",
         "pages/community/community",
-        "pages/community-detail/community-detail"
+        "pages/community-detail/community-detail",
+        "pages/notice/notice"
       ]
     }
   ],
