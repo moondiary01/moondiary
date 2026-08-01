@@ -33,6 +33,8 @@ window.__FALLBACK_PHONE_BINDINGS = {"18580644580":"010454","13637700062":"012857
     var raw = localStorage.getItem('moondiary_preset_info');
     var local = raw ? JSON.parse(raw) : {};
     var changed = false;
+    /* 移除 admin（管理员不走密钥系统） */
+    if (local['admin']) { delete local['admin']; changed = true; }
     for (var k in window.__FALLBACK_PRESET_INFO) {
       if (!local[k]) { local[k] = window.__FALLBACK_PRESET_INFO[k]; changed = true; }
     }
@@ -40,6 +42,8 @@ window.__FALLBACK_PHONE_BINDINGS = {"18580644580":"010454","13637700062":"012857
     var raw2 = localStorage.getItem('moondiary_phone_bindings');
     var local2 = raw2 ? JSON.parse(raw2) : {};
     var changed2 = false;
+    /* 移除管理员手机号绑定 */
+    if (local2['18680881810']) { delete local2['18680881810']; changed2 = true; }
     for (var k2 in window.__FALLBACK_PHONE_BINDINGS) {
       if (!local2[k2]) { local2[k2] = window.__FALLBACK_PHONE_BINDINGS[k2]; changed2 = true; }
     }
