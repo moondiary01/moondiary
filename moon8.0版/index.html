@@ -8001,6 +8001,16 @@ function _submitInlineComment() {
                 }
               });
             }
+            /* 滚动到刚提交的评论，仅必要时小幅滚动，不跳转到其他帖子 */
+            setTimeout(function() {
+              var newEl = commentsEl2.querySelector('[data-cid="' + comment.id + '"]');
+              if (!newEl) return;
+              var rect = newEl.getBoundingClientRect();
+              /* 仅当新评论在可视区域外时才滚动 */
+              if (rect.bottom > window.innerHeight - 10 || rect.top < 10) {
+                newEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }
+            }, 100);
           }
           markCommentViewed(postId);
           var postEl = document.getElementById('post-' + postId);
