@@ -7926,10 +7926,27 @@ function _showInlineInput(commentId, nickname, postId, cssPrefix) {
 }
 
 /* 移除内联输入框 */
+/* 移除内联输入框，并收起所有展开的折叠评论 */
 function _removeInlineInput() {
   var existing = document.getElementById('inlineInputWrap');
   if (existing) existing.remove();
   _lastReplyCommentId = null;
+  /* 收起所有展开的折叠评论容器（id 包含 -hidden- 的元素） */
+  document.querySelectorAll('[id*="-hidden-"]').forEach(function(el) {
+    if (el.style.display === 'block' && el.id.indexOf('inlineInput') === -1) {
+      el.style.display = 'none';
+      /* 同时恢复对应的展开/收起按钮状态 */
+      var targetId = el.id;
+      var container = el.closest('.comm-comments') || el.closest('.post-detail-comments') || el.parentElement;
+      if (container) {
+        var toggles = container.querySelectorAll('[data-target="' + targetId + '"]');
+        toggles.forEach(function(t) {
+          if (t.getAttribute('data-mode') === 'collapsed') t.style.display = 'block';
+          else t.style.display = 'none';
+        });
+      }
+    }
+  });
 }
 
 /* 展开折叠评论：找到最近的 .comm-post 容器获取 postId，跳转到详情页查看全部 */
