@@ -7715,11 +7715,11 @@ function renderCommentHtml(c, cssPrefix, depth) {
   var safeNickForAttr = escapeAttr(c.nickname || '月友');
   var safeId = escapeAttr(c.id || '');
   var safeUserKey = escapeAttr(c.userKey || '');
-  /* 子评论统一缩进一次（不再逐层递增），加左侧连接线，头像缩小 */
+  /* 子评论统一缩进一次（不再逐层递增），头像缩小 */
   var itemClass = cssPrefix + '-item' + (isChild ? ' ' + cssPrefix + '-item-child' : '');
   var indentStyle = '';
   if (isChild) {
-    indentStyle = ' style="margin-left:28px;padding-left:10px;border-left:2px solid #e7e5e4"';
+    indentStyle = ' style="margin-left:28px"';
   }
   var avatarStyle = isChild ? ' style="width:28px;height:28px;min-width:28px;font-size:0.85rem"' : '';
   var nickStyle = isChild ? ' style="font-size:0.75rem"' : '';
