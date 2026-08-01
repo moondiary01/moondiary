@@ -7521,10 +7521,9 @@ function renderPostCard(p) {
   /* 最新2条评论预览（直接展示在帖子卡片下方） */
   var previewCommentsHtml = '';
   if (p.comments && p.comments.length > 0) {
+    /* 预览也用树形嵌套渲染，取最近2条及其子评论 */
     var recentComments = p.comments.slice(-2).reverse(); /* 最新2条，倒序显示 */
-    previewCommentsHtml = recentComments.map(function(c) {
-      return renderCommentHtml(c, 'comm-comment');
-    }).join('');
+    previewCommentsHtml = renderCommentsTree(recentComments, 'comm-comment');
     if (p.comments.length > 2) {
       previewCommentsHtml = '<div style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();toggleComments(\'' + p.id + '\');playClick()">查看全部' + p.comments.length + '条评论 ›</div>' + previewCommentsHtml;
     }
