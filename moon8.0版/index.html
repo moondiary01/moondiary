@@ -7843,7 +7843,7 @@ function renderCommentHtml(c, cssPrefix, depth) {
   if (isChild) {
     indentStyle = ' style="margin-left:28px"';
   }
-  return '<div class="' + itemClass + '" data-cid="' + safeId + '"' + indentStyle + ' onclick="startReplyComment(\'' + safeId + '\',\'' + safeNickForAttr + '\',\'' + cssPrefix + '\')">' +
+  return '<div class="' + itemClass + '" data-cid="' + safeId + '"' + indentStyle + ' onclick="event.stopPropagation();startReplyComment(\'' + safeId + '\',\'' + safeNickForAttr + '\',\'' + cssPrefix + '\')">' +
     '<div class="' + cssPrefix + '-avatar" onclick="event.stopPropagation();showUserProfile(\'' + safeUserKey + '\');playClick()">' + cAvatar + '</div>' +
     '<div class="' + cssPrefix + '-body">' +
       '<div class="' + cssPrefix + '-nick">' + safeNick + '</div>' +
@@ -7853,15 +7853,24 @@ function renderCommentHtml(c, cssPrefix, depth) {
     '</div></div>';
 }
 
-/* 触发回复模式——在该条评论下方直接展开输入框 */
+/* 触发回复模式——在该条评论下方直接展开输入框，再次点击同一条评论则收起输入框 */
+var _lastReplyCommentId = null;
 function startReplyComment(commentId, nickname, cssPrefix) {
+  /* 再次点击同一条评论：收起输入框 */
+  if (_lastReplyCommentId === commentId) {
+    _removeInlineInput();
+    _lastReplyCommentId = null;
+    commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
+    return;
+  }
   var postId = '';
   var replyToUserKey = '';
   if (cssPrefix === 'post-detail-comment') {
     postId = document.getElementById('postDetailModal').dataset.postId || '';
   } else {
-    var item = event && event.target ? event.target.closest('.comm-post') : null;
-    if (item) postId = item.id.replace('post-', '');
+    var el = document.querySelector('[data-cid="' + commentId + '"]');
+    var postEl = el ? el.closest('.comm-post') : null;
+    if (postEl) postId = postEl.id.replace('post-', '');
   }
   if (!postId) return;
   var p = findPostById(postId);
@@ -7872,6 +7881,7 @@ function startReplyComment(commentId, nickname, cssPrefix) {
   }
   /* 设置回复状态 */
   commReplyState = { postId: postId, replyTo: commentId, replyToNickname: nickname, replyToUserKey: replyToUserKey, cssPrefix: cssPrefix, inputId: 'inlineInput-' + commentId };
+  _lastReplyCommentId = commentId;
   /* 在该条评论下方插入内联输入框 */
   _showInlineInput(commentId, nickname, postId, cssPrefix);
 }
@@ -7896,19 +7906,16 @@ function _showInlineInput(commentId, nickname, postId, cssPrefix) {
   if (targetItem) {
     /* 插入到该条评论下方 */
     targetItem.parentElement.insertBefore(inputWrap, targetItem.nextSibling);
-    /* 滚动该评论到输入框上方与顶部之间的中间位置 */
+    /* 仅在输入框不在可视区域时滚动，避免突兀跳转 */
     setTimeout(function() {
-      var drawerHeight = inputWrap.offsetHeight || 50;
-      var itemRect = targetItem.getBoundingClientRect();
       var inputRect = inputWrap.getBoundingClientRect();
-      var inputTop = inputRect.top;
-      /* 可见区域：0 到 inputTop，评论应在中间 */
-      var targetCenter = inputTop / 2;
-      var itemCenter = itemRect.top + itemRect.height / 2;
-      var scrollOffset = itemCenter - targetCenter;
-      var scrollContainer = targetItem.closest('.modal') || document.scrollingElement || document.documentElement;
-      if (scrollContainer) scrollContainer.scrollTop += scrollOffset;
-    }, 50);
+      if (inputRect.bottom > window.innerHeight - 20) {
+        inputWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      /* 自动聚焦输入框 */
+      var inputEl = document.getElementById('inlineInput');
+      if (inputEl) inputEl.focus();
+    }, 80);
   } else {
     /* 没有指定评论，插入到评论区末尾 */
     var commentsEl = document.getElementById('comments-' + postId) || document.getElementById('postDetailComments');
@@ -7922,6 +7929,7 @@ function _showInlineInput(commentId, nickname, postId, cssPrefix) {
 function _removeInlineInput() {
   var existing = document.getElementById('inlineInputWrap');
   if (existing) existing.remove();
+  _lastReplyCommentId = null;
 }
 
 /* 展开折叠评论：找到最近的 .comm-post 容器获取 postId，跳转到详情页查看全部 */
