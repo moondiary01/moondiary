@@ -7762,23 +7762,22 @@ function _toggleChildComments(el) {
   var target = document.getElementById(targetId);
   if (!target) return;
   var mode = el.getAttribute('data-mode');
+  /* 在整个评论区范围内查找同 target 的所有按钮 */
+  var container = target.closest('.comm-comments') || target.closest('.post-detail-comments') || target.parentElement;
+  var allToggles = container.querySelectorAll('[data-target="' + targetId + '"]');
   if (mode === 'collapsed') {
-    /* 展开：显示隐藏容器，隐藏"展开"按钮，显示"收起"按钮 */
+    /* 展开：显示隐藏容器，隐藏所有"展开"按钮，显示所有"收起"按钮 */
     target.style.display = 'block';
-    el.style.display = 'none';
-    var collapseBtn = target.querySelector('.' + el.className.split(' ').join('.') + '-collapse');
-    /* 通过 data-target 找到对应的收起按钮 */
-    var allToggles = target.parentElement.querySelectorAll('[data-target="' + targetId + '"]');
     allToggles.forEach(function(t) {
-      if (t.getAttribute('data-mode') === 'expanded') t.style.display = 'block';
+      if (t.getAttribute('data-mode') === 'collapsed') t.style.display = 'none';
+      else t.style.display = 'block';
     });
   } else {
     /* 收起：隐藏容器，显示"展开"按钮，隐藏"收起"按钮 */
     target.style.display = 'none';
-    el.style.display = 'none';
-    var allToggles = target.parentElement.querySelectorAll('[data-target="' + targetId + '"]');
     allToggles.forEach(function(t) {
       if (t.getAttribute('data-mode') === 'collapsed') t.style.display = 'block';
+      else t.style.display = 'none';
     });
   }
 }
