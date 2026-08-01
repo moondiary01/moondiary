@@ -25,9 +25,9 @@ window.__FALLBACK_PRESET_INFO = {
   "012857": {"activated":true,"phone":"13637700062","activatedAt":"2026-07-31T17:20:37.167Z","gender":"男","age":35,"note":"pzh"},
   "013348": {"activated":true,"phone":"","activatedAt":"2026-07-29T16:32:15.000Z","gender":"女","age":36,"note":"静静雨"},
   "018485": {"activated":true,"phone":"","activatedAt":"2026-07-29T09:09:13.000Z","gender":"","age":null,"note":""},
-  "admin": {"activated":true,"phone":"18680881810","activatedAt":"2026-07-28T00:00:00.000Z","gender":"女","age":35,"note":"moon"}
+  "058200": {"activated":true,"phone":"13883949428","activatedAt":"2026-07-29T00:00:00.000Z","gender":"","age":null,"note":""}
 };
-window.__FALLBACK_PHONE_BINDINGS = {"18580644580":"010454","13637700062":"012857","18680881810":"admin"};
+window.__FALLBACK_PHONE_BINDINGS = {"18580644580":"010454","13637700062":"012857","13883949428":"058200"};
 (function(){
   try {
     var raw = localStorage.getItem('moondiary_preset_info');
@@ -4273,7 +4273,7 @@ function renderKeyList() {
   let html = '';
   const pi = loadPresetInfo();
   /* 兜底：如果本地preset_info密钥数少于云端，异步从云端恢复后重新渲染 */
-  if (cos && Object.keys(pi).length < 5) {
+  if (cos && Object.keys(pi).length < 6) {
     loadFromCloud('_preset_info', function(cloudPi) {
       if (cloudPi && Object.keys(cloudPi).length > Object.keys(pi).length) {
         var merged = {};
