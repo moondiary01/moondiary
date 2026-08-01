@@ -7987,6 +7987,25 @@ function _submitInlineComment() {
           if (commentsEl2) {
             commentsEl2.innerHTML = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
             commentsEl2.style.display = 'block';
+            /* 提交回复后保持所有子评论展开，手动点击收起 */
+            if (comment.replyTo) {
+              commentsEl2.querySelectorAll('[id*="-hidden-"]').forEach(function(hc) {
+                if (hc.style.display === 'none') {
+                  var targetId = hc.id;
+                  hc.style.display = 'block';
+                  var toggles = commentsEl2.querySelectorAll('[data-target="' + targetId + '"]');
+                  toggles.forEach(function(t) {
+                    if (t.getAttribute('data-mode') === 'collapsed') t.style.display = 'none';
+                    else t.style.display = 'block';
+                  });
+                }
+              });
+              /* 滚动到新评论 */
+              setTimeout(function() {
+                var newEl = commentsEl2.querySelector('[data-cid="' + comment.id + '"]');
+                if (newEl) newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }, 100);
+            }
           }
           markCommentViewed(postId);
           var postEl = document.getElementById('post-' + postId);
@@ -7999,34 +8018,6 @@ function _submitInlineComment() {
       }
     }
     commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
-    /* 如果回复的是子评论，自动展开该父评论下的全部子评论 */
-    if (comment.replyTo && cssPrefix !== 'post-detail-comment') {
-      setTimeout(function() {
-        var commentsEl = document.getElementById('comments-' + postId);
-        if (!commentsEl) return;
-        /* 找到所有隐藏容器，展开包含该回复父评论的那个 */
-        var hiddenContainers = commentsEl.querySelectorAll('[id*="-hidden-"]');
-        hiddenContainers.forEach(function(hc) {
-          /* 检查隐藏容器内是否有被回复的评论或其子评论 */
-          var hasReplyTarget = hc.querySelector('[data-cid="' + comment.replyTo + '"]');
-          if (hasReplyTarget || hc.style.display === 'none') {
-            /* 展开该容器 */
-            var targetId = hc.id;
-            var toggles = commentsEl.querySelectorAll('[data-target="' + targetId + '"]');
-            hc.style.display = 'block';
-            toggles.forEach(function(t) {
-              if (t.getAttribute('data-mode') === 'collapsed') t.style.display = 'none';
-              else t.style.display = 'block';
-            });
-          }
-        });
-        /* 滚动到新评论 */
-        var newCommentEl = commentsEl.querySelector('[data-cid="' + comment.id + '"]');
-        if (newCommentEl) {
-          setTimeout(function() { newCommentEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
-        }
-      }, 100);
-    }
     showToast('✅ 评论成功');
   });
 }
