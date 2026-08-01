@@ -8000,11 +8000,6 @@ function _submitInlineComment() {
                   });
                 }
               });
-              /* 滚动到新评论 */
-              setTimeout(function() {
-                var newEl = commentsEl2.querySelector('[data-cid="' + comment.id + '"]');
-                if (newEl) newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }, 100);
             }
           }
           markCommentViewed(postId);
