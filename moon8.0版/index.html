@@ -7987,26 +7987,23 @@ function _submitInlineComment() {
           if (commentsEl2) {
             commentsEl2.innerHTML = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
             commentsEl2.style.display = 'block';
-            /* 提交回复后保持所有子评论展开，手动点击收起 */
-            if (comment.replyTo) {
-              commentsEl2.querySelectorAll('[id*="-hidden-"]').forEach(function(hc) {
-                if (hc.style.display === 'none') {
-                  var targetId = hc.id;
-                  hc.style.display = 'block';
-                  var toggles = commentsEl2.querySelectorAll('[data-target="' + targetId + '"]');
-                  toggles.forEach(function(t) {
-                    if (t.getAttribute('data-mode') === 'collapsed') t.style.display = 'none';
-                    else t.style.display = 'block';
-                  });
-                }
-              });
-            }
+            /* 提交评论后保持所有子评论展开，需手动点击收起 */
+            commentsEl2.querySelectorAll('[id*="-hidden-"]').forEach(function(hc) {
+              if (hc.style.display === 'none') {
+                var targetId = hc.id;
+                hc.style.display = 'block';
+                var toggles = commentsEl2.querySelectorAll('[data-target="' + targetId + '"]');
+                toggles.forEach(function(t) {
+                  if (t.getAttribute('data-mode') === 'collapsed') t.style.display = 'none';
+                  else t.style.display = 'block';
+                });
+              }
+            });
             /* 滚动到刚提交的评论，仅必要时小幅滚动，不跳转到其他帖子 */
             setTimeout(function() {
               var newEl = commentsEl2.querySelector('[data-cid="' + comment.id + '"]');
               if (!newEl) return;
               var rect = newEl.getBoundingClientRect();
-              /* 仅当新评论在可视区域外时才滚动 */
               if (rect.bottom > window.innerHeight - 10 || rect.top < 10) {
                 newEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
               }
