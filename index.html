@@ -8132,78 +8132,109 @@ function _submitInlineComment() {
   }
   /* 先移除输入框 */
   _removeInlineInput();
+
+  /* ===== 乐观更新：先更新本地数据并立即渲染DOM，让用户瞬间看到评论 ===== */
+  var p = findPostById(postId);
+  if (p) {
+    if (!p.comments) p.comments = [];
+    p.comments.push(comment);
+    p.commentCount = p.comments.length;
+  }
+
+  /* 立即更新DOM */
+  if (cssPrefix === 'post-detail-comment') {
+    var commentsElD = document.getElementById('postDetailComments');
+    if (commentsElD) commentsElD.innerHTML = renderCommentsTree(p.comments, 'post-detail-comment');
+    var countElD = document.getElementById('postDetailCommentCount');
+    if (countElD) countElD.textContent = p.commentCount;
+    var titleElD = document.querySelector('#postDetailContent .post-detail-comments-title');
+    if (titleElD) titleElD.textContent = '评论 (' + p.commentCount + ')';
+  } else {
+    var commentsEl2 = document.getElementById('comments-' + postId);
+    if (commentsEl2) {
+      commentsEl2.innerHTML = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
+      commentsEl2.style.display = 'block';
+      /* 提交评论后保持所有子评论展开 */
+      commentsEl2.querySelectorAll('[id*="-hidden-"]').forEach(function(hc) {
+        if (hc.style.display === 'none') {
+          var targetId = hc.id;
+          hc.style.display = 'block';
+          var toggles = commentsEl2.querySelectorAll('[data-target="' + targetId + '"]');
+          toggles.forEach(function(t) {
+            if (t.getAttribute('data-mode') === 'collapsed') t.style.display = 'none';
+            else t.style.display = 'block';
+          });
+        }
+      });
+      /* 定位到刚提交的评论并高亮 */
+      setTimeout(function() {
+        var newEl = commentsEl2.querySelector('[data-cid="' + comment.id + '"]');
+        if (!newEl) return;
+        var newRect = newEl.getBoundingClientRect();
+        if (newRect.bottom > window.innerHeight - 10 || newRect.top < 10) {
+          var scrollParent = newEl.closest('.modal');
+          if (scrollParent) {
+            var delta = newRect.bottom - (window.innerHeight - 60);
+            scrollParent.scrollTop += delta;
+          }
+        }
+        newEl.style.transition = 'background 0.3s';
+        newEl.style.background = 'rgba(139,92,246,0.15)';
+        setTimeout(function() { newEl.style.background = ''; }, 2000);
+      }, 150);
+    }
+    markCommentViewed(postId);
+    var postEl = document.getElementById('post-' + postId);
+    if (postEl) {
+      var commentAction = postEl.querySelectorAll('.comm-post-action')[1];
+      if (commentAction) commentAction.innerHTML = '<span class="comment-icon">💬</span> ' + p.commentCount;
+    }
+  }
+
+  commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
+  showToast('✅ 评论成功');
+  /* 如果提醒页面打开，刷新提醒列表 */
+  if (document.getElementById('noticePageModal').classList.contains('show')) {
+    renderNoticePage();
+  }
+  updateCommNoticeBar();
+
+  /* ===== 异步保存到云端（不阻塞UI）===== */
   loadFromCloud('beauty/community/posts', function(data) {
-    if (!data || !data.posts) return;
+    if (!data || !data.posts) {
+      /* 云端读取失败，直接用本地数据保存 */
+      if (commAllPosts && commAllPosts.posts) {
+        saveToCloudImmediate('beauty/community/posts', commAllPosts);
+      }
+      return;
+    }
     commAllPosts = data;
+    /* 找到对应帖子，确保评论不重复添加（并发保护） */
+    var found = false;
     for (var i = 0; i < data.posts.length; i++) {
       if (data.posts[i].id === postId) {
         if (!data.posts[i].comments) data.posts[i].comments = [];
-        data.posts[i].comments.push(comment);
-        data.posts[i].commentCount = data.posts[i].comments.length;
-        saveToCloudImmediate('beauty/community/posts', data);
-        var p = data.posts[i];
-        if (cssPrefix === 'post-detail-comment') {
-          var commentsEl = document.getElementById('postDetailComments');
-          if (commentsEl) commentsEl.innerHTML = renderCommentsTree(p.comments, 'post-detail-comment');
-          var countEl = document.getElementById('postDetailCommentCount');
-          if (countEl) countEl.textContent = p.commentCount;
-          var titleEl = document.querySelector('#postDetailContent .post-detail-comments-title');
-          if (titleEl) titleEl.textContent = '评论 (' + p.commentCount + ')';
-        } else {
-          var commentsEl2 = document.getElementById('comments-' + postId);
-          if (commentsEl2) {
-            commentsEl2.innerHTML = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
-            commentsEl2.style.display = 'block';
-            /* 提交评论后保持所有子评论展开，需手动点击收起 */
-            commentsEl2.querySelectorAll('[id*="-hidden-"]').forEach(function(hc) {
-              if (hc.style.display === 'none') {
-                var targetId = hc.id;
-                hc.style.display = 'block';
-                var toggles = commentsEl2.querySelectorAll('[data-target="' + targetId + '"]');
-                toggles.forEach(function(t) {
-                  if (t.getAttribute('data-mode') === 'collapsed') t.style.display = 'none';
-                  else t.style.display = 'block';
-                });
-              }
-            });
-            /* 定位到刚提交的评论：轻量滚动到可视位置并高亮闪烁 */
-            setTimeout(function() {
-              var newEl = commentsEl2.querySelector('[data-cid="' + comment.id + '"]');
-              if (!newEl) return;
-              /* 滚动弹窗内部容器，避免跳到其他帖子 */
-              var newRect = newEl.getBoundingClientRect();
-              if (newRect.bottom > window.innerHeight - 10 || newRect.top < 10) {
-                var scrollParent = newEl.closest('.modal');
-                if (scrollParent) {
-                  var delta = newRect.bottom - (window.innerHeight - 60);
-                  scrollParent.scrollTop += delta;
-                }
-              }
-              /* 高亮闪烁提示 */
-              newEl.style.transition = 'background 0.3s';
-              newEl.style.background = 'rgba(139,92,246,0.15)';
-              setTimeout(function() {
-                newEl.style.background = '';
-              }, 2000);
-            }, 150);
-          }
-          markCommentViewed(postId);
-          var postEl = document.getElementById('post-' + postId);
-          if (postEl) {
-            var commentAction = postEl.querySelectorAll('.comm-post-action')[1];
-            if (commentAction) commentAction.innerHTML = '<span class="comment-icon">💬</span> ' + p.commentCount;
-          }
+        /* 检查是否已包含该评论（避免重复） */
+        var exists = false;
+        for (var j = 0; j < data.posts[i].comments.length; j++) {
+          if (data.posts[i].comments[j].id === comment.id) { exists = true; break; }
         }
+        if (!exists) {
+          data.posts[i].comments.push(comment);
+          data.posts[i].commentCount = data.posts[i].comments.length;
+        }
+        found = true;
         break;
       }
     }
-    commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
-    showToast('✅ 评论成功');
-    /* 如果提醒页面打开，刷新提醒列表 */
-    if (document.getElementById('noticePageModal').classList.contains('show')) {
-      renderNoticePage();
+    if (found) {
+      saveToCloudImmediate('beauty/community/posts', data);
+    } else {
+      /* 云端没有该帖子，用本地数据保存 */
+      if (commAllPosts && commAllPosts.posts) {
+        saveToCloudImmediate('beauty/community/posts', commAllPosts);
+      }
     }
-    updateCommNoticeBar();
   });
 }
 
@@ -8657,36 +8688,50 @@ function submitComment(postId) {
     comment.replyToNickname = null;
     comment.replyToUserKey = null;
   }
+
+  /* ===== 乐观更新：先更新本地数据并立即渲染DOM ===== */
+  var p = findPostById(postId);
+  if (p) {
+    if (!p.comments) p.comments = [];
+    p.comments.push(comment);
+    p.commentCount = p.comments.length;
+    /* 局部刷新该帖子的评论区和操作栏 */
+    var commentsEl = document.getElementById('comments-' + postId);
+    if (commentsEl) {
+      commentsEl.innerHTML = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
+    }
+    markCommentViewed(postId);
+    var isLiked = p.likedBy && p.likedBy.indexOf(getCurrentPhone()) > -1;
+    updateLikeButton(postId, isLiked, p.likeCount || 0);
+  }
+  input.value = '';
+  cancelReply();
+  showToast('✅ 评论成功');
+  updateCommNoticeBar();
+
+  /* ===== 异步保存到云端（不阻塞UI）===== */
   loadFromCloud('beauty/community/posts', function(data) {
-    if (!data || !data.posts) return;
+    if (!data || !data.posts) {
+      if (commAllPosts && commAllPosts.posts) saveToCloudImmediate('beauty/community/posts', commAllPosts);
+      return;
+    }
     commAllPosts = data;
     for (var i = 0; i < data.posts.length; i++) {
       if (data.posts[i].id === postId) {
         if (!data.posts[i].comments) data.posts[i].comments = [];
-        data.posts[i].comments.push(comment);
-        data.posts[i].commentCount = data.posts[i].comments.length;
+        /* 并发保护：避免重复添加 */
+        var exists = false;
+        for (var j = 0; j < data.posts[i].comments.length; j++) {
+          if (data.posts[i].comments[j].id === comment.id) { exists = true; break; }
+        }
+        if (!exists) {
+          data.posts[i].comments.push(comment);
+          data.posts[i].commentCount = data.posts[i].comments.length;
+        }
         break;
       }
     }
     saveToCloudImmediate('beauty/community/posts', data);
-    /* 局部刷新该帖子的评论区和操作栏 */
-    var postEl = document.getElementById('post-' + postId);
-    if (postEl) {
-      var p = data.posts.find(function(x) { return x.id === postId; });
-      if (p) {
-        var commentsEl = document.getElementById('comments-' + postId);
-        if (commentsEl) {
-          commentsEl.innerHTML = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
-        }
-        /* 更新操作栏（保留删除/拉黑按钮，评论刚查看清除高亮） */
-        markCommentViewed(postId);
-        var isLiked = p.likedBy && p.likedBy.indexOf(getCurrentPhone()) > -1;
-        updateLikeButton(postId, isLiked, p.likeCount || 0);
-      }
-    }
-    input.value = '';
-    cancelReply();
-    showToast('✅ 评论成功');
   });
 }
 
