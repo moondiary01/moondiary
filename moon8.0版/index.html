@@ -7678,8 +7678,29 @@ var commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyTo
 /* 将扁平评论数组渲染为树形嵌套结构（子评论显示在父评论下方，缩进）
    options.collapse: 是否启用折叠（仅主页帖子卡片用）
      - rootLimit: 父评论最多展示数（默认 Infinity）
-     - childLimit: 每个父评论的子评论最多展示数（默认 Infinity）
+     - childLimit: 每条父评论下所有后代评论加起来最多展示数（默认 Infinity）
 */
+
+/* 扁平化后代评论（广度优先，按时间顺序） */
+function _flattenDescendants(node, result, depth) {
+  if (node.children.length === 0) return;
+  node.children.forEach(function(child) {
+    result.push({ node: child, depth: depth + 1 });
+  });
+  node.children.forEach(function(child) {
+    _flattenDescendants(child, result, depth + 1);
+  });
+}
+
+/* 计算后代评论总数 */
+function _countDescendants(node) {
+  var count = node.children.length;
+  node.children.forEach(function(child) {
+    count += _countDescendants(child);
+  });
+  return count;
+}
+
 function renderCommentsTree(comments, cssPrefix, options) {
   if (!comments || comments.length === 0) return '';
   options = options || {};
@@ -7700,37 +7721,53 @@ function renderCommentsTree(comments, cssPrefix, options) {
       roots.push(map[c.id]);
     }
   });
-  /* 渲染单条评论及其子评论（每条父评论独立控制子评论折叠） */
+  /* 渲染单条评论及其子评论（每条父评论独立控制子评论折叠）
+     collapse 模式下：每条根评论下所有后代评论（子+孙+曾孙...）加起来最多 childLimit 条可见 */
   var uidCounter = 0;
-  function renderNode(node, depth) {
+  function renderNode(node, depth, descendantCount) {
     var html = renderCommentHtml(node.comment, cssPrefix, depth);
     if (node.children.length > 0) {
       var visibleChildren = node.children;
       var hiddenChildren = [];
-      if (collapse && depth === 0 && node.children.length > childLimit) {
-        /* 父评论下的子评论：前 childLimit 条可见，其余折叠 */
-        visibleChildren = node.children.slice(0, childLimit);
-        hiddenChildren = node.children.slice(childLimit);
-      }
-      /* 渲染可见子评论 */
-      visibleChildren.forEach(function(child) {
-        html += renderNode(child, depth + 1);
-      });
-      /* 该父评论下有折叠的子评论：生成独立的展开/收起按钮 */
-      if (hiddenChildren.length > 0) {
-        uidCounter++;
-        var hiddenId = cssPrefix + '-hidden-' + uidCounter;
-        /* "展开剩余N条回复"按钮（折叠状态显示） */
-        html += '<div class="' + cssPrefix + '-toggle ' + cssPrefix + '-toggle-expand" data-mode="collapsed" data-target="' + hiddenId + '" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_toggleChildComments(this)">展开剩余 ' + hiddenChildren.length + '条回复 ›</div>';
-        /* 隐藏的子评论容器 */
-        html += '<div id="' + hiddenId + '" style="display:none">';
-        hiddenChildren.forEach(function(child) {
-          html += renderNode(child, depth + 1);
+      if (collapse && depth === 0 && node.children.length > 0) {
+        /* 根评论：按广度优先（子评论优先）取前 childLimit 条后代，其余折叠 */
+        /* 先把直接子评论的前 childLimit 条作为可见，其余进入隐藏 */
+        var totalDescendants = 0;
+        node.children.forEach(function(ch) {
+          totalDescendants += _countDescendants(ch);
         });
-        /* 容器末尾的"收起"按钮（展开状态显示） */
-        html += '<div class="' + cssPrefix + '-toggle ' + cssPrefix + '-toggle-collapse" data-mode="expanded" data-target="' + hiddenId + '" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_toggleChildComments(this)">收起 ⌃</div>';
-        html += '</div>';
+        /* totalDescendants 是所有后代总数（含子评论本身） */
+        /* 实际要展示的是：前 childLimit 条评论（按时间顺序，子评论优先） */
       }
+      /* 简化策略：根评论下，扁平化所有后代评论（按时间顺序），前 childLimit 条可见，其余折叠 */
+      if (collapse && depth === 0) {
+        var allDescendants = [];
+        _flattenDescendants(node, allDescendants, depth);
+        /* allDescendants 是 [{node, depth}, ...] 按时间顺序 */
+        if (allDescendants.length > childLimit) {
+          var visible = allDescendants.slice(0, childLimit);
+          var hidden = allDescendants.slice(childLimit);
+          /* 渲染可见后代 */
+          visible.forEach(function(item) {
+            html += renderCommentHtml(item.node.comment, cssPrefix, item.depth);
+          });
+          /* 折叠的后代 */
+          uidCounter++;
+          var hiddenId = cssPrefix + '-hidden-' + uidCounter;
+          html += '<div class="' + cssPrefix + '-toggle ' + cssPrefix + '-toggle-expand" data-mode="collapsed" data-target="' + hiddenId + '" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_toggleChildComments(this)">展开剩余 ' + hidden.length + '条回复 ›</div>';
+          html += '<div id="' + hiddenId + '" style="display:none">';
+          hidden.forEach(function(item) {
+            html += renderCommentHtml(item.node.comment, cssPrefix, item.depth);
+          });
+          html += '<div class="' + cssPrefix + '-toggle ' + cssPrefix + '-toggle-collapse" data-mode="expanded" data-target="' + hiddenId + '" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_toggleChildComments(this)">收起 ⌃</div>';
+          html += '</div>';
+          return html;
+        }
+      }
+      /* 非折叠模式或后代不超过限制：正常递归渲染 */
+      visibleChildren.forEach(function(child) {
+        html += renderNode(child, depth + 1, 0);
+      });
     }
     return html;
   }
