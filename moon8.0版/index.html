@@ -1664,7 +1664,8 @@ _loadCosSdk(0);
     <div class="input-group"><label>手机号</label><input type="tel" id="keyPhoneInput" maxlength="11" inputmode="numeric" placeholder="如 13800138000" style="letter-spacing:2px"></div>
     <div class="input-group"><label>性别（可选）</label><select id="keyGenderInput"><option value="">未选择</option><option value="男">男</option><option value="女">女</option></select></div>
     <div class="input-group"><label>年龄（可选）</label><input type="number" id="keyAgeInput" placeholder="如 25" min="1" max="150"></div>
-    <div class="input-group"><label>备注（可选）</label><input type="text" id="keyNoteInput" placeholder="如 小美"></div>
+    <div class="input-group"><label>昵称（用户同步）</label><input type="text" id="keyNicknameInput" placeholder="用户登录后自动同步" readonly style="background:var(--bg-card);color:var(--text-l)"></div>
+    <div class="input-group"><label>备注昵称（可选）</label><input type="text" id="keyNoteInput" placeholder="如 小美（管理员备注）"></div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeKeyEdit()">取消</button>
       <button class="btn btn-primary" onclick="saveKeyInfoOnly()">💾 保存</button>
@@ -4238,7 +4239,8 @@ function editKeyNote(k) {
   document.getElementById('keyPhoneInput').value = info.phone || '';
   document.getElementById('keyGenderInput').value = info.gender || '';
   document.getElementById('keyAgeInput').value = info.age || '';
-  document.getElementById('keyNoteInput').value = info.note || info.nickname || '';
+  document.getElementById('keyNicknameInput').value = info.nickname || '';
+  document.getElementById('keyNoteInput').value = info.note || '';
   /* 填充 meta 信息：版本状态、类型、注册时间、永久 */
   var metaDiv = document.getElementById('keyEditMeta');
   var regDate = info.activatedAt ? new Date(info.activatedAt).toLocaleDateString() : (info.createdAt ? new Date(info.createdAt).toLocaleDateString() : '未注册');
@@ -4419,9 +4421,12 @@ function renderKeyList() {
     } else {
       toggleBtn = '<button class="key-toggle key-toggle-off" onclick="togglePresetKey(\'' + k + '\')">未启用</button>';
     }
-    /* 外面只显示：电话、性别、年龄、昵称（优先从 _preset_info 读取昵称） */
+    /* 外面只显示：电话、性别、年龄、昵称+备注（昵称从用户同步，备注从管理员编辑） */
     var nickName = (info && info.nickname) ? info.nickname : (ud.name || '');
-    const infoText = (info && info.phone ? '📱' + info.phone : '未填写') + (info && info.gender ? ' · ' + info.gender : '') + (info && info.age ? ' · ' + info.age + '岁' : '') + (nickName ? ' · ' + nickName : '');
+    var noteText = (info && info.note) ? info.note : '';
+    var nickDisplay = nickName ? nickName : '';
+    if (noteText) nickDisplay = nickDisplay ? nickDisplay + '（' + noteText + '）' : '（' + noteText + '）';
+    const infoText = (info && info.phone ? '📱' + info.phone : '未填写') + (info && info.gender ? ' · ' + info.gender : '') + (info && info.age ? ' · ' + info.age + '岁' : '') + (nickDisplay ? ' · ' + nickDisplay : '');
     html += '<div class="key-row-v2">'
       + '<div class="key-row-main">'
         + '<div class="key-code">' + k + '</div>'
@@ -4442,9 +4447,12 @@ function renderKeyList() {
     html += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:0.75rem;font-weight:700;color:var(--text-l);margin-bottom:8px">动态密钥</div>';
     arr.forEach(([k, info]) => {
       const ud = getUserData(k);
-      /* 外面只显示：电话、性别、年龄、昵称（优先从 _preset_info 读取昵称） */
+      /* 外面只显示：电话、性别、年龄、昵称+备注（昵称从用户同步，备注从管理员编辑） */
       var dynNickName = info.nickname || ud.name || '';
-      const infoText = (info.phone ? '📱' + info.phone : '未填写') + (info.gender ? ' · ' + info.gender : '') + (info.age ? ' · ' + info.age + '岁' : '') + (dynNickName ? ' · ' + dynNickName : ' · 未登录');
+      var dynNoteText = info.note || '';
+      var dynNickDisplay = dynNickName ? dynNickName : '';
+      if (dynNoteText) dynNickDisplay = dynNickDisplay ? dynNickDisplay + '（' + dynNoteText + '）' : '（' + dynNoteText + '）';
+      const infoText = (info.phone ? '📱' + info.phone : '未填写') + (info.gender ? ' · ' + info.gender : '') + (info.age ? ' · ' + info.age + '岁' : '') + (dynNickDisplay ? ' · ' + dynNickDisplay : ' · 未登录');
       const isOn = !info.revoked;
       const toggleBtn = isOn
         ? '<button class="key-toggle key-toggle-on" onclick="revokeKey(\'' + k + '\')">已启用 · 点击停用</button>'
