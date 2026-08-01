@@ -7985,7 +7985,7 @@ function _submitInlineComment() {
         } else {
           var commentsEl2 = document.getElementById('comments-' + postId);
           if (commentsEl2) {
-            commentsEl2.innerHTML = renderCommentsTree(p.comments, 'comm-comment');
+            commentsEl2.innerHTML = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
             commentsEl2.style.display = 'block';
           }
           markCommentViewed(postId);
@@ -8368,7 +8368,7 @@ function toggleComments(postId) {
     /* 渲染评论区 */
     var commentsHtml = '';
     if (p.comments && p.comments.length > 0) {
-      commentsHtml = renderCommentsTree(p.comments, 'comm-comment');
+      commentsHtml = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
     } else {
       commentsHtml = '<div style="text-align:center;color:#a8a29e;font-size:0.8rem;padding:12px 0">还没有评论，快来抢沙发</div>';
     }
@@ -8424,7 +8424,7 @@ function submitComment(postId) {
       if (p) {
         var commentsEl = document.getElementById('comments-' + postId);
         if (commentsEl) {
-          commentsEl.innerHTML = renderCommentsTree(p.comments, 'comm-comment');
+          commentsEl.innerHTML = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
         }
         /* 更新操作栏（保留删除/拉黑按钮，评论刚查看清除高亮） */
         markCommentViewed(postId);
