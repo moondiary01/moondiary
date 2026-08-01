@@ -7703,7 +7703,7 @@ function renderPostCard(p) {
     '</div>' +
     (fullCommentsHtml ? '<div class="comm-comments" id="comments-' + p.id + '" style="display:block" onclick="event.stopPropagation()">' +
       fullCommentsHtml +
-    '</div>' : '') +
+    '</div>' : '<div class="comm-comments" id="comments-' + p.id + '" style="display:none" onclick="event.stopPropagation()"></div>') +
   '</div>';
 }
 
@@ -8577,7 +8577,25 @@ function toggleComments(postId) {
     for (var i = 0; i < data.posts.length; i++) {
       if (data.posts[i].id === postId) { p = data.posts[i]; break; }
     }
-    if (!p) { el.style.display = 'block'; return; }
+    if (!p) {
+      /* 云端暂时没有该帖子（新帖子刚发布还未同步），用本地缓存继续 */
+      var pLocal2 = findPostById(postId);
+      if (pLocal2) {
+        var htmlLocal2 = '';
+        if (pLocal2.comments && pLocal2.comments.length > 0) {
+          htmlLocal2 = renderCommentsTree(pLocal2.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
+        } else {
+          htmlLocal2 = '<div style="text-align:center;color:#a8a29e;font-size:0.8rem;padding:12px 0">还没有评论，快来抢沙发</div>';
+        }
+        el.innerHTML = htmlLocal2;
+      } else {
+        el.innerHTML = '<div style="text-align:center;color:#a8a29e;font-size:0.8rem;padding:12px 0">还没有评论，快来抢沙发</div>';
+      }
+      el.style.display = 'block';
+      commReplyState = { postId: postId, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: 'comm-comment', inputId: 'inlineInput' };
+      _showInlineInput('', '', postId, 'comm-comment');
+      return;
+    }
     /* 渲染评论区 */
     var commentsHtml = '';
     if (p.comments && p.comments.length > 0) {
