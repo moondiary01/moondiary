@@ -1521,7 +1521,7 @@ _loadCosSdk(0);
 <div class="modal-overlay" id="beautyCommunityModal">
   <div class="modal" style="max-width:550px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-behavior:smooth;background:linear-gradient(180deg,#fdf2f8 0%,#fae8ff 40%,#f5f0fa 100%)">
     <div class="comm-publish-bar">
-      <h2 style="margin:0;font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,#f9a8d4,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:8px">月友圈<button class="comm-publish-btn" onclick="event.stopPropagation();showPostEditor();playClick()"></button><!-- 提醒入口 --><span id="commNoticeBadge" onclick="event.stopPropagation();openNoticePage();playClick()" style="display:none;cursor:pointer;background:linear-gradient(135deg,#fff,#faf5ff);border:1px solid #ede9fe;border-radius:20px;padding:3px 10px;font-size:0.68rem;font-weight:600;color:#8b5cf6;-webkit-text-fill-color:#8b5cf6;display:none;align-items:center;gap:4px;line-height:1.4;flex-shrink:0">🔔 <span id="commNoticeCount">0</span>条未读</span></h2>
+      <h2 style="margin:0;font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,#f9a8d4,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:8px">月友圈<button class="comm-publish-btn" onclick="event.stopPropagation();showPostEditor();playClick()"></button><!-- 提醒入口 --><span id="commNoticeBadge" onclick="event.stopPropagation();openNoticePage();playClick()" style="cursor:pointer;background:rgba(255,255,255,0.6);border:1px solid #f5f3ff;border-radius:20px;padding:3px 10px;font-size:0.68rem;font-weight:600;color:#a8a29e;-webkit-text-fill-color:#a8a29e;display:inline-flex;align-items:center;gap:4px;line-height:1.4;flex-shrink:0">🔔 <span id="commNoticeCount">0</span>条未读</span></h2>
       <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;margin-left:auto" onclick="showMyProfile();playClick()">
         <div id="commMyAvatar" class="comm-my-avatar"></div>
         <span class="comm-my-avatar-label" id="commMyNameLabel"></span>
@@ -1543,7 +1543,7 @@ _loadCosSdk(0);
 <div class="modal-overlay" id="noticePageModal">
   <div class="modal" style="max-width:520px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-behavior:smooth;background:linear-gradient(180deg,#fdf2f8 0%,#fae8ff 40%,#f5f0fa 100%)">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px;border-bottom:1px solid #f5f3ff;margin-bottom:12px">
-      <span style="font-size:1rem;font-weight:700;color:#44403c;display:flex;align-items:center;gap:6px">🔔 互动提醒</span>
+      <span style="font-size:1rem;font-weight:700;color:#44403c;display:flex;align-items:center;gap:6px">🔔 评论提醒<span style="font-size:0.66rem;color:#a8a29e;font-weight:400">最近10条</span></span>
       <div style="display:flex;align-items:center;gap:8px">
         <span onclick="clearAllProfileNotice();playClick()" style="font-size:0.7rem;color:#a8a29e;cursor:pointer;padding:3px 8px;border-radius:8px;background:rgba(0,0,0,0.03)">全部已读</span>
         <span onclick="closeNoticePage();playClick()" style="font-size:1.3rem;color:#a8a29e;cursor:pointer;line-height:1">×</span>
@@ -1552,7 +1552,8 @@ _loadCosSdk(0);
     <div id="noticePageContent" style="display:flex;flex-direction:column;gap:12px"></div>
     <div id="noticePageEmpty" style="text-align:center;padding:40px 0;color:#a8a29e;font-size:0.85rem;display:none">
       <div style="font-size:2.5rem;margin-bottom:10px;opacity:0.4">📭</div>
-      <div>暂无新的评论提醒</div>
+      <div>还没有人评论你的帖子</div>
+      <div style="font-size:0.72rem;margin-top:6px;color:#c4b5fd">发布更多动态，吸引月友评论吧</div>
     </div>
   </div>
   <button class="float-back-fab" onclick="closeNoticePage();playClick()">←</button>
@@ -7606,13 +7607,22 @@ function updateCommNoticeBar() {
       });
     });
   }
-  if (count === 0) {
-    badge.style.display = 'none';
-    return;
-  }
+  /* 始终显示徽章，0条也显示 */
   var countEl = document.getElementById('commNoticeCount');
   if (countEl) countEl.textContent = count > 99 ? '99+' : String(count);
-  badge.style.display = 'flex';
+  badge.style.display = 'inline-flex';
+  /* 有未读时高亮，无未读时灰色 */
+  if (count > 0) {
+    badge.style.background = 'linear-gradient(135deg,#fff,#faf5ff)';
+    badge.style.borderColor = '#ede9fe';
+    badge.style.color = '#8b5cf6';
+    badge.style.webkitTextFillColor = '#8b5cf6';
+  } else {
+    badge.style.background = 'rgba(255,255,255,0.6)';
+    badge.style.borderColor = '#f5f3ff';
+    badge.style.color = '#a8a29e';
+    badge.style.webkitTextFillColor = '#a8a29e';
+  }
 }
 
 function renderCommunityPosts() {
@@ -9004,7 +9014,15 @@ function openNoticePage() {
   modal.classList.add('show');
   var inner = modal.querySelector('.modal');
   if (inner) inner.scrollTop = 0;
+  /* 先用缓存数据渲染 */
   renderNoticePage();
+  /* 异步从云端加载最新数据后刷新 */
+  loadFromCloud('beauty/community/posts', function(data) {
+    if (!data || !data.posts) return;
+    commAllPosts = data;
+    renderNoticePage();
+    updateCommNoticeBar();
+  });
 }
 
 /* 关闭提醒页面，返回月友圈 */
@@ -9027,7 +9045,7 @@ function renderNoticePage() {
     emptyEl.style.display = 'block';
     return;
   }
-  /* 收集所有未查看的新评论 */
+  /* 收集我所有帖子下别人的评论（评论历史），不限未读 */
   var notices = [];
   if (commAllPosts && commAllPosts.posts) {
     commAllPosts.posts.forEach(function(p) {
@@ -9035,14 +9053,15 @@ function renderNoticePage() {
       if (!p.comments || p.comments.length === 0) return;
       var lastView = getCommentViewTime(p.id);
       p.comments.forEach(function(c) {
-        if (c.userKey === me) return;
-        if ((c.createdAt || 0) > lastView) {
-          notices.push({ comment: c, post: p });
-        }
+        if (c.userKey === me) return; /* 排除自己发的评论 */
+        var isUnread = (c.createdAt || 0) > lastView;
+        notices.push({ comment: c, post: p, unread: isUnread });
       });
     });
   }
+  /* 按时间倒序，最多取最近10条 */
   notices.sort(function(a,b) { return (b.comment.createdAt||0) - (a.comment.createdAt||0); });
+  notices = notices.slice(0, 10);
   if (notices.length === 0) {
     container.innerHTML = '';
     emptyEl.style.display = 'block';
@@ -9060,13 +9079,16 @@ function renderNoticePage() {
     var postPreview = p.content ? escapeHtml(p.content) : (p.images && p.images.length ? '[图片动态]' : '[动态]');
     if (postPreview.length > 40) postPreview = postPreview.substring(0, 40) + '...';
     var replyLabel = c.replyToNickname ? '回复 @' + escapeHtml(c.replyToNickname) : '评论了你的帖子';
-    html += '<div class="notice-item" id="notice-item-' + c.id + '">' +
+    /* 未读评论加红点和左边框高亮 */
+    var unreadBadge = n.unread ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ec4899;margin-right:5px;vertical-align:middle"></span>' : '';
+    var itemStyle = n.unread ? 'border-left:3px solid #8b5cf6' : '';
+    html += '<div class="notice-item" id="notice-item-' + c.id + '" style="' + itemStyle + '">' +
       '<div class="notice-item-comment">' +
         '<div class="notice-item-comment-avatar">' + cAvatarContent + '</div>' +
         '<div class="notice-item-comment-body">' +
-          '<div class="notice-item-comment-nick">' + escapeHtml(c.nickname || '月友') + '</div>' +
+          '<div class="notice-item-comment-nick">' + escapeHtml(c.nickname || '月友') + (n.unread ? ' <span style="font-size:0.58rem;color:#ec4899;font-weight:400">新</span>' : '') + '</div>' +
           '<div class="notice-item-comment-text">' + escapeHtml(c.content) + '</div>' +
-          '<div class="notice-item-comment-time">' + formatCommTime(c.createdAt) + ' · ' + replyLabel + '</div>' +
+          '<div class="notice-item-comment-time">' + unreadBadge + formatCommTime(c.createdAt) + ' · ' + replyLabel + '</div>' +
         '</div>' +
       '</div>' +
       '<div class="notice-item-post" onclick="noticeItemOpenPost(\'' + p.id + '\',\'' + c.id + '\');playClick()">' +
