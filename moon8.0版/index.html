@@ -7518,17 +7518,7 @@ function renderPostCard(p) {
     }).join('');
     imagesHtml = '<div class="comm-post-images ' + cls + '">' + imgs + '</div>';
   }
-  /* 最新2条评论预览（直接展示在帖子卡片下方） */
-  var previewCommentsHtml = '';
-  if (p.comments && p.comments.length > 0) {
-    /* 预览也用树形嵌套渲染，取最近2条及其子评论 */
-    var recentComments = p.comments.slice(-2).reverse(); /* 最新2条，倒序显示 */
-    previewCommentsHtml = renderCommentsTree(recentComments, 'comm-comment');
-    if (p.comments.length > 2) {
-      previewCommentsHtml = '<div style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();toggleComments(\'' + p.id + '\');playClick()">查看全部' + p.comments.length + '条评论 ›</div>' + previewCommentsHtml;
-    }
-  }
-  /* 完整评论区（默认隐藏，点击评论图标展开） */
+  /* 评论区直接全部展示（不再折叠预览） */
   var fullCommentsHtml = '';
   if (p.comments && p.comments.length > 0) {
     fullCommentsHtml = renderCommentsTree(p.comments, 'comm-comment');
@@ -7560,10 +7550,9 @@ function renderPostCard(p) {
       deleteBtnHtml +
       blockBtnHtml +
     '</div>' +
-    (previewCommentsHtml ? '<div class="comm-comments-preview" onclick="event.stopPropagation()">' + previewCommentsHtml + '</div>' : '') +
-    '<div class="comm-comments" id="comments-' + p.id + '" style="display:none" onclick="event.stopPropagation()">' +
+    (fullCommentsHtml ? '<div class="comm-comments" id="comments-' + p.id + '" style="display:block" onclick="event.stopPropagation()">' +
       fullCommentsHtml +
-    '</div>' +
+    '</div>' : '') +
   '</div>';
 }
 
@@ -7713,6 +7702,8 @@ function renderCommentsTree(comments, cssPrefix) {
 /* 公共评论渲染函数（cssPrefix: 'comm-comment' 或 'post-detail-comment'） */
 function renderCommentHtml(c, cssPrefix, depth) {
   depth = depth || 0;
+  var isChild = depth > 0;
+  /* 子评论头像小一点 */
   var cAvatar = renderAvatarHtml(c.avatar, c.nickname);
   /* 回复关系标注 */
   var replyHtml = '';
@@ -7724,15 +7715,18 @@ function renderCommentHtml(c, cssPrefix, depth) {
   var safeNickForAttr = escapeAttr(c.nickname || '月友');
   var safeId = escapeAttr(c.id || '');
   var safeUserKey = escapeAttr(c.userKey || '');
-  /* 子评论缩进样式：depth>0 时加左边距和左侧连接线 */
+  /* 子评论统一缩进一次（不再逐层递增），加左侧连接线，头像缩小 */
+  var itemClass = cssPrefix + '-item' + (isChild ? ' ' + cssPrefix + '-item-child' : '');
   var indentStyle = '';
-  if (depth > 0) {
-    indentStyle = ' style="margin-left:' + (depth * 28) + 'px;padding-left:10px;border-left:2px solid #e7e5e4"';
+  if (isChild) {
+    indentStyle = ' style="margin-left:28px;padding-left:10px;border-left:2px solid #e7e5e4"';
   }
-  return '<div class="' + cssPrefix + '-item" data-cid="' + safeId + '"' + indentStyle + ' onclick="startReplyComment(\'' + safeId + '\',\'' + safeNickForAttr + '\',\'' + cssPrefix + '\')">' +
-    '<div class="' + cssPrefix + '-avatar" onclick="event.stopPropagation();showUserProfile(\'' + safeUserKey + '\');playClick()">' + cAvatar + '</div>' +
+  var avatarStyle = isChild ? ' style="width:28px;height:28px;min-width:28px;font-size:0.85rem"' : '';
+  var nickStyle = isChild ? ' style="font-size:0.75rem"' : '';
+  return '<div class="' + itemClass + '" data-cid="' + safeId + '"' + indentStyle + ' onclick="startReplyComment(\'' + safeId + '\',\'' + safeNickForAttr + '\',\'' + cssPrefix + '\')">' +
+    '<div class="' + cssPrefix + '-avatar"' + avatarStyle + ' onclick="event.stopPropagation();showUserProfile(\'' + safeUserKey + '\');playClick()">' + cAvatar + '</div>' +
     '<div class="' + cssPrefix + '-body">' +
-      '<div class="' + cssPrefix + '-nick">' + safeNick + '</div>' +
+      '<div class="' + cssPrefix + '-nick"' + nickStyle + '>' + safeNick + '</div>' +
       replyHtml +
       '<div class="' + cssPrefix + '-text">' + escapeHtml(c.content) + '</div>' +
       (c.createdAt ? '<div class="' + cssPrefix + '-time">' + formatCommTime(c.createdAt) + '</div>' : '') +
