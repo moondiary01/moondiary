@@ -7481,18 +7481,74 @@ function loadCommunityPosts() {
   });
 }
 
-/* 月友圈定时自动刷新（每30秒） */
+/* 月友圈定时自动刷新（每8秒，让所有用户近实时看到新帖子和评论） */
 var _commRefreshTimer = null;
+/* 上次刷新时间戳，防止短时间重复请求 */
+var _lastCommRefreshTs = 0;
+function _shouldRefreshComm() {
+  var now = Date.now();
+  if (now - _lastCommRefreshTs < 3000) return false; /* 最短3秒间隔 */
+  _lastCommRefreshTs = now;
+  return true;
+}
 function startCommAutoRefresh() {
   if (_commRefreshTimer) clearInterval(_commRefreshTimer);
   _commRefreshTimer = setInterval(function() {
     if (document.getElementById('beautyCommunityModal').classList.contains('show')) {
-      loadCommunityPosts();
+      if (_shouldRefreshComm()) loadCommunityPosts();
     }
-  }, 30000);
+  }, 8000);
 }
 function stopCommAutoRefresh() {
   if (_commRefreshTimer) { clearInterval(_commRefreshTimer); _commRefreshTimer = null; }
+}
+
+/* 页面重新可见或获焦时立即刷新月友圈（其他用户发帖/评论后能马上看到） */
+window.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    if (document.getElementById('beautyCommunityModal').classList.contains('show')) {
+      if (_shouldRefreshComm()) loadCommunityPosts();
+    }
+    /* 个人主页可见时也刷新（查看别人主页能及时看到新评论） */
+    if (document.getElementById('profileModal').classList.contains('show')) {
+      var phone = document.getElementById('profileModal').dataset.phone;
+      if (phone) _refreshProfileIfOpen(phone);
+    }
+  }
+});
+window.addEventListener('focus', function() {
+  if (document.getElementById('beautyCommunityModal').classList.contains('show')) {
+    if (_shouldRefreshComm()) loadCommunityPosts();
+  }
+});
+
+/* 个人主页自动刷新定时器 */
+var _profileRefreshTimer = null;
+function startProfileAutoRefresh(phone) {
+  stopProfileAutoRefresh();
+  _profileRefreshTimer = setInterval(function() {
+    if (!document.getElementById('profileModal').classList.contains('show')) {
+      stopProfileAutoRefresh();
+      return;
+    }
+    _refreshProfileIfOpen(phone);
+  }, 10000);
+}
+function stopProfileAutoRefresh() {
+  if (_profileRefreshTimer) { clearInterval(_profileRefreshTimer); _profileRefreshTimer = null; }
+}
+function _refreshProfileIfOpen(phone) {
+  if (!phone) return;
+  if (!document.getElementById('profileModal').classList.contains('show')) return;
+  loadFromCloud('beauty/community/posts', function(data) {
+    if (!data || !data.posts) return;
+    commAllPosts = data;
+    var isMe = (phone === getCurrentPhone());
+    var up = data.posts.filter(function(p) { return p.userKey === phone; });
+    document.getElementById('profilePostCount').textContent = up.length;
+    renderProfilePosts(up, phone);
+    if (isMe) renderProfileNotice(up);
+  });
 }
 
 function renderCommunityPosts() {
@@ -8492,6 +8548,8 @@ function closeProfileToCommunity() {
   _removeInlineInput();
   /* 清理可能残留在用户主页弹窗内的旧抽屉DOM */
   _purgeLegacyDrawer();
+  /* 停止个人主页自动刷新 */
+  stopProfileAutoRefresh();
   /* 隐藏用户主页弹窗 */
   document.getElementById('profileModal').classList.remove('show');
   /* 清空用户主页帖子DOM，避免DOM ID冲突 */
@@ -8588,6 +8646,8 @@ function showUserProfile(phone) {
   profileModal.classList.add('show');
   var modalInner = profileModal.querySelector('.modal');
   if (modalInner) modalInner.scrollTop = 0;
+  /* 启动个人主页自动刷新（10秒，及时看到新帖子/评论） */
+  startProfileAutoRefresh(phone);
   /* 异步加载最新数据并更新 */
   loadProfileData(function() {
     loadFollowData(function() {
