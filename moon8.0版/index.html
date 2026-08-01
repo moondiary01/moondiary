@@ -7532,9 +7532,7 @@ function renderPostCard(p) {
   /* 完整评论区（默认隐藏，点击评论图标展开） */
   var fullCommentsHtml = '';
   if (p.comments && p.comments.length > 0) {
-    fullCommentsHtml = p.comments.slice().reverse().map(function(c) { /* 全部评论，倒序 */
-      return renderCommentHtml(c, 'comm-comment');
-    }).join('');
+    fullCommentsHtml = renderCommentsTree(p.comments, 'comm-comment');
   }
   /* 删除按钮：自己的帖子或管理员可删 */
   var isAdmin = isAdminUser();
@@ -7678,8 +7676,44 @@ function escapeAttr(text) {
 /* === 评论回复公共渲染与状态管理 === */
 var commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
 
+/* 将扁平评论数组渲染为树形嵌套结构（子评论显示在父评论下方，缩进） */
+function renderCommentsTree(comments, cssPrefix) {
+  if (!comments || comments.length === 0) return '';
+  /* 构建评论映射表 */
+  var map = {};
+  var roots = [];
+  comments.forEach(function(c) {
+    map[c.id] = { comment: c, children: [] };
+  });
+  /* 按时间顺序构建父子关系 */
+  comments.forEach(function(c) {
+    if (c.replyTo && map[c.replyTo]) {
+      map[c.replyTo].children.push(map[c.id]);
+    } else {
+      roots.push(map[c.id]);
+    }
+  });
+  /* 递归渲染 */
+  function renderNode(node, depth) {
+    var html = renderCommentHtml(node.comment, cssPrefix, depth);
+    if (node.children.length > 0) {
+      node.children.forEach(function(child) {
+        html += renderNode(child, depth + 1);
+      });
+    }
+    return html;
+  }
+  /* 根评论正序显示（最早的在上面），子评论也正序 */
+  var html = '';
+  roots.forEach(function(root) {
+    html += renderNode(root, 0);
+  });
+  return html;
+}
+
 /* 公共评论渲染函数（cssPrefix: 'comm-comment' 或 'post-detail-comment'） */
-function renderCommentHtml(c, cssPrefix) {
+function renderCommentHtml(c, cssPrefix, depth) {
+  depth = depth || 0;
   var cAvatar = renderAvatarHtml(c.avatar, c.nickname);
   /* 回复关系标注 */
   var replyHtml = '';
@@ -7691,7 +7725,12 @@ function renderCommentHtml(c, cssPrefix) {
   var safeNickForAttr = escapeAttr(c.nickname || '月友');
   var safeId = escapeAttr(c.id || '');
   var safeUserKey = escapeAttr(c.userKey || '');
-  return '<div class="' + cssPrefix + '-item" data-cid="' + safeId + '" onclick="startReplyComment(\'' + safeId + '\',\'' + safeNickForAttr + '\',\'' + cssPrefix + '\')">' +
+  /* 子评论缩进样式：depth>0 时加左边距和左侧连接线 */
+  var indentStyle = '';
+  if (depth > 0) {
+    indentStyle = ' style="margin-left:' + (depth * 28) + 'px;padding-left:10px;border-left:2px solid #e7e5e4"';
+  }
+  return '<div class="' + cssPrefix + '-item" data-cid="' + safeId + '"' + indentStyle + ' onclick="startReplyComment(\'' + safeId + '\',\'' + safeNickForAttr + '\',\'' + cssPrefix + '\')">' +
     '<div class="' + cssPrefix + '-avatar" onclick="event.stopPropagation();showUserProfile(\'' + safeUserKey + '\');playClick()">' + cAvatar + '</div>' +
     '<div class="' + cssPrefix + '-body">' +
       '<div class="' + cssPrefix + '-nick">' + safeNick + '</div>' +
@@ -7808,7 +7847,7 @@ function _submitInlineComment() {
         var p = data.posts[i];
         if (cssPrefix === 'post-detail-comment') {
           var commentsEl = document.getElementById('postDetailComments');
-          if (commentsEl) commentsEl.innerHTML = p.comments.map(function(c) { return renderCommentHtml(c, 'post-detail-comment'); }).join('');
+          if (commentsEl) commentsEl.innerHTML = renderCommentsTree(p.comments, 'post-detail-comment');
           var countEl = document.getElementById('postDetailCommentCount');
           if (countEl) countEl.textContent = p.commentCount;
           var titleEl = document.querySelector('#postDetailContent .post-detail-comments-title');
@@ -7816,7 +7855,7 @@ function _submitInlineComment() {
         } else {
           var commentsEl2 = document.getElementById('comments-' + postId);
           if (commentsEl2) {
-            commentsEl2.innerHTML = p.comments.map(function(c) { return renderCommentHtml(c, 'comm-comment'); }).join('');
+            commentsEl2.innerHTML = renderCommentsTree(p.comments, 'comm-comment');
             commentsEl2.style.display = 'block';
           }
           markCommentViewed(postId);
@@ -8199,9 +8238,7 @@ function toggleComments(postId) {
     /* 渲染评论区 */
     var commentsHtml = '';
     if (p.comments && p.comments.length > 0) {
-      commentsHtml = p.comments.map(function(c) {
-        return renderCommentHtml(c, 'comm-comment');
-      }).join('');
+      commentsHtml = renderCommentsTree(p.comments, 'comm-comment');
     } else {
       commentsHtml = '<div style="text-align:center;color:#a8a29e;font-size:0.8rem;padding:12px 0">还没有评论，快来抢沙发</div>';
     }
@@ -8257,10 +8294,7 @@ function submitComment(postId) {
       if (p) {
         var commentsEl = document.getElementById('comments-' + postId);
         if (commentsEl) {
-          var commentsHtml = p.comments.map(function(c) {
-            return renderCommentHtml(c, 'comm-comment');
-          }).join('');
-          commentsEl.innerHTML = commentsHtml;
+          commentsEl.innerHTML = renderCommentsTree(p.comments, 'comm-comment');
         }
         /* 更新操作栏（保留删除/拉黑按钮，评论刚查看清除高亮） */
         markCommentViewed(postId);
@@ -8634,9 +8668,7 @@ function renderPostDetail(p) {
   /* 评论区 */
   var commentsHtml = '';
   if (p.comments && p.comments.length > 0) {
-    commentsHtml = p.comments.map(function(c) {
-      return renderCommentHtml(c, 'post-detail-comment');
-    }).join('');
+    commentsHtml = renderCommentsTree(p.comments, 'post-detail-comment');
   } else {
     commentsHtml = '<div style="text-align:center;color:#d6d3d1;font-size:0.8rem;padding:16px 0">还没有评论，快来抢沙发 🌙</div>';
   }
@@ -8784,11 +8816,8 @@ function submitPostDetailComment(postId) {
         saveToCloudImmediate('beauty/community/posts', data);
         /* 更新详情页评论区 */
         var p = data.posts[i];
-        var commentsHtml = p.comments.map(function(c) {
-          return renderCommentHtml(c, 'post-detail-comment');
-        }).join('');
         var commentsEl = document.getElementById('postDetailComments');
-        if (commentsEl) commentsEl.innerHTML = commentsHtml;
+        if (commentsEl) commentsEl.innerHTML = renderCommentsTree(p.comments, 'post-detail-comment');
         var countEl = document.getElementById('postDetailCommentCount');
         if (countEl) countEl.textContent = p.commentCount;
         var titleEl = document.querySelector('#postDetailContent .post-detail-comments-title');
