@@ -7723,7 +7723,9 @@ function renderCommentsTree(comments, cssPrefix, options) {
   });
   /* 渲染单条评论及其子评论（每条父评论独立控制子评论折叠）
      collapse 模式下：每条根评论下所有后代评论（子+孙+曾孙...）加起来最多 childLimit 条可见 */
+  var treeId = 't' + Date.now() + Math.random().toString(36).substring(2,7);
   var uidCounter = 0;
+  function makeHiddenId() { uidCounter++; return cssPrefix + '-hidden-' + treeId + '-' + uidCounter; }
   function renderNode(node, depth, descendantCount) {
     var html = renderCommentHtml(node.comment, cssPrefix, depth);
     if (node.children.length > 0) {
@@ -7753,7 +7755,7 @@ function renderCommentsTree(comments, cssPrefix, options) {
           });
           /* 折叠的后代 */
           uidCounter++;
-          var hiddenId = cssPrefix + '-hidden-' + uidCounter;
+          var hiddenId = makeHiddenId();
           html += '<div class="' + cssPrefix + '-toggle ' + cssPrefix + '-toggle-expand" data-mode="collapsed" data-target="' + hiddenId + '" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_toggleChildComments(this)">展开剩余 ' + hidden.length + '条回复 ›</div>';
           html += '<div id="' + hiddenId + '" style="display:none">';
           hidden.forEach(function(item) {
@@ -7781,7 +7783,7 @@ function renderCommentsTree(comments, cssPrefix, options) {
   /* 父评论折叠/展开按钮 + 隐藏容器 */
   if (collapse && hiddenRoots.length > 0) {
     uidCounter++;
-    var rootHiddenId = cssPrefix + '-hidden-' + uidCounter;
+    var rootHiddenId = makeHiddenId();
     html += '<div class="' + cssPrefix + '-toggle" data-mode="collapsed" data-target="' + rootHiddenId + '" style="text-align:center;padding:8px 0;cursor:pointer;color:#8b5cf6;font-size:0.75rem" onclick="event.stopPropagation();_toggleChildComments(this)">展开剩余 ' + hiddenRoots.length + '条评论 ›</div>';
     html += '<div id="' + rootHiddenId + '" style="display:none">';
     hiddenRoots.forEach(function(root) {
