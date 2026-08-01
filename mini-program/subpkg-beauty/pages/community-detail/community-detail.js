@@ -171,6 +171,9 @@ Page({
     if (self.data.replyingTo) {
       newComment.replyTo = self.data.replyingTo
       newComment.replyToNickname = self.data.replyToNickname
+      // replyToUserKey 需要从目标评论中获取
+      var targetComment = findCommentById(self.data.comments, self.data.replyingTo)
+      if (targetComment) newComment.replyToUserKey = targetComment.userKey || ''
     }
 
     // 乐观更新本地
@@ -241,3 +244,12 @@ Page({
     return (d.getMonth() + 1) + '月' + d.getDate() + '日'
   }
 })
+
+// 辅助函数：在评论数组中查找指定ID的评论
+function findCommentById(comments, id) {
+  if (!comments) return null
+  for (var i = 0; i < comments.length; i++) {
+    if (comments[i].id === id) return comments[i]
+  }
+  return null
+}
