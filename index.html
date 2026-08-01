@@ -7999,15 +7999,19 @@ function _submitInlineComment() {
                 });
               }
             });
-            /* 滚动到刚提交的评论，仅必要时小幅滚动，不跳转到其他帖子 */
+            /* 定位到刚提交的评论：滚动到该评论并高亮闪烁 */
             setTimeout(function() {
               var newEl = commentsEl2.querySelector('[data-cid="' + comment.id + '"]');
               if (!newEl) return;
-              var rect = newEl.getBoundingClientRect();
-              if (rect.bottom > window.innerHeight - 10 || rect.top < 10) {
-                newEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-              }
-            }, 100);
+              /* 确保新评论可见，滚动到离顶部1/3处 */
+              newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              /* 高亮闪烁提示 */
+              newEl.style.transition = 'background 0.3s';
+              newEl.style.background = 'rgba(139,92,246,0.15)';
+              setTimeout(function() {
+                newEl.style.background = '';
+              }, 2000);
+            }, 150);
           }
           markCommentViewed(postId);
           var postEl = document.getElementById('post-' + postId);
