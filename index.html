@@ -1284,7 +1284,8 @@ _loadCosSdk(0);
       <p style="margin-left:12px">• 您的数据仅存储在您的个人云端空间，其他用户无法访问。</p>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-primary" onclick="document.getElementById('purchaseNoticeModal').classList.remove('show');playClick()">我知道了</button>
+      <button class="btn btn-outline" onclick="document.getElementById('purchaseNoticeModal').classList.remove('show');playClick()">关闭</button>
+      <button class="btn btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none" onclick="confirmBeautyUpgrade();playClick()">我已阅读并同意 · 确认开通</button>
     </div>
   </div>
 </div>
@@ -1957,6 +1958,29 @@ function markKeyUsed(k, phone) {
   saveUsedKeys(used);
 }
 
+/* 用户登录后同步 gender/age/nickname 到 _preset_info（管理员后台可见） */
+function syncUserInfoToPreset(k, phone) {
+  if (!k || !phone || !isPresetKey(k)) return;
+  loadFromCloud(phone, function(cloudData) {
+    var userData = cloudData;
+    if (!userData) {
+      try { userData = JSON.parse(localStorage.getItem(userStorageKey(phone))); } catch(e) {}
+    }
+    if (!userData) return;
+    loadFromCloud('_preset_info', function(cloudPi) {
+      var pi = cloudPi || loadPresetInfo();
+      if (!pi) pi = {};
+      if (!pi[k]) pi[k] = {};
+      pi[k].phone = phone;
+      if (userData.gender) pi[k].gender = userData.gender;
+      if (userData.age !== null && userData.age !== undefined) pi[k].age = userData.age;
+      if (userData.name) pi[k].nickname = userData.name;
+      localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(pi));
+      savePresetInfo(pi);
+    });
+  });
+}
+
 /* ---------- 预设密钥绑定信息（管理员编辑） ---------- */
 var PRESET_INFO_STORE = 'moondiary_preset_info';
 function loadPresetInfo() {
@@ -2021,6 +2045,23 @@ function loadPayments() {
 function savePayments(payments) {
   try { localStorage.setItem(PAYMENT_STORE, JSON.stringify(payments)); } catch(e) {}
   saveToCloudImmediate(CLOUD_PAYMENT_PATH, payments);
+}
+
+/* 密钥用户免费开通19.9普通版（云端存储），标记 keyFree 区分付费用户 */
+function ensureKeyUserFreeStorage(phone) {
+  if (!phone || phone === 'admin' || phone === 'local') return;
+  var payments = loadPayments();
+  if (!payments[phone]) payments[phone] = {};
+  if (!payments[phone].beautyPaid && !payments[phone].storagePaid) {
+    payments[phone].storagePaid = true;
+    payments[phone].storagePaidBy = 'key_free';
+    payments[phone].storagePaidAt = Date.now();
+    payments[phone].keyFree = true;
+    savePayments(payments);
+  } else if (payments[phone].keyFree === undefined && !payments[phone].beautyPaid) {
+    payments[phone].keyFree = true;
+    savePayments(payments);
+  }
 }
 
 /* 从云端刷新付费数据到本地（用户端实时感知管理员操作） */
@@ -2153,6 +2194,18 @@ function toggleBeautyTrial(phone) {
     showToast('已关闭 ' + phone + ' 的升级版');
   }
   savePayments(payments);
+  /* 同步到 _preset_info，确保管理员后台实时更新 */
+  loadFromCloud('_preset_info', function(cloudPi) {
+    var pi = cloudPi || loadPresetInfo();
+    if (!pi) pi = {};
+    var bindings = loadPhoneBindings();
+    var targetKey = bindings[phone];
+    if (targetKey && pi[targetKey]) {
+      pi[targetKey].phone = phone;
+      localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(pi));
+      savePresetInfo(pi);
+    }
+  });
   renderKeyList();
 }
 
@@ -2420,6 +2473,8 @@ function tryLogin() {
       localStorage.setItem(SESSION_PHONE, phone);
       sessionStorage.setItem(SESSION_PHONE, phone);
       migrateDataIfNeeded(phone, k, function() {
+        syncUserInfoToPreset(k, phone);
+        ensureKeyUserFreeStorage(phone);
         playLoginSound(); showSplash(() => { enterApp(false); });
       });
       return;
@@ -2449,6 +2504,8 @@ function tryLogin() {
       localStorage.setItem(SESSION_PHONE, phone);
       sessionStorage.setItem(SESSION_PHONE, phone);
       migrateDataIfNeeded(phone, k, function() {
+        syncUserInfoToPreset(k, phone);
+        ensureKeyUserFreeStorage(phone);
         playLoginSound(); showSplash(() => { enterApp(false); });
       });
     });
@@ -2538,6 +2595,14 @@ function enterApp(isAdmin) {
   loadState();
   renderAll();
   updateClock();
+  /* 非管理员密钥用户：延迟同步信息到管理员后台（等云端数据加载完） */
+  if (!isAdmin) {
+    var syncKey = localStorage.getItem(SESSION_KEY);
+    var syncPhone = localStorage.getItem(SESSION_PHONE);
+    if (syncKey && syncPhone && isPresetKey(syncKey)) {
+      setTimeout(function() { syncUserInfoToPreset(syncKey, syncPhone); }, 3000);
+    }
+  }
 }
 
 document.getElementById('keyInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
@@ -4029,6 +4094,22 @@ function saveSettings() {
   }
   if (state.targetWeight && state.startWeight && state.targetWeight >= state.startWeight) { showToast('目标体重应小于起始体重'); return; }
   saveState(); closeSettings(); renderAll();
+  /* 同步昵称/性别/年龄到管理员后台 _preset_info */
+  var currKey = currentKey || localStorage.getItem(SESSION_KEY);
+  var currPhone = getCurrentPhone();
+  if (currKey && isPresetKey(currKey) && currPhone && currPhone !== 'local' && currPhone !== 'admin') {
+    loadFromCloud('_preset_info', function(cloudPi) {
+      var pi = cloudPi || loadPresetInfo();
+      if (!pi) pi = {};
+      if (!pi[currKey]) pi[currKey] = {};
+      pi[currKey].phone = currPhone;
+      if (state.gender) pi[currKey].gender = state.gender;
+      if (state.age !== null && state.age !== undefined) pi[currKey].age = state.age;
+      if (state.name) pi[currKey].nickname = state.name;
+      localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(pi));
+      savePresetInfo(pi);
+    });
+  }
   showToast('设置已保存');
 }
 
@@ -4157,7 +4238,7 @@ function editKeyNote(k) {
   document.getElementById('keyPhoneInput').value = info.phone || '';
   document.getElementById('keyGenderInput').value = info.gender || '';
   document.getElementById('keyAgeInput').value = info.age || '';
-  document.getElementById('keyNoteInput').value = info.note || '';
+  document.getElementById('keyNoteInput').value = info.note || info.nickname || '';
   /* 填充 meta 信息：版本状态、类型、注册时间、永久 */
   var metaDiv = document.getElementById('keyEditMeta');
   var regDate = info.activatedAt ? new Date(info.activatedAt).toLocaleDateString() : (info.createdAt ? new Date(info.createdAt).toLocaleDateString() : '未注册');
@@ -4224,7 +4305,10 @@ function saveKeyInfoOnly() {
   if (isPresetKey(keyEditingNote)) {
     const pi = loadPresetInfo();
     pi[keyEditingNote] = pi[keyEditingNote] || {};
-    Object.assign(pi[keyEditingNote], info);
+    pi[keyEditingNote].phone = info.phone;
+    pi[keyEditingNote].gender = info.gender;
+    pi[keyEditingNote].age = info.age;
+    pi[keyEditingNote].note = info.note;
     savePresetInfo(pi);
   } else {
     const keys = loadKeys();
@@ -4335,8 +4419,9 @@ function renderKeyList() {
     } else {
       toggleBtn = '<button class="key-toggle key-toggle-off" onclick="togglePresetKey(\'' + k + '\')">未启用</button>';
     }
-    /* 外面只显示：电话、性别、年龄、昵称 */
-    const infoText = (info && info.phone ? '📱' + info.phone : '未填写') + (info && info.gender ? ' · ' + info.gender : '') + (info && info.age ? ' · ' + info.age + '岁' : '') + (ud.name ? ' · ' + ud.name : '');
+    /* 外面只显示：电话、性别、年龄、昵称（优先从 _preset_info 读取昵称） */
+    var nickName = (info && info.nickname) ? info.nickname : (ud.name || '');
+    const infoText = (info && info.phone ? '📱' + info.phone : '未填写') + (info && info.gender ? ' · ' + info.gender : '') + (info && info.age ? ' · ' + info.age + '岁' : '') + (nickName ? ' · ' + nickName : '');
     html += '<div class="key-row-v2">'
       + '<div class="key-row-main">'
         + '<div class="key-code">' + k + '</div>'
@@ -4357,8 +4442,9 @@ function renderKeyList() {
     html += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:0.75rem;font-weight:700;color:var(--text-l);margin-bottom:8px">动态密钥</div>';
     arr.forEach(([k, info]) => {
       const ud = getUserData(k);
-      /* 外面只显示：电话、性别、年龄、昵称 */
-      const infoText = (info.phone ? '📱' + info.phone : '未填写') + (info.gender ? ' · ' + info.gender : '') + (info.age ? ' · ' + info.age + '岁' : '') + (ud.name ? ' · ' + ud.name : ' · 未登录');
+      /* 外面只显示：电话、性别、年龄、昵称（优先从 _preset_info 读取昵称） */
+      var dynNickName = info.nickname || ud.name || '';
+      const infoText = (info.phone ? '📱' + info.phone : '未填写') + (info.gender ? ' · ' + info.gender : '') + (info.age ? ' · ' + info.age + '岁' : '') + (dynNickName ? ' · ' + dynNickName : ' · 未登录');
       const isOn = !info.revoked;
       const toggleBtn = isOn
         ? '<button class="key-toggle key-toggle-on" onclick="revokeKey(\'' + k + '\')">已启用 · 点击停用</button>'
@@ -5438,6 +5524,34 @@ function openBeautyUpgrade() {
 
 function payBeautyUpgrade() {
   showPurchaseNotice();
+}
+function confirmBeautyUpgrade() {
+  document.getElementById('purchaseNoticeModal').classList.remove('show');
+  var phone = getCurrentPhone();
+  if (!phone || phone === 'admin' || phone === 'local') { showToast('请先登录'); return; }
+  var payments = loadPayments();
+  if (!payments[phone]) payments[phone] = {};
+  payments[phone].beautyPaid = true;
+  payments[phone].beautyPaidAt = Date.now();
+  payments[phone].beautyPaidBy = 'self';
+  payments[phone].storagePaid = true;
+  payments[phone].storagePaidAt = Date.now();
+  payments[phone].keyFree = false;
+  savePayments(payments);
+  /* 同步到管理员后台 _preset_info */
+  var currKey = currentKey || localStorage.getItem(SESSION_KEY);
+  if (currKey && isPresetKey(currKey)) {
+    loadFromCloud('_preset_info', function(cloudPi) {
+      var pi = cloudPi || loadPresetInfo();
+      if (pi && pi[currKey]) {
+        pi[currKey].phone = phone;
+        localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(pi));
+        savePresetInfo(pi);
+      }
+    });
+  }
+  showToast('✅ 升级版已开通，永久有效');
+  openBeautyUpgrade();
 }
 function showPurchaseNotice() {
   document.getElementById('purchaseNoticeModal').classList.add('show');
