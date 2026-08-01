@@ -2341,9 +2341,12 @@ function tryLogin() {
       }
     }
     markKeyUsed(k, phone);
-    /* 激活密钥并绑定手机号，之后可用手机号快速登录 */
+    /* 激活密钥并绑定手机号，保留管理员编辑的gender/age/note等信息 */
     const pi2 = loadPresetInfo();
-    pi2[k] = { activated: true, phone: phone, activatedAt: new Date().toISOString() };
+    if (!pi2[k]) pi2[k] = {};
+    pi2[k].activated = true;
+    pi2[k].phone = phone;
+    pi2[k].activatedAt = new Date().toISOString();
     savePresetInfo(pi2);
     const b1 = loadPhoneBindings(); b1[phone] = k; savePhoneBindings(b1);
     currentKey = k;
@@ -5152,13 +5155,38 @@ function renderAll() {
     if (cloudPi) {
       try {
         var localPi = loadPresetInfo();
-        var merged = Object.assign({}, localPi, cloudPi);
+        /* 深度合并：逐个key合并，保留两边各自有的字段，不互相覆盖 */
+        var merged = localPi ? JSON.parse(JSON.stringify(localPi)) : {};
+        for (var k in cloudPi) {
+          if (!cloudPi.hasOwnProperty(k)) continue;
+          if (!merged[k]) merged[k] = {};
+          var cloudEntry = cloudPi[k] || {};
+          for (var field in cloudEntry) {
+            if (!cloudEntry.hasOwnProperty(field)) continue;
+            /* 云端有值且本地没有该字段，或云端值更"新"时才覆盖 */
+            if (cloudEntry[field] !== null && cloudEntry[field] !== undefined && cloudEntry[field] !== '') {
+              merged[k][field] = cloudEntry[field];
+            }
+          }
+          /* 云端独有的key也保留 */
+        }
+        /* 从 phone_bindings 反向恢复缺失的 preset_info */
+        var bindings = loadPhoneBindings();
+        for (var phone in bindings) {
+          if (!bindings.hasOwnProperty(phone)) continue;
+          var key = bindings[phone];
+          if (key && !merged[key]) {
+            merged[key] = { activated: true, phone: phone, activatedAt: new Date().toISOString() };
+          } else if (key && merged[key] && !merged[key].phone) {
+            merged[key].phone = phone;
+          }
+        }
         localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(merged));
-        console.log('云端密钥绑定信息已同步');
+        console.log('云端密钥绑定信息已同步（深度合并）');
         if (typeof renderKeyList === 'function' && document.getElementById('app').style.display === 'block') {
           renderKeyList();
         }
-      } catch(e) {}
+      } catch(e) { console.error('同步preset_info失败:', e); }
     }
   });
   loadFromCloud('_phone_bindings', function(cloudPb) {
@@ -5168,6 +5196,19 @@ function renderAll() {
         var merged2 = Object.assign({}, localPb, cloudPb);
         localStorage.setItem(PHONE_BINDING_STORE, JSON.stringify(merged2));
         console.log('云端手机号绑定已同步');
+        /* 用合并后的 bindings 补全 preset_info 中缺失的密钥绑定 */
+        var pi = loadPresetInfo();
+        var changed = false;
+        for (var phone in merged2) {
+          if (!merged2.hasOwnProperty(phone)) continue;
+          var key = merged2[phone];
+          if (key && !pi[key]) { pi[key] = { activated: true, phone: phone, activatedAt: new Date().toISOString() }; changed = true; }
+          else if (key && pi[key] && !pi[key].phone) { pi[key].phone = phone; changed = true; }
+        }
+        if (changed) {
+          localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(pi));
+          if (typeof renderKeyList === 'function' && document.getElementById('app').style.display === 'block') renderKeyList();
+        }
       } catch(e) {}
     }
   });
