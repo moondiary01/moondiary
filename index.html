@@ -7756,12 +7756,12 @@ function renderCommentsTree(comments, cssPrefix, options) {
           /* 折叠的后代 */
           uidCounter++;
           var hiddenId = makeHiddenId();
-          html += '<div class="' + cssPrefix + '-toggle ' + cssPrefix + '-toggle-expand" data-mode="collapsed" data-target="' + hiddenId + '" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_toggleChildComments(this)">展开剩余 ' + hidden.length + '条回复 ›</div>';
+          html += '<div class="' + cssPrefix + '-toggle ' + cssPrefix + '-toggle-expand" data-mode="collapsed" data-target="' + hiddenId + '" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer;margin-left:28px" onclick="event.stopPropagation();_toggleChildComments(this)">展开剩余 ' + hidden.length + '条回复 ›</div>';
           html += '<div id="' + hiddenId + '" style="display:none">';
           hidden.forEach(function(item) {
             html += renderCommentHtml(item.node.comment, cssPrefix, item.depth);
           });
-          html += '<div class="' + cssPrefix + '-toggle ' + cssPrefix + '-toggle-collapse" data-mode="expanded" data-target="' + hiddenId + '" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_toggleChildComments(this)">收起 ⌃</div>';
+          html += '<div class="' + cssPrefix + '-toggle ' + cssPrefix + '-toggle-collapse" data-mode="expanded" data-target="' + hiddenId + '" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer;margin-left:28px" onclick="event.stopPropagation();_toggleChildComments(this)">收起 ⌃</div>';
           html += '</div>';
           return html;
         }
