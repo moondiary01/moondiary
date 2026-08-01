@@ -4261,7 +4261,7 @@ function renderKeyList() {
   let html = '';
   const pi = loadPresetInfo();
   /* 兜底：如果本地preset_info密钥数少于云端，异步从云端恢复后重新渲染 */
-  if (cos && Object.keys(pi).length < 4) {
+  if (cos && Object.keys(pi).length < 5) {
     loadFromCloud('_preset_info', function(cloudPi) {
       if (cloudPi && Object.keys(cloudPi).length > Object.keys(pi).length) {
         var merged = {};
