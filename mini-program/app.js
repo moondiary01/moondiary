@@ -1,4 +1,4 @@
-// Moon Diary app.js — 全局逻辑
+// MoonJournal 月亮日记 app.js — 全局逻辑
 const store = require('./utils/store.js');
 const config = require('./utils/config.js');
 const beautyStore = require('./utils/beauty-store.js');

@@ -3,7 +3,7 @@
   <view class="card">
     <view class="section">
       <view class="section-title">1. 服务内容</view>
-      <view class="section-item">- Moon Diary 是一款身材管理记录工具</view>
+      <view class="section-item">- MoonJournal 月亮日记是一款身材记录工具</view>
       <view class="section-item">- 会员可使用全部功能：每日体重记录、趋势统计、经期日历、运动打卡、照片上传、云端数据同步</view>
     </view>
 

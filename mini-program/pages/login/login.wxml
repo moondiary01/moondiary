@@ -3,8 +3,8 @@
   <!-- Logo -->
   <view class="logo-section">
     <view class="logo-icon">🌙</view>
-    <view class="logo-title">Moon Diary</view>
-    <view class="logo-subtitle">身材管理日记</view>
+    <view class="logo-title">MoonJournal</view>
+    <view class="logo-subtitle">月亮日记</view>
   </view>
 
   <!-- Tab 切换 -->

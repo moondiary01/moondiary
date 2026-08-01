@@ -11,7 +11,7 @@
 
     <view class="section">
       <view class="section-title">2. 信息使用</view>
-      <view class="section-item">- 仅用于提供身材管理记录服务</view>
+      <view class="section-item">- 仅用于提供月亮日记记录服务</view>
       <view class="section-item">- 不会用于其他商业用途</view>
       <view class="section-item">- 不会分享给第三方</view>
     </view>
