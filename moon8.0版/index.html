@@ -554,18 +554,22 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .comm-post-action.comment-new{color:#8b5cf6;font-weight:600}
 .comm-post-action.comment-new .comment-icon{animation:commentBlink 1.5s ease-in-out infinite}
 @keyframes commentBlink{0%,100%{opacity:1}50%{opacity:0.5}}
-.comm-comments{margin-top:8px;padding:10px 12px;background:linear-gradient(135deg,#fafaff,#f5f3ff);border-radius:10px}
-.comm-comment-item{display:flex;gap:8px;margin-bottom:6px;padding:3px 0;cursor:pointer;transition:background 0.12s ease-out;border-radius:6px;-webkit-tap-highlight-color:transparent}
+.comm-comments{margin-top:8px;padding:8px 10px;background:linear-gradient(135deg,#fafaff,#f5f3ff);border-radius:10px}
+.comm-comment-item{display:flex;gap:7px;margin-bottom:3px;padding:2px 0;cursor:pointer;transition:background 0.12s ease-out;border-radius:6px;-webkit-tap-highlight-color:transparent}
 .comm-comment-item:last-child{margin-bottom:0}
 .comm-comment-item:active{background:rgba(139,92,246,0.06)}
 .comm-comment-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;flex-shrink:0;overflow:hidden;cursor:pointer;transition:transform 0.12s ease-out;-webkit-tap-highlight-color:transparent}
 .comm-comment-avatar:active{transform:scale(0.88)}
 .comm-comment-avatar img{width:100%;height:100%;object-fit:cover}
+.comm-comment-item-child .comm-comment-avatar{width:22px;height:22px;font-size:0.55rem}
+.comm-comment-item-child .comm-comment-nick{font-size:0.7rem}
+.comm-comment-item-child .comm-comment-text{font-size:0.72rem;line-height:1.4}
+.comm-comment-item-child .comm-comment-time{font-size:0.6rem}
 .comm-comment-body{flex:1;min-width:0}
-.comm-comment-nick{font-size:0.75rem;font-weight:600;color:#44403c;cursor:pointer;transition:color 0.12s}
+.comm-comment-nick{font-size:0.75rem;font-weight:600;color:#44403c;cursor:pointer;transition:color 0.12s;line-height:1.3}
 .comm-comment-nick:active{color:#8b5cf6}
-.comm-comment-text{font-size:0.8rem;color:#57534e;margin-top:1px;word-break:break-word}
-.comm-comment-time{font-size:0.65rem;color:#a8a29e;margin-top:2px}
+.comm-comment-text{font-size:0.78rem;color:#57534e;margin-top:0;word-break:break-word;line-height:1.4}
+.comm-comment-time{font-size:0.62rem;color:#a8a29e;margin-top:1px}
 .comm-comments-preview{margin-top:6px;padding:6px 10px;background:linear-gradient(135deg,#fafaff,#f5f3ff);border-radius:10px}
 .comm-comment-input-wrap{display:flex;gap:6px;margin-top:6px}
 .comm-comment-input{flex:1;padding:7px 12px;border:1.5px solid #f0ebe8;border-radius:18px;font-size:0.8rem;outline:none;background:#fff;transition:border-color 0.2s}
@@ -644,12 +648,16 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .post-detail-action.liked{color:#ec4899}
 .post-detail-action.like-anim{animation:likePop 0.35s ease-out}
 .post-detail-comments-title{font-size:0.8rem;font-weight:600;color:#57534e;margin-bottom:8px}
-.post-detail-comments{margin-bottom:12px;padding:12px 14px;background:linear-gradient(135deg,#fafaff 0%,#f5f3ff 100%);border-radius:12px}
-.post-detail-comment-item{display:flex;gap:8px;margin-bottom:10px;padding:4px 0;cursor:pointer;transition:background 0.12s ease-out;border-radius:6px;-webkit-tap-highlight-color:transparent}
+.post-detail-comments{margin-bottom:12px;padding:10px 12px;background:linear-gradient(135deg,#fafaff 0%,#f5f3ff 100%);border-radius:12px}
+.post-detail-comment-item{display:flex;gap:8px;margin-bottom:6px;padding:2px 0;cursor:pointer;transition:background 0.12s ease-out;border-radius:6px;-webkit-tap-highlight-color:transparent}
 .post-detail-comment-item:last-child{margin-bottom:0}
 .post-detail-comment-item:active{background:rgba(139,92,246,0.06)}
 .post-detail-comment-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;flex-shrink:0;overflow:hidden;cursor:pointer;transition:transform 0.12s ease-out;border:1.5px solid #fff;box-shadow:0 1px 4px rgba(139,92,246,0.1);-webkit-tap-highlight-color:transparent}
 .post-detail-comment-avatar:active{transform:scale(0.88)}
+.post-detail-comment-item-child .post-detail-comment-avatar{width:26px;height:26px;font-size:0.6rem}
+.post-detail-comment-item-child .post-detail-comment-nick{font-size:0.78rem}
+.post-detail-comment-item-child .post-detail-comment-text{font-size:0.8rem;line-height:1.4}
+.post-detail-comment-item-child .post-detail-comment-time{font-size:0.65rem}
 .post-detail-comment-avatar img{width:100%;height:100%;object-fit:cover}
 .post-detail-comment-body{flex:1;min-width:0}
 .post-detail-comment-nick{font-size:0.78rem;font-weight:600;color:#44403c;cursor:pointer}
@@ -7715,18 +7723,16 @@ function renderCommentHtml(c, cssPrefix, depth) {
   var safeNickForAttr = escapeAttr(c.nickname || '月友');
   var safeId = escapeAttr(c.id || '');
   var safeUserKey = escapeAttr(c.userKey || '');
-  /* 子评论统一缩进一次（不再逐层递增），头像缩小 */
+  /* 子评论统一缩进一次（不再逐层递增），头像缩小由 CSS class 控制 */
   var itemClass = cssPrefix + '-item' + (isChild ? ' ' + cssPrefix + '-item-child' : '');
   var indentStyle = '';
   if (isChild) {
     indentStyle = ' style="margin-left:28px"';
   }
-  var avatarStyle = isChild ? ' style="width:28px;height:28px;min-width:28px;font-size:0.85rem"' : '';
-  var nickStyle = isChild ? ' style="font-size:0.75rem"' : '';
   return '<div class="' + itemClass + '" data-cid="' + safeId + '"' + indentStyle + ' onclick="startReplyComment(\'' + safeId + '\',\'' + safeNickForAttr + '\',\'' + cssPrefix + '\')">' +
-    '<div class="' + cssPrefix + '-avatar"' + avatarStyle + ' onclick="event.stopPropagation();showUserProfile(\'' + safeUserKey + '\');playClick()">' + cAvatar + '</div>' +
+    '<div class="' + cssPrefix + '-avatar" onclick="event.stopPropagation();showUserProfile(\'' + safeUserKey + '\');playClick()">' + cAvatar + '</div>' +
     '<div class="' + cssPrefix + '-body">' +
-      '<div class="' + cssPrefix + '-nick"' + nickStyle + '>' + safeNick + '</div>' +
+      '<div class="' + cssPrefix + '-nick">' + safeNick + '</div>' +
       replyHtml +
       '<div class="' + cssPrefix + '-text">' + escapeHtml(c.content) + '</div>' +
       (c.createdAt ? '<div class="' + cssPrefix + '-time">' + formatCommTime(c.createdAt) + '</div>' : '') +
