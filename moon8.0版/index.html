@@ -7700,40 +7700,69 @@ function renderCommentsTree(comments, cssPrefix, options) {
       roots.push(map[c.id]);
     }
   });
-  /* 递归渲染（collapse 模式下全局子评论最多 childLimit 条） */
+  /* 统计总子评论数 */
+  var totalChildren = 0;
+  roots.forEach(function(r) { totalChildren += r.children.length; });
+  /* 递归渲染单条评论及其可见子评论，返回 { html, hiddenChildrenHtml } */
   var childShown = 0;
+  var hiddenChildrenHtml = [];
   function renderNode(node, depth) {
     var html = renderCommentHtml(node.comment, cssPrefix, depth);
     if (node.children.length > 0) {
       node.children.forEach(function(child) {
-        if (collapse && childShown >= childLimit) return;
-        childShown++;
-        html += renderNode(child, depth + 1);
+        if (collapse && childShown >= childLimit) {
+          /* 超出限制的子评论放入隐藏缓冲区 */
+          hiddenChildrenHtml.push(renderNode(child, depth + 1));
+        } else {
+          childShown++;
+          html += renderNode(child, depth + 1);
+        }
       });
     }
     return html;
   }
-  /* 统计总子评论数（用于折叠提示） */
-  var totalChildren = 0;
-  roots.forEach(function(r) { totalChildren += r.children.length; });
-  /* 根评论正序显示，父评论最多展示 rootLimit 条 */
+  /* 根评论：前 rootLimit 条可见，剩余放隐藏缓冲区 */
   var visibleRoots = roots.slice(0, rootLimit);
+  var hiddenRoots = roots.slice(rootLimit);
   var html = '';
+  var hiddenRootsHtml = [];
   visibleRoots.forEach(function(root) {
     html += renderNode(root, 0);
   });
-  /* 全局子评论折叠提示 */
-  if (collapse && totalChildren > childLimit) {
-    var hiddenChildCount = totalChildren - childShown;
-    if (hiddenChildCount > 0) {
-      html += '<div class="' + cssPrefix + '-expand" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_expandToDetail(this)">展开剩余 ' + hiddenChildCount + '条回复 ›</div>';
-    }
+  hiddenRoots.forEach(function(root) {
+    hiddenRootsHtml.push(renderNode(root, 0));
+  });
+  /* 生成唯一容器 ID 后缀（基于时间戳+随机数） */
+  var uid = 'c' + Date.now() + Math.random().toString(36).substring(2,6);
+  /* 子评论折叠/展开按钮 + 隐藏容器 */
+  var hiddenChildCount = totalChildren - Math.min(totalChildren, childLimit);
+  if (collapse && hiddenChildCount > 0) {
+    html += '<div class="' + cssPrefix + '-toggle" data-mode="collapsed" data-target="child-hidden-' + uid + '" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_toggleCollapsedComments(this)">展开剩余 ' + hiddenChildCount + '条回复 ›</div>';
+    html += '<div id="child-hidden-' + uid + '" style="display:none">' + hiddenChildrenHtml.join('') + '</div>';
   }
-  if (collapse && roots.length > rootLimit) {
-    var hiddenRootCount = roots.length - rootLimit;
-    html += '<div class="' + cssPrefix + '-expand" style="text-align:center;padding:8px 0;cursor:pointer;color:#8b5cf6;font-size:0.75rem" onclick="event.stopPropagation();_expandToDetail(this)">展开剩余 ' + hiddenRootCount + '条评论 ›</div>';
+  /* 父评论折叠/展开按钮 + 隐藏容器 */
+  if (collapse && hiddenRoots.length > 0) {
+    html += '<div class="' + cssPrefix + '-toggle" data-mode="collapsed" data-target="root-hidden-' + uid + '" style="text-align:center;padding:8px 0;cursor:pointer;color:#8b5cf6;font-size:0.75rem" onclick="event.stopPropagation();_toggleCollapsedComments(this)">展开剩余 ' + hiddenRoots.length + '条评论 ›</div>';
+    html += '<div id="root-hidden-' + uid + '" style="display:none">' + hiddenRootsHtml.join('') + '</div>';
   }
   return html;
+}
+
+/* 就地展开/收起折叠的评论 */
+function _toggleCollapsedComments(el) {
+  var targetId = el.getAttribute('data-target');
+  var target = document.getElementById(targetId);
+  if (!target) return;
+  var mode = el.getAttribute('data-mode');
+  if (mode === 'collapsed') {
+    target.style.display = 'block';
+    el.setAttribute('data-mode', 'expanded');
+    el.textContent = el.textContent.replace('展开剩余', '收起').replace('›', '⌃');
+  } else {
+    target.style.display = 'none';
+    el.setAttribute('data-mode', 'collapsed');
+    el.textContent = el.textContent.replace('收起', '展开剩余').replace('⌃', '›');
+  }
 }
 
 /* 公共评论渲染函数（cssPrefix: 'comm-comment' 或 'post-detail-comment'） */
