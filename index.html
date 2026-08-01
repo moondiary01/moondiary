@@ -7700,27 +7700,35 @@ function renderCommentsTree(comments, cssPrefix, options) {
       roots.push(map[c.id]);
     }
   });
-  /* 递归渲染 */
+  /* 递归渲染（collapse 模式下全局子评论最多 childLimit 条） */
+  var childShown = 0;
   function renderNode(node, depth) {
     var html = renderCommentHtml(node.comment, cssPrefix, depth);
     if (node.children.length > 0) {
-      var visibleChildren = node.children.slice(0, childLimit);
-      visibleChildren.forEach(function(child) {
+      node.children.forEach(function(child) {
+        if (collapse && childShown >= childLimit) return;
+        childShown++;
         html += renderNode(child, depth + 1);
       });
-      if (collapse && node.children.length > childLimit) {
-        var hiddenCount = node.children.length - childLimit;
-        html += '<div class="' + cssPrefix + '-expand" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_expandToDetail(this)">展开剩余 ' + hiddenCount + '条回复 ›</div>';
-      }
     }
     return html;
   }
-  /* 根评论正序显示（最早的在上面），父评论最多展示 rootLimit 条 */
+  /* 统计总子评论数（用于折叠提示） */
+  var totalChildren = 0;
+  roots.forEach(function(r) { totalChildren += r.children.length; });
+  /* 根评论正序显示，父评论最多展示 rootLimit 条 */
   var visibleRoots = roots.slice(0, rootLimit);
   var html = '';
   visibleRoots.forEach(function(root) {
     html += renderNode(root, 0);
   });
+  /* 全局子评论折叠提示 */
+  if (collapse && totalChildren > childLimit) {
+    var hiddenChildCount = totalChildren - childShown;
+    if (hiddenChildCount > 0) {
+      html += '<div class="' + cssPrefix + '-expand" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_expandToDetail(this)">展开剩余 ' + hiddenChildCount + '条回复 ›</div>';
+    }
+  }
   if (collapse && roots.length > rootLimit) {
     var hiddenRootCount = roots.length - rootLimit;
     html += '<div class="' + cssPrefix + '-expand" style="text-align:center;padding:8px 0;cursor:pointer;color:#8b5cf6;font-size:0.75rem" onclick="event.stopPropagation();_expandToDetail(this)">展开剩余 ' + hiddenRootCount + '条评论 ›</div>';
