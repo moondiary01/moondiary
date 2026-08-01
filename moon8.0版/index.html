@@ -571,6 +571,8 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .comm-comment-text{font-size:0.78rem;color:#57534e;margin-top:0;word-break:break-word;line-height:1.4}
 .comm-comment-time{font-size:0.62rem;color:#a8a29e;margin-top:1px}
 .comm-comments-preview{margin-top:6px;padding:6px 10px;background:linear-gradient(135deg,#fafaff,#f5f3ff);border-radius:10px}
+.comm-comment-expand{font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer;text-align:center}
+.comm-comment-expand:hover{color:#7c3aed;text-decoration:underline}
 .comm-comment-input-wrap{display:flex;gap:6px;margin-top:6px}
 .comm-comment-input{flex:1;padding:7px 12px;border:1.5px solid #f0ebe8;border-radius:18px;font-size:0.8rem;outline:none;background:#fff;transition:border-color 0.2s}
 .comm-comment-input:focus{border-color:#c4b5fd}
@@ -7529,7 +7531,8 @@ function renderPostCard(p) {
   /* 评论区直接全部展示（不再折叠预览） */
   var fullCommentsHtml = '';
   if (p.comments && p.comments.length > 0) {
-    fullCommentsHtml = renderCommentsTree(p.comments, 'comm-comment');
+    /* 主页帖子卡片：父评论最多3条，子评论最多2条 */
+    fullCommentsHtml = renderCommentsTree(p.comments, 'comm-comment', { collapse: true, rootLimit: 3, childLimit: 2 });
   }
   /* 删除按钮：自己的帖子或管理员可删 */
   var isAdmin = isAdminUser();
@@ -7672,9 +7675,17 @@ function escapeAttr(text) {
 /* === 评论回复公共渲染与状态管理 === */
 var commReplyState = { postId: null, replyTo: null, replyToNickname: '', replyToUserKey: '', cssPrefix: '', inputId: '' };
 
-/* 将扁平评论数组渲染为树形嵌套结构（子评论显示在父评论下方，缩进） */
-function renderCommentsTree(comments, cssPrefix) {
+/* 将扁平评论数组渲染为树形嵌套结构（子评论显示在父评论下方，缩进）
+   options.collapse: 是否启用折叠（仅主页帖子卡片用）
+     - rootLimit: 父评论最多展示数（默认 Infinity）
+     - childLimit: 每个父评论的子评论最多展示数（默认 Infinity）
+*/
+function renderCommentsTree(comments, cssPrefix, options) {
   if (!comments || comments.length === 0) return '';
+  options = options || {};
+  var collapse = !!options.collapse;
+  var rootLimit = collapse ? (options.rootLimit || 3) : Infinity;
+  var childLimit = collapse ? (options.childLimit || 2) : Infinity;
   /* 构建评论映射表 */
   var map = {};
   var roots = [];
@@ -7693,17 +7704,27 @@ function renderCommentsTree(comments, cssPrefix) {
   function renderNode(node, depth) {
     var html = renderCommentHtml(node.comment, cssPrefix, depth);
     if (node.children.length > 0) {
-      node.children.forEach(function(child) {
+      var visibleChildren = node.children.slice(0, childLimit);
+      visibleChildren.forEach(function(child) {
         html += renderNode(child, depth + 1);
       });
+      if (collapse && node.children.length > childLimit) {
+        var hiddenCount = node.children.length - childLimit;
+        html += '<div class="' + cssPrefix + '-expand" style="font-size:0.7rem;color:#8b5cf6;padding:2px 0;cursor:pointer" onclick="event.stopPropagation();_expandToDetail(this)">展开剩余 ' + hiddenCount + '条回复 ›</div>';
+      }
     }
     return html;
   }
-  /* 根评论正序显示（最早的在上面），子评论也正序 */
+  /* 根评论正序显示（最早的在上面），父评论最多展示 rootLimit 条 */
+  var visibleRoots = roots.slice(0, rootLimit);
   var html = '';
-  roots.forEach(function(root) {
+  visibleRoots.forEach(function(root) {
     html += renderNode(root, 0);
   });
+  if (collapse && roots.length > rootLimit) {
+    var hiddenRootCount = roots.length - rootLimit;
+    html += '<div class="' + cssPrefix + '-expand" style="text-align:center;padding:8px 0;cursor:pointer;color:#8b5cf6;font-size:0.75rem" onclick="event.stopPropagation();_expandToDetail(this)">展开剩余 ' + hiddenRootCount + '条评论 ›</div>';
+  }
   return html;
 }
 
@@ -7808,6 +7829,14 @@ function _showInlineInput(commentId, nickname, postId, cssPrefix) {
 function _removeInlineInput() {
   var existing = document.getElementById('inlineInputWrap');
   if (existing) existing.remove();
+}
+
+/* 展开折叠评论：找到最近的 .comm-post 容器获取 postId，跳转到详情页查看全部 */
+function _expandToDetail(el) {
+  var postEl = el ? el.closest('.comm-post') : null;
+  if (!postEl) return;
+  var postId = postEl.id ? postEl.id.replace('post-', '') : '';
+  if (postId && typeof openPostDetail === 'function') openPostDetail(postId);
 }
 
 /* 提交内联评论 */
