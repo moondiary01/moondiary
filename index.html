@@ -1499,8 +1499,7 @@ _loadCosSdk(0);
         </div>
       </div>
       <div>
-        <label style="font-size:0.8rem;color:#92400e;font-weight:600"><img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTYgMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iMiIgeT0iMSIgd2lkdGg9IjEyIiBoZWlnaHQ9IjE0IiByeD0iMSIgZmlsbD0iI0ZERTY4QSIgc3Ryb2tlPSIjRjU5RTBCIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iNSIgeTE9IjQiIHgyPSIxMSIgeTI9IjQiIHN0cm9rZT0iI0I0NTMwOSIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjUiIHkxPSI3IiB4Mj0iMTEiIHkyPSI3IiBzdHJva2U9IiNCNDUzMDkiIHN0cm9rZS13aWR0aD0iMSIvPjxsaW5lIHgxPSI1IiB5MT0iMTAiIHgyPSI5IiB5Mj0iMTAiIHN0cm9rZT0iI0I0NTMwOSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9zdmc+" style="width:1em;height:1em;vertical-align:-0.15em" alt="📔"> 日记本</label>
-        <textarea id="moodDiary" placeholder="今天发生了什么？记录下你的感受和想法..." maxlength="1000" style="width:100%;min-height:200px;padding:14px 16px;border:1.5px solid rgba(251,191,36,0.3);border-radius:14px;font-size:0.95rem;resize:vertical;outline:none;font-family:inherit;margin-top:6px;background:rgba(255,255,255,0.7);line-height:1.8;backdrop-filter:blur(4px)" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'"></textarea>
+        <label style="font-size:0.8rem;color:#92400e;font-weight:600">      <textarea id="moodDiary" placeholder="今天发生了什么？记录下你的感受和想法..." maxlength="1000" style="width:100%;min-height:200px;padding:14px 16px;border:1.5px solid rgba(251,191,36,0.3);border-radius:14px;font-size:0.95rem;resize:vertical;outline:none;font-family:inherit;margin-top:6px;background:rgba(255,255,255,0.7);line-height:1.8;backdrop-filter:blur(4px)" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'"></textarea>
         <div style="text-align:right;font-size:0.72rem;color:#c8c4c0" id="moodCharCount">0/1000</div>
       </div>
     </div>
@@ -6933,15 +6932,13 @@ function openBeautyMood() {
       document.getElementById('moodDiary').value = beautyMoodState.diary;
       document.getElementById('moodCharCount').textContent = beautyMoodState.diary.length + '/1000';
       if (customEl) customEl.value = beautyMoodState.customCheck;
-      /* 恢复心情emoji选中（多选） */
+      /* 恢复心情emoji选中 */
       if (beautyMoodState.moods && beautyMoodState.moods.length > 0) {
         document.querySelectorAll('#moodEmojiGrid .beauty-emoji-card').forEach(function(el) {
-          var moodKey = el.getAttribute('data-mood') || (el.getAttribute('onclick')||'').match(/'([^']+)'/);
-          if (moodKey && beautyMoodState.moods.indexOf(Array.isArray(moodKey)?moodKey[1]:moodKey) >= 0) {
+          var mk = el.getAttribute('data-mood');
+          if (mk && beautyMoodState.moods.indexOf(mk) >= 0) {
             el.classList.add('beauty-emoji-card-active');
           }
-        });
-      }
         });
       }
       /* 恢复自律打卡选中 */
@@ -6969,7 +6966,6 @@ function openBeautyMood() {
 }
 
 function selectMoodEmoji(val, el) {
-  /* 多选模式：点击切换选中状态 */
   if (!beautyMoodState.moods) beautyMoodState.moods = [];
   var idx = beautyMoodState.moods.indexOf(val);
   if (idx >= 0) {
@@ -6979,9 +6975,6 @@ function selectMoodEmoji(val, el) {
     beautyMoodState.moods.push(val);
     el.classList.add('beauty-emoji-card-active');
   }
-  autoSaveMood();
-});
-  el.classList.add('beauty-emoji-card-active');
   playClick();
   autoSaveMood();
 }
@@ -6991,18 +6984,6 @@ var _moodAutoSaveTimer = null;
 function autoSaveMood() {
   var userKey = getCurrentPhone();
   if (!beautyMoodData) beautyMoodData = { version: 1, dailyRecords: [] };
-  var today = formatDateStr(new Date());
-  var record = beautyMoodData.dailyRecords.find(function(r){ return r.date === today; });
-  if (!record) {
-    record = { date: today, moods: [], status: '', diary: '', discipline: {} };
-    beautyMoodData.dailyRecords.push(record);
-  }
-  record.moods = beautyMoodState.moods || [];
-  record.status = beautyMoodState.status || '';
-  record.diary = beautyMoodState.diary || '';
-  record.discipline = beautyMoodState.discipline || {};
-  saveToCOS('userdata/beauty/' + userKey + '/mood.json', JSON.stringify(beautyMoodData), function(){});
-};
   if (!beautyMoodData.dailyRecords) beautyMoodData.dailyRecords = [];
   var today = formatDateStr(new Date());
   beautyMoodState.status = document.getElementById('moodStatus').value;
@@ -7333,7 +7314,7 @@ function renderMoodDayDetail() {
     html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
     Object.keys(moodEmojis).forEach(function(k) {
       var isActive = s.mood === k;
-      html += '<span class="beauty-emoji-card'+(isActive?' beauty-emoji-card-active':'')+'" onclick="selectMoodDetailEmoji(\''+k+'\',this);playClick()" style="min-width:48px">'+'<img src="'+moodEmojis[k]+'" style="width:1.2em;height:1.2em;vertical-align:-0.25em">'+'<small>'+(function(){var labels={ecstatic:'幸福',happy:'开心',calm:'平静',grateful:'感恩',excited:'兴奋',content:'满足',proud:'自豪',vain:'臭美',expectant:'期待',neutral:'一般',tired:'疲惫',anxious:'焦虑',nervous:'紧张',worried:'担忧',gloomy:'郁闷',sad:'难过',angry:'生气',stressed:'压力',fear:'恐惧',speechless:'无语'};return labels[k]||k;})()+'</small></span>';
+      html += '<span class="beauty-emoji-card'+(isActive?' beauty-emoji-card-active':'')+'" onclick="selectMoodDetailEmoji(\''+k+'\',this);playClick()" style="min-width:48px">'+'<img src="'+moodEmojis[k]+'" style="width:1.2em;height:1.2em;vertical-align:-0.25em">'+'<small>'+(function(){var l={ecstatic:'幸福',happy:'开心',calm:'平静',grateful:'感恩',excited:'兴奋',content:'满足',proud:'自豪',vain:'臭美',expectant:'期待',neutral:'一般',tired:'疲惫',anxious:'焦虑',nervous:'紧张',worried:'担忧',gloomy:'郁闷',sad:'难过',angry:'生气',stressed:'压力',fear:'恐惧',speechless:'无语'};return l[k]||k;})()+'</small></span>';
     });
     html += '</div></div>';
     html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTYgMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iMiIgeT0iMSIgd2lkdGg9IjEyIiBoZWlnaHQ9IjE0IiByeD0iMSIgZmlsbD0iI0ZERTY4QSIgc3Ryb2tlPSIjRjU5RTBCIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iNSIgeTE9IjQiIHgyPSIxMSIgeTI9IjQiIHN0cm9rZT0iI0I0NTMwOSIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjUiIHkxPSI3IiB4Mj0iMTEiIHkyPSI3IiBzdHJva2U9IiNCNDUzMDkiIHN0cm9rZS13aWR0aD0iMSIvPjxsaW5lIHgxPSI1IiB5MT0iMTAiIHgyPSI5IiB5Mj0iMTAiIHN0cm9rZT0iI0I0NTMwOSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9zdmc+ 日记本</label>';
@@ -7385,7 +7366,6 @@ function renderMoodDayDetail() {
 }
 
 function selectMoodDetailEmoji(val, el) {
-  /* 多选模式 */
   if (!moodDayDetailState.moods) moodDayDetailState.moods = [];
   var idx = moodDayDetailState.moods.indexOf(val);
   if (idx >= 0) {
@@ -7395,8 +7375,6 @@ function selectMoodDetailEmoji(val, el) {
     moodDayDetailState.moods.push(val);
     el.classList.add('beauty-emoji-card-active');
   }
-});
-  el.classList.add('beauty-emoji-card-active');
 }
 
 function toggleMoodDetailCheck(el, key) {
