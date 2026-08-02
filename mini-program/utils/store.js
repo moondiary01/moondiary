@@ -1,4 +1,4 @@
-// MoonJournal 月亮日记 数据存储封装
+// MoonMemo 月亮日记 数据存储封装
 const { COS_CONFIG, PRESET_KEYS } = require('./config.js');
 
 // ===== 本地存储 =====

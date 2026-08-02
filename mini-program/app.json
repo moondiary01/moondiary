@@ -33,7 +33,7 @@
   },
   "window": {
     "navigationBarBackgroundColor": "#1a1025",
-    "navigationBarTitleText": "MoonJournal",
+    "navigationBarTitleText": "MoonMemo",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#faf5f9",
     "backgroundTextStyle": "dark"

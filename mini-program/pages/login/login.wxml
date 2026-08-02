@@ -3,7 +3,7 @@
   <!-- Logo -->
   <view class="logo-section">
     <view class="logo-icon">🌙</view>
-    <view class="logo-title">MoonJournal</view>
+    <view class="logo-title">Moon Memo</view>
     <view class="logo-subtitle">月亮日记</view>
   </view>
 
@@ -37,6 +37,7 @@
         <input class="input" type="number" maxlength="6" placeholder="请输入6位密钥" value="{{keyCode}}" bindinput="onKeyCodeInput" />
       </view>
       <button class="btn btn-primary btn-block" bindtap="onKeyLogin">登录</button>
+      <view class="login-hint">绑定微信可直接登陆，若需密钥登陆请联系管理员\n一个手机号只能绑定一个密钥</view>
     </view>
   </view>
 

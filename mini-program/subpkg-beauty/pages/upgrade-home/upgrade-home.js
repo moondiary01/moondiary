@@ -23,10 +23,5 @@ Page({
   onGoMood: function () {
     audio.playPageFlip()
     wx.navigateTo({ url: '/subpkg-beauty/pages/mood/mood' })
-  },
-
-  onGoCommunity: function () {
-    audio.playPageFlip()
-    wx.navigateTo({ url: '/subpkg-beauty/pages/community/community' })
   }
 })

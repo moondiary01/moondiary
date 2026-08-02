@@ -35,16 +35,6 @@
       <text class="section-arrow">›</text>
     </view>
 
-    <view class="upgrade-section-card" bindtap="onGoCommunity">
-      <view class="section-icon-wrap section-icon-community">
-        <text class="section-icon">🌙</text>
-      </view>
-      <view class="section-info">
-        <view class="section-title">月友圈</view>
-        <view class="section-desc">分享变美日记 · 互相点赞评论</view>
-      </view>
-      <text class="section-arrow">›</text>
-    </view>
   </view>
 
   <!-- 底部信息 -->

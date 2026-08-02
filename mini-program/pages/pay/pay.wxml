@@ -3,7 +3,7 @@
   <!-- 标题 -->
   <view class="pay-header">
     <view class="pay-header-icon">🌙</view>
-    <view class="pay-header-title">MoonJournal 会员</view>
+    <view class="pay-header-title">MoonMemo 会员</view>
   </view>
 
   <!-- Tab切换 -->

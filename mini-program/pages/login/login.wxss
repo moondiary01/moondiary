@@ -61,6 +61,14 @@
   margin-bottom: 30rpx;
   line-height: 1.6;
 }
+.login-hint {
+  font-size: 22rpx;
+  color: #a8a29e;
+  text-align: center;
+  margin-top: 20rpx;
+  line-height: 1.5;
+  white-space: pre-line;
+}
 .wx-login-btn {
   font-size: 32rpx;
   padding: 24rpx 0;
