@@ -2,7 +2,7 @@
   <view class="upgrade-lock-modal">
     <view class="upgrade-lock-icon">🔒</view>
     <view class="upgrade-lock-title">升级版专享</view>
-    <view class="upgrade-lock-desc">100天变美日记为升级版功能，开通后永久使用护肤日记、心情日记、月友圈全部功能</view>
+    <view class="upgrade-lock-desc">100天变美日记为升级版功能，开通后永久使用护肤日记、心情日记全部功能</view>
     <view class="upgrade-lock-price">29.9元 永久使用</view>
     <button class="btn btn-primary btn-block" bindtap="onPay">立即开通</button>
     <view class="upgrade-lock-close" bindtap="onClose">返回</view>

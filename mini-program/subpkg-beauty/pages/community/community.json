@@ -1,9 +1,0 @@
-{
-  "navigationBarTitleText": "月友圈",
-  "navigationBarBackgroundColor": "#faf5f9",
-  "navigationBarTextStyle": "black",
-  "enablePullDownRefresh": true,
-  "usingComponents": {
-    "upgrade-lock": "/components/upgrade-lock/upgrade-lock"
-  }
-}

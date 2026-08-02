@@ -100,16 +100,6 @@
           <text class="benefit-icon">✅</text>
           <text class="benefit-text">自律打卡 · 12项类别</text>
         </view>
-
-        <view class="benefit-section">🌙 月友圈</view>
-        <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">发布动态 · 分享变美心得</text>
-        </view>
-        <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">点赞 · 评论 · 互动交流</text>
-        </view>
       </view>
     </view>
   </block>

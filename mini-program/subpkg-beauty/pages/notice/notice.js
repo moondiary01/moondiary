@@ -169,9 +169,8 @@ Page({
       markCommentReplyViewed(me, commentId)
     }
 
-    wx.navigateTo({
-      url: '/subpkg-beauty/pages/community-detail/community-detail?id=' + postId
-    })
+    // 月友圈已下架，不再跳转
+    wx.showToast({ title: '月友圈已下架', icon: 'none' })
   },
 
   // ===== 折叠/展开历史消息 =====
