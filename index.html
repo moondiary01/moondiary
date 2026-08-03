@@ -1091,7 +1091,7 @@ _loadCosSdk(0);
   <div class="card">
     <div class="card-title">体重趋势图</div>
     <canvas id="chartCanvas"></canvas>
-    <div id="chartWeekBar" style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;justify-content:center"></div>
+    <div id="chartWeekBar" style="position:relative;width:100%;height:0;pointer-events:auto"></div>
     <div id="chartDateRange" style="text-align:center;font-size:0.75rem;color:var(--text-l);margin-top:4px"></div>
     <div class="chart-legend">
       <div class="legend-item"><div class="legend-dot" style="background:#C026D3"></div>晨起体重</div>
@@ -3882,7 +3882,8 @@ function drawChart() {
   if (all.length === 0 && fatD_check.length === 0) {
     ctx.fillStyle = '#A8A29E'; ctx.font = '15px sans-serif'; ctx.textAlign = 'center';
     ctx.fillText('暂无数据，请在「每日记录」页填写', W/2, H/2);
-    renderWeekBar(total);
+    var eb = document.getElementById('chartWeekBar');
+    if (eb) eb.innerHTML = '';
     return;
   }
   if (all.length === 0) {
@@ -3899,29 +3900,35 @@ function drawChart() {
     ctx.textAlign = 'right'; ctx.fillText((maxW-(maxW-minW)*(i/5)).toFixed(1), pad.left-6, y+4);
   }
   ctx.textAlign = 'center';
-  if (isZoom) {
-    /* 放大模式：X轴显示日期（如 7.28） */
-    for (let d = 0; d < visTotal; d++) {
-      const x = pad.left + (d/visSpan)*cw;
-      const dayIdx = zoomStart + d;
+  /* 周数标签点击区域（用HTML覆盖在canvas上） */
+  var weekBarEl = document.getElementById('chartWeekBar');
+  if (!isZoom && weekBarEl) {
+    /* 全览模式：在canvas底部对应位置放置可点击的W0/W1标签 */
+    var weekHtml = '';
+    for (var wv = 0; wv <= tw; wv++) {
+      var wx = pad.left + (wv*7/total)*cw;
+      var wPct = (wx / W * 100);
+      weekHtml += '<span onclick="zoomWeek(' + wv + ')" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:0.7rem;font-weight:600;color:#78716c;cursor:pointer;padding:2px 6px;border-radius:6px;transition:all 0.15s" onmouseover="this.style.background=\'#f3e8ff\';this.style.color=\'#8b5cf6\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#78716c\'">W' + wv + '</span>';
+    }
+    weekBarEl.innerHTML = weekHtml;
+    weekBarEl.style.display = 'block';
+  } else if (weekBarEl) {
+    /* 放大模式：显示日期标签（不可点击） */
+    var weekHtml = '';
+    for (var d = 0; d < visTotal; d++) {
+      var dayIdx = zoomStart + d;
       if (dayIdx < state.days.length) {
-        const date = new Date(state.days[dayIdx].date);
-        const label = (date.getMonth()+1) + '.' + date.getDate();
-        ctx.fillText(label, x, H-pad.bottom+18);
+        var date = new Date(state.days[dayIdx].date);
+        var label = (date.getMonth()+1) + '.' + date.getDate();
+        var dx = pad.left + (d/visSpan)*cw;
+        var dPct = (dx / W * 100);
+        weekHtml += '<span style="position:absolute;left:' + dPct + '%;bottom:22px;transform:translateX(-50%);font-size:0.7rem;font-weight:600;color:#8b5cf6">' + label + '</span>';
       }
     }
-    /* 底部显示日期范围 */
-    var rangeStart = new Date(state.days[zoomStart].date);
-    var rangeEnd = new Date(state.days[Math.min(zoomEnd-1, state.days.length-1)].date);
-    var rangeStr = (rangeStart.getMonth()+1)+'.'+rangeStart.getDate() + ' - ' + (rangeEnd.getMonth()+1)+'.'+rangeEnd.getDate();
-    document.getElementById('chartDateRange').textContent = '第' + (chartZoomWeek+1) + '周 · ' + rangeStr;
-  } else {
-    /* 全览模式：X轴显示 W0/W1... */
-    for (let w = 0; w <= tw; w++) {
-      const x = pad.left + (w*7/total)*cw;
-      ctx.fillText('W'+w, x, H-pad.bottom+18);
-    }
-    document.getElementById('chartDateRange').textContent = '';
+    /* 返回按钮 */
+    weekHtml += '<span onclick="zoomWeek(-1)" style="position:absolute;right:0;bottom:22px;font-size:0.7rem;font-weight:600;color:#ec4899;cursor:pointer;padding:2px 8px;border-radius:6px;background:#fdf2f8" onmouseover="this.style.background=\'#fce7f3\'" onmouseout="this.style.background=\'#fdf2f8\'">← 全部</span>';
+    weekBarEl.innerHTML = weekHtml;
+    weekBarEl.style.display = 'block';
   }
   /* X坐标计算函数 */
   function chartX(idx) {
@@ -4006,22 +4013,6 @@ function drawChart() {
   document.getElementById('s-avg').innerHTML = conv(weights.reduce((a,b)=>a+b,0)/weights.length).toFixed(1) + '<span class="unit">' + unitLabel() + '</span>';
   document.getElementById('s-count').innerHTML = new Set(all.map(d=>d.idx)).size + '<span class="unit">天</span>';
   /* 渲染周数标签栏 */
-  renderWeekBar(total);
-}
-
-/* 渲染可点击的周数标签 */
-function renderWeekBar(total) {
-  var bar = document.getElementById('chartWeekBar');
-  if (!bar) return;
-  var tw = Math.ceil(total / 7);
-  var html = '';
-  /* "全部"按钮 */
-  html += '<span onclick="zoomWeek(-1)" style="padding:3px 10px;border-radius:8px;font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.15s;background:' + (chartZoomWeek < 0 ? 'linear-gradient(135deg,#8b5cf6,#ec4899)' : '#f5f5f4') + ';color:' + (chartZoomWeek < 0 ? '#fff' : '#78716c') + '">全部</span>';
-  for (var w = 0; w < tw; w++) {
-    var active = chartZoomWeek === w;
-    html += '<span onclick="zoomWeek(' + w + ')" style="padding:3px 10px;border-radius:8px;font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.15s;background:' + (active ? 'linear-gradient(135deg,#8b5cf6,#ec4899)' : '#f5f5f4') + ';color:' + (active ? '#fff' : '#78716c') + '">W' + w + '</span>';
-  }
-  bar.innerHTML = html;
 }
 
 /* ---------- 计划 ---------- */
