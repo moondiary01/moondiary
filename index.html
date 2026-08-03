@@ -4064,12 +4064,14 @@ function drawChart() {
       if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
     });
     ctx.stroke();
-    /* 数据点 */
-    fatD.forEach(d => {
-      const x = chartX(d.idx);
-      const y = pad.top + (1-(d.f-minF)/(maxF-minF))*ch;
-      ctx.fillStyle = '#D4B800'; ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
-    });
+    /* 只标注起始点和最后记录点（点线点模式） */
+    if (fatD.length > 0) {
+      var firstFat = fatD[0], lastFat = fatD[fatD.length - 1];
+      var fx3 = chartX(firstFat.idx), fy3 = pad.top + (1-(firstFat.f-minF)/(maxF-minF))*ch;
+      var lx3 = chartX(lastFat.idx), ly3 = pad.top + (1-(lastFat.f-minF)/(maxF-minF))*ch;
+      ctx.fillStyle = '#D4B800'; ctx.beginPath(); ctx.arc(fx3,fy3,1.5,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(lx3,ly3,1.5,0,Math.PI*2); ctx.fill();
+    }
     /* 图例 */
     ctx.fillStyle = '#D4B800'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';
     ctx.fillText('体脂率(%)', W - pad.right - 60, pad.top - 10);
