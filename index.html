@@ -5137,7 +5137,7 @@ function renderCalendar() {
       /* 运动日历 */
       const dayIdx = state.days.findIndex(dd => dd.date === ds);
       const hasExercise = dayIdx >= 0 && state.days[dayIdx].exercise && state.days[dayIdx].exercise !== '无运动';
-      if (hasExercise) { cls += ' exercise'; label = d + ''; }
+      if (hasExercise) { cls += ' exercise'; label = d + '🏃'; }
       /* 照片标记 + 体重箭头 */
       var photoMarkM = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo">📷</span>' : '';
       var weightArrowM = '';
@@ -5172,8 +5172,8 @@ function renderCalendar() {
         const ovStart = new Date(ovulationDay); ovStart.setDate(ovStart.getDate() - 2);
         const ovEnd = new Date(ovulationDay); ovEnd.setDate(ovEnd.getDate() + 2);
         if (!isPeriodDay(ds)) {
-          if (checkDate.getTime() === ovulationDay.getTime()) { cls += ' ovulation'; label = d + ''; }
-          else if (checkDate >= ovStart && checkDate <= ovEnd) cls += ' ovulation-window';
+          if (checkDate.getTime() === ovulationDay.getTime()) { cls += ' ovulation'; label = d + '🥚'; }
+          else if (checkDate >= ovStart && checkDate <= ovEnd) { cls += ' ovulation-window'; label = d + '🌸'; }
         }
       }
       /* 体重波动箭头（同步晨起体重） */
