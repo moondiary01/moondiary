@@ -3886,7 +3886,7 @@ function drawChart() {
     var eb = document.getElementById('chartWeekBar');
     if (eb) {
       if (isZoom) {
-        eb.innerHTML = '<span onclick="zoomWeek(-1)" style="position:absolute;left:0;top:-360px;font-size:0.7rem;font-weight:600;color:#ec4899;cursor:pointer;padding:3px 10px;border-radius:8px;background:#fdf2f8" onmouseover="this.style.background=\'#fce7f3\'" onmouseout="this.style.background=\'#fdf2f8\'">← 全部</span>';
+        eb.innerHTML = '<span onclick="zoomWeek(-1)" style="position:absolute;left:0;top:-370px;font-size:0.75rem;font-weight:700;color:#ec4899;cursor:pointer;padding:4px 12px;border-radius:10px;background:linear-gradient(135deg,#fdf2f8,#fce7f3);border:1px solid rgba(236,72,153,0.2);box-shadow:0 2px 8px rgba(236,72,153,0.1)" onmouseover="this.style.background=\'linear-gradient(135deg,#fce7f3,#fbcfe8)\'" onmouseout="this.style.background=\'linear-gradient(135deg,#fdf2f8,#fce7f3)\'">← 全部</span>';
         eb.style.display = 'block';
       } else {
         eb.innerHTML = '';
@@ -3947,7 +3947,7 @@ function drawChart() {
       var midEnd = showWeeks - 1;
       var midCount = midEnd - midStart + 1;
       /* 收起按钮 */
-      weekHtml += '<span onclick="chartWeekExpanded=false;drawChart()" style="position:absolute;left:0;top:-360px;font-size:0.75rem;font-weight:700;color:#ec4899;cursor:pointer;padding:4px 12px;border-radius:10px;background:linear-gradient(135deg,#fdf2f8,#fce7f3);border:1px solid rgba(236,72,153,0.2);box-shadow:0 2px 8px rgba(236,72,153,0.1)" onmouseover="this.style.background=\'linear-gradient(135deg,#fce7f3,#fbcfe8)\'" onmouseout="this.style.background=\'linear-gradient(135deg,#fdf2f8,#fce7f3)\'">← 收起</span>';
+      weekHtml += '<span onclick="chartWeekExpanded=false;drawChart()" style="position:absolute;left:0;top:-370px;font-size:0.75rem;font-weight:700;color:#ec4899;cursor:pointer;padding:4px 12px;border-radius:10px;background:linear-gradient(135deg,#fdf2f8,#fce7f3);border:1px solid rgba(236,72,153,0.2);box-shadow:0 2px 8px rgba(236,72,153,0.1)" onmouseover="this.style.background=\'linear-gradient(135deg,#fce7f3,#fbcfe8)\'" onmouseout="this.style.background=\'linear-gradient(135deg,#fdf2f8,#fce7f3)\'">← 收起</span>';
       for (var li = 0; li < midCount; li++) {
         var wv = midStart + li;
         var wPct = lineStartPct + (midCount <= 1 ? 0.5 : (li / (midCount - 1)) * lineSpan);
@@ -3966,7 +3966,7 @@ function drawChart() {
     /* 放大模式：显示日期标签，首尾内缩 */
     var weekHtml = '';
     /* 返回按钮放在左上角，不挡日期 */
-    weekHtml += '<span onclick="zoomWeek(-1)" style="position:absolute;left:0;top:-360px;font-size:0.7rem;font-weight:600;color:#ec4899;cursor:pointer;padding:3px 10px;border-radius:8px;background:#fdf2f8" onmouseover="this.style.background=\'#fce7f3\'" onmouseout="this.style.background=\'#fdf2f8\'">← 全部</span>';
+    weekHtml += '<span onclick="zoomWeek(-1)" style="position:absolute;left:0;top:-370px;font-size:0.75rem;font-weight:700;color:#ec4899;cursor:pointer;padding:4px 12px;border-radius:10px;background:linear-gradient(135deg,#fdf2f8,#fce7f3);border:1px solid rgba(236,72,153,0.2);box-shadow:0 2px 8px rgba(236,72,153,0.1)" onmouseover="this.style.background=\'linear-gradient(135deg,#fce7f3,#fbcfe8)\'" onmouseout="this.style.background=\'linear-gradient(135deg,#fdf2f8,#fce7f3)\'">← 全部</span>';
     for (var d = 0; d < visTotal; d++) {
       var dayIdx = zoomStart + d;
       if (dayIdx < state.days.length) {
