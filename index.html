@@ -3881,9 +3881,16 @@ function drawChart() {
   const fatD_check = state.days.map((d,i) => ({idx:i, f:d.fat})).filter(d => d.f !== null && d.f !== undefined && d.idx >= zoomStart && d.idx < zoomEnd);
   if (all.length === 0 && fatD_check.length === 0) {
     ctx.fillStyle = '#A8A29E'; ctx.font = '15px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('暂无数据，请在「每日记录」页填写', W/2, H/2);
+    ctx.fillText(isZoom ? '该周暂无数据' : '暂无数据，请在「每日记录」页填写', W/2, H/2);
     var eb = document.getElementById('chartWeekBar');
-    if (eb) eb.innerHTML = '';
+    if (eb) {
+      if (isZoom) {
+        eb.innerHTML = '<span onclick="zoomWeek(-1)" style="position:absolute;right:0;bottom:22px;font-size:0.7rem;font-weight:600;color:#ec4899;cursor:pointer;padding:2px 8px;border-radius:6px;background:#fdf2f8" onmouseover="this.style.background=\'#fce7f3\'" onmouseout="this.style.background=\'#fdf2f8\'">← 全部</span>';
+        eb.style.display = 'block';
+      } else {
+        eb.innerHTML = '';
+      }
+    }
     return;
   }
   if (all.length === 0) {
