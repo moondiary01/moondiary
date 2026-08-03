@@ -5168,10 +5168,18 @@ function renderCalendar() {
       if (state.periods && state.periods.length) {
         const lastP = state.periods[state.periods.length - 1];
         const lastStart = new Date(lastP.start);
-        const predictStart = new Date(lastStart); predictStart.setDate(predictStart.getDate() + 28);
+        /* 计算实际周期：如果有两条以上经期记录，用最近两次的间隔；否则默认28天 */
+        var cycleDays = 28;
+        if (state.periods.length >= 2) {
+          var prevStart = new Date(state.periods[state.periods.length - 2].start);
+          var actualCycle = Math.round((lastStart - prevStart) / 86400000);
+          if (actualCycle >= 21 && actualCycle <= 45) cycleDays = actualCycle;
+        }
+        const predictStart = new Date(lastStart); predictStart.setDate(predictStart.getDate() + cycleDays);
         const predictEnd = new Date(predictStart); predictEnd.setDate(predictEnd.getDate() + 5);
         const checkDate = new Date(ds);
         if (!isPeriodDay(ds) && checkDate >= predictStart && checkDate <= predictEnd) cls += ' period-predict';
+        /* 排卵日 = 下次经期开始前14天 */
         const ovulationDay = new Date(predictStart); ovulationDay.setDate(ovulationDay.getDate() - 14);
         const ovStart = new Date(ovulationDay); ovStart.setDate(ovStart.getDate() - 2);
         const ovEnd = new Date(ovulationDay); ovEnd.setDate(ovEnd.getDate() + 2);
