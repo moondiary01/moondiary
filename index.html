@@ -3915,8 +3915,12 @@ function drawChart() {
     var showWeeks = Math.min(curWeek + 1, tw);
     var weekHtml = '';
     for (var wv = 0; wv <= showWeeks; wv++) {
-      /* 均匀分布：W0在最左，最后一个在最右 */
-      var wPct = (showWeeks > 0) ? (wv / showWeeks) * 100 : 50;
+      /* 均匀分布：W0在最左，最后一个在最右，首尾内缩不超出线条 */
+      var wPct;
+      if (showWeeks <= 0) { wPct = 50; }
+      else if (wv === 0) { wPct = 6; } /* 首个往里收 */
+      else if (wv === showWeeks) { wPct = 94; } /* 末个往里收 */
+      else { wPct = 6 + (wv / showWeeks) * 88; } /* 中间均匀分布 */
       weekHtml += '<span onclick="zoomWeek(' + wv + ')" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:0.7rem;font-weight:600;color:#78716c;cursor:pointer;padding:2px 6px;border-radius:6px;transition:all 0.15s" onmouseover="this.style.background=\'#f3e8ff\';this.style.color=\'#8b5cf6\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#78716c\'">W' + wv + '</span>';
     }
     weekBarEl.innerHTML = weekHtml;
