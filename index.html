@@ -979,7 +979,7 @@ _loadCosSdk(0);
   </div>
 
   <div class="card">
-    <div class="card-title"><img src="assets/icons/rocket.png" style="width:22px;height:22px;vertical-align:middle;margin-right:3px;" alt=""> 减重进度</div>
+    <div class="card-title">减重进度</div>
     <div class="progress-wrap">
       <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
       <div class="progress-text" id="progressText">0%</div>
@@ -5139,7 +5139,7 @@ function renderCalendar() {
       const hasExercise = dayIdx >= 0 && state.days[dayIdx].exercise && state.days[dayIdx].exercise !== '无运动';
       if (hasExercise) { cls += ' exercise'; label = d + ''; }
       /* 照片标记 + 体重箭头 */
-      var photoMarkM = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo"></span>' : '';
+      var photoMarkM = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo">📷</span>' : '';
       var weightArrowM = '';
       if (dayIdx >= 0) {
         var wM = state.days[dayIdx].weightAM;
@@ -5197,7 +5197,7 @@ function renderCalendar() {
         }
       }
       /* 照片标记（在日期数字上方） */
-      var photoMark = (dayIdx2 >= 0 && state.days[dayIdx2].photo) ? '<span class="cal-photo"></span>' : '';
+      var photoMark = (dayIdx2 >= 0 && state.days[dayIdx2].photo) ? '<span class="cal-photo">📷</span>' : '';
       html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + (photoMark || '') + label + (weightArrow || '') + '</div>';
     }
   }
