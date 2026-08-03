@@ -354,7 +354,7 @@ td .w-cell{font-weight:600;color:var(--rose-600)}
 td .d-pos{color:var(--rose-500)}
 td .d-neg{color:var(--mint)}
 td .d-zero{color:var(--text-l)}
-td .tag{display:inline-block;object-fit:contain;object-fit:contain;font-size:0.62rem;padding:1px 4px;border-radius:3px;font-weight:600}
+td .tag{display:inline-block;font-size:0.62rem;padding:1px 4px;border-radius:3px;font-weight:600}
 td .tag.am{background:var(--amber-l);color:#92400E}
 td .tag.pm{background:var(--mauve-l);color:#5B21B6}
 td .tag.bm-y{background:var(--mint-l);color:#065F46}
@@ -504,7 +504,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .beauty-emoji-card small{font-size:0.72rem;color:#292524;margin-top:2px;line-height:1.1;display:block;text-align:center;font-weight:500}
 .beauty-emoji-card.beauty-emoji-card-active{background:linear-gradient(135deg,#fef3c7,#fde68a);border-color:#fbbf24;box-shadow:0 2px 10px rgba(251,191,36,0.25);transform:scale(1.05)}
 .beauty-emoji-card.beauty-emoji-card-active small{color:#92400e;font-weight:700}
-.beauty-toggle{display:inline-block;object-fit:contain;object-fit:contain;width:44px;height:24px;border-radius:12px;background:#d6d3d1;position:relative;cursor:pointer;transition:all 0.3s}
+.beauty-toggle{display:inline-block;width:44px;height:24px;border-radius:12px;background:#d6d3d1;position:relative;cursor:pointer;transition:all 0.3s}
 .beauty-toggle.beauty-toggle-on{background:linear-gradient(135deg,#8b5cf6,#ec4899)}
 .beauty-toggle::after{content:'';position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;transition:all 0.3s;box-shadow:0 1px 3px rgba(0,0,0,0.15)}
 .beauty-toggle.beauty-toggle-on::after{left:22px}
@@ -523,7 +523,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .beauty-date-row{display:flex;align-items:center;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.2)}
 .beauty-date-item{flex:1;text-align:center;cursor:pointer}
 .beauty-date-label{font-size:0.7rem;color:rgba(255,255,255,0.7);display:block}
-.beauty-date-value{font-size:0.82rem;font-weight:600;color:#fff;padding:4px 12px;border-radius:100px;background:rgba(255,255,255,0.15);display:inline-block;object-fit:contain;object-fit:contain;margin-top:4px}
+.beauty-date-value{font-size:0.82rem;font-weight:600;color:#fff;padding:4px 12px;border-radius:100px;background:rgba(255,255,255,0.15);display:inline-block;margin-top:4px}
 .beauty-entry-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,92,246,0.12)}
 .comm-post{background:linear-gradient(180deg,#fff 0%,#fafafa 100%);border-radius:16px;padding:14px 16px;border:1px solid #ece7e3;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(139,92,246,0.03);transition:all 0.25s}
 .comm-post:hover{box-shadow:0 4px 16px rgba(139,92,246,0.08),0 1px 3px rgba(0,0,0,0.06)}
@@ -619,7 +619,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .notice-item-reply-send:active{transform:scale(0.93)}
 .notice-fold-toggle{text-align:center;padding:10px 0;font-size:0.72rem;color:#a78bfa;cursor:pointer;border-radius:8px;transition:all 0.2s;margin-top:4px;user-select:none}
 .notice-fold-toggle:hover{background:rgba(139,92,246,0.04);color:#7c3aed}
-.notice-fold-arrow{display:inline-block;object-fit:contain;object-fit:contain;transition:transform 0.2s;margin-left:2px;font-size:0.65rem}
+.notice-fold-arrow{display:inline-block;transition:transform 0.2s;margin-left:2px;font-size:0.65rem}
 .comm-comment-item{display:flex;gap:7px;margin-bottom:3px;padding:2px 0;cursor:pointer;transition:background 0.12s ease-out;border-radius:6px;-webkit-tap-highlight-color:transparent}
 .comm-comment-item:last-child{margin-bottom:0}
 .comm-comment-item:active{background:rgba(139,92,246,0.06)}
@@ -1329,7 +1329,7 @@ _loadCosSdk(0);
       </div>
     </div>
     <div style="background:#fff;padding:0 24px 20px;text-align:center;border-radius:0 0 20px 20px">
-      <div style="display:inline-block;object-fit:contain;object-fit:contain;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(236,72,153,0.06));font-size:0.7rem;color:#a8a29e;letter-spacing:1px">UPGRADE · 一次购买 · 永久使用</div>
+      <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(236,72,153,0.06));font-size:0.7rem;color:#a8a29e;letter-spacing:1px">UPGRADE · 一次购买 · 永久使用</div>
       <div style="margin-top:14px">
         <button class="btn btn-outline" style="border-color:#e5e7eb;color:#78716c;font-size:0.82rem" onclick="document.getElementById('beautyHomeModal').classList.remove('show');playClick()">关闭</button>
       </div>
@@ -3092,9 +3092,16 @@ function renderPeriod() {
 }
 function countPeriodDays(dateStr) {
   if (!state.periods) return 1;
-  const open = state.periods.filter(p => p.end === null || p.end >= dateStr).find(p => p.start <= dateStr);
-  if (!open) return 1;
-  return Math.floor((new Date(dateStr) - new Date(open.start)) / 86400000) + 1;
+  for (const p of state.periods) {
+    if (dateStr < p.start) continue;
+    const e = (p.end === null || p.end === undefined) ? p.start : p.end;
+    if (dateStr <= e) {
+      const s = new Date(p.start);
+      const t = new Date(dateStr);
+      return Math.floor((t - s) / 86400000) + 1;
+    }
+  }
+  return 1;
 }
 function isPeriodDay(dateStr) {
   if (!state.periods) return false;
@@ -5272,20 +5279,6 @@ function onCalDayClick(ds) {
   } else {
     showPeriodDetail(ds);
   }
-}
-
-function countPeriodDays(ds) {
-  if (!state.periods) return 0;
-  for (const p of state.periods) {
-    if (ds < p.start) continue;
-    const e = (p.end === null || p.end === undefined) ? p.start : p.end;
-    if (ds <= e) {
-      const s = new Date(p.start);
-      const t = new Date(ds);
-      return Math.floor((t - s) / 86400000) + 1;
-    }
-  }
-  return 0;
 }
 
 function showPeriodDetail(ds) {
@@ -9817,7 +9810,7 @@ function renderUnifiedCommentItem(n) {
           '<div class="notice-item-avatar">' + avatarContent + '</div>' +
           '<div class="notice-item-meta">' +
             '<div class="notice-item-nick">' + escapeHtml(c.nickname||'月友') + typeTag + '</div>' +
-            '<div class="notice-item-action">' + actionText + ' · ' + (isUnread ? '<span class="new-dot" style="display:inline-block;object-fit:contain;object-fit:contain;vertical-align:middle;margin-right:2px"></span>' : '') + formatNoticeTime(c.createdAt) + '</div>' +
+            '<div class="notice-item-action">' + actionText + ' · ' + (isUnread ? '<span class="new-dot" style="display:inline-block;vertical-align:middle;margin-right:2px"></span>' : '') + formatNoticeTime(c.createdAt) + '</div>' +
           '</div>' +
         '</div>' +
         '<div class="notice-item-body">' + escapeHtml(c.content) + '</div>' +
@@ -9907,7 +9900,7 @@ function renderNoticeItem(c, p, type, isUnread, parentComment) {
           '<div class="notice-item-avatar">' + avatarContent + '</div>' +
           '<div class="notice-item-meta">' +
             '<div class="notice-item-nick">' + escapeHtml(c.nickname||'月友') + '</div>' +
-            '<div class="notice-item-action">' + actionText + ' · ' + (isUnread ? '<span class="new-dot" style="display:inline-block;object-fit:contain;object-fit:contain;vertical-align:middle;margin-right:2px"></span>' : '') + formatNoticeTime(c.createdAt) + '</div>' +
+            '<div class="notice-item-action">' + actionText + ' · ' + (isUnread ? '<span class="new-dot" style="display:inline-block;vertical-align:middle;margin-right:2px"></span>' : '') + formatNoticeTime(c.createdAt) + '</div>' +
           '</div>' +
         '</div>' +
         /* 评论内容 */
