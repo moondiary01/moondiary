@@ -5160,7 +5160,7 @@ function renderCalendar() {
       html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + (photoMarkM || '') + label + (weightArrowM || '') + '</div>';
     } else {
       /* 经期日历 */
-      if (isPeriodDay(ds)) cls += ' period';
+      if (isPeriodDay(ds)) { cls += ' period'; label = d + '🌸'; }
       if (state.periods && state.periods.length) {
         const lastP = state.periods[state.periods.length - 1];
         const lastStart = new Date(lastP.start);
@@ -5173,7 +5173,7 @@ function renderCalendar() {
         const ovEnd = new Date(ovulationDay); ovEnd.setDate(ovEnd.getDate() + 2);
         if (!isPeriodDay(ds)) {
           if (checkDate.getTime() === ovulationDay.getTime()) { cls += ' ovulation'; label = d + '🥚'; }
-          else if (checkDate >= ovStart && checkDate <= ovEnd) { cls += ' ovulation-window'; label = d + '🌸'; }
+          else if (checkDate >= ovStart && checkDate <= ovEnd) { cls += ' ovulation-window'; }
         }
       }
       /* 体重波动箭头（同步晨起体重） */
