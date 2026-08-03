@@ -3900,6 +3900,7 @@ function drawChart() {
   all.forEach(d => { if (d.w < minW) minW = d.w; if (d.w > maxW) maxW = d.w; });
   minW = Math.floor(minW - 1); maxW = Math.ceil(maxW + 1);
   const tw = Math.ceil(total / 7);
+  var curWeek = Math.floor(getCurrentDayIndex() / 7); /* 当前所在周 */
   ctx.strokeStyle = '#F5D5D5'; ctx.lineWidth = 1; ctx.font = '11px sans-serif'; ctx.fillStyle = '#A8A29E';
   for (let i = 0; i <= 5; i++) {
     const y = pad.top + (ch/5)*i;
@@ -3910,9 +3911,10 @@ function drawChart() {
   /* 周数标签点击区域（用HTML覆盖在canvas上） */
   var weekBarEl = document.getElementById('chartWeekBar');
   if (!isZoom && weekBarEl) {
-    /* 全览模式：在canvas底部对应位置放置可点击的W0/W1标签 */
+    /* 全览模式：只显示到当前所在周 */
+    var showWeeks = Math.min(curWeek + 1, tw);
     var weekHtml = '';
-    for (var wv = 0; wv <= tw; wv++) {
+    for (var wv = 0; wv <= showWeeks; wv++) {
       var wx = pad.left + (wv*7/total)*cw;
       var wPct = (wx / W * 100);
       weekHtml += '<span onclick="zoomWeek(' + wv + ')" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:0.7rem;font-weight:600;color:#78716c;cursor:pointer;padding:2px 6px;border-radius:6px;transition:all 0.15s" onmouseover="this.style.background=\'#f3e8ff\';this.style.color=\'#8b5cf6\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#78716c\'">W' + wv + '</span>';
