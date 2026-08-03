@@ -7383,7 +7383,7 @@ function renderMoodDayDetail() {
     Object.keys(moodEmojis).forEach(function(k) {
       var moods = s.moods || [];
       var isActive = moods.indexOf(k) > -1;
-      html += '<span class="beauty-emoji-card'+(isActive?' beauty-emoji-card-active':'')+'" onclick="selectMoodDetailEmoji(\''+k+'\',this);playClick()" style="width:calc(20% - 4.8px);box-sizing:border-box">'+(moodEmojis[k].indexOf('|')>-1 ? moodEmojis[k].split('|')[0] : moodEmojis[k].split(' ')[0])+'<small>'+(moodEmojis[k].indexOf('|')>-1 ? moodEmojis[k].split('|').pop() : moodEmojis[k].split(' ').pop())+'</small></span>';
+      html += '<span class="beauty-emoji-card'+(isActive?' beauty-emoji-card-active':'')+'" onclick="selectMoodDetailEmoji(\''+k+'\',this);playClick()" style="width:calc(20% - 4.8px);box-sizing:border-box">'+moodEmojis[k]+'<small>'+k+'</small></span>';
     });
     html += '</div></div>';
     html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">📔 日记本</label>';
@@ -7409,7 +7409,7 @@ function renderMoodDayDetail() {
         var mk = s.moods[mi];
         var md = moodEmojis[mk] || '';
         if (md) {
-          moodHtml += (md.indexOf('|')>-1 ? md.split('|')[0] : md.split(' ')[0]);
+          moodHtml += md;
         }
       }
       html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border-radius:10px"><span style="font-size:0.8rem;color:#78716c">心情</span><div style="font-size:1.3rem;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">'+moodHtml+'</div></div>';
