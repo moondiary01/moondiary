@@ -3889,7 +3889,7 @@ function drawChart() {
   function drawLine(w, color, label) {
     if (w < minW || w > maxW) return;
     const y = pad.top + (1-(w-minW)/(maxW-minW))*ch;
-    ctx.strokeStyle = color; ctx.setLineDash([6,4]); ctx.lineWidth = 1.5;
+    ctx.strokeStyle = color; ctx.setLineDash([6,4]); ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W-pad.right, y); ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = color; ctx.textAlign = 'left'; ctx.font = 'bold 11px sans-serif';
@@ -3898,7 +3898,7 @@ function drawChart() {
   if (state.startWeight) drawLine(state.startWeight, '#C026D3', '起始');
   if (state.targetWeight) drawLine(state.targetWeight, '#F59E0B', '目标');
   if (pmD.length > 0) {
-    ctx.strokeStyle = '#EC4899'; ctx.lineWidth = 3; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.beginPath();
+    ctx.strokeStyle = '#EC4899'; ctx.lineWidth = 1.5; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.beginPath();
     pmD.forEach((d,i) => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
@@ -3908,11 +3908,11 @@ function drawChart() {
     pmD.forEach(d => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
-      ctx.fillStyle = '#EC4899'; ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#EC4899'; ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
     });
   }
   if (amD.length > 0) {
-    ctx.strokeStyle = '#C026D3'; ctx.lineWidth = 3.5; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.beginPath();
+    ctx.strokeStyle = '#C026D3'; ctx.lineWidth = 2; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.beginPath();
     amD.forEach((d,i) => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
@@ -3922,7 +3922,7 @@ function drawChart() {
     amD.forEach(d => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
-      ctx.fillStyle = '#C026D3'; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#C026D3'; ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
     });
   }
   /* 体脂率曲线（右侧Y轴，桔黄色） */
@@ -3940,7 +3940,7 @@ function drawChart() {
       ctx.fillText(val + '%', W - pad.right + 3, y + 3);
     }
     /* 体脂率曲线 */
-    ctx.strokeStyle = '#D4B800'; ctx.lineWidth = 2; ctx.beginPath();
+    ctx.strokeStyle = '#D4B800'; ctx.lineWidth = 1; ctx.beginPath();
     fatD.forEach((d,i) => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.f-minF)/(maxF-minF))*ch;
@@ -3951,7 +3951,7 @@ function drawChart() {
     fatD.forEach(d => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.f-minF)/(maxF-minF))*ch;
-      ctx.fillStyle = '#D4B800'; ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#D4B800'; ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
     });
     /* 图例 */
     ctx.fillStyle = '#D4B800'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';
