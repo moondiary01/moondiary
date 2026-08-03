@@ -5693,7 +5693,7 @@ function renderAll() {
 /* ===== 升级版功能 ===== */
 var beautySkinData = null;
 var beautyMoodData = null;
-var beautyMoodState = { mood: '', status: '', diary: '', discipline: {} };
+var beautyMoodState = { moods: [], status: '', diary: '', discipline: {} };
 var moodCalMonth = null;
 var moodDayDetailDate = null;
 var moodDayDetailState = {};
@@ -6908,7 +6908,7 @@ function openBeautyMood() {
       return;
     }
     document.getElementById('beautyHomeModal').classList.remove('show');
-    beautyMoodState = { mood: '', status: '', diary: '', discipline: {}, photos: [], customCheck: '' };
+    beautyMoodState = { moods: [], status: '', diary: '', discipline: {}, photos: [], customCheck: '' };
   /* 渲染今日日期 */
   var dateEl = document.getElementById('moodTodayDate');
   if (dateEl) {
@@ -6939,7 +6939,14 @@ function openBeautyMood() {
       if (beautyMoodData.dailyRecords[i].date === today) { record = beautyMoodData.dailyRecords[i]; break; }
     }
     if (record) {
-      beautyMoodState.mood = record.mood || '';
+      // 兼容旧版单值 mood → 新版 moods 数组
+      if (record.moods && Array.isArray(record.moods)) {
+        beautyMoodState.moods = record.moods;
+      } else if (record.mood) {
+        beautyMoodState.moods = [record.mood];
+      } else {
+        beautyMoodState.moods = [];
+      }
       beautyMoodState.status = record.status || '';
       beautyMoodState.diary = record.diary || '';
       beautyMoodState.discipline = record.discipline || {};
@@ -6949,11 +6956,15 @@ function openBeautyMood() {
       document.getElementById('moodDiary').value = beautyMoodState.diary;
       document.getElementById('moodCharCount').textContent = beautyMoodState.diary.length + '/1000';
       if (customEl) customEl.value = beautyMoodState.customCheck;
-      /* 恢复心情emoji选中 */
-      if (beautyMoodState.mood) {
+      /* 恢复心情多选高亮 */
+      if (beautyMoodState.moods && beautyMoodState.moods.length > 0) {
         document.querySelectorAll('#moodEmojiGrid .beauty-emoji-card').forEach(function(el) {
-          if (el.getAttribute('onclick') && el.getAttribute('onclick').indexOf(beautyMoodState.mood) > -1) {
-            el.classList.add('beauty-emoji-card-active');
+          var oc = el.getAttribute('onclick') || '';
+          for (var mi = 0; mi < beautyMoodState.moods.length; mi++) {
+            if (oc.indexOf(beautyMoodState.moods[mi]) > -1) {
+              el.classList.add('beauty-emoji-card-active');
+              break;
+            }
           }
         });
       }
@@ -6982,9 +6993,18 @@ function openBeautyMood() {
 }
 
 function selectMoodEmoji(val, el) {
-  beautyMoodState.mood = val;
-  document.querySelectorAll('#moodEmojiGrid .beauty-emoji-card').forEach(function(e) { e.classList.remove('beauty-emoji-card-active'); });
-  el.classList.add('beauty-emoji-card-active');
+  /* 多选 toggle: 点击选中，再点取消 */
+  if (!beautyMoodState.moods) beautyMoodState.moods = [];
+  var idx = beautyMoodState.moods.indexOf(val);
+  if (idx > -1) {
+    // 取消选中
+    beautyMoodState.moods.splice(idx, 1);
+    el.classList.remove('beauty-emoji-card-active');
+  } else {
+    // 选中
+    beautyMoodState.moods.push(val);
+    el.classList.add('beauty-emoji-card-active');
+  }
   playClick();
   autoSaveMood();
 }
@@ -7240,7 +7260,8 @@ function renderMoodCalendar() {
 
 function isMoodDayHasData(rec) {
   if (!rec) return false;
-  if (rec.mood) return true;
+  if (rec.moods && rec.moods.length > 0) return true;
+  if (rec.mood) return true;  // 兼容旧版
   if (rec.status && rec.status.trim()) return true;
   if (rec.diary && rec.diary.trim()) return true;
   if (rec.customCheck && rec.customCheck.trim()) return true;
@@ -7272,7 +7293,7 @@ function openMoodDayDetail(dateStr) {
     }
   }
   moodDayDetailState = {
-    mood: record ? (record.mood || '') : '',
+    moods: record ? (record.moods && Array.isArray(record.moods) ? record.moods : (record.mood ? [record.mood] : [])) : [],
     status: record ? (record.status || '') : '',
     diary: record ? (record.diary || '') : '',
     discipline: record ? Object.assign({}, record.discipline || {}) : {},
@@ -7359,7 +7380,8 @@ function renderMoodDayDetail() {
     html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">今日心情</label>';
     html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
     Object.keys(moodEmojis).forEach(function(k) {
-      var isActive = s.mood === k;
+      var moods = s.moods || [];
+      var isActive = moods.indexOf(k) > -1;
       html += '<span class="beauty-emoji-card'+(isActive?' beauty-emoji-card-active':'')+'" onclick="selectMoodDetailEmoji(\''+k+'\',this);playClick()" style="width:calc(20% - 4.8px);box-sizing:border-box">'+(moodEmojis[k].indexOf('|')>-1 ? moodEmojis[k].split('|')[0] : moodEmojis[k].split(' ')[0])+'<small>'+(moodEmojis[k].indexOf('|')>-1 ? moodEmojis[k].split('|').pop() : moodEmojis[k].split(' ').pop())+'</small></span>';
     });
     html += '</div></div>';
@@ -7380,8 +7402,16 @@ function renderMoodDayDetail() {
     html += '</div></div>';
   } else {
     /* 只读模式 */
-    if (s.mood) {
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border-radius:10px"><span style="font-size:0.8rem;color:#78716c">心情</span><div style="font-size:1.3rem;margin-top:4px">'+((moodEmojis[s.mood]||'').indexOf('|')>-1 ? (moodEmojis[s.mood]).split('|')[0] + ' ' + (moodEmojis[s.mood]).split('|').pop() : (moodEmojis[s.mood]||''))+'</div></div>';
+    if (s.moods && s.moods.length > 0) {
+      var moodHtml = '';
+      for (var mi = 0; mi < s.moods.length; mi++) {
+        var mk = s.moods[mi];
+        var md = moodEmojis[mk] || '';
+        if (md) {
+          moodHtml += (md.indexOf('|')>-1 ? md.split('|')[0] : md.split(' ')[0]);
+        }
+      }
+      html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border-radius:10px"><span style="font-size:0.8rem;color:#78716c">心情</span><div style="font-size:1.3rem;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">'+moodHtml+'</div></div>';
     }
     if (s.status) {
       html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c">📝 状态</span><div style="font-size:0.9rem;margin-top:4px;color:#44403c">'+escapeHtml(s.status)+'</div></div>';
@@ -7402,9 +7432,9 @@ function renderMoodDayDetail() {
       }
       html += '</div></div>';
     }
-    if (!s.mood && !s.status && !s.diary && (!s.discipline || activeDisc.length === 0) && (!s.photos || s.photos.length === 0) && (!s.customCheck || !s.customCheck.trim())) {
+    if (!s.moods || s.moods.length === 0) { if (!s.status && !s.diary && (!s.discipline || activeDisc.length === 0) && (!s.photos || s.photos.length === 0) && (!s.customCheck || !s.customCheck.trim())) {
       html += '<div style="text-align:center;padding:24px 0;color:#a8a29e;font-size:0.85rem">该日暂无记录</div>';
-    }
+    } }
   }
   document.getElementById('moodDayDetailContent').innerHTML = html;
   var btn = document.getElementById('moodDetailEditBtn');
@@ -7412,9 +7442,16 @@ function renderMoodDayDetail() {
 }
 
 function selectMoodDetailEmoji(val, el) {
-  moodDayDetailState.mood = val;
-  el.parentNode.querySelectorAll('.beauty-emoji-card').forEach(function(e) { e.classList.remove('beauty-emoji-card-active'); });
-  el.classList.add('beauty-emoji-card-active');
+  /* 多选 toggle */
+  if (!moodDayDetailState.moods) moodDayDetailState.moods = [];
+  var idx = moodDayDetailState.moods.indexOf(val);
+  if (idx > -1) {
+    moodDayDetailState.moods.splice(idx, 1);
+    el.classList.remove('beauty-emoji-card-active');
+  } else {
+    moodDayDetailState.moods.push(val);
+    el.classList.add('beauty-emoji-card-active');
+  }
 }
 
 function toggleMoodDetailCheck(el, key) {
@@ -7440,7 +7477,8 @@ function saveMoodDayDetail() {
   var dateStr = moodDayDetailDate;
   var record = {
     date: dateStr,
-    mood: s.mood || '',
+    moods: s.moods || [],
+    mood: '',  // 保留兼容旧版
     status: s.status || '',
     diary: s.diary || '',
     discipline: s.discipline || {},
