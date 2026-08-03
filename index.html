@@ -3913,15 +3913,18 @@ function drawChart() {
   if (!isZoom && weekBarEl) {
     /* 全览模式：显示用户设置的全部周数，均匀分布填满宽度 */
     var showWeeks = tw;
+    /* 周数多时缩小字体，避免挤在一起 */
+    var weekFontSize = showWeeks > 10 ? '0.6rem' : (showWeeks > 6 ? '0.65rem' : '0.7rem');
+    var weekPad = showWeeks > 10 ? '1px 3px' : '2px 6px';
     var weekHtml = '';
     for (var wv = 0; wv <= showWeeks; wv++) {
       /* 均匀分布：首尾内缩到线条范围内 */
       var wPct;
       if (showWeeks <= 0) { wPct = 50; }
-      else if (wv === 0) { wPct = 10; } /* 首个往里收 */
-      else if (wv === showWeeks) { wPct = 90; } /* 末个往里收 */
-      else { wPct = 10 + (wv / showWeeks) * 80; } /* 中间均匀分布 */
-      weekHtml += '<span onclick="zoomWeek(' + wv + ')" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:0.7rem;font-weight:600;color:#78716c;cursor:pointer;padding:2px 6px;border-radius:6px;transition:all 0.15s" onmouseover="this.style.background=\'#f3e8ff\';this.style.color=\'#8b5cf6\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#78716c\'">W' + wv + '</span>';
+      else if (wv === 0) { wPct = 10; }
+      else if (wv === showWeeks) { wPct = 90; }
+      else { wPct = 10 + (wv / showWeeks) * 80; }
+      weekHtml += '<span onclick="zoomWeek(' + wv + ')" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:' + weekFontSize + ';font-weight:600;color:#78716c;cursor:pointer;padding:' + weekPad + ';border-radius:6px;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.background=\'#f3e8ff\';this.style.color=\'#8b5cf6\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#78716c\'">W' + wv + '</span>';
     }
     weekBarEl.innerHTML = weekHtml;
     weekBarEl.style.display = 'block';
