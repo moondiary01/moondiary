@@ -5146,12 +5146,11 @@ function renderCalendar() {
       var photoMarkM = (dayIdx >= 0 && state.days[dayIdx].photo) ? '<span class="cal-photo">📷</span>' : '';
       var weightArrowM = '';
       if (dayIdx >= 0) {
-        var wM = state.days[dayIdx].weightAM || state.days[dayIdx].weightPM;
+        var wM = state.days[dayIdx].weightAM;
         if (wM) {
           var prevWM = null;
           for (var pm = dayIdx - 1; pm >= 0; pm--) {
-            var pwm = state.days[pm].weightAM || state.days[pm].weightPM;
-            if (pwm) { prevWM = pwm; break; }
+            if (state.days[pm].weightAM) { prevWM = state.days[pm].weightAM; break; }
           }
           if (prevWM !== null) {
             var diffM = Math.abs(wM - prevWM);
@@ -5189,17 +5188,16 @@ function renderCalendar() {
           else if (checkDate >= ovStart && checkDate <= ovEnd) { cls += ' ovulation-window'; }
         }
       }
-      /* 体重波动箭头（晨重优先，无晨重用晚重） */
+      /* 体重波动箭头（同步晨起体重） */
       var weightArrow = '';
       var dayIdx2 = state.days.findIndex(dd => dd.date === ds);
       if (dayIdx2 >= 0) {
-        var w = state.days[dayIdx2].weightAM || state.days[dayIdx2].weightPM;
+        var w = state.days[dayIdx2].weightAM;
         if (w) {
-          /* 找之前最近的有体重的日期 */
+          /* 找之前最近的有晨起体重的日期 */
           var prevW = null;
           for (var pi = dayIdx2 - 1; pi >= 0; pi--) {
-            var pw = state.days[pi].weightAM || state.days[pi].weightPM;
-            if (pw) { prevW = pw; break; }
+            if (state.days[pi].weightAM) { prevW = state.days[pi].weightAM; break; }
           }
           if (prevW !== null) {
             var diff = Math.abs(w - prevW);
