@@ -1986,7 +1986,7 @@ const SESSION_KEY = 'bodydiary_session';
 const ADMIN_SESSION = 'admin'; /* 管理员登录态标识（非密钥） */
 const USED_KEYS_STORE = 'moondiary_used_keys'; /* 已使用的密钥（用过即作废） */
 const ADMIN_PW_STORE = 'moondiary_admin_pw';
-const DEFAULT_ADMIN_PW = 'moonmoondiaomeinv';
+const DEFAULT_ADMIN_PW = '09160601';
 const ADMIN_PHONE = '18680881810';
 const VERSION_STORE = 'moondiary_version';
 const APP_VERSION = '7.0';
@@ -2032,7 +2032,16 @@ function isPresetKey(k) { return PRESET_KEYS.indexOf(k) !== -1; }
 
 /* ---------- 管理员密码 ---------- */
 function getAdminPw() {
-  return localStorage.getItem(ADMIN_PW_STORE) || DEFAULT_ADMIN_PW;
+  const stored = localStorage.getItem(ADMIN_PW_STORE);
+  if (stored) {
+    /* 兼容旧密码：如果本地存储的密码不是新默认密码，自动清除并返回新密码 */
+    if (stored !== DEFAULT_ADMIN_PW && stored === 'moonmoondiaomeinv') {
+      localStorage.removeItem(ADMIN_PW_STORE);
+      return DEFAULT_ADMIN_PW;
+    }
+    return stored;
+  }
+  return DEFAULT_ADMIN_PW;
 }
 function setAdminPw(pw) {
   localStorage.setItem(ADMIN_PW_STORE, pw);
