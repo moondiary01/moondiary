@@ -4007,11 +4007,14 @@ function drawChart() {
       if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
     });
     ctx.stroke();
-    pmD.forEach(d => {
-      const x = chartX(d.idx);
-      const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
-      ctx.fillStyle = '#EC4899'; ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
-    });
+    /* 只标注起始点和最后记录点 */
+    if (pmD.length > 0) {
+      var firstPM = pmD[0], lastPM = pmD[pmD.length - 1];
+      var fx = chartX(firstPM.idx), fy = pad.top + (1-(firstPM.w-minW)/(maxW-minW))*ch;
+      var lx = chartX(lastPM.idx), ly = pad.top + (1-(lastPM.w-minW)/(maxW-minW))*ch;
+      ctx.fillStyle = '#EC4899'; ctx.beginPath(); ctx.arc(fx,fy,1.5,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(lx,ly,1.5,0,Math.PI*2); ctx.fill();
+    }
   }
   if (amD.length > 0) {
     ctx.strokeStyle = '#C026D3'; ctx.lineWidth = 2; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.beginPath();
@@ -4021,11 +4024,14 @@ function drawChart() {
       if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
     });
     ctx.stroke();
-    amD.forEach(d => {
-      const x = chartX(d.idx);
-      const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
-      ctx.fillStyle = '#C026D3'; ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
-    });
+    /* 只标注起始点和最后记录点 */
+    if (amD.length > 0) {
+      var firstAM = amD[0], lastAM = amD[amD.length - 1];
+      var fx2 = chartX(firstAM.idx), fy2 = pad.top + (1-(firstAM.w-minW)/(maxW-minW))*ch;
+      var lx2 = chartX(lastAM.idx), ly2 = pad.top + (1-(lastAM.w-minW)/(maxW-minW))*ch;
+      ctx.fillStyle = '#C026D3'; ctx.beginPath(); ctx.arc(fx2,fy2,2,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(lx2,ly2,2,0,Math.PI*2); ctx.fill();
+    }
   }
   /* 体脂率曲线（右侧Y轴，桔黄色） */
   const fatD = state.days.map((d,i) => ({idx:i, f:d.fat})).filter(d => d.f !== null && d.f !== undefined && d.idx >= zoomStart && d.idx < zoomEnd);
