@@ -3885,7 +3885,7 @@ function drawChart() {
     var eb = document.getElementById('chartWeekBar');
     if (eb) {
       if (isZoom) {
-        eb.innerHTML = '<span onclick="zoomWeek(-1)" style="position:absolute;right:0;bottom:22px;font-size:0.7rem;font-weight:600;color:#ec4899;cursor:pointer;padding:2px 8px;border-radius:6px;background:#fdf2f8" onmouseover="this.style.background=\'#fce7f3\'" onmouseout="this.style.background=\'#fdf2f8\'">← 全部</span>';
+        eb.innerHTML = '<span onclick="zoomWeek(-1)" style="position:absolute;left:0;top:-360px;font-size:0.7rem;font-weight:600;color:#ec4899;cursor:pointer;padding:3px 10px;border-radius:8px;background:#fdf2f8" onmouseover="this.style.background=\'#fce7f3\'" onmouseout="this.style.background=\'#fdf2f8\'">← 全部</span>';
         eb.style.display = 'block';
       } else {
         eb.innerHTML = '';
