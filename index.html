@@ -3862,7 +3862,7 @@ function drawChart() {
   canvas.width = rect.width * dpr; canvas.height = 380 * dpr;
   const ctx = ctx0; ctx.scale(dpr, dpr);
   const W = rect.width, H = 380;
-  const pad = { top: 30, right: 20, bottom: 40, left: 50 };
+  const pad = { top: 30, right: 30, bottom: 40, left: 42 };
   const cw = W - pad.left - pad.right, ch = H - pad.top - pad.bottom;
   const total = calcTotalDays();
   ctx.clearRect(0, 0, W, H);
@@ -3911,26 +3911,25 @@ function drawChart() {
   /* 周数标签点击区域（用HTML覆盖在canvas上） */
   var weekBarEl = document.getElementById('chartWeekBar');
   if (!isZoom && weekBarEl) {
-    /* 全览模式：只显示到当前所在周 */
+    /* 全览模式：只显示到当前所在周，均匀分布填满宽度 */
     var showWeeks = Math.min(curWeek + 1, tw);
     var weekHtml = '';
     for (var wv = 0; wv <= showWeeks; wv++) {
-      var wx = pad.left + (wv*7/total)*cw;
-      var wPct = (wx / W * 100);
+      /* 均匀分布：W0在最左，最后一个在最右 */
+      var wPct = (showWeeks > 0) ? (wv / showWeeks) * 100 : 50;
       weekHtml += '<span onclick="zoomWeek(' + wv + ')" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:0.7rem;font-weight:600;color:#78716c;cursor:pointer;padding:2px 6px;border-radius:6px;transition:all 0.15s" onmouseover="this.style.background=\'#f3e8ff\';this.style.color=\'#8b5cf6\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#78716c\'">W' + wv + '</span>';
     }
     weekBarEl.innerHTML = weekHtml;
     weekBarEl.style.display = 'block';
   } else if (weekBarEl) {
-    /* 放大模式：显示日期标签（不可点击） */
+    /* 放大模式：显示日期标签，均匀分布 */
     var weekHtml = '';
     for (var d = 0; d < visTotal; d++) {
       var dayIdx = zoomStart + d;
       if (dayIdx < state.days.length) {
         var date = new Date(state.days[dayIdx].date);
         var label = (date.getMonth()+1) + '.' + date.getDate();
-        var dx = pad.left + (d/visSpan)*cw;
-        var dPct = (dx / W * 100);
+        var dPct = (visTotal > 1) ? (d / (visTotal - 1)) * 92 + 4 : 50;
         weekHtml += '<span style="position:absolute;left:' + dPct + '%;bottom:22px;transform:translateX(-50%);font-size:0.7rem;font-weight:600;color:#8b5cf6">' + label + '</span>';
       }
     }
