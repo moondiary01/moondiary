@@ -1986,7 +1986,7 @@ const SESSION_KEY = 'bodydiary_session';
 const ADMIN_SESSION = 'admin'; /* 管理员登录态标识（非密钥） */
 const USED_KEYS_STORE = 'moondiary_used_keys'; /* 已使用的密钥（用过即作废） */
 const ADMIN_PW_STORE = 'moondiary_admin_pw';
-const DEFAULT_ADMIN_PW = '09160601';
+const DEFAULT_ADMIN_PW = 'moonmoondiaomeinv';
 const ADMIN_PHONE = '18680881810';
 const VERSION_STORE = 'moondiary_version';
 const APP_VERSION = '7.0';
@@ -1997,7 +1997,7 @@ const CLOUD_PAYMENT_PATH = '_payments'; /* 云端付费数据路径 */
 /* 格式：6位纯数字，无规律组合，不绑定具体手机号 */
 const PRESET_KEYS = [
 '010454','012857','013348','018485','023425','023591','036032','036446','037880','052685','052808','058200','073455','076343','084789','084982','093400','096418','101874','102582',
-'115952','119283','142757','143758','164751','180274','184166','209636','236646','248964','267433','271906','274491','280859','284903','293586','304476','308139','328462','329298',
+'115952','119283','142757','143758','151601','164751','180274','184166','209636','236646','248964','267433','271906','274491','280859','284903','293586','304476','308139','328462','329298',
 '346078','346277','369485','377674','387697','419948','432766','433973','440677','447871','456865','476101','482027','488360','489068','489110','491723','495407','508373','549524',
 '562504','569932','573489','575763','599981','610266','617810','625423','657913','668217','701927','711630','723316','729015','733029','737867','745817','770571','802718','809624',
 '824136','825033','850547','856860','865608','872030','884622','886980','887928','889171','890256','898640','914858','925406','928652','930565','931496','956876','986478','987348'
@@ -2032,16 +2032,7 @@ function isPresetKey(k) { return PRESET_KEYS.indexOf(k) !== -1; }
 
 /* ---------- 管理员密码 ---------- */
 function getAdminPw() {
-  const stored = localStorage.getItem(ADMIN_PW_STORE);
-  if (stored) {
-    /* 兼容旧密码：如果本地存储的密码不是新默认密码，自动清除并返回新密码 */
-    if (stored !== DEFAULT_ADMIN_PW && stored === 'moonmoondiaomeinv') {
-      localStorage.removeItem(ADMIN_PW_STORE);
-      return DEFAULT_ADMIN_PW;
-    }
-    return stored;
-  }
-  return DEFAULT_ADMIN_PW;
+  return localStorage.getItem(ADMIN_PW_STORE) || DEFAULT_ADMIN_PW;
 }
 function setAdminPw(pw) {
   localStorage.setItem(ADMIN_PW_STORE, pw);
