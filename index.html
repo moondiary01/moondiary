@@ -3849,6 +3849,7 @@ function saveHistoryData() {}
 /* ---------- 图表 ---------- */
 var chartZoomWeek = -1; /* -1=显示全部，>=0=放大第n周 */
 var chartWeekPage = 0; /* 周数标签分页：当前页码，每页4周 */
+var chartWeekPageUserSet = false; /* 用户是否手动翻过页，false=自动跟随当前周 */
 function zoomWeek(w) {
   chartZoomWeek = (chartZoomWeek === w) ? -1 : w;
   drawChart();
@@ -3928,6 +3929,11 @@ function drawChart() {
       var perPage = 4;
       var lastWeek = showWeeks; /* 最后一周的编号 */
       var totalPages = Math.ceil((lastWeek + 1) / perPage); /* 总页数 */
+      /* 如果用户未手动翻页，自动跟随当前周所在页 */
+      if (!chartWeekPageUserSet) {
+        var curWeekIdx = Math.floor(getCurrentDayIndex() / 7);
+        chartWeekPage = Math.floor(curWeekIdx / perPage);
+      }
       /* 确保 chartWeekPage 在有效范围 */
       if (chartWeekPage < 0) chartWeekPage = 0;
       if (chartWeekPage >= totalPages) chartWeekPage = totalPages - 1;
@@ -3955,9 +3961,9 @@ function drawChart() {
         var wPct = lineStartPct + (n <= 1 ? 0.5 : (li / (n - 1)) * lineSpan);
         var item = labels[li];
         if (item.type === 'ellipsisFront') {
-          weekHtml += '<span onclick="chartWeekPage=Math.max(0,chartWeekPage-1);drawChart()" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:' + weekFontSize + ';font-weight:600;color:#a8a29e;cursor:pointer;padding:' + weekPad + ';border-radius:6px;white-space:nowrap" onmouseover="this.style.color=\'#8b5cf6\'" onmouseout="this.style.color=\'#a8a29e\'">···</span>';
+          weekHtml += '<span onclick="chartWeekPageUserSet=true;chartWeekPage=Math.max(0,chartWeekPage-1);drawChart()" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:' + weekFontSize + ';font-weight:600;color:#a8a29e;cursor:pointer;padding:' + weekPad + ';border-radius:6px;white-space:nowrap" onmouseover="this.style.color=\'#8b5cf6\'" onmouseout="this.style.color=\'#a8a29e\'">···</span>';
         } else if (item.type === 'ellipsisEnd') {
-          weekHtml += '<span onclick="chartWeekPage=chartWeekPage+1;drawChart()" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:' + weekFontSize + ';font-weight:600;color:#a8a29e;cursor:pointer;padding:' + weekPad + ';border-radius:6px;white-space:nowrap" onmouseover="this.style.color=\'#8b5cf6\'" onmouseout="this.style.color=\'#a8a29e\'">···</span>';
+          weekHtml += '<span onclick="chartWeekPageUserSet=true;chartWeekPage=chartWeekPage+1;drawChart()" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:' + weekFontSize + ';font-weight:600;color:#a8a29e;cursor:pointer;padding:' + weekPad + ';border-radius:6px;white-space:nowrap" onmouseover="this.style.color=\'#8b5cf6\'" onmouseout="this.style.color=\'#a8a29e\'">···</span>';
         } else {
           weekHtml += '<span onclick="zoomWeek(' + item.val + ')" style="position:absolute;left:' + wPct + '%;bottom:22px;transform:translateX(-50%);font-size:' + weekFontSize + ';font-weight:600;color:#78716c;cursor:pointer;padding:' + weekPad + ';border-radius:6px;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.background=\'#f3e8ff\';this.style.color=\'#8b5cf6\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#78716c\'">W' + item.val + '</span>';
         }
