@@ -10473,9 +10473,9 @@ function formatDateStr(d) {
 </script>
 
 <script>
-// Fluent Flat Emoji replacement - MIT License, permanent free
+// Twemoji replacement - CC-BY 4.0 License, free forever
 (function(){
-  const EMOJI_CDN = "https://cdn.jsdelivr.net/npm/@lobehub/fluent-emoji-flat/assets/";
+  const EMOJI_CDN = "https://cdn.jsdelivr.net/npm/@twemoji/svg@latest/";
   function emojiToCodePoint(emoji) {
     let codes = [];
     for (let c of emoji) {
@@ -10484,32 +10484,24 @@ function formatDateStr(d) {
     return codes.join('-');
   }
   function replaceEmojiInText(text) {
-    // Match emoji characters
     const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{1FA00}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}\u{2702}-\u{27B0}\u{1F1E6}-\u{1F1FF}]/gu;
     return text.replace(emojiRegex, (match) => {
       const cp = emojiToCodePoint(match);
-      return `<img src="${EMOJI_CDN}${cp}.svg" alt="${match}" class="fe-emoji" style="width:1em;height:1em;vertical-align:text-bottom;display:inline-block">`;
+      return '<img src="'+EMOJI_CDN+cp+'.svg" alt="'+match+'" class="fe-emoji" onerror="this.replaceWith(document.createTextNode(this.alt))">';
     });
   }
   function walkAndReplace(node) {
-    if (node.nodeType === 3) { // Text node
-      if (node.textContent.match(/[\u{1F300}-\u{1F9FF}\u{1FA00}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}\u{2702}-\u{27B0}\u{1F1E6}-\u{1F1FF}]/u)) {
+    if (node.nodeType === 3) {
+      if (/[\u{1F300}-\u{1F9FF}\u{1FA00}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}\u{2702}-\u{27B0}\u{1F1E6}-\u{1F1FF}]/u.test(node.textContent)) {
         const span = document.createElement('span');
         span.innerHTML = replaceEmojiInText(node.textContent);
         node.parentNode.replaceChild(span, node);
       }
-    } else if (node.nodeType === 1) {
-      // Skip script, style, pre, code
-      if (!['SCRIPT','STYLE','PRE','CODE','TEXTAREA'].includes(node.tagName)) {
-        for (let child of Array.from(node.childNodes)) {
-          walkAndReplace(child);
-        }
-      }
+    } else if (node.nodeType === 1 && !['SCRIPT','STYLE','PRE','CODE','TEXTAREA'].includes(node.tagName)) {
+      for (let child of Array.from(node.childNodes)) walkAndReplace(child);
     }
   }
-  document.addEventListener('DOMContentLoaded', () => {
-    walkAndReplace(document.body);
-  });
+  document.addEventListener('DOMContentLoaded', () => walkAndReplace(document.body));
 })();
 </script>
 
