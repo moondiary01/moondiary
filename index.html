@@ -818,6 +818,8 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .skincare-photo-upload-mini{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;padding:10px 16px;border-radius:100px;background:#fafaf9;border:2px dashed #d6d3d1;cursor:pointer}
 .skincare-photo-upload-mini-icon{font-size:18px}
 .skincare-photo-upload-mini-text{font-size:0.78rem;color:#78716c;font-weight:500}
+
+.fe-emoji{width:1em;height:1em;vertical-align:text-bottom;display:inline-block;pointer-events:none;}
 </style>
 <!-- COS SDK 多源加载：jsdelivr主源失败时自动切换备用源 -->
 <script>
@@ -10469,5 +10471,47 @@ function formatDateStr(d) {
   return y + '-' + m + '-' + day;
 }
 </script>
+
+<script>
+// Fluent Flat Emoji replacement - MIT License, permanent free
+(function(){
+  const EMOJI_CDN = "https://cdn.jsdelivr.net/npm/@lobehub/fluent-emoji-flat/assets/";
+  function emojiToCodePoint(emoji) {
+    let codes = [];
+    for (let c of emoji) {
+      codes.push(c.codePointAt(0).toString(16));
+    }
+    return codes.join('-');
+  }
+  function replaceEmojiInText(text) {
+    // Match emoji characters
+    const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{1FA00}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}\u{2702}-\u{27B0}\u{1F1E6}-\u{1F1FF}]/gu;
+    return text.replace(emojiRegex, (match) => {
+      const cp = emojiToCodePoint(match);
+      return `<img src="${EMOJI_CDN}${cp}.svg" alt="${match}" class="fe-emoji" style="width:1em;height:1em;vertical-align:text-bottom;display:inline-block">`;
+    });
+  }
+  function walkAndReplace(node) {
+    if (node.nodeType === 3) { // Text node
+      if (node.textContent.match(/[\u{1F300}-\u{1F9FF}\u{1FA00}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}\u{2702}-\u{27B0}\u{1F1E6}-\u{1F1FF}]/u)) {
+        const span = document.createElement('span');
+        span.innerHTML = replaceEmojiInText(node.textContent);
+        node.parentNode.replaceChild(span, node);
+      }
+    } else if (node.nodeType === 1) {
+      // Skip script, style, pre, code
+      if (!['SCRIPT','STYLE','PRE','CODE','TEXTAREA'].includes(node.tagName)) {
+        for (let child of Array.from(node.childNodes)) {
+          walkAndReplace(child);
+        }
+      }
+    }
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    walkAndReplace(document.body);
+  });
+})();
+</script>
+
 </body>
 </html>
