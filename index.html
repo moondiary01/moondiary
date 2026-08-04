@@ -6187,8 +6187,9 @@ function updateSkincareUI() {
   var skinToneLabels = {'coolWhite':'冷白','neutralWhite':'自然白','warmWhite':'黄一白','warmLight':'黄二白','lightWheat':'浅小麦','deepWheat':'深小麦'};
   var skinToneLabel = skinToneLabels[beautySkincareState.skinTone] || '未设置';
   countdownHtml += '<div class="skincare-date-row" style="margin-top:6px;gap:10px">';
-  countdownHtml += '<span style="font-size:0.72rem;color:#a8a29e;white-space:nowrap">设置</span>';
+  countdownHtml += '<span style="font-size:0.72rem;color:#a8a29e;white-space:nowrap">皮肤状态</span>';
   countdownHtml += '<span onclick="onSkinTypeChange();playClick()" style="cursor:pointer;font-size:0.76rem;font-weight:600;padding:3px 10px;border-radius:8px;color:#7c3aed;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);white-space:nowrap">'+skinTypeLabel+'</span>';
+  countdownHtml += '<span style="font-size:0.72rem;color:#a8a29e;white-space:nowrap">皮肤颜色</span>';
   countdownHtml += '<span onclick="onSkinToneChange();playClick()" style="cursor:pointer;font-size:0.76rem;font-weight:600;padding:3px 10px;border-radius:8px;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);white-space:nowrap">'+skinToneLabel+'</span>';
   countdownHtml += '</div>';
   countdownHtml += '<div class="skincare-today-datetime">'+nowStr+'</div>';
