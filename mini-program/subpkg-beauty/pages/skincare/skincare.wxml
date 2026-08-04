@@ -204,59 +204,32 @@
       <view class="detail-close-btn" catchtap="onCloseDetail">✕</view>
     </view>
 
-    <!-- 当日打卡数据（紧凑标签） -->
-    <view class="detail-section" wx:if="{{detailRecord}}">
+    <!-- 打卡项目卡片 -->
+    <view class="detail-card detail-card-purple">
+      <view class="detail-card-title">打卡项目</view>
       <view class="detail-mini-tags">
         <text class="detail-mini-tag {{detailRecord.morningSkincare ? 'mini-on' : 'mini-off'}}">晨间护肤 {{detailRecord.morningSkincare ? '✓' : ''}}</text>
         <text class="detail-mini-tag {{detailRecord.nightSkincare ? 'mini-on' : 'mini-off'}}">晚间护肤 {{detailRecord.nightSkincare ? '✓' : ''}}</text>
-        <text class="detail-mini-tag {{detailRecord.salon ? 'mini-on' : 'mini-off'}}">美容院护理 {{detailRecord.salon ? '✓' : ''}}</text>
-        <text class="detail-mini-tag {{detailRecord.cosmetic ? 'mini-on' : 'mini-off'}}">do脸日记 {{detailRecord.cosmetic ? '✓' : ''}}</text>
       </view>
-      <!-- 护理项目 -->
       <view class="detail-mini-tags" wx:if="{{detailRecord.bodyCare.length > 0}}" style="margin-top:10rpx">
         <text wx:for="{{bodyCareOptions}}" wx:for-item="bc" wx:key="key" class="detail-mini-tag {{detailRecord.bodyCare.indexOf(bc.key) > -1 ? 'mini-on' : 'mini-off'}}">{{bc.label}} {{detailRecord.bodyCare.indexOf(bc.key) > -1 ? '✓' : ''}}</text>
       </view>
+      <!-- 美容院 + do脸 子项 -->
+      <view wx:if="{{detailRecord.salon || detailRecord.cosmetic}}" style="margin-top:12rpx;padding-top:12rpx;border-top:1rpx solid rgba(139,92,246,0.1)">
+        <view wx:if="{{detailRecord.salon}}" class="detail-sub-item">
+          <view class="detail-sub-check">✓ 美容院护理</view>
+          <textarea class="detail-note" placeholder="护理心得..." value="{{detailSalonNote}}" bindinput="onDetailSalonNoteInput" maxlength="200"/>
+        </view>
+        <view wx:if="{{detailRecord.cosmetic}}" class="detail-sub-item">
+          <view class="detail-sub-check">✓ do脸小记</view>
+          <textarea class="detail-note" placeholder="do脸项目感受..." value="{{detailCosmeticNote}}" bindinput="onDetailCosmeticNoteInput" maxlength="200"/>
+        </view>
+      </view>
     </view>
 
-    <!-- 备注📝 -->
-    <view class="detail-section">
-      <view class="detail-label">备注 📝</view>
-      <textarea
-        class="detail-note"
-        placeholder="记录当天的备注..."
-        value="{{detailNote}}"
-        bindinput="onDetailNoteInput"
-        maxlength="500"
-      />
-    </view>
-
-    <!-- 美容院护理心得 -->
-    <view class="detail-section">
-      <view class="detail-label">美容院护理心得</view>
-      <textarea
-        class="detail-note"
-        placeholder="护理心得..."
-        value="{{detailSalonNote}}"
-        bindinput="onDetailSalonNoteInput"
-        maxlength="200"
-      />
-    </view>
-
-    <!-- do脸项目感受 -->
-    <view class="detail-section">
-      <view class="detail-label">do脸项目感受</view>
-      <textarea
-        class="detail-note"
-        placeholder="do脸项目感受..."
-        value="{{detailCosmeticNote}}"
-        bindinput="onDetailCosmeticNoteInput"
-        maxlength="200"
-      />
-    </view>
-
-    <!-- 今日皮肤状态 -->
-    <view class="detail-section">
-      <view class="detail-label">💆 今日皮肤状态</view>
+    <!-- 皮肤状态卡片 -->
+    <view class="detail-card detail-card-pink">
+      <view class="detail-card-title">💆 今日皮肤状态</view>
       <view class="detail-skin-tags">
         <text
           wx:for="{{skinStatusOptions}}"
@@ -275,9 +248,20 @@
       />
     </view>
 
-    <!-- 照片区域（最下端，紧凑入口） -->
+    <!-- 备注卡片 -->
+    <view class="detail-card detail-card-gray">
+      <view class="detail-card-title">备注</view>
+      <textarea
+        class="detail-note"
+        placeholder="记录当天的备注..."
+        value="{{detailNote}}"
+        bindinput="onDetailNoteInput"
+        maxlength="500"
+      />
+    </view>
+
+    <!-- 照片区域 -->
     <view class="detail-photo-section">
-      <!-- 有照片时：查看照片 + 上传/更换 + 删除 -->
       <view wx:if="{{detailPhoto}}" class="photo-action-row">
         <view class="photo-action-btn photo-view-btn" catchtap="onViewPhoto">
           <text class="photo-action-icon">👁</text>
@@ -292,7 +276,6 @@
           <text class="photo-action-text">删除</text>
         </view>
       </view>
-      <!-- 无照片时：小上传入口 -->
       <view wx:else class="photo-upload-mini" catchtap="onDetailUploadPhoto">
         <text class="photo-upload-mini-icon">📷</text>
         <text class="photo-upload-mini-text">上传照片</text>

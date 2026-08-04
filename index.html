@@ -7228,56 +7228,70 @@ function renderSkincareDayDetail() {
     html += '<input type="text" id="skincareDetailSkinCustom" placeholder="自定义皮肤状态，如：毛孔粗大" value="'+(s.skinStatusCustom||'')+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9" oninput="skincareDayDetailState.skinStatusCustom=this.value;autoSaveDetailSkincare()"></div>';
 
   } else {
-    /* 只读模式：纯展示，无边框 */
+    /* 只读模式：高级卡片布局 */
     var hasData = s.bodyCare.length > 0 || s.customCheck || s.salon || s.cosmetic || s.note || s.skinStatus.length > 0 || (s.skinStatusCustom && s.skinStatusCustom.trim());
     var isChecked = s.bodyCare.length > 0 || s.customCheck || s.salon || s.cosmetic;
     if (!hasData && s.photos.length === 0) {
       html += '<div style="text-align:center;padding:40px 20px;color:#a8a29e;font-size:0.85rem">该日未打卡</div>';
     } else {
-      /* 护理项目 + 自定义项目（同一排展示） */
+      /* 统一信息卡片容器 */
+      html += '<div style="display:flex;flex-direction:column;gap:10px">';
+      
+      /* 1. 护理项目 + 自定义 */
       if (isChecked) {
-        html += '<div style="margin-bottom:12px">';
-        html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">';
+        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #8b5cf6;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#8b5cf6;margin-bottom:8px;letter-spacing:0.5px">打卡项目</div>';
+        html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
         s.bodyCare.forEach(function(k) {
-          html += '<span style="padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe">'+(bodyCareLabels[k]||k)+'</span>';
+          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(139,92,246,0.08);color:#7c3aed">'+(bodyCareLabels[k]||k)+'</span>';
         });
         if (s.customCheck) {
           var customItems = s.customCheck.split('、').filter(function(x){return x.trim()});
           customItems.forEach(function(item) {
-            html += '<span style="padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe">'+item+'</span>';
+            html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(139,92,246,0.06);color:#6d28d9;border:1px dashed #c4b5fd">'+item+'</span>';
           });
         }
         html += '</div>';
+        /* 美容院 / do脸 子项 */
         if (s.salon) {
-          html += '<div style="font-size:0.8rem;color:#44403c;margin-bottom:2px">美容院护理 ✓</div>';
-          if (s.salonNote) html += '<div style="font-size:0.75rem;color:#78716c;margin-bottom:6px;padding-left:20px;white-space:pre-wrap">'+s.salonNote+'</div>';
+          html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,92,246,0.1)">';
+          html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#10b981;color:#fff;font-size:0.6rem">✓</span><span style="font-size:0.78rem;font-weight:600;color:#44403c">美容院护理</span></div>';
+          if (s.salonNote) html += '<div style="font-size:0.75rem;color:#78716c;margin-top:4px;padding-left:24px;line-height:1.5;white-space:pre-wrap">'+s.salonNote+'</div>';
+          html += '</div>';
         }
         if (s.cosmetic) {
-          html += '<div style="font-size:0.8rem;color:#44403c;margin-bottom:2px">do脸小记 ✓</div>';
-          if (s.cosmeticNote) html += '<div style="font-size:0.75rem;color:#78716c;margin-bottom:6px;padding-left:20px;white-space:pre-wrap">'+s.cosmeticNote+'</div>';
+          html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,92,246,0.1)">';
+          html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#10b981;color:#fff;font-size:0.6rem">✓</span><span style="font-size:0.78rem;font-weight:600;color:#44403c">do脸小记</span></div>';
+          if (s.cosmeticNote) html += '<div style="font-size:0.75rem;color:#78716c;margin-top:4px;padding-left:24px;line-height:1.5;white-space:pre-wrap">'+s.cosmeticNote+'</div>';
+          html += '</div>';
         }
         html += '</div>';
       }
-      if (s.note) {
-        html += '<div style="margin-bottom:12px">';
-        html += '<div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:4px"> 备注</div>';
-        html += '<div style="font-size:0.82rem;color:#44403c;line-height:1.5;white-space:pre-wrap">'+s.note+'</div>';
-        html += '</div>';
-      }
-      /* 皮肤状态展示 */
+
+      /* 2. 皮肤状态 */
       if (s.skinStatus.length > 0 || (s.skinStatusCustom && s.skinStatusCustom.trim())) {
         var skinStatusLabels2 = {hydrated:'水润',dry:'干燥',oily:'出油',mixed:'混合',acne:'长痘',dull:'暗沉',fine:'细纹',sensitive:'敏感泛红'};
-        html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#fdf2f8,#f5f3ff);border-radius:10px">';
-        html += '<span style="font-size:0.8rem;font-weight:600;color:#ec4899"> 今日皮肤状态</span>';
-        html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">';
+        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #ec4899;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#ec4899;margin-bottom:8px;letter-spacing:0.5px">今日皮肤状态</div>';
+        html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
         s.skinStatus.forEach(function(sk) {
-          html += '<span style="padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#fce7f3,#ede9fe);color:#ec4899;border:1px solid #f9a8d4">'+(skinStatusLabels2[sk]||sk)+'</span>';
+          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(236,72,153,0.08);color:#db2777">'+(skinStatusLabels2[sk]||sk)+'</span>';
         });
         if (s.skinStatusCustom && s.skinStatusCustom.trim()) {
-          html += '<span style="padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#fce7f3,#ede9fe);color:#ec4899;border:1px solid #f9a8d4">'+s.skinStatusCustom+'</span>';
+          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(236,72,153,0.06);color:#be185d;border:1px dashed #f9a8d4">'+s.skinStatusCustom+'</span>';
         }
         html += '</div></div>';
       }
+
+      /* 3. 备注 */
+      if (s.note) {
+        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #a8a29e;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#a8a29e;margin-bottom:6px;letter-spacing:0.5px">备注</div>';
+        html += '<div style="font-size:0.84rem;color:#44403c;line-height:1.65;white-space:pre-wrap">'+s.note+'</div>';
+        html += '</div>';
+      }
+
+      html += '</div>';
     }
   }
 
@@ -8151,52 +8165,74 @@ function renderMoodDayDetail() {
     }
     html += '</div>';
   } else {
-    /* 只读模式 */
-    if (s.moods && s.moods.length > 0) {
-      var moodHtml = '';
-      for (var mi = 0; mi < s.moods.length; mi++) {
-        var mk = s.moods[mi];
-        var md = moodEmojis[mk] || '';
-        var ml = moodLabels[mk] || '';
-        if (md) {
-          moodHtml += '<div style="text-align:center">'+md+'<div style="font-size:0.65rem;color:#78716c;margin-top:2px">'+ml+'</div></div>';
-        }
-      }
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border-radius:10px"><span style="font-size:0.8rem;color:#78716c">心情</span><div style="font-size:1.3rem;margin-top:4px;display:flex;flex-wrap:wrap;gap:6px">'+moodHtml+'</div></div>';
-    }
-    if (s.status) {
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c"> 状态</span><div style="font-size:0.9rem;margin-top:4px;color:#44403c">'+escapeHtml(s.status)+'</div></div>';
-    }
-    if (s.diary) {
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c"> 日记</span><div style="font-size:0.88rem;margin-top:4px;color:#44403c;white-space:pre-wrap;line-height:1.6">'+escapeHtml(s.diary)+'</div></div>';
-    }
-    var discItems2 = [{key:'earlyRise',icon:'',label:'早起'},{key:'water',icon:'',label:'喝水'},{key:'meditation',icon:'',label:'冥想'},{key:'podcast',icon:'',label:'听播客'},{key:'read',icon:'',label:'阅读'},{key:'news',icon:'',label:'今日新闻'},{key:'study',icon:'',label:'学习打卡'},{key:'newSkill',icon:'',label:'学习新技能'},{key:'english',icon:'',label:'学英语'},{key:'journal',icon:'',label:'写日记'},{key:'gratitude',icon:'',label:'感恩日记'},{key:'plan',icon:'',label:'写今日规划'},{key:'cook',icon:'',label:'做饭'},{key:'cleanRoom',icon:'',label:'打扫房间'},{key:'exercise',icon:'',label:'运动'},{key:'declutter',icon:'',label:'断舍离'},{key:'lessScreen',icon:'',label:'少玩电子产品'},{key:'skincare',icon:'',label:'护肤'},{key:'earlySleep',icon:'',label:'早睡'}];
-    var activeDisc = discItems2.filter(function(item) { return s.discipline && s.discipline[item.key]; });
-    if (activeDisc.length > 0 || (s.customCheck && s.customCheck.trim())) {
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c">自律打卡</span><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
-      activeDisc.forEach(function(item) {
-        html += '<span style="padding:4px 10px;border-radius:8px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);font-size:0.78rem;color:#8b5cf6;font-weight:600">'+item.icon+' '+item.label+'</span>';
-      });
-      /* 自定义打卡项目排在最后 */
-      if (s.customCheck && s.customCheck.trim()) {
-        html += '<span style="padding:4px 10px;border-radius:8px;background:linear-gradient(135deg,#fef3c7,#fde68a);font-size:0.78rem;color:#92400e;font-weight:600"> '+escapeHtml(s.customCheck)+'</span>';
-      }
-      html += '</div></div>';
-    }
-    if (!s.moods || s.moods.length === 0) { if (!s.status && !s.diary && (!s.discipline || activeDisc.length === 0) && (!s.photos || s.photos.length === 0) && (!s.customCheck || !s.customCheck.trim()) && (!s.gratitude || !s.gratitude.some(function(g){return g && g.trim()}))) {
+    /* 只读模式：高级卡片布局 */
+    var hasMoodData = (s.moods && s.moods.length > 0) || s.status || s.diary || (s.discipline && Object.values(s.discipline).some(function(v){return v})) || (s.customCheck && s.customCheck.trim()) || (s.gratitude && s.gratitude.some(function(g){return g && g.trim()}));
+    if (!hasMoodData && (!s.photos || s.photos.length === 0)) {
       html += '<div style="text-align:center;padding:24px 0;color:#a8a29e;font-size:0.85rem">该日暂无记录</div>';
-    } }
-    /* 感恩日记展示 */
-    if (s.gratitude && s.gratitude.some(function(g){return g && g.trim()})) {
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(254,243,199,0.5),rgba(254,215,170,0.35));border-radius:10px;border:1px solid rgba(251,191,36,0.2)">';
-      html += '<span style="font-size:0.8rem;font-weight:700;color:#92400e"> 感恩日记</span>';
-      html += '<div style="margin-top:6px">';
-      s.gratitude.forEach(function(g, gi) {
-        if (g && g.trim()) {
-          html += '<div style="font-size:0.82rem;color:#78350f;padding:3px 0;line-height:1.5">'+(gi+1)+'. '+escapeHtml(g)+'</div>';
+    } else {
+      html += '<div style="display:flex;flex-direction:column;gap:10px">';
+
+      /* 1. 心情 */
+      if (s.moods && s.moods.length > 0) {
+        var moodHtml2 = '';
+        for (var mi2 = 0; mi2 < s.moods.length; mi2++) {
+          var mk2 = s.moods[mi2];
+          var md2 = moodEmojis[mk2] || '';
+          var ml2 = moodLabels[mk2] || '';
+          if (md2) {
+            moodHtml2 += '<div style="text-align:center;flex-shrink:0">'+md2+'<div style="font-size:0.62rem;color:#78716c;margin-top:2px">'+ml2+'</div></div>';
+          }
         }
-      });
-      html += '</div></div>';
+        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #ec4899;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#ec4899;margin-bottom:8px;letter-spacing:0.5px">今日心情</div>';
+        html += '<div style="display:flex;flex-wrap:wrap;gap:8px">'+moodHtml2+'</div></div>';
+      }
+
+      /* 2. 当前状态 */
+      if (s.status) {
+        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #8b5cf6;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#8b5cf6;margin-bottom:4px;letter-spacing:0.5px">当前状态</div>';
+        html += '<div style="font-size:0.9rem;color:#44403c">'+escapeHtml(s.status)+'</div></div>';
+      }
+
+      /* 3. 日记 */
+      if (s.diary) {
+        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #a8a29e;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#a8a29e;margin-bottom:6px;letter-spacing:0.5px">日记本</div>';
+        html += '<div style="font-size:0.86rem;color:#44403c;line-height:1.7;white-space:pre-wrap">'+escapeHtml(s.diary)+'</div></div>';
+      }
+
+      /* 4. 自律打卡 */
+      var discItemsRO = [{key:'earlyRise',icon:'',label:'早起'},{key:'water',icon:'',label:'喝水'},{key:'meditation',icon:'',label:'冥想'},{key:'podcast',icon:'',label:'听播客'},{key:'read',icon:'',label:'阅读'},{key:'news',icon:'',label:'今日新闻'},{key:'study',icon:'',label:'学习打卡'},{key:'newSkill',icon:'',label:'学习新技能'},{key:'english',icon:'',label:'学英语'},{key:'journal',icon:'',label:'写日记'},{key:'gratitude',icon:'',label:'感恩日记'},{key:'plan',icon:'',label:'写今日规划'},{key:'cook',icon:'',label:'做饭'},{key:'cleanRoom',icon:'',label:'打扫房间'},{key:'exercise',icon:'',label:'运动'},{key:'declutter',icon:'',label:'断舍离'},{key:'lessScreen',icon:'',label:'少玩电子产品'},{key:'skincare',icon:'',label:'护肤'},{key:'earlySleep',icon:'',label:'早睡'}];
+      var activeDiscRO = discItemsRO.filter(function(item) { return s.discipline && s.discipline[item.key]; });
+      if (activeDiscRO.length > 0 || (s.customCheck && s.customCheck.trim())) {
+        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #10b981;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#10b981;margin-bottom:8px;letter-spacing:0.5px">自律打卡</div>';
+        html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+        activeDiscRO.forEach(function(item) {
+          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(16,185,129,0.08);color:#059669">'+item.icon+' '+item.label+'</span>';
+        });
+        if (s.customCheck && s.customCheck.trim()) {
+          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(245,158,11,0.08);color:#d97706;border:1px dashed #fcd34d"> '+escapeHtml(s.customCheck)+'</span>';
+        }
+        html += '</div></div>';
+      }
+
+      /* 5. 感恩日记 */
+      if (s.gratitude && s.gratitude.some(function(g){return g && g.trim()})) {
+        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #f59e0b;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#f59e0b;margin-bottom:8px;letter-spacing:0.5px">感恩日记</div>';
+        s.gratitude.forEach(function(g, gi) {
+          if (g && g.trim()) {
+            html += '<div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:0.84rem;color:#44403c;line-height:1.5">';
+            html += '<span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(245,158,11,0.12);color:#d97706;font-size:0.7rem;font-weight:700">'+(gi+1)+'</span>';
+            html += '<span>'+escapeHtml(g)+'</span></div>';
+          }
+        });
+        html += '</div>';
+      }
+
+      html += '</div>';
     }
   }
   document.getElementById('moodDayDetailContent').innerHTML = html;
