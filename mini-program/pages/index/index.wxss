@@ -462,14 +462,14 @@ page {
   letter-spacing: 1rpx;
 }
 .beauty-entry-badge {
-  font-size: 22rpx;
-  font-weight: 800;
-  color: #fff;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
-  padding: 5rpx 16rpx;
+  font-size: 26rpx;
+  font-weight: 900;
+  color: #422006;
+  background: linear-gradient(135deg, #fde047, #facc15, #eab308, #ca8a04);
+  padding: 6rpx 18rpx;
   border-radius: 100rpx;
   letter-spacing: 1rpx;
-  box-shadow: 0 0 18rpx rgba(245, 158, 11, 0.55), 0 2rpx 8rpx rgba(180, 83, 9, 0.3);
+  box-shadow: 0 0 26rpx rgba(250, 204, 21, 0.7), 0 4rpx 12rpx rgba(202, 138, 4, 0.35), 0 0 0 2rpx rgba(253, 224, 71, 0.3);
 }
 .beauty-entry-arrow {
   font-size: 36rpx;
@@ -523,12 +523,12 @@ page {
   gap: 3rpx;
   padding: 10rpx 22rpx;
   border-radius: 100rpx;
-  background: linear-gradient(135deg, #a78bfa, #7c3aed, #6d28d9);
-  box-shadow: 0 4rpx 14rpx rgba(124, 58, 237, 0.3);
+  background: linear-gradient(135deg, #fde047, #facc15, #eab308, #ca8a04);
+  box-shadow: 0 0 20rpx rgba(250, 204, 21, 0.55), 0 4rpx 12rpx rgba(202, 138, 4, 0.3), 0 0 0 2rpx rgba(253, 224, 71, 0.25);
   flex-shrink: 0;
 }
-.beauty-price-num { font-size: 36rpx; font-weight: 800; color: #fff; line-height: 1; }
-.beauty-price-unit { font-size: 22rpx; font-weight: 700; color: rgba(255, 255, 255, 0.85); }
+.beauty-price-num { font-size: 36rpx; font-weight: 900; color: #422006; line-height: 1; }
+.beauty-price-unit { font-size: 22rpx; font-weight: 800; color: #5c3d0a; }
 
 /* ===== 管理员入口 ===== */
 .admin-entry-card {
