@@ -411,12 +411,12 @@ page {
 /* ===== 100变美日记入口 ===== */
 .beauty-entry-card {
   margin: 0 24rpx 20rpx;
-  background: linear-gradient(160deg, #fdf2f8 0%, #fce7f3 20%, #fbcfe8 45%, #f0abfc 70%, #e9d5ff 100%);
+  background: linear-gradient(160deg, #fdf2f8 0%, #fce7f3 18%, #fdf4e8 35%, #fef3c7 52%, #fce7f3 70%, #f0abfc 85%, #e9d5ff 100%);
   border-radius: 24rpx;
   padding: 28rpx 22rpx;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8rpx 28rpx rgba(219, 39, 119, 0.18), 0 2rpx 8rpx rgba(168, 85, 247, 0.1);
+  box-shadow: 0 8rpx 28rpx rgba(219, 39, 119, 0.15), 0 2rpx 8rpx rgba(217, 165, 60, 0.12);
 }
 .beauty-glow {
   position: absolute;
@@ -428,14 +428,14 @@ page {
   right: -24rpx;
   width: 160rpx;
   height: 160rpx;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.22), transparent 70%);
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.2), transparent 70%);
 }
 .beauty-glow-purple {
   bottom: -28rpx;
   left: -20rpx;
   width: 140rpx;
   height: 140rpx;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.15), transparent 70%);
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.18), transparent 70%);
 }
 .beauty-shine-line {
   position: absolute;
@@ -443,7 +443,7 @@ page {
   left: 28rpx;
   right: 28rpx;
   height: 3rpx;
-  background: linear-gradient(90deg, transparent, rgba(236, 72, 153, 0.35), rgba(168, 85, 247, 0.35), transparent);
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.4), rgba(236, 72, 153, 0.25), transparent);
   pointer-events: none;
 }
 .beauty-entry-inner { position: relative; z-index: 1; }
@@ -465,15 +465,15 @@ page {
   font-size: 20rpx;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, #db2777, #e11d48);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   padding: 4rpx 14rpx;
   border-radius: 100rpx;
   letter-spacing: 1rpx;
-  box-shadow: 0 2rpx 8rpx rgba(219, 39, 119, 0.3);
+  box-shadow: 0 2rpx 10rpx rgba(245, 158, 11, 0.45);
 }
 .beauty-entry-arrow {
   font-size: 38rpx;
-  color: #c084fc;
+  color: #d4a574;
   flex-shrink: 0;
   line-height: 1;
 }
@@ -488,12 +488,12 @@ page {
   flex-shrink: 0;
   padding: 8rpx 16rpx;
   border-radius: 10rpx;
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.7);
   font-size: 22rpx;
   color: #9d174d;
   font-weight: 600;
   margin-right: 10rpx;
-  box-shadow: 0 2rpx 6rpx rgba(219, 39, 119, 0.08);
+  box-shadow: 0 2rpx 6rpx rgba(219, 39, 119, 0.06);
 }
 .beauty-feat-chip:last-child { margin-right: 0; }
 .beauty-entry-bottom {
@@ -501,11 +501,11 @@ page {
   align-items: center;
   justify-content: space-between;
   padding-top: 14rpx;
-  border-top: 2rpx solid rgba(236, 72, 153, 0.12);
+  border-top: 2rpx solid rgba(217, 165, 60, 0.2);
 }
 .beauty-entry-subline {
   font-size: 18rpx;
-  color: #be185d;
+  color: #a16207;
   letter-spacing: 0.5rpx;
   font-weight: 500;
   flex: 1;
@@ -516,12 +516,12 @@ page {
   gap: 3rpx;
   padding: 10rpx 20rpx;
   border-radius: 100rpx;
-  background: linear-gradient(135deg, #ec4899, #db2777);
-  box-shadow: 0 4rpx 14rpx rgba(236, 72, 153, 0.4);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 4rpx 14rpx rgba(245, 158, 11, 0.45);
   flex-shrink: 0;
 }
 .beauty-price-num { font-size: 36rpx; font-weight: 800; color: #fff; line-height: 1; }
-.beauty-price-unit { font-size: 22rpx; font-weight: 700; color: rgba(255, 255, 255, 0.85); }
+.beauty-price-unit { font-size: 22rpx; font-weight: 700; color: rgba(255, 255, 255, 0.9); }
 
 /* ===== 管理员入口 ===== */
 .admin-entry-card {
