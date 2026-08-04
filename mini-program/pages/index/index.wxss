@@ -450,6 +450,9 @@ page {
   color: #78716c;
   margin-top: 4rpx;
   display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .beauty-entry-arrow {
   font-size: 36rpx;
