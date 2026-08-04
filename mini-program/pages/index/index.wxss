@@ -411,64 +411,101 @@ page {
 /* ===== 100变美日记入口 ===== */
 .beauty-entry-card {
   margin: 0 24rpx 20rpx;
-  background: linear-gradient(135deg, #fdf2f8, #f5f3ff);
-  border: 2rpx solid #e9d5ff;
-  border-radius: 20rpx;
-  padding: 28rpx 24rpx;
+  background: linear-gradient(135deg, #1a1025 0%, #2d1b4e 30%, #4c1d6b 60%, #7c3aed 100%);
+  border-radius: 24rpx;
+  padding: 32rpx 24rpx;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(124, 58, 237, 0.25);
 }
-.beauty-entry-banner {
+.beauty-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.beauty-glow-pink {
+  top: -40rpx;
+  right: -30rpx;
+  width: 180rpx;
+  height: 180rpx;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.3), transparent 70%);
+}
+.beauty-glow-amber {
+  bottom: -30rpx;
+  left: -30rpx;
+  width: 150rpx;
+  height: 150rpx;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.15), transparent 70%);
+}
+.beauty-entry-inner { position: relative; z-index: 1; }
+.beauty-entry-top {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
 }
-.beauty-entry-icon {
-  font-size: 48rpx;
-}
-.beauty-entry-info {
-  flex: 1;
-}
-.beauty-entry-title-row {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-}
+.beauty-entry-header { flex: 1; }
+.beauty-entry-title-row { display: flex; align-items: center; gap: 12rpx; }
 .beauty-entry-title {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: #1c1917;
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 2rpx;
 }
-.upgrade-tag {
+.beauty-entry-badge {
   font-size: 20rpx;
   font-weight: 600;
-  color: #8b5cf6;
-  background: #ede9fe;
-  padding: 4rpx 12rpx;
-  border-radius: 8rpx;
-}
-.beauty-entry-desc {
-  font-size: 22rpx;
-  color: #78716c;
-  margin-top: 4rpx;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.beauty-entry-subline {
-  font-size: 18rpx;
-  color: #a8a29e;
-  margin-top: 6rpx;
-  display: inline-block;
-  padding: 4rpx 12rpx;
-  border-radius: 10rpx;
-  background: linear-gradient(135deg, rgba(139,92,246,0.06), rgba(236,72,153,0.06));
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.18);
+  padding: 4rpx 14rpx;
+  border-radius: 100rpx;
   letter-spacing: 1rpx;
 }
 .beauty-entry-arrow {
-  font-size: 36rpx;
-  color: #8b5cf6;
+  font-size: 40rpx;
+  color: rgba(255,255,255,0.4);
+  flex-shrink: 0;
+  line-height: 1;
 }
+.beauty-features-row {
+  display: flex;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+  flex-wrap: wrap;
+}
+.beauty-feat-chip {
+  padding: 8rpx 16rpx;
+  border-radius: 10rpx;
+  background: rgba(255,255,255,0.08);
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.8);
+  font-weight: 500;
+}
+.beauty-entry-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16rpx;
+  border-top: 1rpx solid rgba(255,255,255,0.1);
+}
+.beauty-entry-subline {
+  font-size: 18rpx;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 1rpx;
+  flex: 1;
+}
+.beauty-price-tag {
+  display: flex;
+  align-items: baseline;
+  gap: 3rpx;
+  padding: 10rpx 20rpx;
+  border-radius: 100rpx;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  box-shadow: 0 4rpx 16rpx rgba(245,158,11,0.35);
+  flex-shrink: 0;
+}
+.beauty-price-num { font-size: 36rpx; font-weight: 800; color: #1a1025; line-height: 1; }
+.beauty-price-unit { font-size: 20rpx; font-weight: 700; color: #5c3d0a; }
 
 /* ===== 管理员入口 ===== */
 .admin-entry-card {
