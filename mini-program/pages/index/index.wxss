@@ -411,12 +411,12 @@ page {
 /* ===== 100变美日记入口 ===== */
 .beauty-entry-card {
   margin: 0 24rpx 20rpx;
-  background: linear-gradient(150deg, #fdf2f8 0%, #f5e6f9 20%, #ede0fd 40%, #f0d6f5 58%, #fce4ec 75%, #fdf2f8 100%);
+  background: linear-gradient(160deg, #1a1025 0%, #2d1b4e 35%, #4c1d6b 65%, #7c3aed 100%);
   border-radius: 24rpx;
   padding: 30rpx 24rpx;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8rpx 32rpx rgba(168, 85, 247, 0.14), inset 0 1rpx 0 rgba(255, 255, 255, 0.55);
+  box-shadow: 0 8rpx 32rpx rgba(124, 58, 237, 0.25);
 }
 .beauty-glow {
   position: absolute;
@@ -424,111 +424,95 @@ page {
   pointer-events: none;
 }
 .beauty-glow-pink {
-  top: -40rpx;
-  right: -30rpx;
-  width: 180rpx;
-  height: 180rpx;
-  background: radial-gradient(circle, rgba(192, 132, 252, 0.18), transparent 70%);
+  top: -50rpx;
+  right: -35rpx;
+  width: 200rpx;
+  height: 200rpx;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.22), transparent 70%);
 }
 .beauty-glow-purple {
   bottom: -35rpx;
-  left: -20rpx;
-  width: 160rpx;
-  height: 160rpx;
-  background: radial-gradient(circle, rgba(244, 114, 182, 0.15), transparent 70%);
-}
-.beauty-shine-line {
-  position: absolute;
-  top: 0;
-  left: 30rpx;
-  right: 30rpx;
-  height: 2rpx;
-  background: linear-gradient(90deg, transparent, rgba(192, 132, 252, 0.35), rgba(244, 114, 182, 0.25), transparent);
-  pointer-events: none;
+  left: -30rpx;
+  width: 170rpx;
+  height: 170rpx;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.18), transparent 70%);
 }
 .beauty-entry-inner { position: relative; z-index: 1; }
+/* 主标题 */
 .beauty-entry-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18rpx;
+  margin-bottom: 6rpx;
 }
-.beauty-entry-header { flex: 1; }
-.beauty-entry-title-row { display: flex; align-items: center; gap: 12rpx; }
 .beauty-entry-title {
   font-size: 34rpx;
   font-weight: 800;
-  color: #6b21a8;
-  letter-spacing: 1rpx;
-}
-.beauty-entry-badge {
-  font-size: 26rpx;
-  font-weight: 900;
-  color: #422006;
-  background: linear-gradient(135deg, #fde047, #facc15, #eab308, #ca8a04);
-  padding: 6rpx 18rpx;
-  border-radius: 100rpx;
-  letter-spacing: 1rpx;
-  box-shadow: 0 0 26rpx rgba(250, 204, 21, 0.7), 0 4rpx 12rpx rgba(202, 138, 4, 0.35), 0 0 0 2rpx rgba(253, 224, 71, 0.3);
+  color: #fff;
+  letter-spacing: 3rpx;
 }
 .beauty-entry-arrow {
   font-size: 36rpx;
-  color: #c4b5fd;
+  color: rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
   line-height: 1;
-  font-weight: 300;
+}
+/* 副标题 + 升级版标签 */
+.beauty-entry-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-bottom: 20rpx;
+}
+.beauty-entry-subtitle {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 3rpx;
+}
+.beauty-entry-badge {
+  font-size: 22rpx;
+  font-weight: 800;
+  color: #422006;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  padding: 5rpx 16rpx;
+  border-radius: 100rpx;
+  letter-spacing: 1rpx;
+  box-shadow: 0 0 14rpx rgba(245, 158, 11, 0.4);
 }
 /* 功能标签 */
 .beauty-features-scroll {
   width: 100%;
   white-space: nowrap;
-  margin-bottom: 18rpx;
+  margin-bottom: 22rpx;
 }
 .beauty-feat-chip {
   display: inline-block;
   flex-shrink: 0;
   padding: 8rpx 18rpx;
   border-radius: 10rpx;
+  background: rgba(255, 255, 255, 0.08);
   font-size: 22rpx;
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
   margin-right: 10rpx;
 }
-.beauty-feat-chip:nth-child(odd) {
-  background: rgba(139, 92, 246, 0.07);
-  color: #7c3aed;
-}
-.beauty-feat-chip:nth-child(even) {
-  background: rgba(236, 72, 153, 0.07);
-  color: #be185d;
-}
 .beauty-feat-chip:last-child { margin-right: 0; }
+/* 底部 */
 .beauty-entry-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-top: 16rpx;
-  border-top: 2rpx solid rgba(168, 85, 247, 0.1);
+  border-top: 2rpx solid rgba(255, 255, 255, 0.08);
 }
 .beauty-entry-subline {
   font-size: 18rpx;
-  color: #7c3aed;
+  color: rgba(255, 255, 255, 0.3);
   letter-spacing: 0.5rpx;
-  font-weight: 500;
-  opacity: 0.65;
-  flex: 1;
 }
-.beauty-price-tag {
-  display: flex;
-  align-items: baseline;
-  gap: 3rpx;
-  padding: 10rpx 22rpx;
-  border-radius: 100rpx;
-  background: linear-gradient(135deg, #fde047, #facc15, #eab308, #ca8a04);
-  box-shadow: 0 0 20rpx rgba(250, 204, 21, 0.55), 0 4rpx 12rpx rgba(202, 138, 4, 0.3), 0 0 0 2rpx rgba(253, 224, 71, 0.25);
-  flex-shrink: 0;
+.beauty-entry-hint {
+  color: rgba(255, 255, 255, 0.25);
 }
-.beauty-price-num { font-size: 36rpx; font-weight: 900; color: #422006; line-height: 1; }
-.beauty-price-unit { font-size: 22rpx; font-weight: 800; color: #5c3d0a; }
 
 /* ===== 管理员入口 ===== */
 .admin-entry-card {
