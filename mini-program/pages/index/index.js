@@ -187,6 +187,7 @@ Page({
       isFemale: isFemale,
       isAdmin: app.globalData.loginType === 'admin',
       isBeautyUser: app.globalData.canUseUpgrade || app.globalData.loginType === 'admin' || app.globalData.loginType === 'key',
+      hideBeautyEntry: app.globalData.canUseUpgrade && app.globalData.loginType !== 'admin',  // 底部入口：非管理员的已购用户才隐藏
       dayData: todayData,
       waterMl: waterMl,
       waterGoal: waterGoal,

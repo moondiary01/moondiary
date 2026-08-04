@@ -119,8 +119,8 @@
     <textarea class="note-textarea" placeholder="今天怎么样..." value="{{dayData.note}}" bindinput="onNoteInput" bindblur="onNoteBlur" maxlength="500" auto-height></textarea>
   </view>
 
-  <!-- 100变美日记入口（仅未购用户显示） -->
-  <view class="beauty-entry-card" bindtap="onGoBeauty" wx:if="{{!isBeautyUser}}">
+  <!-- 100变美日记入口（管理员始终显示，非管理员的已购用户隐藏） -->
+  <view class="beauty-entry-card" bindtap="onGoBeauty" wx:if="{{!hideBeautyEntry}}">
     <!-- 光晕 -->
     <view class="beauty-glow beauty-glow-pink"></view>
     <view class="beauty-glow beauty-glow-purple"></view>
