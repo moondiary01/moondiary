@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="MoonMemo 月亮日记 — 你的专属健康追踪伙伴">
@@ -144,9 +144,10 @@ body{
   background:var(--bg);
   color:var(--text);
   min-height:100vh;
+  min-height:100dvh;
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
-  padding-bottom:40px;
+  padding-bottom:max(40px, env(safe-area-inset-bottom, 20px));
 }
 
 /* ===== 登录门 ===== */
@@ -465,10 +466,10 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .modal .input-group{margin-bottom:12px}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
 /* 悬浮返回按钮 — 右下角固定 */
-.float-back-fab{position:fixed;bottom:24px;right:24px;z-index:9000;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#3d2b4f 0%,#5b3a5e 30%,#7a5276 55%,#9d6b8b 80%,#c084a8 100%);color:#fce7f3;display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;border:none;box-shadow:0 1px 0 rgba(255,255,255,0.08) inset,0 -1px 0 rgba(0,0,0,0.2) inset,0 0 0 1px rgba(255,255,255,0.05),0 10px 30px rgba(61,43,79,0.3),0 2px 8px rgba(0,0,0,0.06);transition:all 0.2s}
+.float-back-fab{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom, 0px));right:24px;z-index:9000;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#3d2b4f 0%,#5b3a5e 30%,#7a5276 55%,#9d6b8b 80%,#c084a8 100%);color:#fce7f3;display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;border:none;box-shadow:0 1px 0 rgba(255,255,255,0.08) inset,0 -1px 0 rgba(0,0,0,0.2) inset,0 0 0 1px rgba(255,255,255,0.05),0 10px 30px rgba(61,43,79,0.3),0 2px 8px rgba(0,0,0,0.06);transition:all 0.2s}
 .float-back-fab:active{transform:scale(0.88);box-shadow:0 1px 0 rgba(255,255,255,0.04) inset,0 4px 12px rgba(61,43,79,0.2)}
 /* ===== Toast / 保存提示 ===== */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 22px;border-radius:24px;font-size:0.8rem;z-index:300;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom, 0px));left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 22px;border-radius:24px;font-size:0.8rem;z-index:300;opacity:0;transition:opacity 0.3s;pointer-events:none}
 .toast.show{opacity:1}
 .save-indicator{position:fixed;top:16px;right:16px;background:var(--mint);color:#fff;padding:4px 12px;border-radius:20px;font-size:0.7rem;font-weight:600;z-index:150;opacity:0;transition:opacity 0.3s;display:flex;align-items:center;gap:4px}
 .save-indicator.show{opacity:1}
@@ -6496,7 +6497,7 @@ function onSkinTypeChange() {
   var labels = options.map(function(o) { return o[1]; });
   // 使用简单的下拉选择
   var html = '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;display:flex;align-items:flex-end;justify-content:center" onclick="this.remove()">';
-  html += '<div style="background:#fff;border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:400px" onclick="event.stopPropagation()">';
+  html += '<div style="background:#fff;border-radius:16px 16px 0 0;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom, 0px));width:100%;max-width:400px" onclick="event.stopPropagation()">';
   html += '<div style="font-size:1rem;font-weight:700;text-align:center;margin-bottom:16px">选择皮肤状态</div>';
   options.forEach(function(o) {
     html += '<div onclick="selectSkinType(\''+o[0]+'\');playClick()" style="padding:14px;text-align:center;font-size:0.95rem;cursor:pointer;border-bottom:1px solid #f5f5f4;color:'+(beautySkincareState.skinType===o[0]?'#7c3aed;font-weight:700':'#44403c')+'">'+o[1]+(beautySkincareState.skinType===o[0]?' ✓':'')+'</div>';
@@ -6528,7 +6529,7 @@ function onSkinToneChange() {
     ['deepWheat','深小麦（深健康暖肤色）']
   ];
   var html = '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;display:flex;align-items:flex-end;justify-content:center" onclick="this.remove()">';
-  html += '<div style="background:#fff;border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:400px" onclick="event.stopPropagation()">';
+  html += '<div style="background:#fff;border-radius:16px 16px 0 0;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom, 0px));width:100%;max-width:400px" onclick="event.stopPropagation()">';
   html += '<div style="font-size:1rem;font-weight:700;text-align:center;margin-bottom:16px">选择皮肤颜色</div>';
   options.forEach(function(o) {
     html += '<div onclick="selectSkinTone(\''+o[0]+'\');playClick()" style="padding:14px;text-align:center;font-size:0.95rem;cursor:pointer;border-bottom:1px solid #f5f5f4;color:'+(beautySkincareState.skinTone===o[0]?'#7c3aed;font-weight:700':'#44403c')+'">'+o[1]+(beautySkincareState.skinTone===o[0]?' ✓':'')+'</div>';
