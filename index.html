@@ -1388,7 +1388,7 @@ _loadCosSdk(0);
 
 <!-- 护肤日记弹窗 -->
 <div class="modal-overlay" id="beautySkincareModal">
-  <div class="modal" style="max-width:550px;max-height:85vh;overflow-y:auto;overflow-x:hidden;width:calc(100% - 32px)">
+  <div class="modal" style="max-width:580px;max-height:85vh;overflow-y:auto">
     <div id="skincareContent">
       <!-- 倒计时卡片+皮肤状态小字（JS动态填充） -->
       <div id="skincareCountdown"></div>
@@ -1396,7 +1396,7 @@ _loadCosSdk(0);
       <!-- 今日皮肤状态（多选标签 + 自定义输入） -->
       <div style="margin-bottom:16px">
         <div class="card-title" style="margin-bottom:4px">今日皮肤状态</div>
-        <div id="skinStatusTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;margin-bottom:12px;max-width:100%">
+        <div id="skinStatusTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;margin-bottom:12px">
           <span class="beauty-tag" data-key="hydrated" onclick="toggleSkinStatus(this,'hydrated')">水润</span>
           <span class="beauty-tag" data-key="dry" onclick="toggleSkinStatus(this,'dry')">干燥</span>
           <span class="beauty-tag" data-key="oily" onclick="toggleSkinStatus(this,'oily')">泛油</span>
@@ -1490,7 +1490,7 @@ _loadCosSdk(0);
 
 <!-- 心情日记弹窗 -->
 <div class="modal-overlay" id="beautyMoodModal">
-  <div class="modal" style="max-width:550px;max-height:85vh;overflow-y:auto;overflow-x:hidden;width:calc(100% - 32px)">
+  <div class="modal" style="max-width:580px;max-height:85vh;overflow-y:auto">
     <h2> 心情日记</h2>
     <!-- 阳光心情卡片：温暖渐变背景包裹日期+状态+心情+日记 -->
     <div style="background:linear-gradient(135deg,#fff9e6 0%,#fef0e6 25%,#ffe4f0 55%,#f3e8ff 85%,#e0f2fe 100%);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:0 4px 20px rgba(251,191,36,0.1),inset 0 1px 0 rgba(255,255,255,0.6)">
@@ -1501,7 +1501,7 @@ _loadCosSdk(0);
       </div>
       <div style="margin-bottom:14px">
         <label style="font-size:0.8rem;color:#92400e;font-weight:600">今日心情</label>
-        <div id="moodEmojiGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;justify-content:flex-start;max-width:100%">
+        <div id="moodEmojiGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;justify-content:flex-start">
                     <span class="beauty-emoji-card" onclick="selectMoodEmoji('happy',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB5C5"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>开心</small></span>
           <span class="beauty-emoji-card" onclick="selectMoodEmoji('satisfied',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFC8B0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 20 Q18 15 22 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 15 38 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>满足</small></span>
           <span class="beauty-emoji-card" onclick="selectMoodEmoji('surprised',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#F0C0FF"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="19" r="3.5" fill="#5C3D4A"/><circle cx="34" cy="19" r="3.5" fill="#5C3D4A"/><circle cx="18" cy="19" r="1.5" fill="white"/><circle cx="34" cy="19" r="1.5" fill="white"/><circle cx="26" cy="30" r="4" fill="#5C3D4A"/></svg><small>惊喜</small></span>
