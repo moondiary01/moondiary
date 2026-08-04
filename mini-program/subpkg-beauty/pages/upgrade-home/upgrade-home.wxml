@@ -37,15 +37,6 @@
 
   </view>
 
-  <!-- 功能亮点标签 -->
-  <view class="upgrade-features">
-    <text class="feature-tag feature-tag-purple">护肤日记</text>
-    <text class="feature-tag feature-tag-pink">心情记录</text>
-    <text class="feature-tag feature-tag-amber">感恩日记</text>
-    <text class="feature-tag feature-tag-green">自律打卡</text>
-    <text class="feature-tag feature-tag-blue">日历照片</text>
-  </view>
-
   <!-- 底部信息 -->
   <view class="upgrade-footer">
     <view class="upgrade-price-tag">

@@ -154,25 +154,3 @@
   margin-top: 4rpx;
   letter-spacing: 1rpx;
 }
-
-/* ===== 功能亮点标签 ===== */
-.upgrade-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
-  justify-content: center;
-  padding: 12rpx 24rpx 0;
-}
-
-.feature-tag {
-  padding: 6rpx 18rpx;
-  border-radius: 16rpx;
-  font-size: 22rpx;
-  font-weight: 600;
-}
-
-.feature-tag-purple { background: rgba(139, 92, 246, 0.08); color: #7c3aed; }
-.feature-tag-pink { background: rgba(236, 72, 153, 0.08); color: #ec4899; }
-.feature-tag-amber { background: rgba(217, 119, 6, 0.08); color: #d97706; }
-.feature-tag-green { background: rgba(5, 150, 105, 0.08); color: #059669; }
-.feature-tag-blue { background: rgba(2, 132, 199, 0.08); color: #0284c7; }

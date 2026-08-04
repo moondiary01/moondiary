@@ -454,6 +454,17 @@ page {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.beauty-entry-subline {
+  font-size: 18rpx;
+  color: #a8a29e;
+  margin-top: 6rpx;
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  border-radius: 10rpx;
+  background: linear-gradient(135deg, rgba(139,92,246,0.06), rgba(236,72,153,0.06));
+  letter-spacing: 1rpx;
+}
 .beauty-entry-arrow {
   font-size: 36rpx;
   color: #8b5cf6;
