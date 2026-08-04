@@ -411,12 +411,12 @@ page {
 /* ===== 100变美日记入口 ===== */
 .beauty-entry-card {
   margin: 0 24rpx 20rpx;
-  background: linear-gradient(135deg, #1a1025 0%, #2d1b4e 30%, #4c1d6b 60%, #7c3aed 100%);
+  background: linear-gradient(160deg, #fdf2f8 0%, #fce7f3 20%, #fbcfe8 45%, #f0abfc 70%, #e9d5ff 100%);
   border-radius: 24rpx;
-  padding: 32rpx 24rpx;
+  padding: 28rpx 22rpx;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8rpx 32rpx rgba(124, 58, 237, 0.25);
+  box-shadow: 0 8rpx 28rpx rgba(219, 39, 119, 0.18), 0 2rpx 8rpx rgba(168, 85, 247, 0.1);
 }
 .beauty-glow {
   position: absolute;
@@ -424,74 +424,90 @@ page {
   pointer-events: none;
 }
 .beauty-glow-pink {
-  top: -40rpx;
-  right: -30rpx;
-  width: 180rpx;
-  height: 180rpx;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.3), transparent 70%);
+  top: -36rpx;
+  right: -24rpx;
+  width: 160rpx;
+  height: 160rpx;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.22), transparent 70%);
 }
-.beauty-glow-amber {
-  bottom: -30rpx;
-  left: -30rpx;
-  width: 150rpx;
-  height: 150rpx;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.15), transparent 70%);
+.beauty-glow-purple {
+  bottom: -28rpx;
+  left: -20rpx;
+  width: 140rpx;
+  height: 140rpx;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.15), transparent 70%);
+}
+.beauty-shine-line {
+  position: absolute;
+  top: 0;
+  left: 28rpx;
+  right: 28rpx;
+  height: 3rpx;
+  background: linear-gradient(90deg, transparent, rgba(236, 72, 153, 0.35), rgba(168, 85, 247, 0.35), transparent);
+  pointer-events: none;
 }
 .beauty-entry-inner { position: relative; z-index: 1; }
 .beauty-entry-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18rpx;
+  margin-bottom: 16rpx;
 }
 .beauty-entry-header { flex: 1; }
-.beauty-entry-title-row { display: flex; align-items: center; gap: 12rpx; }
+.beauty-entry-title-row { display: flex; align-items: center; gap: 10rpx; }
 .beauty-entry-title {
   font-size: 34rpx;
   font-weight: 800;
-  color: #fff;
-  letter-spacing: 2rpx;
+  color: #831843;
+  letter-spacing: 1rpx;
 }
 .beauty-entry-badge {
   font-size: 20rpx;
-  font-weight: 600;
-  color: rgba(255,255,255,0.9);
-  background: rgba(255,255,255,0.18);
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #db2777, #e11d48);
   padding: 4rpx 14rpx;
   border-radius: 100rpx;
   letter-spacing: 1rpx;
+  box-shadow: 0 2rpx 8rpx rgba(219, 39, 119, 0.3);
 }
 .beauty-entry-arrow {
-  font-size: 40rpx;
-  color: rgba(255,255,255,0.4);
+  font-size: 38rpx;
+  color: #c084fc;
   flex-shrink: 0;
   line-height: 1;
 }
-.beauty-features-row {
-  display: flex;
-  gap: 10rpx;
-  margin-bottom: 20rpx;
-  flex-wrap: wrap;
+/* 功能标签滚动容器 */
+.beauty-features-scroll {
+  width: 100%;
+  white-space: nowrap;
+  margin-bottom: 16rpx;
 }
 .beauty-feat-chip {
+  display: inline-block;
+  flex-shrink: 0;
   padding: 8rpx 16rpx;
   border-radius: 10rpx;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.65);
   font-size: 22rpx;
-  color: rgba(255,255,255,0.8);
-  font-weight: 500;
+  color: #9d174d;
+  font-weight: 600;
+  margin-right: 10rpx;
+  box-shadow: 0 2rpx 6rpx rgba(219, 39, 119, 0.08);
 }
+.beauty-feat-chip:last-child { margin-right: 0; }
 .beauty-entry-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 16rpx;
-  border-top: 1rpx solid rgba(255,255,255,0.1);
+  padding-top: 14rpx;
+  border-top: 2rpx solid rgba(236, 72, 153, 0.12);
 }
 .beauty-entry-subline {
   font-size: 18rpx;
-  color: rgba(255,255,255,0.45);
-  letter-spacing: 1rpx;
+  color: #be185d;
+  letter-spacing: 0.5rpx;
+  font-weight: 500;
   flex: 1;
 }
 .beauty-price-tag {
@@ -500,12 +516,12 @@ page {
   gap: 3rpx;
   padding: 10rpx 20rpx;
   border-radius: 100rpx;
-  background: linear-gradient(135deg, #f59e0b, #fbbf24);
-  box-shadow: 0 4rpx 16rpx rgba(245,158,11,0.35);
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  box-shadow: 0 4rpx 14rpx rgba(236, 72, 153, 0.4);
   flex-shrink: 0;
 }
-.beauty-price-num { font-size: 36rpx; font-weight: 800; color: #1a1025; line-height: 1; }
-.beauty-price-unit { font-size: 20rpx; font-weight: 700; color: #5c3d0a; }
+.beauty-price-num { font-size: 36rpx; font-weight: 800; color: #fff; line-height: 1; }
+.beauty-price-unit { font-size: 22rpx; font-weight: 700; color: rgba(255, 255, 255, 0.85); }
 
 /* ===== 管理员入口 ===== */
 .admin-entry-card {

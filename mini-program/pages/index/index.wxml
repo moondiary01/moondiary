@@ -116,9 +116,11 @@
 
   <!-- 100变美日记入口 -->
   <view class="beauty-entry-card" bindtap="onGoBeauty">
-    <!-- 光晕背景 -->
+    <!-- 装饰光晕 -->
     <view class="beauty-glow beauty-glow-pink"></view>
-    <view class="beauty-glow beauty-glow-amber"></view>
+    <view class="beauty-glow beauty-glow-purple"></view>
+    <!-- 顶部细闪线 -->
+    <view class="beauty-shine-line"></view>
     <view class="beauty-entry-inner">
       <!-- 标题行 -->
       <view class="beauty-entry-top">
@@ -130,20 +132,20 @@
         </view>
         <text class="beauty-entry-arrow">›</text>
       </view>
-      <!-- 功能亮点行 -->
-      <view class="beauty-features-row">
+      <!-- 功能标签 —— 一行排开 -->
+      <scroll-view class="beauty-features-scroll" scroll-x="true" enhanced show-scrollbar="{{false}}">
         <text class="beauty-feat-chip">护肤日记</text>
         <text class="beauty-feat-chip">心情记录</text>
         <text class="beauty-feat-chip">感恩日记</text>
         <text class="beauty-feat-chip">自律打卡</text>
         <text class="beauty-feat-chip">日历照片</text>
-      </view>
+      </scroll-view>
       <!-- 底部价格 -->
       <view class="beauty-entry-bottom">
         <text class="beauty-entry-subline">一次购买 · 永久会员权益 · 云端储存</text>
         <view class="beauty-price-tag">
           <text class="beauty-price-num">29.9</text>
-          <text class="beauty-price-unit">元 永久</text>
+          <text class="beauty-price-unit">元</text>
         </view>
       </view>
     </view>
