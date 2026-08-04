@@ -241,8 +241,31 @@ function userStorageKey(userKey) {
 }
 
 function saveState(userKey, state) {
+  // 记录更新时间戳
+  state._updatedAt = Date.now();
+  // 空数据保护：防止覆盖云端已有数据
+  if (isStateEmpty(state)) {
+    console.log('数据为空，跳过云端保存');
+    setLocal(userStorageKey(userKey), state);
+    return;
+  }
   setLocal(userStorageKey(userKey), state);
   saveToCloud(userKey, state);
+}
+
+// 检查 state 是否为空（防止空数据覆盖云端）
+function isStateEmpty(state) {
+  if (!state) return true;
+  if (state.name && state.name.trim()) return false;
+  if (state.startWeight !== null && state.startWeight !== undefined) return false;
+  if (state.startFat !== null && state.startFat !== undefined) return false;
+  if (state.days && state.days.length > 0) {
+    for (var i = 0; i < state.days.length; i++) {
+      var d = state.days[i];
+      if (d && (d.weightAM || d.weightPM || d.diet || d.exercise || d.note || d.fat || d.water || d.bm || d.period || d.periodNote || d.photo)) return false;
+    }
+  }
+  return true;
 }
 
 function loadState(userKey, callback) {
@@ -252,20 +275,27 @@ function loadState(userKey, callback) {
     // 再读云端合并
     loadFromCloud(userKey, function (cloudData) {
       if (cloudData) {
-        // 以云端为主，但确保数组字段不丢失
-        var merged = Object.assign({}, local, cloudData);
-        // 确保关键数组字段存在
-        if (!merged.days) merged.days = cloudData.days || local.days || [];
-        if (!merged.periods) merged.periods = cloudData.periods || local.periods || [];
-        if (!merged.weeklyReview) merged.weeklyReview = cloudData.weeklyReview || local.weeklyReview || [];
-        setLocal(userStorageKey(userKey), merged);
-        if (callback) callback(merged);
+        // 时间戳对比：本地数据比云端新则跳过合并
+        var localUpdated = local._updatedAt || 0;
+        var cloudUpdated = cloudData._updatedAt || 0;
+        if (cloudUpdated > localUpdated) {
+          // 云端更新，以云端为主
+          var merged = Object.assign({}, local, cloudData);
+          if (!merged.days) merged.days = cloudData.days || local.days || [];
+          if (!merged.periods) merged.periods = cloudData.periods || local.periods || [];
+          if (!merged.weeklyReview) merged.weeklyReview = cloudData.weeklyReview || local.weeklyReview || [];
+          setLocal(userStorageKey(userKey), merged);
+          if (callback) callback(merged);
+        } else {
+          // 本地已是最新，保留本地
+          if (callback) callback(local);
+        }
       } else {
         if (callback) callback(local);
       }
     });
   } else {
-    // 全新用户
+    // 本地无数据，从云端加载
     loadFromCloud(userKey, function (cloudData) {
       if (cloudData) {
         // 确保数组字段存在
