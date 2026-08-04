@@ -519,3 +519,26 @@
   color: #a8a29e;
   margin-left: 12rpx;
 }
+
+/* ===== 感恩日记卡片 ===== */
+.gratitude-card {
+  background: linear-gradient(135deg, rgba(254,243,199,0.3), rgba(254,215,170,0.2));
+  border: 2rpx solid rgba(251,191,36,0.15);
+}
+.gratitude-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.gratitude-input {
+  width: 100%;
+  padding: 18rpx 20rpx;
+  border: 2rpx solid rgba(251,191,36,0.3);
+  border-radius: 14rpx;
+  font-size: 28rpx;
+  background: rgba(255,255,255,0.7);
+  box-sizing: border-box;
+}
+.gratitude-input::placeholder {
+  color: #a8a29e;
+}

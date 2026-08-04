@@ -55,7 +55,20 @@
     <view class="char-count">{{moodDiary.length}}/1000</view>
   </view>
 
-  <!-- 4. 冥想打卡 -->
+  <!-- 4. 感恩日记 -->
+  <view class="card mood-card gratitude-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">🙏</view>
+      <view class="card-title-text">感恩日记</view>
+    </view>
+    <view class="gratitude-list">
+      <input class="gratitude-input" placeholder="今天想感恩的第一件事……" value="{{gratitude1}}" bindinput="onGratitude1Input" maxlength="30" />
+      <input class="gratitude-input" placeholder="今天想感恩的第二件事……" value="{{gratitude2}}" bindinput="onGratitude2Input" maxlength="30" />
+      <input class="gratitude-input" placeholder="今天想感恩的第三件事……" value="{{gratitude3}}" bindinput="onGratitude3Input" maxlength="30" />
+    </view>
+  </view>
+
+  <!-- 5. 冥想打卡 -->
   <view class="card mood-card">
     <view class="card-title-row">
       <view class="card-title-icon">🧘</view>
@@ -86,7 +99,7 @@
     </view>
   </view>
 
-  <!-- 5. 冥想音乐 -->
+  <!-- 6. 冥想音乐 -->
   <view class="card mood-card">
     <view class="card-title-row">
       <view class="card-title-icon">🎵</view>
@@ -130,7 +143,7 @@
     </view>
   </view>
 
-  <!-- 6. 自律打卡 -->
+  <!-- 7. 自律打卡 -->
   <view class="card mood-card">
     <view class="card-title-row">
       <view class="card-title-icon">⭐</view>
@@ -153,7 +166,7 @@
     </view>
   </view>
 
-  <!-- 7. 日历照片 -->
+  <!-- 8. 日历照片 -->
   <view class="card mood-card">
     <view class="card-title-row">
       <view class="card-title-icon">📸</view>

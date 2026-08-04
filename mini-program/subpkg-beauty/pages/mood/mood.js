@@ -123,7 +123,11 @@ Page({
     currentTrackIndex: -1,
     showPlayer: false,
     // 照片
-    photos: []
+    photos: [],
+    // 感恩日记
+    gratitude1: '',
+    gratitude2: '',
+    gratitude3: ''
   },
 
   onLoad: function () {
@@ -178,7 +182,10 @@ Page({
         currentStatus: record.status || '',
         selectedMood: record.mood || '',
         moodDiary: record.diary || '',
-        photos: record.photos || []
+        photos: record.photos || [],
+        gratitude1: (record.gratitude && record.gratitude[0]) || '',
+        gratitude2: (record.gratitude && record.gratitude[1]) || '',
+        gratitude3: (record.gratitude && record.gratitude[2]) || ''
       })
     })
   },
@@ -192,7 +199,8 @@ Page({
       meditation: false,
       meditationMinutes: 0,
       discipline: {},
-      photos: []
+      photos: [],
+      gratitude: ['', '', '']
     }
   },
 
@@ -211,6 +219,11 @@ Page({
   onDiaryInput: function (e) {
     this.setData({ moodDiary: e.detail.value })
   },
+
+  // ===== 感恩日记输入 =====
+  onGratitude1Input: function (e) { this.setData({ gratitude1: e.detail.value }) },
+  onGratitude2Input: function (e) { this.setData({ gratitude2: e.detail.value }) },
+  onGratitude3Input: function (e) { this.setData({ gratitude3: e.detail.value }) },
 
   // ===== 自律打卡切换 =====
   onDisciplineToggle: function (e) {
@@ -431,6 +444,7 @@ Page({
     record.mood = this.data.selectedMood
     record.diary = this.data.moodDiary
     record.photos = this.data.photos
+    record.gratitude = [this.data.gratitude1, this.data.gratitude2, this.data.gratitude3]
     record.updatedAt = Date.now()
 
     var found = false

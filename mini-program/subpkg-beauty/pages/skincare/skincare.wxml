@@ -163,6 +163,7 @@
           <!-- 底部打勾标记（不分早晚） -->
           <view class="cal-day-marks">
             <text wx:if="{{item.hasRecord}}" class="cal-mark cal-mark-done">✓</text>
+            <text wx:if="{{item.hasSkinStatus && !item.today}}" class="cal-mark cal-mark-skin">◇</text>
           </view>
         </view>
       </block>
@@ -172,6 +173,7 @@
     <view class="cal-legend">
       <view class="legend-item"><text class="legend-emoji">📷</text><text>有照片</text></view>
       <view class="legend-item"><text class="legend-emoji">✓</text><text>已打卡</text></view>
+      <view class="legend-item"><text class="legend-emoji skin-dot">◇</text><text>皮肤状态</text></view>
     </view>
   </view>
 
@@ -249,6 +251,27 @@
         value="{{detailCosmeticNote}}"
         bindinput="onDetailCosmeticNoteInput"
         maxlength="200"
+      />
+    </view>
+
+    <!-- 今日皮肤状态 -->
+    <view class="detail-section">
+      <view class="detail-label">💆 今日皮肤状态</view>
+      <view class="detail-skin-tags">
+        <text
+          wx:for="{{skinStatusOptions}}"
+          wx:key="*this"
+          class="detail-skin-tag {{detailSkinStatus.indexOf(item) > -1 ? 'skin-tag-active' : ''}}"
+          data-key="{{item}}"
+          bindtap="onSkinStatusToggle"
+        >{{item}}</text>
+      </view>
+      <input
+        class="detail-skin-custom"
+        placeholder="自定义皮肤状态，如：毛孔粗大"
+        value="{{detailSkinStatusCustom}}"
+        bindinput="onSkinStatusCustomInput"
+        maxlength="30"
       />
     </view>
 

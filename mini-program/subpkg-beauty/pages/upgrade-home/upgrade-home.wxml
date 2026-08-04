@@ -30,7 +30,7 @@
       </view>
       <view class="section-info">
         <view class="section-title">心情日记</view>
-        <view class="section-desc">心情记录 · 冥想音乐 · 自律打卡</view>
+        <view class="section-desc">心情记录 · 日历照片 · 感恩日记 · 自律打卡</view>
       </view>
       <text class="section-arrow">›</text>
     </view>
@@ -40,7 +40,7 @@
   <!-- 底部信息 -->
   <view class="upgrade-footer">
     <view class="upgrade-price-tag">
-      <text class="upgrade-price">29.9元 永久使用</text>
+      <text class="upgrade-price">29.9元 永久使用 · 云端储存</text>
       <text class="upgrade-price-desc">升级版会员 · 全功能解锁</text>
     </view>
   </view>

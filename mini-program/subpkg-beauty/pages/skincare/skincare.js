@@ -38,6 +38,8 @@ Page({
       { key: 'footCare', label: '脚部护理' }
     ],
     bodyCareSelected: [],
+    // 皮肤状态预设标签
+    skinStatusOptions: ['水润', '干燥', '出油', '混合', '长痘', '暗沉', '细纹', '敏感泛红'],
     // 顶部摘要：已选打卡项标签列表
     topSummaryTags: [],
     // 日历
@@ -52,6 +54,8 @@ Page({
     detailPhoto: '',
     detailSalonNote: '',
     detailCosmeticNote: '',
+    detailSkinStatus: [],
+    detailSkinStatusCustom: '',
     isToday: false,
     // 查看照片大图
     showPhotoView: false,
@@ -158,7 +162,9 @@ Page({
       salon: false, salonNote: '',
       cosmetic: false, cosmeticNote: '',
       note: '',
-      photo: ''
+      photo: '',
+      skinStatus: [],
+      skinStatusCustom: ''
     }
   },
 
@@ -357,7 +363,7 @@ Page({
   },
 
   // ===== 日历渲染 =====
-  // 判断某天是否有打卡（晨间/晚间/美容院/do脸/护理项目 任一即可）
+  // 判断某天是否有打卡（晨间/晚间/美容院/do脸/护理项目/皮肤状态 任一即可）
   isDayChecked: function (dayData) {
     if (!dayData) return false
     if (dayData.morningSkincare) return true
@@ -365,6 +371,8 @@ Page({
     if (dayData.salon) return true
     if (dayData.cosmetic) return true
     if (dayData.bodyCare && dayData.bodyCare.length > 0) return true
+    if (dayData.skinStatus && dayData.skinStatus.length > 0) return true
+    if (dayData.skinStatusCustom && dayData.skinStatusCustom.trim()) return true
     return false
   },
 
@@ -397,7 +405,8 @@ Page({
         dateStr: dateStr,
         today: dateStr === todayStr,
         hasRecord: !!dayData && self.isDayChecked(dayData),
-        hasPhoto: dayData && dayData.photo ? true : false
+        hasPhoto: dayData && dayData.photo ? true : false,
+        hasSkinStatus: dayData && ((dayData.skinStatus && dayData.skinStatus.length > 0) || (dayData.skinStatusCustom && dayData.skinStatusCustom.trim()))
       })
     }
     this.setData({ calDays: calDays })
@@ -446,6 +455,8 @@ Page({
       detailPhoto: record.photo || '',
       detailSalonNote: record.salonNote || '',
       detailCosmeticNote: record.cosmeticNote || '',
+      detailSkinStatus: record.skinStatus || [],
+      detailSkinStatusCustom: record.skinStatusCustom || '',
       isToday: dateStr === todayStr
     })
   },
@@ -464,6 +475,24 @@ Page({
 
   onDetailCosmeticNoteInput: function (e) {
     this.setData({ detailCosmeticNote: e.detail.value })
+  },
+
+  // ===== 皮肤状态切换（日历详情弹窗） =====
+  onSkinStatusToggle: function (e) {
+    audio.playClick()
+    var key = e.currentTarget.dataset.key
+    var status = this.data.detailSkinStatus.slice()
+    var idx = status.indexOf(key)
+    if (idx > -1) {
+      status.splice(idx, 1)
+    } else {
+      status.push(key)
+    }
+    this.setData({ detailSkinStatus: status })
+  },
+
+  onSkinStatusCustomInput: function (e) {
+    this.setData({ detailSkinStatusCustom: e.detail.value })
   },
 
   // ===== 照片上传（多策略：chooseMedia → chooseImage，base64存入JSON） =====
@@ -626,6 +655,8 @@ Page({
     record.photo = this.data.detailPhoto
     record.salonNote = this.data.detailSalonNote
     record.cosmeticNote = this.data.detailCosmeticNote
+    record.skinStatus = this.data.detailSkinStatus
+    record.skinStatusCustom = this.data.detailSkinStatusCustom
     record.updatedAt = Date.now()
 
     var data = this.data.skinData

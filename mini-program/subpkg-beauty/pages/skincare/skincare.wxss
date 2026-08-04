@@ -557,6 +557,7 @@
 .cal-mark-morning { color: #f59e0b; }
 .cal-mark-night { color: #8b5cf6; }
 .cal-mark-photo { color: #ec4899; }
+.cal-mark-skin { color: #ec4899; font-size: 16rpx; }
 
 .cal-legend {
   display: flex;
@@ -577,6 +578,42 @@
 
 .legend-emoji {
   font-size: 24rpx;
+}
+
+.skin-dot {
+  color: #ec4899;
+  font-size: 20rpx;
+}
+
+/* ===== 皮肤状态标签 ===== */
+.detail-skin-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 14rpx;
+}
+.detail-skin-tag {
+  padding: 8rpx 20rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  background: #fafaf9;
+  color: #78716c;
+  border: 2rpx solid #e5e7eb;
+}
+.skin-tag-active {
+  background: linear-gradient(135deg, #fce7f3, #f5f3ff);
+  color: #ec4899;
+  border-color: #f9a8d4;
+}
+.detail-skin-custom {
+  width: 100%;
+  padding: 14rpx 18rpx;
+  border: 2rpx solid #e5e7eb;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  background: #fafaf9;
+  box-sizing: border-box;
 }
 
 /* ===== 弹窗通用 ===== */
