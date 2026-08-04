@@ -1411,6 +1411,7 @@ _loadCosSdk(0);
           <span class="beauty-tag" data-key="sting" onclick="toggleSkinStatus(this,'sting')">刺痛</span>
           <span class="beauty-tag" data-key="itchy" onclick="toggleSkinStatus(this,'itchy')">发痒</span>
           <span class="beauty-tag" data-key="edema" onclick="toggleSkinStatus(this,'edema')">水肿</span>
+          <span class="beauty-tag" data-key="largePores" onclick="toggleSkinStatus(this,'largePores')">毛孔粗大</span>
         </div>
         <input type="text" id="skinStatusCustom" placeholder="自定义皮肤状态，如：毛孔粗大" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:0.9rem;outline:none;background:#fafaf9;font-family:inherit" oninput="autoSaveSkincare()">
       </div>
@@ -6186,11 +6187,11 @@ function updateSkincareUI() {
   /* 皮肤状态 + 肤色并排显示 */
   var skinToneLabels = {'coolWhite':'冷白','neutralWhite':'自然白','warmWhite':'黄一白','warmLight':'黄二白','lightWheat':'浅小麦','deepWheat':'深小麦'};
   var skinToneLabel = skinToneLabels[beautySkincareState.skinTone] || '未设置';
-  countdownHtml += '<div class="skincare-date-row" style="margin-top:6px;gap:10px">';
-  countdownHtml += '<span style="font-size:0.72rem;color:#a8a29e;white-space:nowrap">皮肤状态</span>';
-  countdownHtml += '<span onclick="onSkinTypeChange();playClick()" style="cursor:pointer;font-size:0.76rem;font-weight:600;padding:3px 10px;border-radius:8px;color:#7c3aed;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);white-space:nowrap">'+skinTypeLabel+'</span>';
-  countdownHtml += '<span style="font-size:0.72rem;color:#a8a29e;white-space:nowrap">皮肤颜色</span>';
-  countdownHtml += '<span onclick="onSkinToneChange();playClick()" style="cursor:pointer;font-size:0.76rem;font-weight:600;padding:3px 10px;border-radius:8px;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);white-space:nowrap">'+skinToneLabel+'</span>';
+  countdownHtml += '<div class="skincare-date-row" style="margin-top:6px;justify-content:space-between">';
+  countdownHtml += '<div style="display:flex;align-items:center;gap:6px"><span style="font-size:0.72rem;color:#a8a29e;white-space:nowrap">皮肤状态</span>';
+  countdownHtml += '<span onclick="onSkinTypeChange();playClick()" style="cursor:pointer;font-size:0.76rem;font-weight:600;padding:3px 10px;border-radius:8px;color:#7c3aed;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);white-space:nowrap">'+skinTypeLabel+'</span></div>';
+  countdownHtml += '<div style="display:flex;align-items:center;gap:6px"><span style="font-size:0.72rem;color:#a8a29e;white-space:nowrap">皮肤颜色</span>';
+  countdownHtml += '<span onclick="onSkinToneChange();playClick()" style="cursor:pointer;font-size:0.76rem;font-weight:600;padding:3px 10px;border-radius:8px;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);white-space:nowrap">'+skinToneLabel+'</span></div>';
   countdownHtml += '</div>';
   countdownHtml += '<div class="skincare-today-datetime">'+nowStr+'</div>';
   countdownHtml += '</div>';
