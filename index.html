@@ -332,14 +332,14 @@ body::-webkit-scrollbar{display:none}
 .weight-hero .today-block-sub{color:rgba(255,255,255,0.7);font-size:0.62rem;white-space:nowrap}
 .weight-hero .am-pm-row{gap:10px}
 .weight-hero .am-pm-item{display:flex;flex-direction:column;gap:4px;min-width:0}
-/* 晨起输入框：明显更亮 */
-.weight-hero .weight-input-am{font-size:1.6rem;font-weight:800;color:#fff;background:rgba(255,255,255,0.22);border:1.5px solid rgba(255,255,255,0.3);border-radius:12px;padding:12px;text-align:center;width:100%;box-sizing:border-box}
-.weight-hero .weight-input-am::placeholder{color:rgba(255,255,255,0.5);font-size:0.8rem;font-weight:500}
-.weight-hero .weight-input-am:focus{border-color:rgba(255,255,255,0.6);box-shadow:0 0 0 4px rgba(255,255,255,0.14);background:rgba(255,255,255,0.28)}
-/* 睡前输入框：明显更暗 */
-.weight-hero .weight-input-pm{font-size:1.6rem;font-weight:800;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.14);border-radius:12px;padding:12px;text-align:center;width:100%;box-sizing:border-box}
-.weight-hero .weight-input-pm::placeholder{color:rgba(255,255,255,0.35);font-size:0.8rem;font-weight:500}
-.weight-hero .weight-input-pm:focus{border-color:rgba(255,255,255,0.35);box-shadow:0 0 0 4px rgba(255,255,255,0.06);background:rgba(255,255,255,0.1)}
+/* 晨起输入框：与紫色背景区分，更亮更浅 */
+.weight-hero .weight-input-am{font-size:1.6rem;font-weight:800;color:#fff;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.25);border-radius:12px;padding:12px;text-align:center;width:100%;box-sizing:border-box}
+.weight-hero .weight-input-am::placeholder{color:rgba(255,255,255,0.45);font-size:0.8rem;font-weight:500}
+.weight-hero .weight-input-am:focus{border-color:rgba(255,255,255,0.55);box-shadow:0 0 0 4px rgba(255,255,255,0.12);background:rgba(255,255,255,0.22)}
+/* 睡前输入框：比晨起稍暗 */
+.weight-hero .weight-input-pm{font-size:1.6rem;font-weight:800;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px;text-align:center;width:100%;box-sizing:border-box}
+.weight-hero .weight-input-pm::placeholder{color:rgba(255,255,255,0.3);font-size:0.8rem;font-weight:500}
+.weight-hero .weight-input-pm:focus{border-color:rgba(255,255,255,0.28);box-shadow:0 0 0 4px rgba(255,255,255,0.04);background:rgba(255,255,255,0.12)}
 /* 体脂在 Hero 内嵌 */
 .weight-hero .fat-inline{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.15)}
 .weight-hero .fat-inline-label{font-size:0.68rem;color:rgba(255,255,255,0.75);font-weight:600;white-space:nowrap}
@@ -1454,7 +1454,7 @@ _loadCosSdk(0);
       <div onclick="openBeautyMood();playClick()" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#fdf2f8,#fff1f2);cursor:pointer;margin-bottom:10px;transition:all 0.25s;border:1px solid rgba(236,72,153,0.08);box-shadow:0 2px 8px rgba(236,72,153,0.04)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(236,72,153,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(236,72,153,0.04)'">
         <div style="flex:1;min-width:0">
           <div style="font-size:0.95rem;font-weight:700;color:#1c1917">心情日记</div>
-          <div style="font-size:0.72rem;color:#a8a29e;margin-top:2px">心情记录 · 冥想音乐 · 自律打卡</div>
+          <div style="font-size:0.72rem;color:#a8a29e;margin-top:2px">心情记录 · 日历照片 · 感恩日记</div>
         </div>
         <div style="width:28px;height:28px;border-radius:50%;background:rgba(236,72,153,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="color:#ec4899;font-size:1rem;line-height:1">→</span></div>
       </div>
@@ -1471,7 +1471,7 @@ _loadCosSdk(0);
       </div>
     </div>
     <div style="background:#fff;padding:0 24px 20px;text-align:center;border-radius:0 0 20px 20px">
-      <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(236,72,153,0.06));font-size:0.7rem;color:#a8a29e;letter-spacing:1px">UPGRADE · 一次购买 · 永久使用</div>
+      <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(236,72,153,0.06));font-size:0.7rem;color:#a8a29e;letter-spacing:1px">UPGRADE · 一次购买 · 永久使用 · 云端储存</div>
       <div style="margin-top:14px">
         <button class="btn btn-outline" style="border-color:#e5e7eb;color:#78716c;font-size:0.82rem" onclick="document.getElementById('beautyHomeModal').classList.remove('show');playClick()">关闭</button>
       </div>
@@ -2001,7 +2001,7 @@ _loadCosSdk(0);
     </div>
     <!-- 照片操作行：有照片隐藏，无照片显示上传 -->
     <div id="periodDetailPhotoActions" style="display:flex;gap:8px;margin-bottom:10px">
-      <button class="btn btn-outline" style="flex:1;font-size:0.8rem" id="periodDetailUploadBtn" onclick="uploadDayPhotoFromDetail();playClick()"> 上传照片</button>
+      <button class="btn btn-outline" style="flex:1;font-size:0.8rem" id="periodDetailUploadBtn" onclick="uploadDayPhotoFromDetail();playClick()">📷 上传照片</button>
     </div>
     <div class="modal-actions">
       <button class="btn btn-outline" id="periodDetailAction" onclick="cancelPeriodFromDetail();playClick()">取消经期</button>
@@ -6675,8 +6675,8 @@ function renderTodayPhotoArea() {
   /* 不足4张时显示添加按钮 */
   if (photos.length < 4) {
     html += '<div onclick="uploadTodayPhoto();playClick()" style="width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
-    html += '<span style="font-size:1.2rem"></span>';
-    html += '<span style="font-size:0.6rem;color:#a8a29e">'+photos.length+'/4</span>';
+    html += '<span style="font-size:1.2rem">📷</span>';
+    html += '<span style="font-size:0.6rem;color:#a8a29e">上传照片 '+photos.length+'/4</span>';
     html += '</div>';
   }
   html += '</div>';
@@ -7036,12 +7036,15 @@ function renderSkincareCalendar() {
     var rec = recordsMap[ds];
     var hasRecord = !!rec && isDayCheckedWeb(rec);
     var hasPhoto = rec && (rec.photos && rec.photos.length > 0 || rec.photo);
+    var hasSkinStatus = rec && ((rec.skinStatus && rec.skinStatus.length > 0) || (rec.skinStatusCustom && rec.skinStatusCustom.trim()));
     var todayBg = isToday ? 'background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(124,58,237,0.25);' : '';
     var recBg = hasRecord && !isToday ? 'background:rgba(124,58,237,0.06);' : '';
     var recColor = hasRecord && !isToday ? 'color:#7c3aed;font-weight:700;' : 'color:#78716c;font-weight:500;';
     html += '<div onclick="openSkincareDayDetail(\''+ds+'\');playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;gap:0;transition:all 0.15s;position:relative;'+todayBg+recBg+'">';
     /* 照片标记 */
     if (hasPhoto) html += '<span style="position:absolute;top:1px;left:0;right:0;text-align:center;font-size:0.45rem;line-height:1">📷</span>';
+    /* 皮肤状态标记 */
+    if (hasSkinStatus && !isToday) html += '<span style="position:absolute;bottom:1px;left:0;right:0;text-align:center;font-size:0.4rem;line-height:1;color:#ec4899">◇</span>';
     if (isToday) {
       html += '<span style="width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-weight:700;font-size:0.78rem;box-shadow:0 2px 8px rgba(124,58,237,0.35)">'+d+'</span>';
     } else {
@@ -7058,12 +7061,13 @@ function renderSkincareCalendar() {
   html += '<div style="display:flex;gap:14px;margin-top:8px;padding-top:6px;border-top:1px solid #ede9fe;flex-wrap:wrap;justify-content:center;font-size:0.68rem">';
   html += '<span style="color:#a8a29e;display:flex;align-items:center;gap:3px"> 有照片</span>';
   html += '<span style="color:#7c3aed;display:flex;align-items:center;gap:3px;font-weight:600">✓ 已打卡</span>';
+  html += '<span style="color:#ec4899;display:flex;align-items:center;gap:3px;font-weight:600"> 皮肤状态</span>';
   html += '<span style="color:#a8a29e;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:rgba(124,58,237,0.06)"></span> 未打卡</span>';
   html += '</div>';
   calEl.innerHTML = html;
 }
 
-/* 判断某天是否有打卡（美容院/do脸/护理项目/自定义项目 任一即可） */
+/* 判断某天是否有打卡（美容院/do脸/护理项目/自定义项目/皮肤状态 任一即可） */
 function isDayCheckedWeb(rec) {
   if (!rec) return false;
   if (rec.morningSkincare) return true;
@@ -7072,6 +7076,8 @@ function isDayCheckedWeb(rec) {
   if (rec.cosmetic) return true;
   if (rec.bodyCare && rec.bodyCare.length > 0) return true;
   if (rec.customCheck && rec.customCheck.trim()) return true;
+  if (rec.skinStatus && rec.skinStatus.length > 0) return true;
+  if (rec.skinStatusCustom && rec.skinStatusCustom.trim()) return true;
   return false;
 }
 
@@ -7137,8 +7143,8 @@ function renderSkincareDayDetail() {
     }
     if (editing && s.photos.length < 4) {
       html += '<div onclick="uploadDetailPhoto();playClick()" style="width:68px;height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
-      html += '<span style="font-size:1.2rem"></span>';
-      html += '<span style="font-size:0.6rem;color:#a8a29e">'+s.photos.length+'/4</span>';
+      html += '<span style="font-size:1.2rem">📷</span>';
+      html += '<span style="font-size:0.6rem;color:#a8a29e">上传照片 '+s.photos.length+'/4</span>';
       html += '</div>';
     }
     html += '</div>';
@@ -7146,8 +7152,8 @@ function renderSkincareDayDetail() {
   } else if (editing) {
     html += '<div style="margin-bottom:16px">';
     html += '<div onclick="uploadDetailPhoto();playClick()" style="padding:20px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;background:#fafaf9">';
-    html += '<span style="font-size:1.5rem"></span><br>';
-    html += '<span style="font-size:0.8rem;color:#a8a29e">添加自拍</span>';
+    html += '<span style="font-size:1.5rem">📷</span><br>';
+    html += '<span style="font-size:0.8rem;color:#a8a29e">上传照片</span>';
     html += '</div>';
     html += '</div>';
   }
@@ -7766,8 +7772,8 @@ function renderMoodTodayPhotoArea() {
   }
   if (photos.length < 4) {
     html += '<div onclick="uploadMoodTodayPhoto();playClick()" style="width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:transparent;flex-shrink:0">';
-    html += '<span style="font-size:1.2rem"></span>';
-    html += '<span style="font-size:0.6rem;color:#9ca3af">'+photos.length+'/4</span>';
+    html += '<span style="font-size:1.2rem">📷</span>';
+    html += '<span style="font-size:0.6rem;color:#9ca3af">上传照片 '+photos.length+'/4</span>';
     html += '</div>';
   }
   html += '</div>';
@@ -7903,12 +7909,15 @@ function renderMoodCalendar() {
     var rec = recordsMap[ds];
     var hasRecord = !!rec && isMoodDayHasData(rec);
     var hasPhoto = rec && rec.photos && rec.photos.length > 0;
+    var hasGratitude = rec && rec.gratitude && rec.gratitude.some(function(g) { return g && g.trim(); });
     var todayBg = isToday ? 'background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(245,158,11,0.25);' : '';
     var recBg = hasRecord && !isToday ? 'background:rgba(245,158,11,0.06);' : '';
     var recColor = hasRecord && !isToday ? 'color:#d97706;font-weight:700;' : 'color:#78716c;font-weight:500;';
     html += '<div onclick="openMoodDayDetail(\''+ds+'\');playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;gap:0;transition:all 0.15s;position:relative;'+todayBg+recBg+'">';
     /* 照片标记 */
     if (hasPhoto) html += '<span style="position:absolute;top:1px;left:0;right:0;text-align:center;font-size:0.45rem;line-height:1">📷</span>';
+    /* 感恩日记标记 */
+    if (hasGratitude && !isToday) html += '<span style="position:absolute;bottom:1px;left:0;right:0;text-align:center;font-size:0.4rem;line-height:1;color:#b45309">♡</span>';
     if (isToday) {
       html += '<span style="width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#fff;font-weight:700;font-size:0.78rem;box-shadow:0 2px 8px rgba(245,158,11,0.35)">'+d+'</span>';
     } else {
@@ -7924,6 +7933,7 @@ function renderMoodCalendar() {
   html += '<div style="display:flex;gap:14px;margin-top:8px;padding-top:6px;border-top:1px solid #fef3c7;flex-wrap:wrap;justify-content:center;font-size:0.68rem">';
   html += '<span style="color:#a8a29e;display:flex;align-items:center;gap:3px"> 有照片</span>';
   html += '<span style="color:#d97706;display:flex;align-items:center;gap:3px;font-weight:600">✓ 有记录</span>';
+  html += '<span style="color:#b45309;display:flex;align-items:center;gap:3px;font-weight:600"> 感恩日记</span>';
   html += '<span style="color:#a8a29e;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:rgba(245,158,11,0.06)"></span> 无记录</span>';
   html += '</div>';
   calEl.innerHTML = html;
@@ -7939,6 +7949,11 @@ function isMoodDayHasData(rec) {
   if (rec.photos && rec.photos.length > 0) return true;
   if (rec.discipline) {
     for (var k in rec.discipline) { if (rec.discipline[k]) return true; }
+  }
+  if (rec.gratitude) {
+    for (var gi = 0; gi < rec.gratitude.length; gi++) {
+      if (rec.gratitude[gi] && rec.gratitude[gi].trim()) return true;
+    }
   }
   return false;
 }
@@ -8036,13 +8051,13 @@ function renderMoodDayDetail() {
     }
     if (editing && s.photos.length < 4) {
       html += '<div onclick="uploadMoodDetailPhoto();playClick()" style="width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #f0ebe8;border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
-      html += '<span style="font-size:1.2rem;color:#a8a29e"></span><span style="font-size:0.6rem;color:#a8a29e">添加</span></div>';
+      html += '<span style="font-size:1.2rem;color:#a8a29e">📷</span><span style="font-size:0.6rem;color:#a8a29e">上传照片</span></div>';
     }
     html += '</div></div>';
   } else if (editing) {
     html += '<div style="margin-bottom:16px;text-align:center">';
     html += '<div onclick="uploadMoodDetailPhoto();playClick()" style="width:72px;height:72px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #f0ebe8;border-radius:10px;cursor:pointer;background:#fafaf9">';
-    html += '<span style="font-size:1.2rem;color:#a8a29e"></span><span style="font-size:0.6rem;color:#a8a29e">添加照片</span></div></div>';
+    html += '<span style="font-size:1.2rem;color:#a8a29e">📷</span><span style="font-size:0.6rem;color:#a8a29e">上传照片</span></div></div>';
   }
 
   if (editing) {
