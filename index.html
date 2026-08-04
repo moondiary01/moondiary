@@ -1847,6 +1847,8 @@ _loadCosSdk(0);
 <div class="modal-overlay" id="periodDetailModal">
   <div class="modal">
     <h2>经期备注</h2>
+    <!-- 照片直接展示在最上方 -->
+    <div id="periodDetailPhotoArea" style="display:none;margin-bottom:16px;text-align:center"></div>
     <div style="text-align:center;margin-bottom:16px">
       <div id="periodDetailDate" style="font-size:0.85rem;color:var(--text-l)">—</div>
       <div id="periodDetailDay" style="font-size:1.1rem;font-weight:700;color:var(--rose-600);margin-top:4px">—</div>
@@ -5457,6 +5459,15 @@ function showPeriodDetail(ds) {
   const dailyNote = (day && day.note) ? day.note : '无日记';
   const diet = day ? (day.diet || '未记录') : '未记录';
   const exercise = day ? (day.exercise || '未记录') : '未记录';
+  /* 照片直接展示在最上方 */
+  var photoArea = document.getElementById('periodDetailPhotoArea');
+  if (day && day.photo) {
+    photoArea.style.display = '';
+    photoArea.innerHTML = '<img src="'+day.photo+'" style="max-width:100%;max-height:200px;border-radius:12px;object-fit:contain;box-shadow:0 2px 8px rgba(0,0,0,0.08)" onclick="viewDayPhotoFromDetail();playClick()" />';
+  } else {
+    photoArea.style.display = 'none';
+    photoArea.innerHTML = '';
+  }
   /* 恢复标题和经期备注区块 */
   document.querySelector('#periodDetailModal h2').textContent = '经期备注';
   var noteBox = document.getElementById('periodDetailNote').parentElement;
@@ -5496,6 +5507,15 @@ function showExerciseDetail(ds) {
   const dailyNote = (day && day.note) ? day.note : '无日记';
   const diet = day ? (day.diet || '未记录') : '未记录';
   const exercise = day ? (day.exercise || '未记录') : '未记录';
+  /* 照片直接展示在最上方 */
+  var photoArea = document.getElementById('periodDetailPhotoArea');
+  if (day && day.photo) {
+    photoArea.style.display = '';
+    photoArea.innerHTML = '<img src="'+day.photo+'" style="max-width:100%;max-height:200px;border-radius:12px;object-fit:contain;box-shadow:0 2px 8px rgba(0,0,0,0.08)" onclick="viewDayPhotoFromDetail();playClick()" />';
+  } else {
+    photoArea.style.display = 'none';
+    photoArea.innerHTML = '';
+  }
   /* 设置标题 */
   document.querySelector('#periodDetailModal h2').textContent = '运动打卡';
   document.getElementById('periodDetailDate').textContent = ds;
@@ -6615,7 +6635,9 @@ function renderSkincareCalendar() {
     var todayBg = isToday ? 'background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(124,58,237,0.25);' : '';
     var recBg = hasRecord && !isToday ? 'background:rgba(124,58,237,0.06);' : '';
     var recColor = hasRecord && !isToday ? 'color:#7c3aed;font-weight:700;' : 'color:#78716c;font-weight:500;';
-    html += '<div onclick="openSkincareDayDetail(\''+ds+'\');playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;gap:0;transition:all 0.15s;'+todayBg+recBg+'">';
+    html += '<div onclick="openSkincareDayDetail(\''+ds+'\');playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;gap:0;transition:all 0.15s;position:relative;'+todayBg+recBg+'">';
+    /* 照片标记 */
+    if (hasPhoto) html += '<span style="position:absolute;top:1px;left:0;right:0;text-align:center;font-size:0.45rem;line-height:1"></span>';
     if (isToday) {
       html += '<span style="width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-weight:700;font-size:0.78rem;box-shadow:0 2px 8px rgba(124,58,237,0.35)">'+d+'</span>';
     } else {
@@ -7465,7 +7487,9 @@ function renderMoodCalendar() {
     var todayBg = isToday ? 'background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(245,158,11,0.25);' : '';
     var recBg = hasRecord && !isToday ? 'background:rgba(245,158,11,0.06);' : '';
     var recColor = hasRecord && !isToday ? 'color:#d97706;font-weight:700;' : 'color:#78716c;font-weight:500;';
-    html += '<div onclick="openMoodDayDetail(\''+ds+'\');playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;gap:0;transition:all 0.15s;'+todayBg+recBg+'">';
+    html += '<div onclick="openMoodDayDetail(\''+ds+'\');playClick()" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;gap:0;transition:all 0.15s;position:relative;'+todayBg+recBg+'">';
+    /* 照片标记 */
+    if (hasPhoto) html += '<span style="position:absolute;top:1px;left:0;right:0;text-align:center;font-size:0.45rem;line-height:1"></span>';
     if (isToday) {
       html += '<span style="width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#fff;font-weight:700;font-size:0.78rem;box-shadow:0 2px 8px rgba(245,158,11,0.35)">'+d+'</span>';
     } else {
