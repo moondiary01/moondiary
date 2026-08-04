@@ -166,7 +166,62 @@
     </view>
   </view>
 
-  <!-- 8. 日历照片 -->
+  <!-- 8. 心情日历 -->
+  <view class="card mood-card mood-calendar-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">📅</view>
+      <view class="card-title-text">心情日历</view>
+    </view>
+    <view class="cal-hint">点击日期查看/编辑当日记录</view>
+
+    <!-- 月份导航 -->
+    <view class="cal-nav">
+      <view class="cal-nav-btn" bindtap="onPrevMonth">‹</view>
+      <view class="cal-nav-title">{{calYear}}年{{calMonth + 1}}月</view>
+      <view class="cal-nav-btn" bindtap="onNextMonth">›</view>
+    </view>
+
+    <!-- 日历表头 -->
+    <view class="cal-header">
+      <view class="cal-hcell">日</view>
+      <view class="cal-hcell">一</view>
+      <view class="cal-hcell">二</view>
+      <view class="cal-hcell">三</view>
+      <view class="cal-hcell">四</view>
+      <view class="cal-hcell">五</view>
+      <view class="cal-hcell">六</view>
+    </view>
+
+    <!-- 日历网格 -->
+    <view class="cal-grid">
+      <block wx:for="{{calDays}}" wx:key="key">
+        <view class="cal-cell cal-empty" wx:if="{{item.empty}}"></view>
+        <view
+          class="cal-cell {{item.today ? 'cal-today' : ''}} {{item.hasRecord ? 'cal-has-record' : ''}}"
+          wx:else
+          data-date="{{item.dateStr}}"
+          bindtap="onCalDayClick"
+        >
+          <text wx:if="{{item.hasPhoto}}" class="cal-mark cal-mark-photo">📷</text>
+          <view class="cal-day-num">{{item.day}}</view>
+          <view class="cal-day-marks">
+            <text wx:if="{{item.hasMood}}" class="cal-mark cal-mark-mood">{{item.moodEmoji}}</text>
+            <text wx:if="{{item.hasRecord}}" class="cal-mark cal-mark-done">✓</text>
+            <text wx:if="{{item.hasGratitude && !item.today}}" class="cal-mark cal-mark-gratitude">♡</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 日历图例 -->
+    <view class="cal-legend">
+      <view class="legend-item"><text class="legend-emoji">📷</text><text>有照片</text></view>
+      <view class="legend-item"><text class="legend-emoji mood-dot">✓</text><text>已记录</text></view>
+      <view class="legend-item"><text class="legend-emoji gratitude-dot">♡</text><text>感恩日记</text></view>
+    </view>
+  </view>
+
+  <!-- 9. 日历照片 -->
   <view class="card mood-card">
     <view class="card-title-row">
       <view class="card-title-icon">📸</view>
@@ -190,6 +245,65 @@
     <view class="save-btn" bindtap="onSave">保存今日心情日记</view>
   </view>
 
+</view>
+
+<!-- 日历日期详情弹窗 -->
+<view class="overlay" wx:if="{{showDayDetail}}" bindtap="onCloseDetail">
+  <view class="modal detail-modal" catchtap="">
+    <view class="detail-header">
+      <text class="detail-title-text">{{detailDate}}</text>
+      <view class="detail-close-btn" catchtap="onCloseDetail">✕</view>
+    </view>
+
+    <!-- 心情卡片 -->
+    <view class="detail-card detail-card-pink" wx:if="{{detailMoodEmoji}}">
+      <view class="detail-card-title">今日心情</view>
+      <view class="mood-detail-display">
+        <text class="mood-detail-emoji">{{detailMoodEmoji}}</text>
+        <text class="mood-detail-label">{{detailMoodLabel}}</text>
+      </view>
+    </view>
+
+    <!-- 当前状态卡片 -->
+    <view class="detail-card detail-card-purple" wx:if="{{detailStatus}}">
+      <view class="detail-card-title">当前状态</view>
+      <text class="detail-status-text">{{detailStatus}}</text>
+    </view>
+
+    <!-- 日记卡片 -->
+    <view class="detail-card detail-card-gray" wx:if="{{detailDiary}}">
+      <view class="detail-card-title">日记本</view>
+      <text class="detail-diary-text">{{detailDiary}}</text>
+    </view>
+
+    <!-- 自律打卡卡片 -->
+    <view class="detail-card detail-card-green" wx:if="{{detailDiscipline.length > 0}}">
+      <view class="detail-card-title">自律打卡</view>
+      <view class="detail-mini-tags">
+        <text wx:for="{{detailDiscipline}}" wx:key="*this" class="detail-mini-tag mini-on">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 感恩日记卡片 -->
+    <view class="detail-card detail-card-amber" wx:if="{{detailGratitude.length > 0}}">
+      <view class="detail-card-title">感恩日记</view>
+      <view wx:for="{{detailGratitude}}" wx:key="*this" class="gratitude-detail-item">
+        <text class="gratitude-detail-num">{{index + 1}}</text>
+        <text class="gratitude-detail-text">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 照片区域 -->
+    <view class="detail-photo-section" wx:if="{{detailPhotos.length > 0}}">
+      <view class="detail-photo-row">
+        <image wx:for="{{detailPhotos}}" wx:key="*this" src="{{item}}" mode="aspectFill" class="detail-photo-thumb" data-index="{{index}}" bindtap="onPreviewDetailPhoto"/>
+      </view>
+    </view>
+
+    <view class="detail-actions">
+      <button class="btn btn-outline" catchtap="onCloseDetail">关闭</button>
+    </view>
+  </view>
 </view>
 
 <!-- 底部迷你播放器 -->

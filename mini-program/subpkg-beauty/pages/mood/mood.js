@@ -127,7 +127,20 @@ Page({
     // 感恩日记
     gratitude1: '',
     gratitude2: '',
-    gratitude3: ''
+    gratitude3: '',
+    // 日历
+    calYear: new Date().getFullYear(),
+    calMonth: new Date().getMonth(),
+    calDays: [],
+    showDayDetail: false,
+    detailDate: '',
+    detailMoodEmoji: '',
+    detailMoodLabel: '',
+    detailStatus: '',
+    detailDiary: '',
+    detailDiscipline: [],
+    detailGratitude: [],
+    detailPhotos: []
   },
 
   onLoad: function () {
@@ -137,7 +150,9 @@ Page({
     var weekDay = ['日','一','二','三','四','五','六'][now.getDay()]
     this.setData({
       todayStr: now.getMonth() + 1 + '月' + now.getDate() + '日 周' + weekDay,
-      canUseUpgrade: app.globalData.canUseUpgrade || false
+      canUseUpgrade: app.globalData.canUseUpgrade || false,
+      calYear: now.getFullYear(),
+      calMonth: now.getMonth()
     })
     this.filterMusic('nature')
     this.loadData()
@@ -187,6 +202,7 @@ Page({
         gratitude2: (record.gratitude && record.gratitude[1]) || '',
         gratitude3: (record.gratitude && record.gratitude[2]) || ''
       })
+      self.renderCalendar()
     })
   },
 
@@ -465,9 +481,154 @@ Page({
     beautyStore.saveMood(app.globalData.userKey, data, function (success) {
       if (success) {
         wx.showToast({ title: '保存成功', icon: 'success' })
+        self.renderCalendar()
       } else {
         wx.showToast({ title: '保存失败，请重试', icon: 'none' })
       }
+    })
+  },
+
+  // ===== 日历渲染 =====
+  renderCalendar: function () {
+    var data = this.data.moodData
+    var records = (data && data.dailyRecords) ? data.dailyRecords : []
+    var recordMap = {}
+    records.forEach(function(r) { recordMap[r.date] = r })
+
+    var moodEmojiMap = {
+      ecstatic: '🥰', happy: '😊', calm: '😌', grateful: '🙏',
+      neutral: '😐', tired: '😪', anxious: '😰', sad: '😢',
+      angry: '😤', stressed: '🤯'
+    }
+    var moodLabelMap = {
+      ecstatic: '幸福', happy: '开心', calm: '平静', grateful: '感恩',
+      neutral: '一般', tired: '疲惫', anxious: '焦虑', sad: '难过',
+      angry: '生气', stressed: '压力'
+    }
+
+    function hasRecord(rec) {
+      return rec && (rec.status || rec.mood || rec.diary || rec.photos.length > 0 ||
+        (rec.discipline && Object.values(rec.discipline).some(function(v) { return v })) ||
+        (rec.gratitude && rec.gratitude.some(function(g) { return g && g.trim() })))
+    }
+
+    var year = this.data.calYear
+    var month = this.data.calMonth
+    var todayStr = beautyStore.localDateStr(new Date())
+
+    var firstDay = new Date(year, month, 1).getDay()
+    var daysInMonth = new Date(year, month + 1, 0).getDate()
+
+    var days = []
+    for (var i = 0; i < firstDay; i++) {
+      days.push({ empty: true, key: 'e' + i })
+    }
+    for (var d = 1; d <= daysInMonth; d++) {
+      var ds = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0')
+      var rec = recordMap[ds] || null
+      var hasData = hasRecord(rec)
+      var hasPhoto = rec && rec.photos && rec.photos.length > 0
+      var hasGrat = rec && rec.gratitude && rec.gratitude.some(function(g) { return g && g.trim() })
+      days.push({
+        empty: false,
+        key: 'd' + d,
+        day: d,
+        dateStr: ds,
+        today: ds === todayStr,
+        hasRecord: hasData,
+        hasPhoto: hasPhoto,
+        hasMood: rec && rec.mood && moodEmojiMap[rec.mood],
+        moodEmoji: rec && rec.mood ? moodEmojiMap[rec.mood] : '',
+        hasGratitude: hasGrat
+      })
+    }
+    this.setData({ calDays: days })
+  },
+
+  onPrevMonth: function () {
+    audio.playClick()
+    var month = this.data.calMonth - 1
+    var year = this.data.calYear
+    if (month < 0) { month = 11; year-- }
+    this.setData({ calMonth: month, calYear: year })
+    this.renderCalendar()
+  },
+
+  onNextMonth: function () {
+    audio.playClick()
+    var month = this.data.calMonth + 1
+    var year = this.data.calYear
+    if (month > 11) { month = 0; year++ }
+    this.setData({ calMonth: month, calYear: year })
+    this.renderCalendar()
+  },
+
+  onCalDayClick: function (e) {
+    audio.playClick()
+    var dateStr = e.currentTarget.dataset.date
+    var record = null
+    var data = this.data.moodData
+    if (data && data.dailyRecords) {
+      for (var i = 0; i < data.dailyRecords.length; i++) {
+        if (data.dailyRecords[i].date === dateStr) {
+          record = data.dailyRecords[i]
+          break
+        }
+      }
+    }
+
+    var moodEmojiMap = {
+      ecstatic: '🥰', happy: '😊', calm: '😌', grateful: '🙏',
+      neutral: '😐', tired: '😪', anxious: '😰', sad: '😢',
+      angry: '😤', stressed: '🤯'
+    }
+    var moodLabelMap = {
+      ecstatic: '幸福', happy: '开心', calm: '平静', grateful: '感恩',
+      neutral: '一般', tired: '疲惫', anxious: '焦虑', sad: '难过',
+      angry: '生气', stressed: '压力'
+    }
+
+    var discLabels = {
+      tidyRoom: '🧹 收拾房间', declutter: '📦 断舍离', read: '📖 阅读',
+      exercise: '🏃 运动', cook: '🍳 做饭', noPhone: '📵 减少手机',
+      earlySleep: '🛏️ 早睡', gratitude: '✨ 感恩记录', meditation: '🧘 冥想',
+      skincare: '💄 护肤', water: '💧 喝水', journal: '✏️ 写日记'
+    }
+
+    var discActive = []
+    if (record && record.discipline) {
+      Object.keys(record.discipline).forEach(function(k) {
+        if (record.discipline[k] && discLabels[k]) discActive.push(discLabels[k])
+      })
+    }
+
+    var gratitudeItems = []
+    if (record && record.gratitude) {
+      record.gratitude.forEach(function(g) { if (g && g.trim()) gratitudeItems.push(g) })
+    }
+
+    this.setData({
+      showDayDetail: true,
+      detailDate: dateStr,
+      detailMoodEmoji: record && record.mood ? moodEmojiMap[record.mood] || '' : '',
+      detailMoodLabel: record && record.mood ? moodLabelMap[record.mood] || '' : '',
+      detailStatus: record ? (record.status || '') : '',
+      detailDiary: record ? (record.diary || '') : '',
+      detailDiscipline: discActive,
+      detailGratitude: gratitudeItems,
+      detailPhotos: record && record.photos ? record.photos : []
+    })
+  },
+
+  onCloseDetail: function () {
+    this.setData({ showDayDetail: false })
+  },
+
+  onPreviewDetailPhoto: function (e) {
+    var idx = e.currentTarget.dataset.index
+    wx.previewImage({
+      current: this.data.detailPhotos[idx],
+      urls: this.data.detailPhotos
     })
   },
 
