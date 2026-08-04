@@ -1393,6 +1393,28 @@ _loadCosSdk(0);
       <!-- 倒计时卡片+皮肤状态小字（JS动态填充） -->
       <div id="skincareCountdown"></div>
 
+      <!-- 今日皮肤状态（多选标签 + 自定义输入） -->
+      <div style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:4px">今日皮肤状态</div>
+        <div id="skinStatusTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;margin-bottom:12px">
+          <span class="beauty-tag" data-key="hydrated" onclick="toggleSkinStatus(this,'hydrated')">水润</span>
+          <span class="beauty-tag" data-key="dry" onclick="toggleSkinStatus(this,'dry')">干燥</span>
+          <span class="beauty-tag" data-key="oily" onclick="toggleSkinStatus(this,'oily')">泛油</span>
+          <span class="beauty-tag" data-key="combo" onclick="toggleSkinStatus(this,'combo')">外油内干</span>
+          <span class="beauty-tag" data-key="sensitive" onclick="toggleSkinStatus(this,'sensitive')">敏感泛红</span>
+          <span class="beauty-tag" data-key="acne" onclick="toggleSkinStatus(this,'acne')">痘痘</span>
+          <span class="beauty-tag" data-key="closedComedo" onclick="toggleSkinStatus(this,'closedComedo')">闭口</span>
+          <span class="beauty-tag" data-key="blackhead" onclick="toggleSkinStatus(this,'blackhead')">黑头</span>
+          <span class="beauty-tag" data-key="fineLines" onclick="toggleSkinStatus(this,'fineLines')">干纹</span>
+          <span class="beauty-tag" data-key="dull" onclick="toggleSkinStatus(this,'dull')">暗沉</span>
+          <span class="beauty-tag" data-key="acneMark" onclick="toggleSkinStatus(this,'acneMark')">痘印</span>
+          <span class="beauty-tag" data-key="sting" onclick="toggleSkinStatus(this,'sting')">刺痛</span>
+          <span class="beauty-tag" data-key="itchy" onclick="toggleSkinStatus(this,'itchy')">发痒</span>
+          <span class="beauty-tag" data-key="edema" onclick="toggleSkinStatus(this,'edema')">水肿</span>
+        </div>
+        <input type="text" id="skinStatusCustom" placeholder="自定义皮肤状态，如：毛孔粗大" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:0.9rem;outline:none;background:#fafaf9;font-family:inherit" oninput="autoSaveSkincare()">
+      </div>
+
       <!-- 今日打卡（护理项目 + 打勾项） -->
       <div style="margin-bottom:16px">
         <div class="card-title" style="margin-bottom:4px">今日打卡</div>
@@ -5841,6 +5863,8 @@ var beautySkincareState = {
   nightSkincare: false,
   customCheck: '',
   bodyCare: [],
+  skinStatus: [],
+  skinStatusCustom: '',
   salon: false, salonNote: '',
   cosmetic: false, cosmeticNote: '',
   photos: [],
@@ -6094,6 +6118,8 @@ function finishSkincareLoad() {
     beautySkincareState.note = '';
     beautySkincareState.photos = [];
     beautySkincareState.customCheck = '';
+    beautySkincareState.skinStatus = [];
+    beautySkincareState.skinStatusCustom = '';
 
     /* 加载今日记录 */
     var today = formatDateStr(new Date());
@@ -6112,6 +6138,8 @@ function finishSkincareLoad() {
       beautySkincareState.note = record.note || '';
       beautySkincareState.photos = record.photos || (record.photo ? [record.photo] : []);
       beautySkincareState.customCheck = record.customCheck || '';
+      beautySkincareState.skinStatus = record.skinStatus || [];
+      beautySkincareState.skinStatusCustom = record.skinStatusCustom || '';
     }
 
     updateSkincareUI();
@@ -6183,6 +6211,11 @@ function updateSkincareUI() {
   document.querySelectorAll('#bodyCareTags .beauty-tag').forEach(function(el) {
     el.classList.toggle('beauty-tag-active', beautySkincareState.bodyCare.indexOf(el.dataset.key) > -1);
   });
+  /* 皮肤状态标签高亮恢复 */
+  document.querySelectorAll('#skinStatusTags .beauty-tag').forEach(function(el) {
+    el.classList.toggle('beauty-tag-active', beautySkincareState.skinStatus.indexOf(el.dataset.key) > -1);
+  });
+  if (document.getElementById('skinStatusCustom')) document.getElementById('skinStatusCustom').value = beautySkincareState.skinStatusCustom || '';
   if (document.getElementById('beautyNote')) document.getElementById('beautyNote').value = beautySkincareState.note;
   if (document.getElementById('beautyCustomCheck')) document.getElementById('beautyCustomCheck').value = beautySkincareState.customCheck || '';
   /* 今日照片区域 */
@@ -6417,6 +6450,15 @@ function toggleBodyCare(el, key) {
   autoSaveSkincare();
 }
 
+function toggleSkinStatus(el, key) {
+  var idx = beautySkincareState.skinStatus.indexOf(key);
+  if (idx > -1) beautySkincareState.skinStatus.splice(idx, 1);
+  else beautySkincareState.skinStatus.push(key);
+  el.classList.toggle('beauty-tag-active');
+  playClick();
+  autoSaveSkincare();
+}
+
 function onSkinTypeChange() {
   var options = [['dry','干性'],['oily','油性'],['combination','混合'],['sensitive','敏感']];
   var labels = options.map(function(o) { return o[1]; });
@@ -6460,6 +6502,7 @@ function saveBeautySkincare() {
   beautySkincareState.cosmeticNote = document.getElementById('beautyCosmeticNote') ? document.getElementById('beautyCosmeticNote').value : '';
   beautySkincareState.customCheck = document.getElementById('beautyCustomCheck') ? document.getElementById('beautyCustomCheck').value : '';
   beautySkincareState.note = document.getElementById('beautyNote') ? document.getElementById('beautyNote').value : '';
+  beautySkincareState.skinStatusCustom = document.getElementById('skinStatusCustom') ? document.getElementById('skinStatusCustom').value : '';
 
   var record = Object.assign({ date: today }, beautySkincareState);
   delete record.totalDays; delete record.currentDay;
