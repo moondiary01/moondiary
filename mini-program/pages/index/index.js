@@ -15,6 +15,7 @@ Page({
     unitLabel: '斤',
     isFemale: false,
     isAdmin: false,
+    isBeautyUser: false,   // 是否已购升级版
     dayData: {},
     waterMl: 0,
     waterGoal: 2000,
@@ -185,6 +186,7 @@ Page({
       unitLabel: unitLabel,
       isFemale: isFemale,
       isAdmin: app.globalData.loginType === 'admin',
+      isBeautyUser: app.globalData.canUseUpgrade || app.globalData.loginType === 'admin' || app.globalData.loginType === 'key',
       dayData: todayData,
       waterMl: waterMl,
       waterGoal: waterGoal,
@@ -393,6 +395,20 @@ Page({
     audio.playEnter()
     wx.navigateTo({
       url: '/subpkg-beauty/pages/upgrade-home/upgrade-home'
+    })
+  },
+
+  onGoSkincare: function () {
+    audio.playEnter()
+    wx.navigateTo({
+      url: '/subpkg-beauty/pages/skincare/skincare'
+    })
+  },
+
+  onGoMood: function () {
+    audio.playEnter()
+    wx.navigateTo({
+      url: '/subpkg-beauty/pages/mood/mood'
     })
   }
 })

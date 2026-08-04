@@ -14,6 +14,11 @@
       <text class="hero-weight-unit">{{unitLabel}}</text>
     </view>
     <view class="hero-weight-label">今日体重</view>
+    <!-- 已购用户快捷入口 -->
+    <view class="hero-beauty-quick" wx:if="{{isBeautyUser}}">
+      <view class="hero-quick-btn hero-quick-skincare" bindtap="onGoSkincare">护肤</view>
+      <view class="hero-quick-btn hero-quick-mood" bindtap="onGoMood">心情</view>
+    </view>
   </view>
 
   <!-- 体重 + 体脂 Hero 卡片 -->
@@ -114,8 +119,8 @@
     <textarea class="note-textarea" placeholder="今天怎么样..." value="{{dayData.note}}" bindinput="onNoteInput" bindblur="onNoteBlur" maxlength="500" auto-height></textarea>
   </view>
 
-  <!-- 100变美日记入口 -->
-  <view class="beauty-entry-card" bindtap="onGoBeauty">
+  <!-- 100变美日记入口（仅未购用户显示） -->
+  <view class="beauty-entry-card" bindtap="onGoBeauty" wx:if="{{!isBeautyUser}}">
     <!-- 光晕 -->
     <view class="beauty-glow beauty-glow-pink"></view>
     <view class="beauty-glow beauty-glow-purple"></view>
