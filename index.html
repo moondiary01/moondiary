@@ -365,19 +365,19 @@ body::-webkit-scrollbar{display:none}
 .water-block .water-goal-progress{color:#7BA5BE}
 
 /* ===== 健康三合一：排便 + 运动 + 饮食 ===== */
-.health-trio{background:#fff;border:1px solid #EDE4F5;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:10px;box-shadow:0 2px 16px rgba(124,58,237,0.05)}
+.health-trio{background:linear-gradient(160deg,#FFF5F7 0%,#FFE4EA 50%,#FECDD3 100%);border:1px solid rgba(244,114,182,0.15);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:10px;box-shadow:0 2px 16px rgba(244,114,182,0.06)}
 .health-trio-row{display:grid;grid-template-columns:1fr 1fr;gap:0}
-.health-trio-row > *{padding:15px 16px;border-right:1px solid #F3EEFA;border-bottom:1px solid #F3EEFA;position:relative}
+.health-trio-row > *{padding:15px 16px;border-right:1px solid rgba(244,114,182,0.12);border-bottom:1px solid rgba(244,114,182,0.12);position:relative}
 .health-trio-row > *:nth-child(2n){border-right:none}
-.health-trio-row > *:last-child{grid-column:1/-1;border-bottom:none;background:linear-gradient(160deg,#FDF8FD 0%,#FEF5FA 50%,#FFF1F7 100%)}
+.health-trio-row > *:last-child{grid-column:1/-1;border-bottom:none;background:linear-gradient(160deg,rgba(255,255,255,0.5) 0%,rgba(255,245,247,0.6) 50%,rgba(254,205,211,0.4) 100%)}
 .health-trio-label{font-size:0.66rem;font-weight:700;color:var(--rose-500);margin-bottom:8px;letter-spacing:0.04em;text-transform:uppercase}
 /* 排便/运动 select */
-.health-trio select{-webkit-appearance:none;appearance:none;width:100%;padding:10px 14px;border:1.5px solid #EDE4F5;border-radius:12px;font-size:0.84rem;font-weight:600;color:var(--ink);outline:none;background:#FAF7FD url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A78BFA' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center;cursor:pointer;transition:all 0.25s}
+.health-trio select{-webkit-appearance:none;appearance:none;width:100%;padding:10px 14px;border:1.5px solid rgba(244,114,182,0.2);border-radius:12px;font-size:0.84rem;font-weight:600;color:var(--ink);outline:none;background:rgba(255,255,255,0.7) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23F472B6' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center;cursor:pointer;transition:all 0.25s}
 .health-trio select:hover{border-color:var(--rose-300);background:#fff}
-.health-trio select:focus{border-color:var(--rose-400);box-shadow:0 0 0 4px rgba(147,51,234,0.07);background:#fff}
+.health-trio select:focus{border-color:var(--rose-400);box-shadow:0 0 0 4px rgba(244,114,182,0.08);background:#fff}
 /* 饮食标签 */
 .health-trio .toggle-options{padding-top:4px}
-.health-trio .toggle-opt{padding:6px 12px;font-size:0.74rem;border-radius:16px;border:1.5px solid #EDE4F5;background:#FAF7FD;color:var(--text-l);font-weight:600;cursor:pointer;transition:all 0.2s}
+.health-trio .toggle-opt{padding:6px 12px;font-size:0.74rem;border-radius:16px;border:1.5px solid rgba(244,114,182,0.2);background:rgba(255,255,255,0.7);color:var(--text-l);font-weight:600;cursor:pointer;transition:all 0.2s}
 .health-trio .toggle-opt:hover{border-color:var(--rose-300);color:var(--rose-600);background:var(--rose-50);transform:translateY(-1px)}
 .health-trio .toggle-opt.selected{background:linear-gradient(135deg,var(--rose-500),var(--coral));color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(236,72,153,0.2)}
 
