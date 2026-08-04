@@ -16,8 +16,8 @@
     <view class="hero-weight-label">今日体重</view>
     <!-- 已购用户快捷入口 -->
     <view class="hero-beauty-quick" wx:if="{{isBeautyUser}}">
-      <view class="hero-quick-btn hero-quick-skincare" bindtap="onGoSkincare">护肤</view>
-      <view class="hero-quick-btn hero-quick-mood" bindtap="onGoMood">心情</view>
+      <view class="hero-quick-btn hero-quick-skincare" bindtap="onGoSkincare">护肤日记</view>
+      <view class="hero-quick-btn hero-quick-mood" bindtap="onGoMood">心情日记</view>
     </view>
   </view>
 
