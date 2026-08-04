@@ -6169,10 +6169,9 @@ function updateSkincareUI() {
   countdownHtml += '<span class="skincare-countdown-num">'+beautySkincareState.currentDay+'</span>';
   countdownHtml += '<span class="skincare-countdown-total">/'+beautySkincareState.totalDays+'天</span>';
   countdownHtml += '</div></div>';
-  /* 信息区 — 大标题用区别色 + 皮肤状态小字旁 */
+  /* 信息区 — 大标题用区别色（皮肤状态移到底部） */
   countdownHtml += '<div class="skincare-countdown-info">';
-  countdownHtml += '<div class="skincare-title-row"><span class="skincare-countdown-title">护肤日记</span>';
-  countdownHtml += '<span class="skincare-skin-badge" onclick="onSkinTypeChange();playClick()">'+skinTypeLabel+'</span></div>';
+  countdownHtml += '<div class="skincare-title-row"><span class="skincare-countdown-title">护肤日记</span></div>';
   countdownHtml += '<div class="skincare-countdown-desc">第'+beautySkincareState.currentDay+'天，坚持变美！</div>';
   countdownHtml += '<div class="skincare-countdown-progress">';
   countdownHtml += '<div class="skincare-progress-bar"><div class="skincare-progress-fill" style="width:'+progress+'%"></div></div>';
@@ -6184,12 +6183,13 @@ function updateSkincareUI() {
   countdownHtml += '<span class="skincare-date-sep">→</span>';
   countdownHtml += '<div class="skincare-date-item"><span class="skincare-date-label">结束日期</span><input type="date" class="skincare-date-input" value="'+beautySkincareState.endDate+'" onchange="onEndDateChange(this.value)" /></div>';
   countdownHtml += '</div>';
-  /* 皮肤颜色选择 */
+  /* 皮肤状态 + 肤色并排显示 */
   var skinToneLabels = {'coolWhite':'冷白','neutralWhite':'自然白','warmWhite':'黄一白','warmLight':'黄二白','lightWheat':'浅小麦','deepWheat':'深小麦'};
   var skinToneLabel = skinToneLabels[beautySkincareState.skinTone] || '未设置';
-  countdownHtml += '<div class="skincare-date-row" style="margin-top:2px">';
-  countdownHtml += '<span class="skincare-date-label" style="font-size:0.72rem;color:#a8a29e;width:auto;flex:none;margin-right:6px">肤色</span>';
-  countdownHtml += '<span class="skincare-skin-badge" onclick="onSkinToneChange();playClick()" style="cursor:pointer;font-size:0.78rem">'+skinToneLabel+'</span>';
+  countdownHtml += '<div class="skincare-date-row" style="margin-top:6px;gap:10px">';
+  countdownHtml += '<span style="font-size:0.72rem;color:#a8a29e;white-space:nowrap">设置</span>';
+  countdownHtml += '<span onclick="onSkinTypeChange();playClick()" style="cursor:pointer;font-size:0.76rem;font-weight:600;padding:3px 10px;border-radius:8px;color:#7c3aed;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);white-space:nowrap">'+skinTypeLabel+'</span>';
+  countdownHtml += '<span onclick="onSkinToneChange();playClick()" style="cursor:pointer;font-size:0.76rem;font-weight:600;padding:3px 10px;border-radius:8px;color:#d97706;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);white-space:nowrap">'+skinToneLabel+'</span>';
   countdownHtml += '</div>';
   countdownHtml += '<div class="skincare-today-datetime">'+nowStr+'</div>';
   countdownHtml += '</div>';
