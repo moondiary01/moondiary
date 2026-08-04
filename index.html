@@ -1516,20 +1516,17 @@ _loadCosSdk(0);
           <span class="beauty-emoji-card" onclick="selectMoodEmoji('confused',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D8D0C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/><path d="M20 28 Q26 32 32 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>疑惑</small></span>
         </div>
       </div>
-      <!-- 感恩日记 -->
-      <div style="margin-bottom:16px;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(254,243,199,0.5),rgba(254,215,170,0.35));border:1px solid rgba(251,191,36,0.2);box-shadow:0 2px 12px rgba(251,191,36,0.08)">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
-          <span style="font-size:1.1rem">🌻</span>
-          <label style="font-size:0.85rem;color:#92400e;font-weight:700;letter-spacing:0.3px">感恩日记</label>
-        </div>
-        <textarea id="gratitude1" placeholder="今天你想感恩的第一件事……" maxlength="50" style="width:100%;min-height:48px;padding:10px 14px;border:1.5px solid rgba(251,191,36,0.25);border-radius:12px;font-size:0.9rem;resize:vertical;outline:none;font-family:inherit;background:rgba(255,255,255,0.75);line-height:1.7;backdrop-filter:blur(4px);transition:border-color 0.2s;margin-bottom:8px" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.25)'"></textarea>
-        <textarea id="gratitude2" placeholder="今天你想感恩的第二件事……" maxlength="50" style="width:100%;min-height:48px;padding:10px 14px;border:1.5px solid rgba(251,191,36,0.25);border-radius:12px;font-size:0.9rem;resize:vertical;outline:none;font-family:inherit;background:rgba(255,255,255,0.75);line-height:1.7;backdrop-filter:blur(4px);transition:border-color 0.2s;margin-bottom:8px" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.25)'"></textarea>
-        <textarea id="gratitude3" placeholder="今天你想感恩的第三件事……" maxlength="50" style="width:100%;min-height:48px;padding:10px 14px;border:1.5px solid rgba(251,191,36,0.25);border-radius:12px;font-size:0.9rem;resize:vertical;outline:none;font-family:inherit;background:rgba(255,255,255,0.75);line-height:1.7;backdrop-filter:blur(4px);transition:border-color 0.2s" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.25)'"></textarea>
-      </div>
       <div>
         <label style="font-size:0.8rem;color:#92400e;font-weight:600">日记本</label>
         <textarea id="moodDiary" placeholder="今天发生了什么？记录下你的感受和想法..." maxlength="1000" style="width:100%;min-height:280px;padding:16px 18px;border:1.5px solid rgba(251,191,36,0.3);border-radius:14px;font-size:0.95rem;resize:vertical;outline:none;font-family:inherit;margin-top:6px;background:rgba(255,255,255,0.7);line-height:1.8;backdrop-filter:blur(4px)" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'"></textarea>
         <div style="text-align:right;font-size:0.72rem;color:#c8c4c0" id="moodCharCount">0/1000</div>
+      </div>
+      <!-- 感恩日记 -->
+      <div style="margin-bottom:0;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(254,243,199,0.5),rgba(254,215,170,0.35));border:1px solid rgba(251,191,36,0.2);box-shadow:0 2px 12px rgba(251,191,36,0.08);margin-top:16px">
+        <label style="font-size:0.8rem;color:#92400e;font-weight:700;letter-spacing:0.3px;margin-bottom:10px;display:block">感恩日记</label>
+        <input type="text" id="gratitude1" placeholder="今天你想感恩的第一件事……" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid rgba(251,191,36,0.3);border-radius:12px;font-size:0.95rem;outline:none;background:rgba(255,255,255,0.7);backdrop-filter:blur(4px);margin-bottom:8px;transition:border-color 0.2s" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'">
+        <input type="text" id="gratitude2" placeholder="今天你想感恩的第二件事……" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid rgba(251,191,36,0.3);border-radius:12px;font-size:0.95rem;outline:none;background:rgba(255,255,255,0.7);backdrop-filter:blur(4px);margin-bottom:8px;transition:border-color 0.2s" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'">
+        <input type="text" id="gratitude3" placeholder="今天你想感恩的第三件事……" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid rgba(251,191,36,0.3);border-radius:12px;font-size:0.95rem;outline:none;background:rgba(255,255,255,0.7);backdrop-filter:blur(4px);transition:border-color 0.2s" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'">
       </div>
     </div>
     <!-- 心情照片打卡 -->
