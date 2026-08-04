@@ -11,7 +11,7 @@ Page({
     vipUpgradeUsers: 0,    // VIP升级版用户人数（暂不统计，等升级版上线后启用）
     freeUsers: 0,          // 免费使用人数（密钥用户）
     showUpgradeStat: true,// 升级版统计开关
-    version: '3.0.0',
+    version: '7.1',
     noticeSent: false,
     keyList: [],
     filteredKeys: [],
