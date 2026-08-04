@@ -5351,7 +5351,7 @@ function renderCalendar() {
       html += '<div class="' + cls + '" onclick="onCalDayClick(\'' + ds + '\')">' + (photoMarkM || '') + label + (weightArrowM || '') + '</div>';
     } else {
       /* 经期日历 */
-      if (isPeriodDay(ds)) { cls += ' period'; label = d + '🌸'; }
+      if (isPeriodDay(ds)) { cls += ' period'; label = d; }
       if (state.periods && state.periods.length) {
         const lastP = state.periods[state.periods.length - 1];
         const lastStart = new Date(lastP.start);
