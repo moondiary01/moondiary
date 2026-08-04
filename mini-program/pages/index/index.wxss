@@ -411,12 +411,12 @@ page {
 /* ===== 100变美日记入口 ===== */
 .beauty-entry-card {
   margin: 0 24rpx 20rpx;
-  background: linear-gradient(160deg, #fdf2f8 0%, #fce7f3 18%, #fdf4e8 35%, #fef3c7 52%, #fce7f3 70%, #f0abfc 85%, #e9d5ff 100%);
+  background: linear-gradient(155deg, #faf5ff 0%, #f3e8ff 15%, #e9d5ff 35%, #e4d0fc 50%, #e9d5ff 65%, #f3e8ff 80%, #faf5ff 100%);
   border-radius: 24rpx;
-  padding: 28rpx 22rpx;
+  padding: 30rpx 24rpx;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8rpx 28rpx rgba(219, 39, 119, 0.15), 0 2rpx 8rpx rgba(217, 165, 60, 0.12);
+  box-shadow: 0 8rpx 32rpx rgba(139, 92, 246, 0.18), inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
 }
 .beauty-glow {
   position: absolute;
@@ -424,26 +424,33 @@ page {
   pointer-events: none;
 }
 .beauty-glow-pink {
-  top: -36rpx;
-  right: -24rpx;
-  width: 160rpx;
-  height: 160rpx;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.2), transparent 70%);
+  top: -40rpx;
+  right: -30rpx;
+  width: 180rpx;
+  height: 180rpx;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.22), transparent 70%);
 }
 .beauty-glow-purple {
-  bottom: -28rpx;
+  bottom: -30rpx;
   left: -20rpx;
-  width: 140rpx;
-  height: 140rpx;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.18), transparent 70%);
+  width: 160rpx;
+  height: 160rpx;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.12), transparent 70%);
+}
+.beauty-glow-mid {
+  top: 40%;
+  right: -15rpx;
+  width: 90rpx;
+  height: 90rpx;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.1), transparent 70%);
 }
 .beauty-shine-line {
   position: absolute;
   top: 0;
-  left: 28rpx;
-  right: 28rpx;
-  height: 3rpx;
-  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.4), rgba(236, 72, 153, 0.25), transparent);
+  left: 30rpx;
+  right: 30rpx;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.3), rgba(139, 92, 246, 0.2), transparent);
   pointer-events: none;
 }
 .beauty-entry-inner { position: relative; z-index: 1; }
@@ -451,77 +458,78 @@ page {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16rpx;
+  margin-bottom: 18rpx;
 }
 .beauty-entry-header { flex: 1; }
-.beauty-entry-title-row { display: flex; align-items: center; gap: 10rpx; }
+.beauty-entry-title-row { display: flex; align-items: center; gap: 12rpx; }
 .beauty-entry-title {
   font-size: 34rpx;
   font-weight: 800;
-  color: #831843;
+  color: #5b21b6;
   letter-spacing: 1rpx;
 }
 .beauty-entry-badge {
-  font-size: 20rpx;
-  font-weight: 700;
+  font-size: 22rpx;
+  font-weight: 800;
   color: #fff;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  padding: 4rpx 14rpx;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+  padding: 5rpx 16rpx;
   border-radius: 100rpx;
   letter-spacing: 1rpx;
-  box-shadow: 0 2rpx 10rpx rgba(245, 158, 11, 0.45);
+  box-shadow: 0 0 16rpx rgba(245, 158, 11, 0.5), 0 2rpx 8rpx rgba(217, 119, 6, 0.3);
 }
 .beauty-entry-arrow {
   font-size: 38rpx;
-  color: #d4a574;
+  color: #a78bfa;
   flex-shrink: 0;
   line-height: 1;
+  font-weight: 300;
 }
 /* 功能标签滚动容器 */
 .beauty-features-scroll {
   width: 100%;
   white-space: nowrap;
-  margin-bottom: 16rpx;
+  margin-bottom: 18rpx;
 }
 .beauty-feat-chip {
   display: inline-block;
   flex-shrink: 0;
-  padding: 8rpx 16rpx;
+  padding: 8rpx 18rpx;
   border-radius: 10rpx;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(139, 92, 246, 0.08);
   font-size: 22rpx;
-  color: #9d174d;
+  color: #6d28d9;
   font-weight: 600;
   margin-right: 10rpx;
-  box-shadow: 0 2rpx 6rpx rgba(219, 39, 119, 0.06);
 }
 .beauty-feat-chip:last-child { margin-right: 0; }
 .beauty-entry-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 14rpx;
-  border-top: 2rpx solid rgba(217, 165, 60, 0.2);
+  padding-top: 16rpx;
+  border-top: 2rpx solid rgba(139, 92, 246, 0.12);
 }
 .beauty-entry-subline {
   font-size: 18rpx;
-  color: #a16207;
+  color: #7c3aed;
   letter-spacing: 0.5rpx;
   font-weight: 500;
+  opacity: 0.7;
   flex: 1;
 }
 .beauty-price-tag {
   display: flex;
   align-items: baseline;
   gap: 3rpx;
-  padding: 10rpx 20rpx;
+  padding: 10rpx 22rpx;
   border-radius: 100rpx;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 4rpx 14rpx rgba(245, 158, 11, 0.45);
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  box-shadow: 0 4rpx 14rpx rgba(124, 58, 237, 0.35);
   flex-shrink: 0;
 }
 .beauty-price-num { font-size: 36rpx; font-weight: 800; color: #fff; line-height: 1; }
-.beauty-price-unit { font-size: 22rpx; font-weight: 700; color: rgba(255, 255, 255, 0.9); }
+.beauty-price-unit { font-size: 22rpx; font-weight: 700; color: rgba(255, 255, 255, 0.85); }
 
 /* ===== 管理员入口 ===== */
 .admin-entry-card {
