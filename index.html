@@ -7114,6 +7114,8 @@ function openSkincareDayDetail(dateStr) {
     bodyCare: record ? (record.bodyCare || []) : [],
     salon: record ? !!record.salon : false,
     cosmetic: record ? !!record.cosmetic : false,
+    skinStatus: record ? (record.skinStatus || []) : [],
+    skinStatusCustom: record ? (record.skinStatusCustom || '') : '',
     record: record || null,
     isEditing: false
   };
@@ -7203,9 +7205,22 @@ function renderSkincareDayDetail() {
     /* 备注 */
     html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:4px"> 备注</div>';
     html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;resize:vertical;outline:none;font-family:inherit" oninput="autoSaveDetailSkincare()">'+s.note+'</textarea></div>';
+
+    /* 今日皮肤状态 */
+    html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:6px"> 今日皮肤状态</div>';
+    var skinStatusPresets = ['hydrated','dry','oily','mixed','acne','dull','fine','sensitive'];
+    var skinStatusLabels = {hydrated:'水润',dry:'干燥',oily:'出油',mixed:'混合',acne:'长痘',dull:'暗沉',fine:'细纹',sensitive:'敏感泛红'};
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px">';
+    skinStatusPresets.forEach(function(sk) {
+      var active = s.skinStatus.indexOf(sk) > -1;
+      html += '<span onclick="toggleDetailSkinStatus(this,\''+sk+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#fce7f3,#f5f3ff);color:#ec4899;border:1px solid #f9a8d4':'background:#fafaf9;color:#78716c;border:1px solid var(--border)')+'">'+skinStatusLabels[sk]+'</span>';
+    });
+    html += '</div>';
+    html += '<input type="text" id="skincareDetailSkinCustom" placeholder="自定义皮肤状态，如：毛孔粗大" value="'+(s.skinStatusCustom||'')+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9" oninput="skincareDayDetailState.skinStatusCustom=this.value;autoSaveDetailSkincare()"></div>';
+
   } else {
     /* 只读模式：纯展示，无边框 */
-    var hasData = s.bodyCare.length > 0 || s.customCheck || s.salon || s.cosmetic || s.note;
+    var hasData = s.bodyCare.length > 0 || s.customCheck || s.salon || s.cosmetic || s.note || s.skinStatus.length > 0 || (s.skinStatusCustom && s.skinStatusCustom.trim());
     var isChecked = s.bodyCare.length > 0 || s.customCheck || s.salon || s.cosmetic;
     if (!hasData && s.photos.length === 0) {
       html += '<div style="text-align:center;padding:40px 20px;color:#a8a29e;font-size:0.85rem">该日未打卡</div>';
@@ -7239,6 +7254,20 @@ function renderSkincareDayDetail() {
         html += '<div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:4px"> 备注</div>';
         html += '<div style="font-size:0.82rem;color:#44403c;line-height:1.5;white-space:pre-wrap">'+s.note+'</div>';
         html += '</div>';
+      }
+      /* 皮肤状态展示 */
+      if (s.skinStatus.length > 0 || (s.skinStatusCustom && s.skinStatusCustom.trim())) {
+        var skinStatusLabels2 = {hydrated:'水润',dry:'干燥',oily:'出油',mixed:'混合',acne:'长痘',dull:'暗沉',fine:'细纹',sensitive:'敏感泛红'};
+        html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#fdf2f8,#f5f3ff);border-radius:10px">';
+        html += '<span style="font-size:0.8rem;font-weight:600;color:#ec4899"> 今日皮肤状态</span>';
+        html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">';
+        s.skinStatus.forEach(function(sk) {
+          html += '<span style="padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#fce7f3,#ede9fe);color:#ec4899;border:1px solid #f9a8d4">'+(skinStatusLabels2[sk]||sk)+'</span>';
+        });
+        if (s.skinStatusCustom && s.skinStatusCustom.trim()) {
+          html += '<span style="padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#fce7f3,#ede9fe);color:#ec4899;border:1px solid #f9a8d4">'+s.skinStatusCustom+'</span>';
+        }
+        html += '</div></div>';
       }
     }
   }
@@ -7302,6 +7331,16 @@ function toggleDetailCustomCheck(el, label) {
   var idx = skincareDayDetailState.customChecks.indexOf(label);
   if (idx > -1) skincareDayDetailState.customChecks.splice(idx, 1);
   else skincareDayDetailState.customChecks.push(label);
+  renderSkincareDayDetail();
+  autoSaveDetailSkincare();
+}
+
+/* 日历详情：切换皮肤状态标签 */
+function toggleDetailSkinStatus(el, key) {
+  if (!skincareDayDetailState.skinStatus) skincareDayDetailState.skinStatus = [];
+  var idx = skincareDayDetailState.skinStatus.indexOf(key);
+  if (idx > -1) skincareDayDetailState.skinStatus.splice(idx, 1);
+  else skincareDayDetailState.skinStatus.push(key);
   renderSkincareDayDetail();
   autoSaveDetailSkincare();
 }
@@ -7515,6 +7554,7 @@ function saveSkincareDayDetail(silent) {
   skincareDayDetailState.note = document.getElementById('skincareDetailNote') ? document.getElementById('skincareDetailNote').value : skincareDayDetailState.note;
   skincareDayDetailState.salonNote = document.getElementById('skincareDetailSalonNote') ? document.getElementById('skincareDetailSalonNote').value : skincareDayDetailState.salonNote;
   skincareDayDetailState.cosmeticNote = document.getElementById('skincareDetailCosmeticNote') ? document.getElementById('skincareDetailCosmeticNote').value : skincareDayDetailState.cosmeticNote;
+  skincareDayDetailState.skinStatusCustom = document.getElementById('skincareDetailSkinCustom') ? document.getElementById('skincareDetailSkinCustom').value : skincareDayDetailState.skinStatusCustom;
   var customInputVal = document.getElementById('skincareDetailCustomCheck') ? document.getElementById('skincareDetailCustomCheck').value.trim() : '';
   var customChecks = skincareDayDetailState.customChecks || [];
   if (customInputVal && customChecks.indexOf(customInputVal) < 0) customChecks.push(customInputVal);
@@ -7531,6 +7571,8 @@ function saveSkincareDayDetail(silent) {
       beautySkinData.dailyRecords[i].bodyCare = skincareDayDetailState.bodyCare;
       beautySkinData.dailyRecords[i].salon = skincareDayDetailState.salon;
       beautySkinData.dailyRecords[i].cosmetic = skincareDayDetailState.cosmetic;
+      beautySkinData.dailyRecords[i].skinStatus = skincareDayDetailState.skinStatus;
+      beautySkinData.dailyRecords[i].skinStatusCustom = skincareDayDetailState.skinStatusCustom;
       beautySkinData.dailyRecords[i].updatedAt = Date.now();
       found = true; break;
     }
@@ -7546,6 +7588,8 @@ function saveSkincareDayDetail(silent) {
       salonNote: skincareDayDetailState.salonNote,
       cosmeticNote: skincareDayDetailState.cosmeticNote,
       photos: skincareDayDetailState.photos,
+      skinStatus: skincareDayDetailState.skinStatus,
+      skinStatusCustom: skincareDayDetailState.skinStatusCustom,
       createdAt: Date.now()
     });
   }
@@ -7985,6 +8029,7 @@ function openMoodDayDetail(dateStr) {
     discipline: record ? Object.assign({}, record.discipline || {}) : {},
     photos: record ? (record.photos || []) : [],
     customCheck: record ? (record.customCheck || '') : '',
+    gratitude: record ? (record.gratitude || ['','','']) : ['','',''],
     record: record || null,
     isEditing: false
   };
@@ -8087,6 +8132,15 @@ function renderMoodDayDetail() {
     var customActive = (s.customCheck && s.customCheck.trim()) ? ' beauty-check-active' : '';
     html += '<span class="beauty-check'+customActive+'" onclick="editMoodDetailCustomCheck();playClick()" style="border-style:dashed;border-color:#fbbf24;color:#92400e;background:rgba(255,255,255,0.5)">'+escapeHtml(customLabel)+'</span>';
     html += '</div></div>';
+
+    /* 感恩日记（编辑模式） */
+    if (!s.gratitude) s.gratitude = ['','',''];
+    html += '<div style="margin-bottom:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(254,243,199,0.3),rgba(254,215,170,0.2));border:1px solid rgba(251,191,36,0.2)">';
+    html += '<label style="font-size:0.8rem;font-weight:700;color:#92400e;display:block;margin-bottom:6px"> 感恩日记</label>';
+    for (var gi = 0; gi < 3; gi++) {
+      html += '<input type="text" maxlength="30" placeholder="今天想感恩的第'+(gi+1)+'件事……" value="'+(s.gratitude[gi]||'')+'" oninput="moodDayDetailState.gratitude['+gi+']=this.value" style="width:100%;padding:8px 12px;border:1.5px solid rgba(251,191,36,0.3);border-radius:10px;font-size:0.88rem;outline:none;background:rgba(255,255,255,0.7);margin-bottom:'+(gi<2?'6px':'0')+'">';
+    }
+    html += '</div>';
   } else {
     /* 只读模式 */
     if (s.moods && s.moods.length > 0) {
@@ -8120,9 +8174,21 @@ function renderMoodDayDetail() {
       }
       html += '</div></div>';
     }
-    if (!s.moods || s.moods.length === 0) { if (!s.status && !s.diary && (!s.discipline || activeDisc.length === 0) && (!s.photos || s.photos.length === 0) && (!s.customCheck || !s.customCheck.trim())) {
+    if (!s.moods || s.moods.length === 0) { if (!s.status && !s.diary && (!s.discipline || activeDisc.length === 0) && (!s.photos || s.photos.length === 0) && (!s.customCheck || !s.customCheck.trim()) && (!s.gratitude || !s.gratitude.some(function(g){return g && g.trim()}))) {
       html += '<div style="text-align:center;padding:24px 0;color:#a8a29e;font-size:0.85rem">该日暂无记录</div>';
     } }
+    /* 感恩日记展示 */
+    if (s.gratitude && s.gratitude.some(function(g){return g && g.trim()})) {
+      html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(254,243,199,0.5),rgba(254,215,170,0.35));border-radius:10px;border:1px solid rgba(251,191,36,0.2)">';
+      html += '<span style="font-size:0.8rem;font-weight:700;color:#92400e"> 感恩日记</span>';
+      html += '<div style="margin-top:6px">';
+      s.gratitude.forEach(function(g, gi) {
+        if (g && g.trim()) {
+          html += '<div style="font-size:0.82rem;color:#78350f;padding:3px 0;line-height:1.5">'+(gi+1)+'. '+escapeHtml(g)+'</div>';
+        }
+      });
+      html += '</div></div>';
+    }
   }
   document.getElementById('moodDayDetailContent').innerHTML = html;
   var btn = document.getElementById('moodDetailEditBtn');
@@ -8183,6 +8249,7 @@ function saveMoodDayDetail() {
     discipline: s.discipline || {},
     photos: s.photos || [],
     customCheck: s.customCheck || '',
+    gratitude: s.gratitude || ['','',''],
     createdAt: s.record ? (s.record.createdAt || Date.now()) : Date.now(),
     updatedAt: Date.now()
   };
