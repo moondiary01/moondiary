@@ -7539,6 +7539,7 @@ function renderMoodDayDetail() {
   var s = moodDayDetailState;
   var editing = s.isEditing;
   document.getElementById('moodDayDetailTitle').textContent = ' ' + dateStr;
+    var moodLabels = {happy:'开心',satisfied:'满足',surprised:'惊喜',heartbeat:'心动',moved:'感动',shy:'害羞',calm:'平静',excited:'激动',confident:'自信',proud:'骄傲',loose:'松弛',relieved:'释然',healed:'治愈',hopeful:'憧憬',lost:'迷茫',nostalgic:'怀念',bored:'无聊',dazed:'恍惚',relaxed:'无助',tired:'疲惫',nervous:'紧张',lonely:'孤独',pitiful:'可怜',down:'低落',aloof:'压抑',bitter:'心酸',wronged:'委屈',cold:'冷漠',sad:'难过',anxious:'焦虑',scared:'恐惧',angry:'生气',irritated:'烦躁',jealous:'妒忌',confused:'疑惑'};
     var moodEmojis = {
   happy:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB5C5"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>',
   satisfied:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFC8B0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 20 Q18 15 22 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 15 38 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>',
@@ -7610,7 +7611,7 @@ function renderMoodDayDetail() {
     Object.keys(moodEmojis).forEach(function(k) {
       var moods = s.moods || [];
       var isActive = moods.indexOf(k) > -1;
-      html += '<span class="beauty-emoji-card'+(isActive?' beauty-emoji-card-active':'')+'" onclick="selectMoodDetailEmoji(\''+k+'\',this);playClick()" style="width:calc(20% - 4.8px);box-sizing:border-box">'+moodEmojis[k]+'<small>'+k+'</small></span>';
+      html += '<span class="beauty-emoji-card'+(isActive?' beauty-emoji-card-active':'')+'" onclick="selectMoodDetailEmoji(\''+k+'\',this);playClick()" style="width:calc(20% - 4.8px);box-sizing:border-box">'+moodEmojis[k]+'<small>'+moodLabels[k]+'</small></span>';
     });
     html += '</div></div>';
     html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">日记本</label>';
@@ -7635,11 +7636,12 @@ function renderMoodDayDetail() {
       for (var mi = 0; mi < s.moods.length; mi++) {
         var mk = s.moods[mi];
         var md = moodEmojis[mk] || '';
+        var ml = moodLabels[mk] || '';
         if (md) {
-          moodHtml += md;
+          moodHtml += '<div style="text-align:center">'+md+'<div style="font-size:0.65rem;color:#78716c;margin-top:2px">'+ml+'</div></div>';
         }
       }
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border-radius:10px"><span style="font-size:0.8rem;color:#78716c">心情</span><div style="font-size:1.3rem;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">'+moodHtml+'</div></div>';
+      html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border-radius:10px"><span style="font-size:0.8rem;color:#78716c">心情</span><div style="font-size:1.3rem;margin-top:4px;display:flex;flex-wrap:wrap;gap:6px">'+moodHtml+'</div></div>';
     }
     if (s.status) {
       html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c"> 状态</span><div style="font-size:0.9rem;margin-top:4px;color:#44403c">'+escapeHtml(s.status)+'</div></div>';
