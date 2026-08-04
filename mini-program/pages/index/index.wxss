@@ -411,12 +411,12 @@ page {
 /* ===== 100变美日记入口 ===== */
 .beauty-entry-card {
   margin: 0 24rpx 20rpx;
-  background: linear-gradient(155deg, #faf5ff 0%, #f3e8ff 15%, #e9d5ff 35%, #e4d0fc 50%, #e9d5ff 65%, #f3e8ff 80%, #faf5ff 100%);
+  background: linear-gradient(150deg, #fdf2f8 0%, #f5e6f9 20%, #ede0fd 40%, #f0d6f5 58%, #fce4ec 75%, #fdf2f8 100%);
   border-radius: 24rpx;
   padding: 30rpx 24rpx;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8rpx 32rpx rgba(139, 92, 246, 0.18), inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8rpx 32rpx rgba(168, 85, 247, 0.14), inset 0 1rpx 0 rgba(255, 255, 255, 0.55);
 }
 .beauty-glow {
   position: absolute;
@@ -428,21 +428,14 @@ page {
   right: -30rpx;
   width: 180rpx;
   height: 180rpx;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.22), transparent 70%);
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.18), transparent 70%);
 }
 .beauty-glow-purple {
-  bottom: -30rpx;
+  bottom: -35rpx;
   left: -20rpx;
   width: 160rpx;
   height: 160rpx;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.12), transparent 70%);
-}
-.beauty-glow-mid {
-  top: 40%;
-  right: -15rpx;
-  width: 90rpx;
-  height: 90rpx;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.1), transparent 70%);
+  background: radial-gradient(circle, rgba(244, 114, 182, 0.15), transparent 70%);
 }
 .beauty-shine-line {
   position: absolute;
@@ -450,7 +443,7 @@ page {
   left: 30rpx;
   right: 30rpx;
   height: 2rpx;
-  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.3), rgba(139, 92, 246, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(192, 132, 252, 0.35), rgba(244, 114, 182, 0.25), transparent);
   pointer-events: none;
 }
 .beauty-entry-inner { position: relative; z-index: 1; }
@@ -465,7 +458,7 @@ page {
 .beauty-entry-title {
   font-size: 34rpx;
   font-weight: 800;
-  color: #5b21b6;
+  color: #6b21a8;
   letter-spacing: 1rpx;
 }
 .beauty-entry-badge {
@@ -476,16 +469,16 @@ page {
   padding: 5rpx 16rpx;
   border-radius: 100rpx;
   letter-spacing: 1rpx;
-  box-shadow: 0 0 16rpx rgba(245, 158, 11, 0.5), 0 2rpx 8rpx rgba(217, 119, 6, 0.3);
+  box-shadow: 0 0 18rpx rgba(245, 158, 11, 0.55), 0 2rpx 8rpx rgba(180, 83, 9, 0.3);
 }
 .beauty-entry-arrow {
-  font-size: 38rpx;
-  color: #a78bfa;
+  font-size: 36rpx;
+  color: #c4b5fd;
   flex-shrink: 0;
   line-height: 1;
   font-weight: 300;
 }
-/* 功能标签滚动容器 */
+/* 功能标签 */
 .beauty-features-scroll {
   width: 100%;
   white-space: nowrap;
@@ -496,11 +489,17 @@ page {
   flex-shrink: 0;
   padding: 8rpx 18rpx;
   border-radius: 10rpx;
-  background: rgba(139, 92, 246, 0.08);
   font-size: 22rpx;
-  color: #6d28d9;
   font-weight: 600;
   margin-right: 10rpx;
+}
+.beauty-feat-chip:nth-child(odd) {
+  background: rgba(139, 92, 246, 0.07);
+  color: #7c3aed;
+}
+.beauty-feat-chip:nth-child(even) {
+  background: rgba(236, 72, 153, 0.07);
+  color: #be185d;
 }
 .beauty-feat-chip:last-child { margin-right: 0; }
 .beauty-entry-bottom {
@@ -508,14 +507,14 @@ page {
   align-items: center;
   justify-content: space-between;
   padding-top: 16rpx;
-  border-top: 2rpx solid rgba(139, 92, 246, 0.12);
+  border-top: 2rpx solid rgba(168, 85, 247, 0.1);
 }
 .beauty-entry-subline {
   font-size: 18rpx;
   color: #7c3aed;
   letter-spacing: 0.5rpx;
   font-weight: 500;
-  opacity: 0.7;
+  opacity: 0.65;
   flex: 1;
 }
 .beauty-price-tag {
@@ -524,8 +523,8 @@ page {
   gap: 3rpx;
   padding: 10rpx 22rpx;
   border-radius: 100rpx;
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
-  box-shadow: 0 4rpx 14rpx rgba(124, 58, 237, 0.35);
+  background: linear-gradient(135deg, #a78bfa, #7c3aed, #6d28d9);
+  box-shadow: 0 4rpx 14rpx rgba(124, 58, 237, 0.3);
   flex-shrink: 0;
 }
 .beauty-price-num { font-size: 36rpx; font-weight: 800; color: #fff; line-height: 1; }

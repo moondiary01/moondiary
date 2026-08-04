@@ -119,8 +119,7 @@
     <!-- 装饰光晕 -->
     <view class="beauty-glow beauty-glow-pink"></view>
     <view class="beauty-glow beauty-glow-purple"></view>
-    <view class="beauty-glow beauty-glow-mid"></view>
-    <!-- 顶部微光 -->
+    <!-- 微光顶线 -->
     <view class="beauty-shine-line"></view>
     <view class="beauty-entry-inner">
       <!-- 标题行 -->
