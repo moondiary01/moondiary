@@ -138,17 +138,29 @@ document.addEventListener('DOMContentLoaded',window.__emergencySync);
   --grad-card:linear-gradient(135deg,#FFFFFF 0%,#FAF5FF 100%);
   --grad-gold:linear-gradient(135deg,#C9A876,#E0C9A0);
 }
-html{font-size:16px;-webkit-text-size-adjust:100%}
+html{font-size:16px;-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;text-size-adjust:100%}
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI","PingFang SC","Noto Sans SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;
   background:var(--bg);
   color:var(--text);
   min-height:100vh;
   min-height:100dvh;
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
   padding-bottom:max(40px, env(safe-area-inset-bottom, 20px));
+  /* 安卓滚动条隐藏，防止占用宽度 */
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  /* 禁止安卓长按选中 */
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+  /* 安卓输入框默认样式统一 */
+  -webkit-appearance:none;
 }
+body::-webkit-scrollbar{display:none}
 
 /* ===== 登录门 ===== */
 .gate{position:fixed;inset:0;background:var(--grad-hero);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px;overflow:hidden;padding-top:40px}
@@ -246,7 +258,8 @@ body{
 .pf-label{font-size:0.65rem;color:#fff;opacity:0.7;text-transform:uppercase;letter-spacing:0.5px}
 .pf-value{font-size:0.92rem;font-weight:700;color:#fff}
 /* ===== Tab ===== */
-.tabs{display:flex;max-width:1100px;margin:0 auto;padding:14px 20px 0;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs{display:flex;max-width:1100px;margin:0 auto;padding:14px 20px 0;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.tabs::-webkit-scrollbar{display:none}
 .tab{padding:8px 16px;border:none;background:transparent;cursor:pointer;font-size:0.85rem;font-weight:600;color:var(--text-l);transition:all 0.2s;border-bottom:2px solid transparent;white-space:nowrap}
 .tab.active{color:var(--rose-600);border-bottom-color:var(--rose-500)}
 .tab:hover:not(.active){color:var(--rose-400)}
@@ -296,7 +309,19 @@ body{
 @media(max-width:600px){.input-card{grid-template-columns:1fr}}
 .input-group{display:flex;flex-direction:column;gap:4px}
 .input-group label{font-size:0.72rem;font-weight:600;color:var(--text-l)}
-.input-group input,.input-group select,.input-group textarea{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.88rem;outline:none;font-family:inherit;background:var(--card);color:var(--text)}
+.input-group input,.input-group select,.input-group textarea{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.88rem;outline:none;font-family:inherit;background:var(--card);color:var(--text);-webkit-appearance:none;appearance:none}
+/* 全局统一输入框样式，消除安卓默认样式 */
+input,textarea,select{
+  -webkit-appearance:none;
+  appearance:none;
+  outline:none;
+}
+input:focus,textarea:focus,select:focus{outline:none}
+/* 安卓上 backdrop-filter 回退 */
+@supports not (backdrop-filter: blur(1px)) {
+  .gate-card{background:rgba(255,255,255,0.98)}
+  .modal-overlay{background:rgba(28,25,23,0.55)}
+}
 .input-group input:focus,.input-group select:focus,.input-group textarea:focus{border-color:var(--rose-400);box-shadow:0 0 0 3px rgba(251,113,133,0.1)}
 /* 打卡区块 */
 .checkin-box{background:var(--rose-50);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px}
@@ -456,9 +481,11 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .avatar-option:hover{transform:scale(1.1)}
 .avatar-option.selected{border-color:var(--rose-500);background:var(--rose-100)}
 /* ===== 弹窗 ===== */
-.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(28,25,23,0.4);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(28,25,23,0.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.modal-overlay::-webkit-scrollbar{display:none}
 .modal-overlay.show{display:flex;animation:modalFadeIn 0.15s ease-out}
-.modal{background:#fff;border-radius:20px;padding:24px;max-width:440px;width:100%;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;animation:modalSlideUp 0.15s ease-out}
+.modal{background:#fff;border-radius:20px;padding:24px;max-width:440px;width:100%;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;animation:modalSlideUp 0.15s ease-out;scrollbar-width:none;-ms-overflow-style:none}
+.modal::-webkit-scrollbar{display:none}
 @keyframes modalFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes modalSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .modal.wide{max-width:560px}
