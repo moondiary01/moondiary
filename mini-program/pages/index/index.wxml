@@ -9,15 +9,25 @@
       <view class="hero-name">{{userName || '你好'}}</view>
       <view class="hero-date">{{todayStr}}</view>
     </view>
-    <view class="hero-weight">
-      <text class="hero-weight-num">{{todayWeightDisplay}}</text>
-      <text class="hero-weight-unit">{{unitLabel}}</text>
-    </view>
-    <view class="hero-weight-label">今日体重</view>
-    <!-- 已购用户快捷入口 -->
-    <view class="hero-beauty-quick" wx:if="{{isBeautyUser}}">
-      <view class="hero-quick-btn hero-quick-skincare" bindtap="onGoSkincare">护肤日记</view>
-      <view class="hero-quick-btn hero-quick-mood" bindtap="onGoMood">心情日记</view>
+    <view class="hero-bottom-row">
+      <view class="hero-weight-col">
+        <view class="hero-weight">
+          <text class="hero-weight-num">{{todayWeightDisplay}}</text>
+          <text class="hero-weight-unit">{{unitLabel}}</text>
+        </view>
+        <view class="hero-weight-label">今日体重</view>
+      </view>
+      <!-- 已购用户快捷入口 — 靠右 -->
+      <view class="hero-beauty-quick" wx:if="{{isBeautyUser}}">
+        <view class="hero-quick-btn hero-quick-skincare" bindtap="onGoSkincare">
+          <text class="hero-quick-icon">🧴</text>
+          <text class="hero-quick-text">护肤日记</text>
+        </view>
+        <view class="hero-quick-btn hero-quick-mood" bindtap="onGoMood">
+          <text class="hero-quick-icon">💗</text>
+          <text class="hero-quick-text">心情日记</text>
+        </view>
+      </view>
     </view>
   </view>
 
