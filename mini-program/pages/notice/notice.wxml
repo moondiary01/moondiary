@@ -29,6 +29,12 @@
     </view>
 
     <view class="section">
+      <view class="section-title">5. 使用期限说明</view>
+      <view class="section-item">- 永久会员权益为无限期有效</view>
+      <view class="section-item">- 无限期权益仅在本小程序正常运营存续期间内有效</view>
+    </view>
+
+    <view class="section">
       <view class="section-title">5. 自动续费</view>
       <view class="section-item">- 暂不支持自动续费</view>
       <view class="section-item">- 会员到期后需手动续费</view>

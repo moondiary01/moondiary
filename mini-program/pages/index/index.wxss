@@ -87,40 +87,40 @@ page {
   margin-bottom: 18rpx;
 }
 
-/* 晨起输入框：明亮 */
+/* 晨起输入框：浅黄色边框，白色字体 */
 .weight-input-am {
   flex: 1;
   font-size: 36rpx;
   font-weight: 800;
-  color: #fff;
+  color: rgba(255,255,255,0.95);
   background: rgba(255,255,255,0.18);
-  border: 2rpx solid rgba(255,255,255,0.25);
+  border: 2rpx solid rgba(254,240,138,0.45);
   border-radius: 16rpx;
   padding: 22rpx 14rpx;
   text-align: center;
   box-sizing: border-box;
 }
 .weight-input-am::placeholder {
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.55);
   font-size: 22rpx;
   font-weight: 500;
 }
 
-/* 睡前输入框：比晨起稍暗 */
+/* 睡前输入框：亮黄色边框，白色字体 */
 .weight-input-pm {
   flex: 1;
   font-size: 36rpx;
   font-weight: 800;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.9);
   background: rgba(255,255,255,0.08);
-  border: 2rpx solid rgba(255,255,255,0.12);
+  border: 2rpx solid rgba(250,204,21,0.55);
   border-radius: 16rpx;
   padding: 22rpx 14rpx;
   text-align: center;
   box-sizing: border-box;
 }
 .weight-input-pm::placeholder {
-  color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.4);
   font-size: 22rpx;
   font-weight: 500;
 }

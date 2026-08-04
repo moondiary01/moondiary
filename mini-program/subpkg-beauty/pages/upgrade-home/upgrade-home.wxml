@@ -40,7 +40,7 @@
   <!-- 底部信息 -->
   <view class="upgrade-footer">
     <view class="upgrade-price-tag">
-      <text class="upgrade-price">29.9元 永久使用 · 云端储存</text>
+      <text class="upgrade-price">29.9元 永久会员权益 · 云端储存</text>
       <text class="upgrade-price-desc">升级版会员 · 全功能解锁</text>
     </view>
   </view>

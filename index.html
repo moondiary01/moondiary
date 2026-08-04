@@ -332,14 +332,14 @@ body::-webkit-scrollbar{display:none}
 .weight-hero .today-block-sub{color:rgba(255,255,255,0.7);font-size:0.62rem;white-space:nowrap}
 .weight-hero .am-pm-row{gap:10px}
 .weight-hero .am-pm-item{display:flex;flex-direction:column;gap:4px;min-width:0}
-/* 晨起输入框：与紫色背景区分，更亮更浅 */
-.weight-hero .weight-input-am{font-size:1.6rem;font-weight:800;color:#fff;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.25);border-radius:12px;padding:12px;text-align:center;width:100%;box-sizing:border-box}
-.weight-hero .weight-input-am::placeholder{color:rgba(255,255,255,0.45);font-size:0.8rem;font-weight:500}
-.weight-hero .weight-input-am:focus{border-color:rgba(255,255,255,0.55);box-shadow:0 0 0 4px rgba(255,255,255,0.12);background:rgba(255,255,255,0.22)}
-/* 睡前输入框：比晨起稍暗 */
-.weight-hero .weight-input-pm{font-size:1.6rem;font-weight:800;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px;text-align:center;width:100%;box-sizing:border-box}
-.weight-hero .weight-input-pm::placeholder{color:rgba(255,255,255,0.3);font-size:0.8rem;font-weight:500}
-.weight-hero .weight-input-pm:focus{border-color:rgba(255,255,255,0.28);box-shadow:0 0 0 4px rgba(255,255,255,0.04);background:rgba(255,255,255,0.12)}
+/* 晨起输入框：浅黄色边框，白色字体 */
+.weight-hero .weight-input-am{font-size:1.6rem;font-weight:800;color:rgba(255,255,255,0.95);background:rgba(255,255,255,0.18);border:1.5px solid rgba(254,240,138,0.45);border-radius:12px;padding:12px;text-align:center;width:100%;box-sizing:border-box}
+.weight-hero .weight-input-am::placeholder{color:rgba(255,255,255,0.55);font-size:0.8rem;font-weight:500}
+.weight-hero .weight-input-am:focus{border-color:rgba(254,240,138,0.75);box-shadow:0 0 0 4px rgba(254,240,138,0.12);background:rgba(255,255,255,0.22)}
+/* 睡前输入框：亮黄色边框，白色字体 */
+.weight-hero .weight-input-pm{font-size:1.6rem;font-weight:800;color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.08);border:1.5px solid rgba(250,204,21,0.55);border-radius:12px;padding:12px;text-align:center;width:100%;box-sizing:border-box}
+.weight-hero .weight-input-pm::placeholder{color:rgba(255,255,255,0.4);font-size:0.8rem;font-weight:500}
+.weight-hero .weight-input-pm:focus{border-color:rgba(250,204,21,0.8);box-shadow:0 0 0 4px rgba(250,204,21,0.1);background:rgba(255,255,255,0.12)}
 /* 体脂在 Hero 内嵌 */
 .weight-hero .fat-inline{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.15)}
 .weight-hero .fat-inline-label{font-size:0.68rem;color:rgba(255,255,255,0.75);font-weight:600;white-space:nowrap}
@@ -1471,7 +1471,7 @@ _loadCosSdk(0);
       </div>
     </div>
     <div style="background:#fff;padding:0 24px 20px;text-align:center;border-radius:0 0 20px 20px">
-      <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(236,72,153,0.06));font-size:0.7rem;color:#a8a29e;letter-spacing:1px">UPGRADE · 一次购买 · 永久使用 · 云端储存</div>
+      <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(236,72,153,0.06));font-size:0.7rem;color:#a8a29e;letter-spacing:1px">UPGRADE · 一次购买 · 永久会员权益 · 云端储存</div>
       <div style="margin-top:14px">
         <button class="btn btn-outline" style="border-color:#e5e7eb;color:#78716c;font-size:0.82rem" onclick="document.getElementById('beautyHomeModal').classList.remove('show');playClick()">关闭</button>
       </div>
@@ -1490,6 +1490,7 @@ _loadCosSdk(0);
       <p style="margin-left:12px">• 数字商品一经开通，不支持退款。</p>
       <p><b>3. 使用期限</b></p>
       <p style="margin-left:12px">• 均为<b>永久有效</b>，一次购买终身使用。</p>
+      <p style="margin-left:12px">• 无限期权益仅在本小程序正常运营存续期间内有效。</p>
       <p><b>4. 开通方式</b></p>
       <p style="margin-left:12px">• 联系管理员手动开通，开通后立即生效。</p>
       <p><b>5. 数据安全</b></p>
