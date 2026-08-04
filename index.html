@@ -1628,12 +1628,14 @@ _loadCosSdk(0);
 
 <!-- 护肤日历日期详情弹窗 -->
 <div class="modal-overlay" id="skincareDayDetailModal">
-  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto">
-    <h2 id="skincareDayDetailTitle">日期详情</h2>
-    <div id="skincareDayDetailContent"></div>
-    <div class="modal-actions" style="display:flex;gap:8px">
-      <button class="btn btn-outline" id="skincareDetailEditBtn" onclick="toggleSkincareDetailEdit();playClick()" style="flex:1">编辑打卡</button>
-      <button class="btn btn-outline" onclick="closeSkincareDayDetail();playClick()" style="flex:1">关闭</button>
+  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto;padding:0;border-radius:20px;overflow:hidden">
+    <div style="background:linear-gradient(135deg,#8b5cf6,#ec4899);padding:20px 24px;text-align:center">
+      <h2 id="skincareDayDetailTitle" style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;letter-spacing:1px">日期详情</h2>
+    </div>
+    <div style="padding:16px 18px" id="skincareDayDetailContent"></div>
+    <div class="modal-actions" style="display:flex;gap:8px;padding:0 18px 18px">
+      <button class="btn btn-outline" id="skincareDetailEditBtn" onclick="toggleSkincareDetailEdit();playClick()" style="flex:1;border-radius:12px">编辑打卡</button>
+      <button class="btn btn-outline" onclick="closeSkincareDayDetail();playClick()" style="flex:1;border-radius:12px">关闭</button>
     </div>
   </div>
 </div>
@@ -1744,12 +1746,14 @@ _loadCosSdk(0);
 
 <!-- 心情日历日期详情弹窗 -->
 <div class="modal-overlay" id="moodDayDetailModal">
-  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto">
-    <h2 id="moodDayDetailTitle">日期详情</h2>
-    <div id="moodDayDetailContent"></div>
-    <div class="modal-actions" style="display:flex;gap:8px">
-      <button class="btn btn-outline" id="moodDetailEditBtn" onclick="toggleMoodDetailEdit();playClick()" style="flex:1">编辑</button>
-      <button class="btn btn-outline" onclick="closeMoodDayDetail();playClick()" style="flex:1">关闭</button>
+  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto;padding:0;border-radius:20px;overflow:hidden">
+    <div style="background:linear-gradient(135deg,#ec4899,#f59e0b);padding:20px 24px;text-align:center">
+      <h2 id="moodDayDetailTitle" style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;letter-spacing:1px">日期详情</h2>
+    </div>
+    <div style="padding:16px 18px" id="moodDayDetailContent"></div>
+    <div class="modal-actions" style="display:flex;gap:8px;padding:0 18px 18px">
+      <button class="btn btn-outline" id="moodDetailEditBtn" onclick="toggleMoodDetailEdit();playClick()" style="flex:1;border-radius:12px">编辑</button>
+      <button class="btn btn-outline" onclick="closeMoodDayDetail();playClick()" style="flex:1;border-radius:12px">关闭</button>
     </div>
   </div>
 </div>
@@ -7140,10 +7144,11 @@ function renderSkincareDayDetail() {
   var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',lipsCare:'护唇',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理',eyeCare:'护眼',chestCare:'胸部护理',intimateCare:'私处护理',hairCare:'头发护理',nailCare:'美甲'};
   var html = '';
 
-  /* 顶部：照片展示（不要边框，4张一排缩小） */
+  /* 顶部：照片展示（卡片式） */
   if (s.photos && s.photos.length > 0) {
-    html += '<div style="margin-bottom:16px">';
-    html += '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">';
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #0ea5e9;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-bottom:10px">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#0ea5e9;margin-bottom:8px;letter-spacing:0.5px">照片</div>';
+    html += '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start">';
     for (var i = 0; i < s.photos.length; i++) {
       html += '<div style="position:relative;width:68px;height:68px;border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0" onclick="viewDetailPhoto('+i+');playClick()">';
       html += '<img src="'+s.photos[i]+'" style="width:100%;height:100%;object-fit:cover;display:block" />';
@@ -7153,7 +7158,7 @@ function renderSkincareDayDetail() {
       html += '</div>';
     }
     if (editing && s.photos.length < 4) {
-      html += '<div onclick="uploadDetailPhoto();playClick()" style="width:68px;height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
+      html += '<div onclick="uploadDetailPhoto();playClick()" style="width:68px;height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #e5e7eb;border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
       html += '<span style="font-size:1.2rem">📷</span>';
       html += '<span style="font-size:0.6rem;color:#a8a29e">上传照片 '+s.photos.length+'/4</span>';
       html += '</div>';
@@ -7161,71 +7166,78 @@ function renderSkincareDayDetail() {
     html += '</div>';
     html += '</div>';
   } else if (editing) {
-    html += '<div style="margin-bottom:16px">';
-    html += '<div onclick="uploadDetailPhoto();playClick()" style="padding:20px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;background:#fafaf9">';
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #0ea5e9;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-bottom:10px">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#0ea5e9;margin-bottom:8px;letter-spacing:0.5px">照片</div>';
+    html += '<div onclick="uploadDetailPhoto();playClick()" style="padding:20px;border:2px dashed #e5e7eb;border-radius:10px;text-align:center;cursor:pointer;background:#fafaf9">';
     html += '<span style="font-size:1.5rem">📷</span><br>';
     html += '<span style="font-size:0.8rem;color:#a8a29e">上传照片</span>';
     html += '</div>';
     html += '</div>';
   }
 
-  /* 下方：打卡项目 + 备注 */
+  /* 下方：打卡项目 + 备注（卡片式） */
   if (editing) {
-    /* 编辑模式：可输入 */
-    /* 护理项目 + 自定义打卡项目（同一区域，不单独一排） */
-    html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:6px">打卡项目</div>';
+    /* 编辑模式：卡片式 */
+    html += '<div style="display:flex;flex-direction:column;gap:10px">';
+    
+    /* 打卡项目卡片 */
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #8b5cf6;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#8b5cf6;margin-bottom:8px;letter-spacing:0.5px">打卡项目</div>';
     html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
     var allBodyCares = ['faceCare','oralCare','neckCare','lipsCare','bodyCare','handCare','footCare','eyeCare','chestCare','intimateCare','hairCare','nailCare'];
     allBodyCares.forEach(function(k) {
       var active = s.bodyCare.indexOf(k) > -1;
-      html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe':'background:#fafaf9;color:#78716c;border:1px solid var(--border)')+'">'+bodyCareLabels[k]+'</span>';
+      html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:rgba(139,92,246,0.1);color:#7c3aed;border:1px solid #c4b5fd':'background:#fafaf9;color:#78716c;border:1px solid #e5e7eb')+'">'+bodyCareLabels[k]+'</span>';
     });
-    /* 自定义预设标签紧接在护理项目后面 */
+    /* 自定义预设标签 */
     var customPresets = {mask:'面膜',eyeMask:'眼膜',lipsCare:'唇部护理'};
     if (!s.customChecks) s.customChecks = s.customCheck ? s.customCheck.split('、').filter(function(x){return x.trim()}) : [];
     Object.keys(customPresets).forEach(function(k) {
       var active = s.customChecks.indexOf(customPresets[k]) > -1;
-      html += '<span onclick="toggleDetailCustomCheck(this,\''+customPresets[k]+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe':'background:#fafaf9;color:#78716c;border:1px solid var(--border)')+'">'+customPresets[k]+'</span>';
+      html += '<span onclick="toggleDetailCustomCheck(this,\''+customPresets[k]+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:rgba(139,92,246,0.1);color:#7c3aed;border:1px solid #c4b5fd':'background:#fafaf9;color:#78716c;border:1px solid #e5e7eb')+'">'+customPresets[k]+'</span>';
     });
     html += '</div>';
-    /* 自定义输入框 */
-    html += '<input type="text" id="skincareDetailCustomCheck" placeholder="其他自定义项目，如：面膜" value="" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;margin-top:6px" oninput="autoSaveDetailSkincare()"></div>';
+    html += '<input type="text" id="skincareDetailCustomCheck" placeholder="其他自定义项目，如：面膜" value="" style="width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;margin-top:8px;box-sizing:border-box" oninput="autoSaveDetailSkincare()"></div>';
 
-    /* 美容院护理 */
-    html += '<div style="margin-bottom:12px">';
-    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:6px" onclick="toggleDetailCheck(\'salon\');playClick()">';
-    html += '<span style="width:24px;height:24px;border:2px solid '+(s.salon?'#10b981':'var(--border)')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.salon?'#10b981':'transparent')+'">✓</span>';
+    /* 美容院护理卡片 */
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #10b981;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px" onclick="toggleDetailCheck(\'salon\');playClick()">';
+    html += '<span style="width:24px;height:24px;border:2px solid '+(s.salon?'#10b981':'#d6d3d1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.salon?'#10b981':'transparent')+'">✓</span>';
     html += '<span style="font-size:0.85rem;font-weight:600;color:#44403c">美容院护理</span></label>';
     if (s.salon) {
-      html += '<textarea id="skincareDetailSalonNote" placeholder="护理心得..." style="width:100%;min-height:50px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;resize:vertical;font-family:inherit" oninput="autoSaveDetailSkincare()">'+s.salonNote+'</textarea>';
+      html += '<textarea id="skincareDetailSalonNote" placeholder="护理心得..." style="width:100%;min-height:50px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;resize:vertical;font-family:inherit;box-sizing:border-box" oninput="autoSaveDetailSkincare()">'+s.salonNote+'</textarea>';
     }
     html += '</div>';
 
-    /* do脸小记 */
-    html += '<div style="margin-bottom:12px">';
-    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:6px" onclick="toggleDetailCheck(\'cosmetic\');playClick()">';
-    html += '<span style="width:24px;height:24px;border:2px solid '+(s.cosmetic?'#10b981':'var(--border)')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.cosmetic?'#10b981':'transparent')+'">✓</span>';
+    /* do脸小记卡片 */
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #f59e0b;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px" onclick="toggleDetailCheck(\'cosmetic\');playClick()">';
+    html += '<span style="width:24px;height:24px;border:2px solid '+(s.cosmetic?'#f59e0b':'#d6d3d1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.cosmetic?'#f59e0b':'transparent')+'">✓</span>';
     html += '<span style="font-size:0.85rem;font-weight:600;color:#44403c">do脸小记</span></label>';
     if (s.cosmetic) {
-      html += '<textarea id="skincareDetailCosmeticNote" placeholder="do脸项目感受..." style="width:100%;min-height:50px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;resize:vertical;font-family:inherit" oninput="autoSaveDetailSkincare()">'+s.cosmeticNote+'</textarea>';
+      html += '<textarea id="skincareDetailCosmeticNote" placeholder="do脸项目感受..." style="width:100%;min-height:50px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;resize:vertical;font-family:inherit;box-sizing:border-box" oninput="autoSaveDetailSkincare()">'+s.cosmeticNote+'</textarea>';
     }
     html += '</div>';
 
-    /* 备注 */
-    html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:4px"> 备注</div>';
-    html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;resize:vertical;outline:none;font-family:inherit" oninput="autoSaveDetailSkincare()">'+s.note+'</textarea></div>';
+    /* 备注卡片 */
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #a8a29e;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#a8a29e;margin-bottom:8px;letter-spacing:0.5px">备注</div>';
+    html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;resize:vertical;outline:none;font-family:inherit;box-sizing:border-box" oninput="autoSaveDetailSkincare()">'+s.note+'</textarea></div>';
 
-    /* 今日皮肤状态 */
-    html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:6px"> 今日皮肤状态</div>';
+    /* 皮肤状态卡片 */
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #ec4899;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#ec4899;margin-bottom:8px;letter-spacing:0.5px">今日皮肤状态</div>';
     var skinStatusPresets = ['hydrated','dry','oily','mixed','acne','dull','fine','sensitive'];
     var skinStatusLabels = {hydrated:'水润',dry:'干燥',oily:'出油',mixed:'混合',acne:'长痘',dull:'暗沉',fine:'细纹',sensitive:'敏感泛红'};
-    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px">';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">';
     skinStatusPresets.forEach(function(sk) {
       var active = s.skinStatus.indexOf(sk) > -1;
-      html += '<span onclick="toggleDetailSkinStatus(this,\''+sk+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#fce7f3,#f5f3ff);color:#ec4899;border:1px solid #f9a8d4':'background:#fafaf9;color:#78716c;border:1px solid var(--border)')+'">'+skinStatusLabels[sk]+'</span>';
+      html += '<span onclick="toggleDetailSkinStatus(this,\''+sk+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:rgba(236,72,153,0.1);color:#db2777;border:1px solid #f9a8d4':'background:#fafaf9;color:#78716c;border:1px solid #e5e7eb')+'">'+skinStatusLabels[sk]+'</span>';
     });
     html += '</div>';
-    html += '<input type="text" id="skincareDetailSkinCustom" placeholder="自定义皮肤状态，如：毛孔粗大" value="'+(s.skinStatusCustom||'')+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9" oninput="skincareDayDetailState.skinStatusCustom=this.value;autoSaveDetailSkincare()"></div>';
+    html += '<input type="text" id="skincareDetailSkinCustom" placeholder="自定义皮肤状态，如：毛孔粗大" value="'+(s.skinStatusCustom||'')+'" style="width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;box-sizing:border-box" oninput="skincareDayDetailState.skinStatusCustom=this.value;autoSaveDetailSkincare()"></div>';
+
+    html += '</div>';
 
   } else {
     /* 只读模式：高级卡片布局 */
@@ -8105,10 +8117,11 @@ function renderMoodDayDetail() {
   };
   var html = '';
 
-  /* 照片展示 */
+  /* 照片展示（卡片式） */
   if (s.photos && s.photos.length > 0) {
-    html += '<div style="margin-bottom:16px">';
-    html += '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">';
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #0ea5e9;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-bottom:10px">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#0ea5e9;margin-bottom:8px;letter-spacing:0.5px">照片</div>';
+    html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
     for (var i = 0; i < s.photos.length; i++) {
       html += '<div style="position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0" onclick="viewMoodDetailPhoto('+i+');playClick()">';
       html += '<img src="'+s.photos[i]+'" style="width:100%;height:100%;object-fit:cover;display:block" />';
@@ -8118,51 +8131,65 @@ function renderMoodDayDetail() {
       html += '</div>';
     }
     if (editing && s.photos.length < 4) {
-      html += '<div onclick="uploadMoodDetailPhoto();playClick()" style="width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #f0ebe8;border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
-      html += '<span style="font-size:1.2rem;color:#a8a29e">📷</span><span style="font-size:0.6rem;color:#a8a29e">上传照片</span></div>';
+      html += '<div onclick="uploadMoodDetailPhoto();playClick()" style="width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #e5e7eb;border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
+      html += '<span style="font-size:1.2rem">📷</span><span style="font-size:0.6rem;color:#a8a29e">上传照片</span></div>';
     }
     html += '</div></div>';
   } else if (editing) {
-    html += '<div style="margin-bottom:16px;text-align:center">';
-    html += '<div onclick="uploadMoodDetailPhoto();playClick()" style="width:72px;height:72px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #f0ebe8;border-radius:10px;cursor:pointer;background:#fafaf9">';
-    html += '<span style="font-size:1.2rem;color:#a8a29e">📷</span><span style="font-size:0.6rem;color:#a8a29e">上传照片</span></div></div>';
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #0ea5e9;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-bottom:10px">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#0ea5e9;margin-bottom:8px;letter-spacing:0.5px">照片</div>';
+    html += '<div onclick="uploadMoodDetailPhoto();playClick()" style="width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #e5e7eb;border-radius:10px;cursor:pointer;background:#fafaf9">';
+    html += '<span style="font-size:1.2rem">📷</span><span style="font-size:0.6rem;color:#a8a29e">上传照片</span></div></div>';
   }
 
   if (editing) {
-    /* 编辑模式 */
-    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c"> 当前状态</label>';
-    html += '<input type="text" value="'+escapeHtml(s.status)+'" maxlength="50" placeholder="此刻的感受..." oninput="moodDayDetailState.status=this.value" style="width:100%;padding:8px 12px;border:1.5px solid #f0ebe8;border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:4px"></div>';
-    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">今日心情</label>';
-    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
+    /* 编辑模式：卡片式 */
+    html += '<div style="display:flex;flex-direction:column;gap:10px">';
+
+    /* 当前状态卡片 */
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #8b5cf6;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#8b5cf6;margin-bottom:8px;letter-spacing:0.5px">当前状态</div>';
+    html += '<input type="text" value="'+escapeHtml(s.status)+'" maxlength="50" placeholder="此刻的感受..." oninput="moodDayDetailState.status=this.value" style="width:100%;padding:8px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;box-sizing:border-box"></div>';
+
+    /* 今日心情卡片 */
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #ec4899;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#ec4899;margin-bottom:8px;letter-spacing:0.5px">今日心情</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
     Object.keys(moodEmojis).forEach(function(k) {
       var moods = s.moods || [];
       var isActive = moods.indexOf(k) > -1;
       html += '<span class="beauty-emoji-card'+(isActive?' beauty-emoji-card-active':'')+'" onclick="selectMoodDetailEmoji(\''+k+'\',this);playClick()" style="width:calc(20% - 4.8px);box-sizing:border-box">'+moodEmojis[k]+'<small>'+moodLabels[k]+'</small></span>';
     });
     html += '</div></div>';
-    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">日记本</label>';
-    html += '<textarea maxlength="1000" placeholder="记录你的感受..." oninput="moodDayDetailState.diary=this.value" style="width:100%;min-height:80px;padding:8px 12px;border:1.5px solid #f0ebe8;border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit;background:#fafaf9;margin-top:4px">'+escapeHtml(s.diary)+'</textarea></div>';
-    /* 自律打卡 */
-    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">自律打卡</label>';
-    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
+
+    /* 日记本卡片 */
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #a8a29e;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#a8a29e;margin-bottom:8px;letter-spacing:0.5px">日记本</div>';
+    html += '<textarea maxlength="1000" placeholder="记录你的感受..." oninput="moodDayDetailState.diary=this.value" style="width:100%;min-height:80px;padding:8px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit;background:#fafaf9;box-sizing:border-box">'+escapeHtml(s.diary)+'</textarea></div>';
+
+    /* 自律打卡卡片 */
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #10b981;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#10b981;margin-bottom:8px;letter-spacing:0.5px">自律打卡</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
     var discItems = [{key:'earlyRise',icon:'',label:'早起'},{key:'water',icon:'',label:'喝水'},{key:'meditation',icon:'',label:'冥想'},{key:'podcast',icon:'',label:'听播客'},{key:'read',icon:'',label:'阅读'},{key:'news',icon:'',label:'今日新闻'},{key:'study',icon:'',label:'学习打卡'},{key:'newSkill',icon:'',label:'学习新技能'},{key:'english',icon:'',label:'学英语'},{key:'journal',icon:'',label:'写日记'},{key:'gratitude',icon:'',label:'感恩日记'},{key:'plan',icon:'',label:'写今日规划'},{key:'cook',icon:'',label:'做饭'},{key:'cleanRoom',icon:'',label:'打扫房间'},{key:'exercise',icon:'',label:'运动'},{key:'declutter',icon:'',label:'断舍离'},{key:'lessScreen',icon:'',label:'少玩电子产品'},{key:'skincare',icon:'',label:'护肤'},{key:'earlySleep',icon:'',label:'早睡'}];
     discItems.forEach(function(item) {
       var isActive = s.discipline && s.discipline[item.key];
       html += '<span class="beauty-check'+(isActive?' beauty-check-active':'')+'" onclick="toggleMoodDetailCheck(this,\''+item.key+'\');playClick()">'+item.icon+' '+item.label+'</span>';
     });
-    /* 自定义打卡标签排在最后 */
     var customLabel = (s.customCheck && s.customCheck.trim()) ? '✓ ' + s.customCheck : ' 自定义';
     var customActive = (s.customCheck && s.customCheck.trim()) ? ' beauty-check-active' : '';
     html += '<span class="beauty-check'+customActive+'" onclick="editMoodDetailCustomCheck();playClick()" style="border-style:dashed;border-color:#fbbf24;color:#92400e;background:rgba(255,255,255,0.5)">'+escapeHtml(customLabel)+'</span>';
     html += '</div></div>';
 
-    /* 感恩日记（编辑模式） */
+    /* 感恩日记卡片 */
     if (!s.gratitude) s.gratitude = ['','',''];
-    html += '<div style="margin-bottom:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(254,243,199,0.3),rgba(254,215,170,0.2));border:1px solid rgba(251,191,36,0.2)">';
-    html += '<label style="font-size:0.8rem;font-weight:700;color:#92400e;display:block;margin-bottom:6px"> 感恩日记</label>';
+    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #f59e0b;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#f59e0b;margin-bottom:8px;letter-spacing:0.5px">感恩日记</div>';
     for (var gi = 0; gi < 3; gi++) {
-      html += '<input type="text" maxlength="30" placeholder="今天想感恩的第'+(gi+1)+'件事……" value="'+(s.gratitude[gi]||'')+'" oninput="moodDayDetailState.gratitude['+gi+']=this.value" style="width:100%;padding:8px 12px;border:1.5px solid rgba(251,191,36,0.3);border-radius:10px;font-size:0.88rem;outline:none;background:rgba(255,255,255,0.7);margin-bottom:'+(gi<2?'6px':'0')+'">';
+      html += '<input type="text" maxlength="30" placeholder="今天想感恩的第'+(gi+1)+'件事……" value="'+(s.gratitude[gi]||'')+'" oninput="moodDayDetailState.gratitude['+gi+']=this.value" style="width:100%;padding:8px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:0.88rem;outline:none;background:#fafaf9;margin-bottom:'+(gi<2?'6px':'0')+';box-sizing:border-box">';
     }
+    html += '</div>';
+
     html += '</div>';
   } else {
     /* 只读模式：高级卡片布局 */
