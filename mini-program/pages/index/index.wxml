@@ -3,7 +3,7 @@
 
 <view class="index-page">
 
-  <!-- 顶部信息 -->
+  <!-- 顶部信息（非固定，随页面滚动） -->
   <view class="hero-card">
     <view class="hero-top">
       <view class="hero-name">{{userName || '你好'}}</view>
@@ -16,94 +16,106 @@
     <view class="hero-weight-label">今日体重</view>
   </view>
 
-  <!-- 体重输入 -->
-  <view class="card">
-    <view class="card-title">体重记录</view>
-    <view class="weight-row">
-      <view class="weight-input-group">
-        <text class="input-label">晨起体重</text>
-        <input class="input" type="digit" placeholder="{{unitLabel}}" value="{{dayData.weightAM ? (unitLabel === '斤' ? (dayData.weightAM * 2) : dayData.weightAM) : ''}}" bindinput="onMorningWeightInput" />
-      </view>
-      <view class="weight-input-group">
-        <text class="input-label">晚间体重</text>
-        <input class="input" type="digit" placeholder="{{unitLabel}}" value="{{dayData.weightPM ? (unitLabel === '斤' ? (dayData.weightPM * 2) : dayData.weightPM) : ''}}" bindinput="onEveningWeightInput" />
-      </view>
+  <!-- 体重 + 体脂 Hero 卡片 -->
+  <view class="weight-hero">
+    <view class="weight-hero-header">
+      <view class="weight-hero-dot"></view>
+      <text class="weight-hero-title">早晚体重打卡</text>
+      <text class="weight-hero-unit">{{unitLabel}}</text>
     </view>
-    <view class="weight-row">
-      <view class="weight-input-group">
-        <text class="input-label">体脂率(%)</text>
-        <input class="input" type="digit" placeholder="如 25" value="{{dayData.fat}}" bindinput="onFatRateInput" />
-      </view>
-      <view class="weight-input-group">
-        <text class="input-label">排便情况</text>
-        <input class="input" placeholder="如 正常/便秘" value="{{dayData.bm}}" bindinput="onBmInput" />
-      </view>
+    <view class="weight-hero-row">
+      <input class="weight-input-am" type="digit" placeholder="点击输入 晨起体重（空腹排便后）" value="{{dayData.weightAM ? (unitLabel === '斤' ? (dayData.weightAM * 2).toFixed(1) : Number(dayData.weightAM).toFixed(1)) : ''}}" bindinput="onMorningWeightInput" bindblur="onMorningWeightBlur" />
+      <input class="weight-input-pm" type="digit" placeholder="点击输入 睡前体重" value="{{dayData.weightPM ? (unitLabel === '斤' ? (dayData.weightPM * 2).toFixed(1) : Number(dayData.weightPM).toFixed(1)) : ''}}" bindinput="onEveningWeightInput" bindblur="onEveningWeightBlur" />
+    </view>
+    <view class="weight-hero-fat">
+      <text class="fat-label">体脂率</text>
+      <input class="fat-input" type="digit" placeholder="--" value="{{dayData.fat || ''}}" bindinput="onFatRateInput" bindblur="onFatRateBlur" />
+      <text class="fat-unit">%</text>
     </view>
   </view>
 
-  <!-- 饮食选择 -->
-  <view class="card">
-    <view class="card-title">饮食</view>
-    <scroll-view scroll-x="true" class="tag-scroll">
-      <view class="tag-list">
-        <view wx:for="{{dietOptions}}" wx:key="*this"
-          class="tag-item {{dayData.diet === item ? 'tag-item-active' : ''}}"
-          bindtap="onDietSelect" data-value="{{item}}">
-          {{item}}
-        </view>
+  <!-- 喝水打卡 -->
+  <view class="water-block">
+    <view class="water-block-header">
+      <view class="water-block-dot"></view>
+      <text class="water-block-title">喝水打卡</text>
+    </view>
+    <view class="water-cups-row">
+      <view wx:for="{{waterCups}}" wx:key="index"
+        class="water-cup {{item.filled ? 'water-cup-filled' : ''}}"
+        bindtap="onWaterAdd"
+        data-index="{{index}}">
+        {{index + 1}}
       </view>
-    </scroll-view>
+    </view>
+    <view class="water-info-row">
+      <text>已喝 <text class="water-count-num">{{dayData.water || 0}}</text> 杯 <text class="water-count-num">{{waterMl}}</text>ml</text>
+    </view>
+    <view class="water-goal-text">目标 {{waterGoal}} ml</view>
   </view>
 
-  <!-- 运动选择 -->
-  <view class="card">
-    <view class="card-title">运动</view>
-    <scroll-view scroll-x="true" class="tag-scroll">
-      <view class="tag-list">
-        <view wx:for="{{exerciseOptions}}" wx:key="*this"
-          class="tag-item {{dayData.exercise === item ? 'tag-item-active' : ''}}"
-          bindtap="onExerciseSelect" data-value="{{item}}">
-          {{item}}
-        </view>
+  <!-- 健康三合一：排便 + 运动 + 饮食 -->
+  <view class="health-trio">
+    <view class="health-trio-row">
+      <!-- 排便 -->
+      <view class="health-trio-cell">
+        <view class="health-trio-label">排便</view>
+        <picker mode="selector" range="{{bmOptions}}" value="{{bmIndex}}" bindchange="onBmChange">
+          <view class="health-trio-picker {{dayData.bm ? 'health-trio-picker-active' : ''}}">
+            {{dayData.bm || '—'}}
+          </view>
+        </picker>
       </view>
-    </scroll-view>
-  </view>
-
-  <!-- 饮水打卡 -->
-  <view class="card">
-    <view class="card-title">饮水打卡</view>
-    <view class="water-row">
-      <view class="water-info">
-        <text class="water-count">{{dayData.water || 0}}</text>
-        <text class="water-unit">杯</text>
-        <text class="water-ml">约 {{waterMl}} ml</text>
+      <!-- 运动 -->
+      <view class="health-trio-cell">
+        <view class="health-trio-label">运动</view>
+        <picker mode="selector" range="{{exerciseTrioOptions}}" value="{{exerciseIndex}}" bindchange="onExerciseChange">
+          <view class="health-trio-picker {{dayData.exercise ? 'health-trio-picker-active' : ''}}">
+            {{dayData.exercise || '—'}}
+          </view>
+        </picker>
       </view>
-      <view class="water-btn" bindtap="onWaterAdd">+1杯</view>
+      <!-- 饮食（占满一行） -->
+      <view class="health-trio-cell health-trio-diet">
+        <view class="health-trio-label">饮食</view>
+        <scroll-view scroll-x="true" class="diet-scroll">
+          <view class="diet-tag-list">
+            <view wx:for="{{dietOptions}}" wx:key="*this"
+              class="diet-tag {{dayData.diet === item ? 'diet-tag-active' : ''}}"
+              bindtap="onDietSelect" data-value="{{item}}">
+              {{item}}
+            </view>
+          </view>
+        </scroll-view>
+      </view>
     </view>
   </view>
 
   <!-- 经期备注（女性用户） -->
-  <view class="card" wx:if="{{isFemale}}">
-    <view class="card-title">经期备注</view>
-    <view class="tag-row" style="margin-bottom: 16rpx;">
-      <view class="tag-item {{dayData.period ? 'tag-item-active' : ''}}" bindtap="onPeriodToggle">今日经期</view>
+  <view class="period-block" wx:if="{{isFemale}}">
+    <view class="period-block-header">
+      <view class="period-block-dot"></view>
+      <text class="period-block-title">生理期记录</text>
     </view>
-    <textarea class="textarea" placeholder="记录经期感受..." value="{{dayData.periodNote}}" bindinput="onPeriodNoteInput" maxlength="200"></textarea>
+    <view class="period-chip-row">
+      <view class="period-chip {{dayData.period ? 'period-chip-active' : ''}}" bindtap="onPeriodToggle">今天来月经</view>
+      <view class="period-chip {{dayData.periodEnd ? 'period-chip-active' : ''}}" wx:if="{{dayData.period}}" bindtap="onPeriodEndToggle">标记结束</view>
+    </view>
+    <view class="period-status" wx:if="{{periodStatusText}}">{{periodStatusText}}</view>
+    <textarea class="period-note" placeholder="症状/流量备注（如：量多、痛经）" value="{{dayData.periodNote}}" bindinput="onPeriodNoteInput" bindblur="onPeriodNoteBlur" maxlength="200"></textarea>
   </view>
 
   <!-- 心情日记 -->
-  <view class="card">
-    <view class="card-title">心情日记</view>
-    <textarea class="textarea" placeholder="今天怎么样..." value="{{dayData.note}}" bindinput="onNoteInput" maxlength="500"></textarea>
-  </view>
-
-  <!-- 保存按钮 -->
-  <view class="save-area">
-    <button class="btn btn-primary btn-block" bindtap="onSave">保存今日记录</button>
+  <view class="note-block">
+    <view class="note-block-header">
+      <view class="note-block-dot"></view>
+      <text class="note-block-title">心情日记</text>
+    </view>
+    <textarea class="note-textarea" placeholder="今天怎么样..." value="{{dayData.note}}" bindinput="onNoteInput" bindblur="onNoteBlur" maxlength="500" auto-height></textarea>
   </view>
 
   <!-- 100变美日记入口 -->
-  <view class="card beauty-entry-card" bindtap="onGoBeauty">
+  <view class="beauty-entry-card" bindtap="onGoBeauty">
     <view class="beauty-entry-banner">
       <text class="beauty-entry-icon">✨</text>
       <view class="beauty-entry-info">
@@ -118,11 +130,14 @@
   </view>
 
   <!-- 管理员入口 -->
-  <view class="card" wx:if="{{isAdmin}}">
+  <view class="admin-entry-card" wx:if="{{isAdmin}}">
     <view class="admin-entry" bindtap="onGoAdmin">
       <text class="admin-entry-text">⚙️ 管理后台</text>
       <text class="admin-entry-arrow">›</text>
     </view>
   </view>
+
+  <!-- 底部留白 -->
+  <view style="height: 120rpx;"></view>
 
 </view>

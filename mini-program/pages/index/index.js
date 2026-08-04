@@ -2,6 +2,10 @@
 var app = getApp()
 var store = require('../../utils/store.js')
 var config = require('../../utils/config.js')
+var audio = require('../../utils/audio.js')
+
+// 自动保存防抖定时器
+var _autoSaveTimer = null
 
 Page({
   data: {
@@ -13,9 +17,18 @@ Page({
     isAdmin: false,
     dayData: {},
     waterMl: 0,
+    waterGoal: 2000,
+    waterCups: [],          // 杯子列表 [{filled: bool}]
     showPayModal: false,
-    dietOptions: ['液断', '轻断食', '少餐', '正餐', '放纵'],
-    exerciseOptions: ['有运动', '无运动', '有氧运动', '力量训练', '瑜伽拉伸', '散步']
+    periodStatusText: '',
+    // 排便选项
+    bmOptions: ['—', '✓ 有', '✗ 无', '便秘'],
+    bmIndex: 0,
+    // 运动选项
+    exerciseTrioOptions: ['—', '✓ 有', '✗ 无'],
+    exerciseIndex: 0,
+    // 饮食选项
+    dietOptions: ['液断', '轻断食', '少餐', '正餐', '放纵']
   },
 
   onLoad: function () {
@@ -23,10 +36,8 @@ Page({
   },
 
   onShow: function () {
-    // 微信用户可能状态还在异步加载中
     var self = this
     if (app.globalData.loginType === 'wx' && !app.globalData.statusReady) {
-      // 等待状态加载完成
       var checkCount = 0
       var checkTimer = setInterval(function () {
         checkCount++
@@ -40,13 +51,22 @@ Page({
     }
   },
 
+  onHide: function () {
+    // 页面隐藏时立即保存
+    this.saveNow()
+  },
+
+  onUnload: function () {
+    // 页面卸载时立即保存
+    if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null }
+    this.saveNow()
+  },
+
   checkAndLoad: function () {
-    // 检查试用是否过期
     if (!app.canUse()) {
       this.setData({ showPayModal: true })
       return
     }
-    // 如果 payModal 之前显示过，现在恢复了使用权限，隐藏它
     if (this.data.showPayModal) {
       this.setData({ showPayModal: false })
     }
@@ -55,7 +75,6 @@ Page({
 
   onPayModalClose: function () {
     this.setData({ showPayModal: false })
-    // 试用过期后关闭弹窗，跳转到付费页面
     wx.navigateTo({ url: '/pages/pay/pay' })
   },
 
@@ -108,6 +127,7 @@ Page({
         exercise: '',
         water: 0,
         period: false,
+        periodEnd: false,
         periodNote: '',
         note: ''
       }
@@ -118,16 +138,45 @@ Page({
     var weightVal = todayData.weightAM || todayData.weightPM
     var weightDisplay = '--'
     if (weightVal) {
-      // 存储的是kg，斤模式下显示 ×2
       weightDisplay = unitLabel === '斤' ? (weightVal * 2).toFixed(1) : Number(weightVal).toFixed(1)
     }
 
     var waterMl = (todayData.water || 0) * 250
+    var waterGoal = state.waterGoal || 2000
 
-    // 格式化日期显示
+    // 生成杯子列表
+    var maxCups = Math.max(8, Math.ceil(waterGoal / 250))
+    var waterCups = []
+    for (var c = 0; c < maxCups; c++) {
+      waterCups.push({ filled: c < (todayData.water || 0) })
+    }
+
+    // 日期格式化
     var d = new Date()
     var weekDay = ['日', '一', '二', '三', '四', '五', '六'][d.getDay()]
     var todayStr = d.getMonth() + 1 + '月' + d.getDate() + '日 周' + weekDay
+
+    // 排便/运动 index 映射
+    var bmMap = { '': 0, '有': 1, '无': 2, '便秘': 3 }
+    var bmIndex = bmMap[todayData.bm] || 0
+    var exMap = { '': 0, '有运动': 1, '无运动': 2 }
+    var exerciseIndex = exMap[todayData.exercise] || 0
+
+    // 经期状态文本
+    var periodStatusText = ''
+    if (todayData.period) {
+      var startDate = new Date(today)
+      // 查找经期起始日
+      for (var pi = 0; pi < days.length; pi++) {
+        if (days[pi].period && days[pi].date < today) {
+          startDate = new Date(days[pi].date)
+        } else if (days[pi].date < today && !days[pi].period) {
+          startDate = new Date(today)
+        }
+      }
+      var periodDay = Math.floor((d - startDate) / (1000 * 60 * 60 * 24)) + 1
+      periodStatusText = '经期第 ' + periodDay + ' 天'
+    }
 
     this.setData({
       userName: state.name || '',
@@ -137,86 +186,33 @@ Page({
       isFemale: isFemale,
       isAdmin: app.globalData.loginType === 'admin',
       dayData: todayData,
-      waterMl: waterMl
+      waterMl: waterMl,
+      waterGoal: waterGoal,
+      waterCups: waterCups,
+      bmIndex: bmIndex,
+      exerciseIndex: exerciseIndex,
+      periodStatusText: periodStatusText
     })
 
-    // 保存到当前页面的 state 引用
     this.currentState = state
     this.currentToday = today
   },
 
-  // ===== 输入处理 =====
-  onMorningWeightInput: function (e) {
-    var v = e.detail.value
-    // 斤模式下存储 v/2（即kg），与网页版一致
-    var unitLabel = this.data.unitLabel
-    var storedVal = v ? (unitLabel === '斤' ? Number(v) / 2 : Number(v)) : null
-    this.updateDayData('weightAM', storedVal)
-    this.updateWeightDisplay()
-  },
-  onEveningWeightInput: function (e) {
-    var v = e.detail.value
-    var unitLabel = this.data.unitLabel
-    var storedVal = v ? (unitLabel === '斤' ? Number(v) / 2 : Number(v)) : null
-    this.updateDayData('weightPM', storedVal)
-    this.updateWeightDisplay()
-  },
-  onFatRateInput: function (e) {
-    this.updateDayData('fat', e.detail.value)
-  },
-  onBmInput: function (e) {
-    this.updateDayData('bm', e.detail.value)
-  },
-  onDietSelect: function (e) {
-    var val = e.currentTarget.dataset.value
-    var current = this.data.dayData.diet === val ? '' : val
-    this.updateDayData('diet', current)
-  },
-  onExerciseSelect: function (e) {
-    var val = e.currentTarget.dataset.value
-    var current = this.data.dayData.exercise === val ? '' : val
-    this.updateDayData('exercise', current)
-  },
-  onWaterAdd: function () {
-    var cups = (this.data.dayData.water || 0) + 1
-    this.updateDayData('water', cups)
-    this.setData({ waterMl: cups * 250 })
-  },
-  onPeriodToggle: function () {
-    var current = !this.data.dayData.period
-    this.updateDayData('period', current)
-  },
-  onPeriodNoteInput: function (e) {
-    this.updateDayData('periodNote', e.detail.value)
-  },
-  onNoteInput: function (e) {
-    this.updateDayData('note', e.detail.value)
-  },
-
-  updateDayData: function (field, value) {
-    var key = 'dayData.' + field
-    var obj = {}
-    obj[key] = value
-    this.setData(obj)
-  },
-
-  updateWeightDisplay: function () {
-    var dayData = this.data.dayData
-    var weightVal = dayData.weightAM || dayData.weightPM
-    var display = '--'
-    if (weightVal) {
-      // 存储的是kg，斤模式下显示 ×2
-      display = this.data.unitLabel === '斤' ? (weightVal * 2).toFixed(1) : Number(weightVal).toFixed(1)
-    }
-    this.setData({ todayWeightDisplay: display })
-  },
-
-  // ===== 保存 =====
-  onSave: function () {
+  // ===== 自动保存核心 =====
+  autoSave: function () {
     var self = this
+    if (_autoSaveTimer) clearTimeout(_autoSaveTimer)
+    _autoSaveTimer = setTimeout(function () {
+      self.saveNow()
+    }, 400)
+  },
+
+  saveNow: function () {
     var state = this.currentState
     var today = this.currentToday
     var dayData = this.data.dayData
+
+    if (!state || !today) return
 
     var days = state.days || []
     var found = false
@@ -233,19 +229,167 @@ Page({
     state.days = days
     app.globalData.state = state
     store.saveState(app.globalData.userKey, state)
-
-    wx.showToast({ title: '保存成功', icon: 'success' })
   },
 
-  // ===== 管理后台入口 =====
+  // ===== 体重输入 =====
+  onMorningWeightInput: function (e) {
+    var v = e.detail.value
+    var unitLabel = this.data.unitLabel
+    var storedVal = v ? (unitLabel === '斤' ? Number(v) / 2 : Number(v)) : null
+    this.updateDayData('weightAM', storedVal)
+    this.updateWeightDisplay()
+    this.autoSave()
+  },
+  onMorningWeightBlur: function (e) {
+    this.saveNow()
+  },
+  onEveningWeightInput: function (e) {
+    var v = e.detail.value
+    var unitLabel = this.data.unitLabel
+    var storedVal = v ? (unitLabel === '斤' ? Number(v) / 2 : Number(v)) : null
+    this.updateDayData('weightPM', storedVal)
+    this.updateWeightDisplay()
+    this.autoSave()
+  },
+  onEveningWeightBlur: function (e) {
+    this.saveNow()
+  },
+
+  // ===== 体脂率 =====
+  onFatRateInput: function (e) {
+    var v = e.detail.value
+    this.updateDayData('fat', v || null)
+    this.autoSave()
+  },
+  onFatRateBlur: function (e) {
+    this.saveNow()
+  },
+
+  // ===== 排便 =====
+  onBmChange: function (e) {
+    var idx = parseInt(e.detail.value)
+    var valMap = { 0: '', 1: '有', 2: '无', 3: '便秘' }
+    var val = valMap[idx] || ''
+    this.setData({ bmIndex: idx })
+    this.updateDayData('bm', val)
+    this.autoSave()
+  },
+
+  // ===== 运动 =====
+  onExerciseChange: function (e) {
+    var idx = parseInt(e.detail.value)
+    var valMap = { 0: '', 1: '有运动', 2: '无运动' }
+    var val = valMap[idx] || ''
+    this.setData({ exerciseIndex: idx })
+    this.updateDayData('exercise', val)
+    this.autoSave()
+  },
+
+  // ===== 饮食 =====
+  onDietSelect: function (e) {
+    var val = e.currentTarget.dataset.value
+    var current = this.data.dayData.diet === val ? '' : val
+    this.updateDayData('diet', current)
+    this.autoSave()
+  },
+
+  // ===== 喝水打卡 =====
+  onWaterAdd: function (e) {
+    var cups = (this.data.dayData.water || 0) + 1
+    var maxCups = Math.max(8, Math.ceil(this.data.waterGoal / 250))
+    if (cups > maxCups) cups = maxCups
+    this.updateDayData('water', cups)
+    this.setData({ waterMl: cups * 250 })
+
+    // 更新杯子列表
+    var waterCups = this.data.waterCups
+    for (var i = 0; i < waterCups.length; i++) {
+      waterCups[i].filled = i < cups
+    }
+    this.setData({ waterCups: waterCups })
+
+    // 播放水滴音效
+    audio.playWater()
+
+    this.autoSave()
+  },
+
+  // ===== 经期 =====
+  onPeriodToggle: function () {
+    var current = !this.data.dayData.period
+    this.updateDayData('period', current)
+    if (!current) {
+      this.updateDayData('periodEnd', false)
+    }
+    this.updatePeriodStatus()
+    this.autoSave()
+  },
+  onPeriodEndToggle: function () {
+    var current = !this.data.dayData.periodEnd
+    this.updateDayData('periodEnd', current)
+    this.updatePeriodStatus()
+    this.autoSave()
+  },
+  updatePeriodStatus: function () {
+    var dayData = this.data.dayData
+    var text = ''
+    if (dayData.period) {
+      var today = new Date()
+      var startDate = new Date(this.currentToday)
+      var days = this.currentState ? (this.currentState.days || []) : []
+      for (var i = 0; i < days.length; i++) {
+        if (days[i].period && days[i].date < this.currentToday) {
+          startDate = new Date(days[i].date)
+        } else if (days[i].date < this.currentToday && !days[i].period) {
+          startDate = new Date(this.currentToday)
+        }
+      }
+      var periodDay = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1
+      text = '经期第 ' + periodDay + ' 天'
+    }
+    this.setData({ periodStatusText: text })
+  },
+  onPeriodNoteInput: function (e) {
+    this.updateDayData('periodNote', e.detail.value)
+    this.autoSave()
+  },
+  onPeriodNoteBlur: function (e) {
+    this.saveNow()
+  },
+
+  // ===== 心情日记 =====
+  onNoteInput: function (e) {
+    this.updateDayData('note', e.detail.value)
+    this.autoSave()
+  },
+  onNoteBlur: function (e) {
+    this.saveNow()
+  },
+
+  // ===== 工具方法 =====
+  updateDayData: function (field, value) {
+    var key = 'dayData.' + field
+    var obj = {}
+    obj[key] = value
+    this.setData(obj)
+  },
+
+  updateWeightDisplay: function () {
+    var dayData = this.data.dayData
+    var weightVal = dayData.weightAM || dayData.weightPM
+    var display = '--'
+    if (weightVal) {
+      display = this.data.unitLabel === '斤' ? (weightVal * 2).toFixed(1) : Number(weightVal).toFixed(1)
+    }
+    this.setData({ todayWeightDisplay: display })
+  },
+
+  // ===== 导航 =====
   onGoAdmin: function () {
     wx.navigateTo({ url: '/pages/admin/admin' })
   },
 
-  // ===== 100变美日记入口 =====
   onGoBeauty: function () {
-    var app = getApp()
-    var audio = require('../../utils/audio.js')
     audio.playEnter()
     wx.navigateTo({
       url: '/subpkg-beauty/pages/upgrade-home/upgrade-home'
