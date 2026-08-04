@@ -37,11 +37,20 @@
 
   </view>
 
+  <!-- 功能亮点标签 -->
+  <view class="upgrade-features">
+    <text class="feature-tag feature-tag-purple">护肤日记</text>
+    <text class="feature-tag feature-tag-pink">心情记录</text>
+    <text class="feature-tag feature-tag-amber">感恩日记</text>
+    <text class="feature-tag feature-tag-green">自律打卡</text>
+    <text class="feature-tag feature-tag-blue">日历照片</text>
+  </view>
+
   <!-- 底部信息 -->
   <view class="upgrade-footer">
     <view class="upgrade-price-tag">
       <text class="upgrade-price">29.9元 永久会员权益 · 云端储存</text>
-      <text class="upgrade-price-desc">升级版会员 · 全功能解锁</text>
+      <text class="upgrade-price-desc">一次购买 · 永久会员权益 · 云端储存</text>
     </view>
   </view>
 </view>
