@@ -30,8 +30,8 @@ Page({
     // 排便选项
     bmOptions: ['—', '✓ 有', '✗ 无', '便秘'],
     bmIndex: 0,
-    // 运动选项 — 扩展为7个（对齐HTML版）
-    exerciseTrioOptions: ['—', '✓ 有', '✗ 无', '有氧运动', '力量训练', '瑜伽拉伸', '散步'],
+    // 运动选项（对齐HTML版 3 项）
+    exerciseTrioOptions: ['—', '✓ 有', '✗ 无'],
     exerciseIndex: 0,
     // 饮食选项
     dietOptions: ['液断', '轻断食', '少餐', '正餐', '放纵'],

@@ -93,15 +93,15 @@ page {
   flex-shrink: 0;
 }
 .avatar {
-  width: 104rpx;
-  height: 104rpx;
+  width: 136rpx;
+  height: 136rpx;
   border-radius: 50%;
   background: rgba(255,255,255,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 56rpx;
-  border: 4rpx solid rgba(255,255,255,0.6);
+  border: 6rpx solid rgba(255,255,255,0.6);
   box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.15);
   overflow: hidden;
 }
@@ -161,7 +161,6 @@ page {
 .beauty-quick-skincare .beauty-quick-sub { color: #8b5cf6; }
 .beauty-quick-mood .beauty-quick-title { color: #9d174d; }
 .beauty-quick-mood .beauty-quick-sub { color: #ec4899; }
-.beauty-quick-mood .beauty-quick-title { color: #be185d; }
 
 /* ===== 19.9元购买入口（hero区内，试用/未购用户可见） ===== */
 .basic-plan-entry {

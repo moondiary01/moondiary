@@ -3,18 +3,18 @@
 /* 遮罩层 */
 .overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.55);
+  background: rgba(28,25,23,0.4);
   display: flex; align-items: center; justify-content: center;
   z-index: 10000;
-  backdrop-filter: blur(4rpx);
+  backdrop-filter: blur(12rpx);
 }
 
 /* 弹窗外框 */
 .modal-box {
-  width: 680rpx;
+  width: 840rpx;
   max-height: 90vh;
   overflow-y: auto;
-  border-radius: 32rpx;
+  border-radius: 48rpx;
   background: transparent;
   box-shadow: 0 48rpx 160rpx rgba(124,58,237,0.35), 0 16rpx 48rpx rgba(0,0,0,0.15);
 }
@@ -22,7 +22,7 @@
 /* ===== 顶部渐变区 ===== */
 .pm-top {
   background: linear-gradient(160deg, #1a1025 0%, #2d1b4e 35%, #4c1d6b 65%, #7c3aed 100%);
-  padding: 56rpx 40rpx 48rpx;
+  padding: 72rpx 56rpx 64rpx;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -50,7 +50,7 @@
 }
 .pm-icon {
   position: relative; z-index: 1;
-  font-size: 80rpx;
+  font-size: 96rpx;
   display: block;
   margin-bottom: 12rpx;
   filter: drop-shadow(0 8rpx 24rpx rgba(245,158,11,0.4));
