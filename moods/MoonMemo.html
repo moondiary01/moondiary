@@ -464,7 +464,57 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .modal h2{font-size:1rem;color:var(--ink);margin-bottom:16px;font-weight:700}
 .modal .input-group{margin-bottom:12px}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
-/* 悬浮返回按钮 — 右下角固定 */
+/* ===== 日历详情弹窗（卡片式布局） ===== */
+.detail-modal{background:#fff;border-radius:20px;padding:20px 22px;box-shadow:0 8px 32px rgba(0,0,0,0.12);animation:modalSlideUp 0.15s ease-out}
+.detail-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #f5f5f4}
+.detail-title-text{font-size:1.1rem;font-weight:700;color:#1a1a1a;letter-spacing:0.5px}
+.detail-close-btn{width:32px;height:32px;border-radius:50%;background:#f5f5f4;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#78716c;cursor:pointer;border:none;transition:all 0.15s}
+.detail-close-btn:hover{background:#e5e5e2;color:#44403c}
+.detail-card{margin-bottom:12px;padding:16px 16px;background:#fff;border-radius:14px;box-shadow:0 1px 6px rgba(0,0,0,0.04);border-left:5px solid transparent}
+.detail-card-purple{border-left-color:#8b5cf6}
+.detail-card-pink{border-left-color:#ec4899}
+.detail-card-gray{border-left-color:#a8a29e}
+.detail-card-green{border-left-color:#10b981}
+.detail-card-amber{border-left-color:#f59e0b}
+.detail-card-purple .detail-card-title{color:#8b5cf6}
+.detail-card-pink .detail-card-title{color:#ec4899}
+.detail-card-gray .detail-card-title{color:#a8a29e}
+.detail-card-green .detail-card-title{color:#10b981}
+.detail-card-amber .detail-card-title{color:#f59e0b}
+.detail-card-title{font-size:0.82rem;font-weight:700;margin-bottom:10px;letter-spacing:0.5px}
+.detail-mini-tags{display:flex;flex-wrap:wrap;gap:6px}
+.detail-mini-tag{padding:4px 12px;border-radius:100px;font-size:0.72rem;font-weight:500;cursor:pointer;transition:all 0.15s}
+.detail-mini-tag.mini-on{background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8}
+.detail-mini-tag.mini-off{background:#f5f5f4;color:#a8a29e;border:1px solid transparent}
+.detail-skin-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.detail-skin-tag{padding:4px 12px;border-radius:24px;font-size:0.72rem;font-weight:500;cursor:pointer;background:#fafaf9;color:#78716c;border:1.5px solid #e5e7eb;transition:all 0.15s}
+.detail-skin-tag.skin-tag-active{background:linear-gradient(135deg,#fce7f3,#f5f3ff);color:#ec4899;border-color:#f9a8d4}
+.detail-skin-custom{width:100%;padding:8px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:0.8rem;background:#fafaf9;outline:none;box-sizing:border-box}
+.detail-note{width:100%;min-height:60px;padding:8px 10px;border:1px solid #f0ebe8;border-radius:8px;font-size:0.82rem;color:#44403c;line-height:1.5;background:#fafaf9;resize:vertical;outline:none;font-family:inherit;box-sizing:border-box}
+.detail-photo-section{margin-bottom:14px;margin-top:6px}
+.photo-action-row{display:flex;gap:8px}
+.photo-action-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:12px 6px;border-radius:12px;cursor:pointer;border:none;transition:all 0.15s;font-family:inherit}
+.photo-action-icon{font-size:1.5rem}
+.photo-action-text{font-size:0.7rem;font-weight:600}
+.photo-view-btn{background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#be185d;border:1px solid #fbcfe8}
+.photo-upload-btn{background:#f5f3ff;color:#6d28d9;border:1px solid #ddd6fe}
+.photo-delete-btn{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.photo-upload-mini{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:100px;background:#fafaf9;border:2px dashed #d6d3d1;cursor:pointer}
+.photo-upload-mini-icon{font-size:1.2rem}
+.photo-upload-mini-text{font-size:0.78rem;color:#78716c;font-weight:500}
+.detail-actions{display:flex;gap:10px}
+.detail-actions .btn{flex:1;font-size:0.85rem;padding:10px 0;border-radius:100px;text-align:center}
+.btn-primary{background:linear-gradient(135deg,#ec4899,#8b5cf6);color:#fff;font-weight:600;border:none;box-shadow:0 3px 10px rgba(236,72,153,0.25);cursor:pointer}
+.btn-primary:hover{opacity:0.92}
+.mood-detail-display{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detail-status-text{font-size:0.9rem;color:#44403c;line-height:1.6}
+.detail-diary-text{font-size:0.85rem;color:#44403c;line-height:1.7;white-space:pre-wrap}
+.gratitude-detail-item{display:flex;align-items:flex-start;gap:8px;padding:4px 0}
+.gratitude-detail-num{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:rgba(245,158,11,0.12);color:#d97706;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.gratitude-detail-text{font-size:0.85rem;color:#44403c;line-height:1.5;flex:1}
+.detail-photo-row{display:flex;gap:8px;flex-wrap:wrap}
+.detail-photo-thumb{width:80px;height:80px;border-radius:10px;object-fit:cover;background:#f5f5f4}
+/* ===== 悬浮返回按钮 — 右下角固定 ===== */
 .float-back-fab{position:fixed;bottom:24px;right:24px;z-index:9000;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#3d2b4f 0%,#5b3a5e 30%,#7a5276 55%,#9d6b8b 80%,#c084a8 100%);color:#fce7f3;display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;border:none;box-shadow:0 1px 0 rgba(255,255,255,0.08) inset,0 -1px 0 rgba(0,0,0,0.2) inset,0 0 0 1px rgba(255,255,255,0.05),0 10px 30px rgba(61,43,79,0.3),0 2px 8px rgba(0,0,0,0.06);transition:all 0.2s}
 .float-back-fab:active{transform:scale(0.88);box-shadow:0 1px 0 rgba(255,255,255,0.04) inset,0 4px 12px rgba(61,43,79,0.2)}
 /* ===== Toast / 保存提示 ===== */
@@ -1448,14 +1498,17 @@ _loadCosSdk(0);
   <button class="float-back-fab" onclick="closeBeautySkincare();playClick()">←</button>
 </div>
 
-<!-- 护肤日历日期详情弹窗 -->
-<div class="modal-overlay" id="skincareDayDetailModal">
-  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto">
-    <h2 id="skincareDayDetailTitle">📅 日期详情</h2>
+<!-- 护肤日历日期详情弹窗（卡片式布局，同步小程序 f5c02e6） -->
+<div class="modal-overlay" id="skincareDayDetailModal" onclick="closeSkincareDayDetail()">
+  <div class="modal detail-modal" onclick="event.stopPropagation()" style="max-width:380px;max-height:75vh;overflow-y:auto;padding:20px 22px">
+    <div class="detail-header">
+      <span class="detail-title-text" id="skincareDayDetailTitle">日期详情</span>
+      <span class="detail-close-btn" onclick="closeSkincareDayDetail()">✕</span>
+    </div>
     <div id="skincareDayDetailContent"></div>
-    <div class="modal-actions" style="display:flex;gap:8px">
-      <button class="btn btn-outline" id="skincareDetailEditBtn" onclick="toggleSkincareDetailEdit();playClick()" style="flex:1">编辑打卡</button>
-      <button class="btn btn-outline" onclick="document.getElementById('skincareDayDetailModal').classList.remove('show');playClick()" style="flex:1">关闭</button>
+    <div class="detail-actions" style="margin-top:16px">
+      <button class="btn btn-outline" id="skincareDetailEditBtn" onclick="toggleSkincareDetailEdit();playClick()" style="flex:1">编辑</button>
+      <button class="btn btn-primary" onclick="saveSkincareDayDetailAndClose();playClick()" style="flex:1">保存</button>
     </div>
   </div>
 </div>
@@ -1557,14 +1610,17 @@ _loadCosSdk(0);
   <button class="float-back-fab" onclick="closeBeautyMood();playClick()">←</button>
 </div>
 
-<!-- 心情日历日期详情弹窗 -->
-<div class="modal-overlay" id="moodDayDetailModal">
-  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto">
-    <h2 id="moodDayDetailTitle">📅 日期详情</h2>
+<!-- 心情日历日期详情弹窗（卡片式布局，同步小程序 f5c02e6） -->
+<div class="modal-overlay" id="moodDayDetailModal" onclick="closeMoodDayDetail()">
+  <div class="modal detail-modal" onclick="event.stopPropagation()" style="max-width:380px;max-height:75vh;overflow-y:auto;padding:20px 22px">
+    <div class="detail-header">
+      <span class="detail-title-text" id="moodDayDetailTitle">日期详情</span>
+      <span class="detail-close-btn" onclick="closeMoodDayDetail()">✕</span>
+    </div>
     <div id="moodDayDetailContent"></div>
-    <div class="modal-actions" style="display:flex;gap:8px">
+    <div class="detail-actions" style="margin-top:16px">
       <button class="btn btn-outline" id="moodDetailEditBtn" onclick="toggleMoodDetailEdit();playClick()" style="flex:1">编辑</button>
-      <button class="btn btn-outline" onclick="document.getElementById('moodDayDetailModal').classList.remove('show');playClick()" style="flex:1">关闭</button>
+      <button class="btn btn-outline" onclick="closeMoodDayDetail();playClick()" style="flex:1">关闭</button>
     </div>
   </div>
 </div>
@@ -6464,6 +6520,8 @@ function openSkincareDayDetail(dateStr) {
     bodyCare: record ? (record.bodyCare || []) : [],
     salon: record ? !!record.salon : false,
     cosmetic: record ? !!record.cosmetic : false,
+    skinStatus: record ? (record.skinStatus || []) : [],
+    skinStatusCustom: record ? (record.skinStatusCustom || '') : '',
     record: record || null,
     isEditing: false
   };
@@ -6474,127 +6532,155 @@ function renderSkincareDayDetail() {
   var dateStr = skincareDayDetailDate;
   var s = skincareDayDetailState;
   var editing = s.isEditing;
-  document.getElementById('skincareDayDetailTitle').textContent = '📅 ' + dateStr;
+  document.getElementById('skincareDayDetailTitle').textContent = dateStr;
 
   var bodyCareLabels = {faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',lipsCare:'护唇',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理',eyeCare:'护眼',chestCare:'胸部护理',intimateCare:'私处护理',hairCare:'头发护理',nailCare:'美甲'};
   var html = '';
 
-  /* 顶部：照片展示（不要边框，4张一排缩小） */
-  if (s.photos && s.photos.length > 0) {
-    html += '<div style="margin-bottom:16px">';
-    html += '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">';
-    for (var i = 0; i < s.photos.length; i++) {
-      html += '<div style="position:relative;width:68px;height:68px;border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0" onclick="viewDetailPhoto('+i+');playClick()">';
-      html += '<img src="'+s.photos[i]+'" style="width:100%;height:100%;object-fit:cover;display:block" />';
-      if (editing) {
-        html += '<div onclick="event.stopPropagation();deleteDetailPhoto('+i+');playClick()" style="position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.6rem;cursor:pointer">✕</div>';
-      }
-      html += '</div>';
-    }
-    if (editing && s.photos.length < 4) {
-      html += '<div onclick="uploadDetailPhoto();playClick()" style="width:68px;height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
-      html += '<span style="font-size:1.2rem">📷</span>';
-      html += '<span style="font-size:0.6rem;color:#a8a29e">'+s.photos.length+'/4</span>';
-      html += '</div>';
-    }
-    html += '</div>';
-    html += '</div>';
-  } else if (editing) {
-    html += '<div style="margin-bottom:16px">';
-    html += '<div onclick="uploadDetailPhoto();playClick()" style="padding:20px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;background:#fafaf9">';
-    html += '<span style="font-size:1.5rem">📷</span><br>';
-    html += '<span style="font-size:0.8rem;color:#a8a29e">添加自拍</span>';
-    html += '</div>';
-    html += '</div>';
-  }
-
-  /* 下方：打卡项目 + 备注 */
+  /* ─── 卡片1：打卡项目（紫色左边框） ─── */
+  html += '<div class="detail-card detail-card-purple">';
+  html += '<div class="detail-card-title">打卡项目</div>';
   if (editing) {
-    /* 编辑模式：可输入 */
-    /* 护理项目 + 自定义打卡项目（同一区域，不单独一排） */
-    html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:6px">打卡项目</div>';
+    /* 编辑模式：可切换标签 */
     html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
     var allBodyCares = ['faceCare','oralCare','neckCare','lipsCare','bodyCare','handCare','footCare','eyeCare','chestCare','intimateCare','hairCare','nailCare'];
     allBodyCares.forEach(function(k) {
       var active = s.bodyCare.indexOf(k) > -1;
-      html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe':'background:#fafaf9;color:#78716c;border:1px solid var(--border)')+'">'+bodyCareLabels[k]+'</span>';
+      html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" class="detail-mini-tag '+(active?'mini-on':'mini-off')+'">'+bodyCareLabels[k]+' '+(active?'✓':'')+'</span>';
     });
-    /* 自定义预设标签紧接在护理项目后面 */
-    var customPresets = {mask:'面膜',eyeMask:'眼膜',lipsCare:'唇部护理'};
+    html += '</div>';
+    /* 自定义预设 */
+    var customPresets = ['面膜','眼膜','唇部护理'];
     if (!s.customChecks) s.customChecks = s.customCheck ? s.customCheck.split('、').filter(function(x){return x.trim()}) : [];
-    Object.keys(customPresets).forEach(function(k) {
-      var active = s.customChecks.indexOf(customPresets[k]) > -1;
-      html += '<span onclick="toggleDetailCustomCheck(this,\''+customPresets[k]+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe':'background:#fafaf9;color:#78716c;border:1px solid var(--border)')+'">'+customPresets[k]+'</span>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
+    customPresets.forEach(function(label) {
+      var active = s.customChecks.indexOf(label) > -1;
+      html += '<span onclick="toggleDetailCustomCheck(this,\''+label+'\');playClick()" class="detail-mini-tag '+(active?'mini-on':'mini-off')+'">'+label+' '+(active?'✓':'')+'</span>';
     });
     html += '</div>';
-    /* 自定义输入框 */
-    html += '<input type="text" id="skincareDetailCustomCheck" placeholder="其他自定义项目，如：面膜" value="" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;margin-top:6px" oninput="autoSaveDetailSkincare()"></div>';
-
-    /* 美容院护理 */
-    html += '<div style="margin-bottom:12px">';
-    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:6px" onclick="toggleDetailCheck(\'salon\');playClick()">';
-    html += '<span style="width:20px;height:20px;border:2px solid '+(s.salon?'#10b981':'var(--border)')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.salon?'#10b981':'transparent')+'">✓</span>';
-    html += '<span style="font-size:0.85rem;font-weight:600;color:#44403c">💆 美容院护理</span></label>';
-    if (s.salon) {
-      html += '<textarea id="skincareDetailSalonNote" placeholder="护理心得..." style="width:100%;min-height:50px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;resize:vertical;font-family:inherit" oninput="autoSaveDetailSkincare()">'+s.salonNote+'</textarea>';
+    html += '<input type="text" id="skincareDetailCustomCheck" placeholder="其他自定义项目，如：面膜" value="" style="width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.82rem;outline:none;background:#fafaf9;margin-top:8px" oninput="autoSaveDetailSkincare()">';
+    /* 美容院 + do脸子项 */
+    var hasSub = s.salon || s.cosmetic;
+    if (hasSub) {
+      html += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,92,246,0.1)">';
+      if (s.salon) {
+        html += '<div style="margin-bottom:8px"><div style="font-size:0.78rem;font-weight:600;color:#059669;margin-bottom:4px">✓ 美容院护理</div>';
+        html += '<textarea id="skincareDetailSalonNote" placeholder="护理心得..." style="width:100%;min-height:45px;padding:6px 8px;border:1px solid #f0ebe8;border-radius:8px;font-size:0.8rem;outline:none;background:#fafaf9;resize:vertical;font-family:inherit" oninput="autoSaveDetailSkincare()">'+(s.salonNote||'')+'</textarea></div>';
+      }
+      if (s.cosmetic) {
+        html += '<div style="margin-bottom:4px"><div style="font-size:0.78rem;font-weight:600;color:#059669;margin-bottom:4px">✓ do脸小记</div>';
+        html += '<textarea id="skincareDetailCosmeticNote" placeholder="do脸项目感受..." style="width:100%;min-height:45px;padding:6px 8px;border:1px solid #f0ebe8;border-radius:8px;font-size:0.8rem;outline:none;background:#fafaf9;resize:vertical;font-family:inherit" oninput="autoSaveDetailSkincare()">'+(s.cosmeticNote||'')+'</textarea></div>';
+      }
+      html += '</div>';
     }
-    html += '</div>';
-
-    /* do脸小记 */
-    html += '<div style="margin-bottom:12px">';
-    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:6px" onclick="toggleDetailCheck(\'cosmetic\');playClick()">';
-    html += '<span style="width:20px;height:20px;border:2px solid '+(s.cosmetic?'#10b981':'var(--border)')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.cosmetic?'#10b981':'transparent')+'">✓</span>';
-    html += '<span style="font-size:0.85rem;font-weight:600;color:#44403c">💉 do脸小记</span></label>';
-    if (s.cosmetic) {
-      html += '<textarea id="skincareDetailCosmeticNote" placeholder="do脸项目感受..." style="width:100%;min-height:50px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;resize:vertical;font-family:inherit" oninput="autoSaveDetailSkincare()">'+s.cosmeticNote+'</textarea>';
-    }
-    html += '</div>';
-
-    /* 备注 */
-    html += '<div style="margin-bottom:12px"><div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:4px">📝 备注</div>';
-    html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;resize:vertical;outline:none;font-family:inherit" oninput="autoSaveDetailSkincare()">'+s.note+'</textarea></div>';
   } else {
-    /* 只读模式：纯展示，无边框 */
-    var hasData = s.bodyCare.length > 0 || s.customCheck || s.salon || s.cosmetic || s.note;
-    var isChecked = s.bodyCare.length > 0 || s.customCheck || s.salon || s.cosmetic;
-    if (!hasData && s.photos.length === 0) {
-      html += '<div style="text-align:center;padding:40px 20px;color:#a8a29e;font-size:0.85rem">该日未打卡</div>';
-    } else {
-      /* 护理项目 + 自定义项目（同一排展示） */
-      if (isChecked) {
-        html += '<div style="margin-bottom:12px">';
-        html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">';
-        s.bodyCare.forEach(function(k) {
-          html += '<span style="padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe">'+(bodyCareLabels[k]||k)+'</span>';
+    /* 只读模式 */
+    var hasCheckins = s.bodyCare.length > 0 || s.customCheck || s.salon || s.cosmetic;
+    if (hasCheckins) {
+      html += '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px">';
+      s.bodyCare.forEach(function(k) {
+        html += '<span class="detail-mini-tag mini-on">'+bodyCareLabels[k]+' ✓</span>';
+      });
+      if (s.customCheck) {
+        var customItems = s.customCheck.split('、').filter(function(x){return x.trim()});
+        customItems.forEach(function(item) {
+          html += '<span class="detail-mini-tag mini-on">'+item+' ✓</span>';
         });
-        if (s.customCheck) {
-          var customItems = s.customCheck.split('、').filter(function(x){return x.trim()});
-          customItems.forEach(function(item) {
-            html += '<span style="padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe">'+item+'</span>';
-          });
-        }
-        html += '</div>';
-        if (s.salon) {
-          html += '<div style="font-size:0.8rem;color:#44403c;margin-bottom:2px">💆 美容院护理 ✓</div>';
-          if (s.salonNote) html += '<div style="font-size:0.75rem;color:#78716c;margin-bottom:6px;padding-left:20px;white-space:pre-wrap">'+s.salonNote+'</div>';
-        }
-        if (s.cosmetic) {
-          html += '<div style="font-size:0.8rem;color:#44403c;margin-bottom:2px">💉 do脸小记 ✓</div>';
-          if (s.cosmeticNote) html += '<div style="font-size:0.75rem;color:#78716c;margin-bottom:6px;padding-left:20px;white-space:pre-wrap">'+s.cosmeticNote+'</div>';
-        }
+      }
+      html += '</div>';
+      if (s.salon) {
+        html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,92,246,0.1)">';
+        html += '<div style="font-size:0.78rem;font-weight:600;color:#059669;margin-bottom:2px">✓ 美容院护理</div>';
+        if (s.salonNote) html += '<div style="font-size:0.75rem;color:#78716c;line-height:1.5;white-space:pre-wrap">'+s.salonNote+'</div>';
         html += '</div>';
       }
-      if (s.note) {
-        html += '<div style="margin-bottom:12px">';
-        html += '<div style="font-size:0.8rem;font-weight:600;color:#78716c;margin-bottom:4px">📝 备注</div>';
-        html += '<div style="font-size:0.82rem;color:#44403c;line-height:1.5;white-space:pre-wrap">'+s.note+'</div>';
+      if (s.cosmetic) {
+        html += '<div style="margin-top:6px"><div style="font-size:0.78rem;font-weight:600;color:#059669;margin-bottom:2px">✓ do脸小记</div>';
+        if (s.cosmeticNote) html += '<div style="font-size:0.75rem;color:#78716c;line-height:1.5;white-space:pre-wrap">'+s.cosmeticNote+'</div>';
         html += '</div>';
       }
+    } else {
+      html += '<div style="color:#a8a29e;font-size:0.78rem">暂无打卡</div>';
     }
   }
+  html += '</div>';
+
+  /* ─── 卡片2：皮肤状态（粉色左边框） ─── */
+  html += '<div class="detail-card detail-card-pink">';
+  html += '<div class="detail-card-title">💆 皮肤状态</div>';
+  if (editing) {
+    var skinOptions = ['干皮','油皮','混油皮','混干皮','敏感肌','中性皮','痘痘','红血丝','闭口','毛孔粗大','暗沉','细纹','晒黑','屏障受损','皮炎'];
+    if (!s.skinStatus) s.skinStatus = [];
+    html += '<div class="detail-skin-tags">';
+    skinOptions.forEach(function(sk) {
+      var active = s.skinStatus.indexOf(sk) > -1;
+      html += '<span class="detail-skin-tag'+(active?' skin-tag-active':'')+'" onclick="toggleDetailSkinStatus(this,\''+sk+'\');playClick()">'+sk+'</span>';
+    });
+    html += '</div>';
+    html += '<input type="text" id="skincareDetailSkinCustom" class="detail-skin-custom" placeholder="自定义皮肤状态，如：毛孔粗大" value="'+(s.skinStatusCustom||'')+'" maxlength="30" oninput="skincareDayDetailState.skinStatusCustom=this.value">';
+  } else {
+    if ((s.skinStatus && s.skinStatus.length > 0) || s.skinStatusCustom) {
+      html += '<div style="display:flex;flex-wrap:wrap;gap:5px">';
+      if (s.skinStatus) s.skinStatus.forEach(function(sk) {
+        html += '<span style="padding:3px 10px;border-radius:24px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#fce7f3,#f5f3ff);color:#ec4899;border:1px solid #f9a8d4">'+sk+'</span>';
+      });
+      if (s.skinStatusCustom) html += '<span style="padding:3px 10px;border-radius:24px;font-size:0.72rem;font-weight:600;background:linear-gradient(135deg,#fce7f3,#f5f3ff);color:#ec4899;border:1px solid #f9a8d4">'+s.skinStatusCustom+'</span>';
+      html += '</div>';
+    } else {
+      html += '<div style="color:#a8a29e;font-size:0.78rem">未记录</div>';
+    }
+  }
+  html += '</div>';
+
+  /* ─── 卡片3：备注（灰色左边框） ─── */
+  html += '<div class="detail-card detail-card-gray">';
+  html += '<div class="detail-card-title">备注</div>';
+  if (editing) {
+    html += '<textarea id="skincareDetailNote" class="detail-note" placeholder="记录当天的备注..." oninput="autoSaveDetailSkincare()">'+(s.note||'')+'</textarea>';
+  } else {
+    if (s.note) {
+      html += '<div style="font-size:0.82rem;color:#44403c;line-height:1.5;white-space:pre-wrap">'+s.note+'</div>';
+    } else {
+      html += '<div style="color:#a8a29e;font-size:0.78rem">无备注</div>';
+    }
+  }
+  html += '</div>';
+
+  /* ─── 照片区域 ─── */
+  html += '<div class="detail-photo-section">';
+  if (s.photos && s.photos.length > 0) {
+    html += '<div class="photo-action-row">';
+    html += '<div class="photo-action-btn photo-view-btn" onclick="viewDetailPhoto(0);playClick()"><span class="photo-action-icon">👁</span><span class="photo-action-text">查看照片</span></div>';
+    if (editing) {
+      html += '<div class="photo-action-btn photo-upload-btn" onclick="uploadDetailPhoto();playClick()"><span class="photo-action-icon">📷</span><span class="photo-action-text">更换</span></div>';
+      html += '<div class="photo-action-btn photo-delete-btn" onclick="deleteDetailPhoto(0);playClick()"><span class="photo-action-icon">🗑</span><span class="photo-action-text">删除</span></div>';
+    }
+    html += '</div>';
+  } else if (editing) {
+    html += '<div class="photo-upload-mini" onclick="uploadDetailPhoto();playClick()"><span class="photo-upload-mini-icon">📷</span><span class="photo-upload-mini-text">上传照片</span></div>';
+  }
+  html += '</div>';
 
   document.getElementById('skincareDayDetailContent').innerHTML = html;
   document.getElementById('skincareDayDetailModal').classList.add('show');
+}
+
+function closeSkincareDayDetail() {
+  document.getElementById('skincareDayDetailModal').classList.remove('show');
+}
+
+function saveSkincareDayDetailAndClose() {
+  saveSkincareDayDetail(true);
+  closeSkincareDayDetail();
+}
+
+function toggleDetailSkinStatus(el, key) {
+  if (!skincareDayDetailState.skinStatus) skincareDayDetailState.skinStatus = [];
+  var idx = skincareDayDetailState.skinStatus.indexOf(key);
+  if (idx > -1) skincareDayDetailState.skinStatus.splice(idx, 1);
+  else skincareDayDetailState.skinStatus.push(key);
+  el.classList.toggle('skin-tag-active');
+  autoSaveDetailSkincare();
 }
 
 /* 日历详情：自动保存（防抖） */
@@ -6855,6 +6941,8 @@ function saveSkincareDayDetail(silent) {
   var customChecks = skincareDayDetailState.customChecks || [];
   if (customInputVal && customChecks.indexOf(customInputVal) < 0) customChecks.push(customInputVal);
   skincareDayDetailState.customCheck = customChecks.join('、');
+  /* 读取皮肤状态自定义输入 */
+  skincareDayDetailState.skinStatusCustom = document.getElementById('skincareDetailSkinCustom') ? document.getElementById('skincareDetailSkinCustom').value.trim() : (skincareDayDetailState.skinStatusCustom||'');
 
   var found = false;
   for (var i = 0; i < beautySkinData.dailyRecords.length; i++) {
@@ -6867,6 +6955,8 @@ function saveSkincareDayDetail(silent) {
       beautySkinData.dailyRecords[i].bodyCare = skincareDayDetailState.bodyCare;
       beautySkinData.dailyRecords[i].salon = skincareDayDetailState.salon;
       beautySkinData.dailyRecords[i].cosmetic = skincareDayDetailState.cosmetic;
+      beautySkinData.dailyRecords[i].skinStatus = skincareDayDetailState.skinStatus || [];
+      beautySkinData.dailyRecords[i].skinStatusCustom = skincareDayDetailState.skinStatusCustom || '';
       beautySkinData.dailyRecords[i].updatedAt = Date.now();
       found = true; break;
     }
@@ -6882,6 +6972,8 @@ function saveSkincareDayDetail(silent) {
       salonNote: skincareDayDetailState.salonNote,
       cosmeticNote: skincareDayDetailState.cosmeticNote,
       photos: skincareDayDetailState.photos,
+      skinStatus: skincareDayDetailState.skinStatus || [],
+      skinStatusCustom: skincareDayDetailState.skinStatusCustom || '',
       createdAt: Date.now()
     });
   }
@@ -7296,6 +7388,7 @@ function openMoodDayDetail(dateStr) {
     discipline: record ? Object.assign({}, record.discipline || {}) : {},
     photos: record ? (record.photos || []) : [],
     customCheck: record ? (record.customCheck || '') : '',
+    gratitude: record ? (record.gratitude || []) : [],
     record: record || null,
     isEditing: false
   };
@@ -7307,8 +7400,9 @@ function renderMoodDayDetail() {
   var dateStr = moodDayDetailDate;
   var s = moodDayDetailState;
   var editing = s.isEditing;
-  document.getElementById('moodDayDetailTitle').textContent = '📅 ' + dateStr;
-    var moodEmojis = {
+  document.getElementById('moodDayDetailTitle').textContent = dateStr;
+
+  var moodEmojis = {
   happy:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB5C5"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>',
   satisfied:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFC8B0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 20 Q18 15 22 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 15 38 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>',
   surprised:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#F0C0FF"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="19" r="3.5" fill="#5C3D4A"/><circle cx="34" cy="19" r="3.5" fill="#5C3D4A"/><circle cx="18" cy="19" r="1.5" fill="white"/><circle cx="34" cy="19" r="1.5" fill="white"/><circle cx="26" cy="30" r="4" fill="#5C3D4A"/></svg>',
@@ -7345,97 +7439,107 @@ function renderMoodDayDetail() {
   jealous:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0C8B8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/><path d="M20 32 Q26 28 32 32" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
   confused:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D8D0C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/><path d="M20 28 Q26 32 32 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
   };
+
+  var moodLabelMap = {
+    happy:'开心',satisfied:'满足',surprised:'惊喜',heartbeat:'心动',moved:'感动',shy:'害羞',calm:'平静',
+    excited:'兴奋',confident:'自信',proud:'骄傲',loose:'放松',relieved:'释然',healed:'被治愈',hopeful:'充满希望',
+    lost:'迷茫',nostalgic:'怀旧',bored:'无聊',dazed:'发呆',relaxed:'悠闲',tired:'疲惫',
+    nervous:'紧张',lonely:'孤独',pitiful:'委屈',down:'低落',aloof:'冷淡',bitter:'苦涩',wronged:'冤枉',
+    cold:'冷漠',sad:'难过',anxious:'焦虑',scared:'害怕',angry:'生气',irritated:'烦躁',jealous:'嫉妒',confused:'困惑'
+  };
+
   var html = '';
 
-  /* 照片展示 */
-  if (s.photos && s.photos.length > 0) {
-    html += '<div style="margin-bottom:16px">';
-    html += '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">';
-    for (var i = 0; i < s.photos.length; i++) {
-      html += '<div style="position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0" onclick="viewMoodDetailPhoto('+i+');playClick()">';
-      html += '<img src="'+s.photos[i]+'" style="width:100%;height:100%;object-fit:cover;display:block" />';
-      if (editing) {
-        html += '<div onclick="event.stopPropagation();deleteMoodDetailPhoto('+i+');playClick()" style="position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.6rem;cursor:pointer">✕</div>';
-      }
-      html += '</div>';
-    }
-    if (editing && s.photos.length < 4) {
-      html += '<div onclick="uploadMoodDetailPhoto();playClick()" style="width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #f0ebe8;border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
-      html += '<span style="font-size:1.2rem;color:#a8a29e">📷</span><span style="font-size:0.6rem;color:#a8a29e">添加</span></div>';
-    }
+  /* ─── 卡片1：今日心情（粉色左边框） ─── */
+  if (s.moods && s.moods.length > 0) {
+    html += '<div class="detail-card detail-card-pink">';
+    html += '<div class="detail-card-title">今日心情</div>';
+    html += '<div class="mood-detail-display">';
+    s.moods.forEach(function(mk) {
+      html += '<span style="font-size:2.8rem">'+(moodEmojis[mk]||'')+'</span>';
+    });
+    html += '<span style="font-size:1.1rem;font-weight:600;color:#44403c;margin-left:4px">'+s.moods.map(function(m){return moodLabelMap[m]||m}).join('、')+'</span>';
     html += '</div></div>';
-  } else if (editing) {
-    html += '<div style="margin-bottom:16px;text-align:center">';
-    html += '<div onclick="uploadMoodDetailPhoto();playClick()" style="width:72px;height:72px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #f0ebe8;border-radius:10px;cursor:pointer;background:#fafaf9">';
-    html += '<span style="font-size:1.2rem;color:#a8a29e">📷</span><span style="font-size:0.6rem;color:#a8a29e">添加照片</span></div></div>';
   }
 
-  if (editing) {
-    /* 编辑模式 */
-    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">📝 当前状态</label>';
-    html += '<input type="text" value="'+escapeHtml(s.status)+'" maxlength="50" placeholder="此刻的感受..." oninput="moodDayDetailState.status=this.value" style="width:100%;padding:8px 12px;border:1.5px solid #f0ebe8;border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:4px"></div>';
-    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">今日心情</label>';
-    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
-    Object.keys(moodEmojis).forEach(function(k) {
-      var moods = s.moods || [];
-      var isActive = moods.indexOf(k) > -1;
-      html += '<span class="beauty-emoji-card'+(isActive?' beauty-emoji-card-active':'')+'" onclick="selectMoodDetailEmoji(\''+k+'\',this);playClick()" style="width:calc(20% - 4.8px);box-sizing:border-box">'+moodEmojis[k]+'<small>'+k+'</small></span>';
-    });
-    html += '</div></div>';
-    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">📔 日记本</label>';
-    html += '<textarea maxlength="1000" placeholder="记录你的感受..." oninput="moodDayDetailState.diary=this.value" style="width:100%;min-height:80px;padding:8px 12px;border:1.5px solid #f0ebe8;border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit;background:#fafaf9;margin-top:4px">'+escapeHtml(s.diary)+'</textarea></div>';
-    /* 自律打卡 */
-    html += '<div style="margin-bottom:12px"><label style="font-size:0.8rem;color:#78716c">⭐ 自律打卡</label>';
-    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
-    var discItems = [{key:'earlyRise',icon:'🌅',label:'早起'},{key:'water',icon:'💧',label:'喝水'},{key:'meditation',icon:'🧘',label:'冥想'},{key:'podcast',icon:'🎧',label:'听播客'},{key:'read',icon:'📖',label:'阅读'},{key:'news',icon:'📰',label:'今日新闻'},{key:'study',icon:'📚',label:'学习打卡'},{key:'newSkill',icon:'✨',label:'学习新技能'},{key:'english',icon:'🇬🇧',label:'学英语'},{key:'journal',icon:'✏️',label:'写日记'},{key:'gratitude',icon:'🙏',label:'感恩日记'},{key:'plan',icon:'📋',label:'写今日规划'},{key:'cook',icon:'🍳',label:'做饭'},{key:'cleanRoom',icon:'🧹',label:'打扫房间'},{key:'exercise',icon:'🏃',label:'运动'},{key:'declutter',icon:'📦',label:'断舍离'},{key:'lessScreen',icon:'📵',label:'少玩电子产品'},{key:'skincare',icon:'💄',label:'护肤'},{key:'earlySleep',icon:'🛏️',label:'早睡'}];
-    discItems.forEach(function(item) {
-      var isActive = s.discipline && s.discipline[item.key];
-      html += '<span class="beauty-check'+(isActive?' beauty-check-active':'')+'" onclick="toggleMoodDetailCheck(this,\''+item.key+'\');playClick()">'+item.icon+' '+item.label+'</span>';
-    });
-    /* 自定义打卡标签排在最后 */
-    var customLabel = (s.customCheck && s.customCheck.trim()) ? '✓ ' + s.customCheck : '➕ 自定义';
-    var customActive = (s.customCheck && s.customCheck.trim()) ? ' beauty-check-active' : '';
-    html += '<span class="beauty-check'+customActive+'" onclick="editMoodDetailCustomCheck();playClick()" style="border-style:dashed;border-color:#fbbf24;color:#92400e;background:rgba(255,255,255,0.5)">'+escapeHtml(customLabel)+'</span>';
-    html += '</div></div>';
-  } else {
-    /* 只读模式 */
-    if (s.moods && s.moods.length > 0) {
-      var moodHtml = '';
-      for (var mi = 0; mi < s.moods.length; mi++) {
-        var mk = s.moods[mi];
-        var md = moodEmojis[mk] || '';
-        if (md) {
-          moodHtml += md;
-        }
-      }
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border-radius:10px"><span style="font-size:0.8rem;color:#78716c">心情</span><div style="font-size:1.3rem;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">'+moodHtml+'</div></div>';
-    }
-    if (s.status) {
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c">📝 状态</span><div style="font-size:0.9rem;margin-top:4px;color:#44403c">'+escapeHtml(s.status)+'</div></div>';
-    }
-    if (s.diary) {
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c">📔 日记</span><div style="font-size:0.88rem;margin-top:4px;color:#44403c;white-space:pre-wrap;line-height:1.6">'+escapeHtml(s.diary)+'</div></div>';
-    }
-    var discItems2 = [{key:'earlyRise',icon:'🌅',label:'早起'},{key:'water',icon:'💧',label:'喝水'},{key:'meditation',icon:'🧘',label:'冥想'},{key:'podcast',icon:'🎧',label:'听播客'},{key:'read',icon:'📖',label:'阅读'},{key:'news',icon:'📰',label:'今日新闻'},{key:'study',icon:'📚',label:'学习打卡'},{key:'newSkill',icon:'✨',label:'学习新技能'},{key:'english',icon:'🇬🇧',label:'学英语'},{key:'journal',icon:'✏️',label:'写日记'},{key:'gratitude',icon:'🙏',label:'感恩日记'},{key:'plan',icon:'📋',label:'写今日规划'},{key:'cook',icon:'🍳',label:'做饭'},{key:'cleanRoom',icon:'🧹',label:'打扫房间'},{key:'exercise',icon:'🏃',label:'运动'},{key:'declutter',icon:'📦',label:'断舍离'},{key:'lessScreen',icon:'📵',label:'少玩电子产品'},{key:'skincare',icon:'💄',label:'护肤'},{key:'earlySleep',icon:'🛏️',label:'早睡'}];
-    var activeDisc = discItems2.filter(function(item) { return s.discipline && s.discipline[item.key]; });
-    if (activeDisc.length > 0 || (s.customCheck && s.customCheck.trim())) {
-      html += '<div style="margin-bottom:12px;padding:10px 14px;background:#fafaf9;border-radius:10px"><span style="font-size:0.8rem;color:#78716c">⭐ 自律打卡</span><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">';
-      activeDisc.forEach(function(item) {
-        html += '<span style="padding:4px 10px;border-radius:8px;background:linear-gradient(135deg,#f5f3ff,#fce7f3);font-size:0.78rem;color:#8b5cf6;font-weight:600">'+item.icon+' '+item.label+'</span>';
-      });
-      /* 自定义打卡项目排在最后 */
-      if (s.customCheck && s.customCheck.trim()) {
-        html += '<span style="padding:4px 10px;border-radius:8px;background:linear-gradient(135deg,#fef3c7,#fde68a);font-size:0.78rem;color:#92400e;font-weight:600">📝 '+escapeHtml(s.customCheck)+'</span>';
-      }
-      html += '</div></div>';
-    }
-    if (!s.moods || s.moods.length === 0) { if (!s.status && !s.diary && (!s.discipline || activeDisc.length === 0) && (!s.photos || s.photos.length === 0) && (!s.customCheck || !s.customCheck.trim())) {
-      html += '<div style="text-align:center;padding:24px 0;color:#a8a29e;font-size:0.85rem">该日暂无记录</div>';
-    } }
+  /* ─── 卡片2：当前状态（紫色左边框） ─── */
+  if (s.status) {
+    html += '<div class="detail-card detail-card-purple">';
+    html += '<div class="detail-card-title">当前状态</div>';
+    html += '<div class="detail-status-text">'+escapeHtml(s.status)+'</div>';
+    html += '</div>';
   }
+
+  /* ─── 卡片3：日记本（灰色左边框） ─── */
+  if (s.diary) {
+    html += '<div class="detail-card detail-card-gray">';
+    html += '<div class="detail-card-title">日记本</div>';
+    html += '<div class="detail-diary-text">'+escapeHtml(s.diary)+'</div>';
+    html += '</div>';
+  }
+
+  /* ─── 卡片4：自律打卡（绿色左边框） ─── */
+  var discItems = [{key:'earlyRise',icon:'🌅',label:'早起'},{key:'water',icon:'💧',label:'喝水'},{key:'meditation',icon:'🧘',label:'冥想'},{key:'podcast',icon:'🎧',label:'听播客'},{key:'read',icon:'📖',label:'阅读'},{key:'news',icon:'📰',label:'今日新闻'},{key:'study',icon:'📚',label:'学习打卡'},{key:'newSkill',icon:'✨',label:'学习新技能'},{key:'english',icon:'🇬🇧',label:'学英语'},{key:'journal',icon:'✏️',label:'写日记'},{key:'gratitude',icon:'🙏',label:'感恩日记'},{key:'plan',icon:'📋',label:'写今日规划'},{key:'cook',icon:'🍳',label:'做饭'},{key:'cleanRoom',icon:'🧹',label:'打扫房间'},{key:'exercise',icon:'🏃',label:'运动'},{key:'declutter',icon:'📦',label:'断舍离'},{key:'lessScreen',icon:'📵',label:'少玩电子产品'},{key:'skincare',icon:'💄',label:'护肤'},{key:'earlySleep',icon:'🛏️',label:'早睡'}];
+  var activeDiscLabels = [];
+  discItems.forEach(function(item) {
+    if (s.discipline && s.discipline[item.key]) activeDiscLabels.push(item.icon+' '+item.label);
+  });
+  if (s.customCheck && s.customCheck.trim()) activeDiscLabels.push('📝 '+s.customCheck);
+  if (activeDiscLabels.length > 0) {
+    html += '<div class="detail-card detail-card-green">';
+    html += '<div class="detail-card-title">自律打卡</div>';
+    html += '<div class="detail-mini-tags">';
+    activeDiscLabels.forEach(function(l) {
+      html += '<span class="detail-mini-tag mini-on">'+l+'</span>';
+    });
+    html += '</div></div>';
+  }
+
+  /* ─── 卡片5：感恩日记（琥珀色左边框） ─── */
+  var gratitude = s.gratitude || [];
+  if (gratitude.length > 0) {
+    html += '<div class="detail-card detail-card-amber">';
+    html += '<div class="detail-card-title">感恩日记</div>';
+    gratitude.forEach(function(g, gi) {
+      html += '<div class="gratitude-detail-item"><span class="gratitude-detail-num">'+(gi+1)+'</span><span class="gratitude-detail-text">'+escapeHtml(g)+'</span></div>';
+    });
+    html += '</div>';
+  }
+
+  /* ─── 照片区域 ─── */
+  if (s.photos && s.photos.length > 0) {
+    html += '<div class="detail-photo-section"><div class="detail-photo-row">';
+    s.photos.forEach(function(p, pi) {
+      html += '<img src="'+p+'" class="detail-photo-thumb" style="cursor:pointer" onclick="viewMoodDetailPhoto('+pi+');playClick()" />';
+    });
+    html += '</div></div>';
+  }
+
+  /* 无任何内容 */
+  if (!html) {
+    html = '<div style="text-align:center;padding:30px 20px;color:#a8a29e;font-size:0.85rem">该日暂无记录</div>';
+  }
+
   document.getElementById('moodDayDetailContent').innerHTML = html;
   var btn = document.getElementById('moodDetailEditBtn');
-  if (btn) btn.textContent = editing ? '完成编辑' : '编辑';
+  if (btn) btn.style.display = 'none'; /* 心情日历详情弹窗只读模式 */
+}
+
+function closeMoodDayDetail() {
+  document.getElementById('moodDayDetailModal').classList.remove('show');
+}
+
+function viewMoodDetailPhoto(index) {
+  var photos = moodDayDetailState.photos || [];
+  if (index < 0 || index >= photos.length) return;
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  overlay.onclick = function() { overlay.remove(); };
+  var img = document.createElement('img');
+  img.src = photos[index];
+  img.style.cssText = 'max-width:90%;max-height:90%;border-radius:8px';
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
 }
 
 function selectMoodDetailEmoji(val, el) {
@@ -7481,6 +7585,7 @@ function saveMoodDayDetail() {
     discipline: s.discipline || {},
     photos: s.photos || [],
     customCheck: s.customCheck || '',
+    gratitude: s.gratitude || [],
     createdAt: s.record ? (s.record.createdAt || Date.now()) : Date.now(),
     updatedAt: Date.now()
   };
@@ -7558,10 +7663,6 @@ function deleteMoodDetailPhoto(index) {
   moodDayDetailState.photos.splice(index, 1);
   renderMoodDayDetail();
   saveMoodDayDetail();
-}
-
-function viewMoodDetailPhoto(index) {
-  showImageViewer(moodDayDetailState.photos, index);
 }
 
 /* === 月友圈（朋友圈模式） === */
