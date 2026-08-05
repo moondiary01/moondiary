@@ -18,6 +18,7 @@ Page({
     isAdmin: false,
     isBeautyUser: false,
     hideBeautyEntry: false,
+    showBeautyQuick: false,
     dayData: {},
     waterMl: 0,
     waterGoal: 2000,
@@ -204,6 +205,7 @@ Page({
       isAdmin: app.globalData.loginType === 'admin',
       isBeautyUser: app.globalData.canUseUpgrade || app.globalData.loginType === 'admin' || app.globalData.loginType === 'key',
       hideBeautyEntry: app.globalData.canUseUpgrade && app.globalData.loginType !== 'admin',
+      showBeautyQuick: app.globalData.canUseUpgrade || app.globalData.loginType === 'admin' || app.globalData.loginType === 'key',
       dayData: todayData,
       waterMl: waterMl,
       waterGoal: waterGoal,
@@ -425,6 +427,20 @@ Page({
     audio.playEnter()
     wx.navigateTo({
       url: '/subpkg-beauty/pages/upgrade-home/upgrade-home'
+    })
+  },
+
+  onOpenSkincare: function () {
+    audio.playEnter()
+    wx.navigateTo({
+      url: '/subpkg-beauty/pages/skincare/skincare'
+    })
+  },
+
+  onOpenMood: function () {
+    audio.playEnter()
+    wx.navigateTo({
+      url: '/subpkg-beauty/pages/mood/mood'
     })
   },
 

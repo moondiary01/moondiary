@@ -47,8 +47,20 @@
           </view>
         </view>
       </view>
+      <!-- 升级版快捷入口（仅已购/试用用户可见） -->
+      <view class="beauty-quick-btns" wx:if="{{showBeautyQuick}}">
+        <view class="beauty-quick-btn beauty-quick-skincare" bindtap="onOpenSkincare">
+          <text class="beauty-quick-title">护肤日记</text>
+          <text class="beauty-quick-sub">打卡 · 照片 · do脸</text>
+        </view>
+        <view class="beauty-quick-btn beauty-quick-mood" bindtap="onOpenMood">
+          <text class="beauty-quick-title">心情日记</text>
+          <text class="beauty-quick-sub">心情 · 自律 · 感恩</text>
+        </view>
+      </view>
     </view>
   </view>
+</view>
 
   <view class="main-content">
   <!-- ===== 仪表盘 6项 ===== -->

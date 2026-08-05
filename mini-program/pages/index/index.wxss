@@ -125,6 +125,41 @@ page {
   margin-top: 28rpx;
   flex-wrap: wrap;
 }
+/* 升级版快捷入口 */
+.beauty-quick-btns {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+.beauty-quick-btn {
+  flex: 1;
+  padding: 20rpx 22rpx;
+  border-radius: 20rpx;
+  text-align: center;
+  transition: all 0.2s;
+}
+.beauty-quick-skincare {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border: 3rpx solid #c4b5fd;
+}
+.beauty-quick-mood {
+  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+  border: 3rpx solid #fbcfe8;
+}
+.beauty-quick-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  display: block;
+}
+.beauty-quick-skincare .beauty-quick-title { color: #7c3aed; }
+.beauty-quick-mood .beauty-quick-title { color: #be185d; }
+.beauty-quick-sub {
+  font-size: 22rpx;
+  margin-top: 4rpx;
+  display: block;
+}
+.beauty-quick-skincare .beauty-quick-sub { color: #a78bfa; }
+.beauty-quick-mood .beauty-quick-sub { color: #f472b6; }
 .profile-info {
   display: flex;
   gap: 32rpx;

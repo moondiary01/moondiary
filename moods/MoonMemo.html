@@ -1075,6 +1075,17 @@ _loadCosSdk(0);
         <div class="pf-item" onclick="openSettings()"><span class="pf-label">身高</span><span class="pf-value" id="pf-height">—</span></div>
       </div>
     </div>
+    <!-- 升级版快捷入口（仅已购/试用用户可见） -->
+    <div id="beautyQuickBtns" style="display:none;display:flex;gap:10px;margin-top:12px">
+      <div onclick="openBeautySkincare();playClick()" style="flex:1;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#f5f3ff,#ede9fe);cursor:pointer;text-align:center;transition:all 0.2s;border:1.5px solid #c4b5fd" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(139,92,246,0.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:0.85rem;font-weight:700;color:#7c3aed">护肤日记</div>
+        <div style="font-size:0.65rem;color:#a78bfa;margin-top:2px">打卡 · 照片 · do脸</div>
+      </div>
+      <div onclick="openBeautyMood();playClick()" style="flex:1;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#fdf2f8,#fce7f3);cursor:pointer;text-align:center;transition:all 0.2s;border:1.5px solid #fbcfe8" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(236,72,153,0.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:0.85rem;font-weight:700;color:#be185d">心情日记</div>
+        <div style="font-size:0.65rem;color:#f472b6;margin-top:2px">心情 · 自律 · 感恩</div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -3774,6 +3785,22 @@ function renderHero() {
   /* 男性：隐藏经期图例 */
   const legendPeriod = document.getElementById('legendPeriod');
   if (legendPeriod) legendPeriod.style.display = (state.gender === '男') ? 'none' : '';
+  /* 刷新升级版快捷入口和底部入口 */
+  refreshBeautyEntryUI();
+}
+
+function refreshBeautyEntryUI() {
+  var quickBtns = document.getElementById('beautyQuickBtns');
+  var bottomCard = document.querySelector('.beauty-entry-card');
+  if (hasBeautyPermission()) {
+    /* 已购用户：显示快捷入口，隐藏底部升级卡片 */
+    if (quickBtns) quickBtns.style.display = 'flex';
+    if (bottomCard) bottomCard.style.display = 'none';
+  } else {
+    /* 未购用户：隐藏快捷入口，显示底部升级卡片 */
+    if (quickBtns) quickBtns.style.display = 'none';
+    if (bottomCard) bottomCard.style.display = '';
+  }
 }
 
 function renderDashboard() {
@@ -6443,6 +6470,7 @@ function confirmBeautyUpgrade() {
     });
   }
   showToast(' 升级版已开通，永久有效');
+  refreshBeautyEntryUI();
   openBeautyUpgrade();
 }
 function showPurchaseNotice() {
