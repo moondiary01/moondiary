@@ -2,6 +2,35 @@
 .login-page {
   min-height: 100vh;
   padding-bottom: 60rpx;
+  background: linear-gradient(135deg, #6D28D9 0%, #9333EA 30%, #C026D3 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  position: relative;
+  overflow: hidden;
+}
+/* 背景光晕 */
+.login-page::before {
+  content: '';
+  position: absolute;
+  width: 600rpx;
+  height: 600rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+  top: -200rpx;
+  right: -150rpx;
+}
+.login-page::after {
+  content: '';
+  position: absolute;
+  width: 450rpx;
+  height: 450rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,118,0.15) 0%, transparent 70%);
+  bottom: -120rpx;
+  left: -100rpx;
 }
 
 /* Logo */
@@ -9,7 +38,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 80rpx 0 50rpx;
+  padding: 0 0 30rpx;
+  position: relative;
+  z-index: 1;
 }
 .logo-icon {
   font-size: 100rpx;
@@ -30,10 +61,16 @@
 .tab-bar {
   display: flex;
   margin: 0 24rpx 10rpx;
-  background: #fff;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
   border-radius: 16rpx;
   padding: 8rpx;
   box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+  position: relative;
+  z-index: 1;
+  max-width: 700rpx;
+  width: 100%;
+  align-self: center;
 }
 .tab-item {
   flex: 1;
@@ -53,6 +90,19 @@
 /* 内容 */
 .login-content {
   margin-top: 10rpx;
+  position: relative;
+  z-index: 1;
+  max-width: 700rpx;
+  width: 100%;
+  align-self: center;
+}
+/* 毛玻璃卡片 */
+.login-content .card {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 32rpx;
+  padding: 40rpx 34rpx 34rpx;
+  box-shadow: 0 32rpx 80rpx rgba(26,21,48,0.3), 0 0 0 2rpx rgba(255,255,255,0.2) inset;
 }
 .login-tip {
   font-size: 26rpx;
