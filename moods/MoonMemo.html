@@ -8207,9 +8207,10 @@ function renderMoodDayDetail() {
     if (!hasMoodData && (!s.photos || s.photos.length === 0)) {
       html += '<div style="text-align:center;padding:24px 0;color:#a8a29e;font-size:0.85rem">该日暂无记录</div>';
     } else {
-      html += '<div style="display:flex;flex-direction:column;gap:10px">';
+      /* 统一浅粉总容器（照片除外） */
+      html += '<div style="display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,#fdf2f8 0%,#fce7f3 50%,#faf5ff 100%);border-radius:18px;padding:14px">';
 
-      /* 1. 心情 */
+      /* 1. 心情 — 透明 */
       if (s.moods && s.moods.length > 0) {
         var moodHtml2 = '';
         for (var mi2 = 0; mi2 < s.moods.length; mi2++) {
@@ -8220,52 +8221,60 @@ function renderMoodDayDetail() {
             moodHtml2 += '<div style="text-align:center;flex-shrink:0">'+md2+'<div style="font-size:0.62rem;color:#78716c;margin-top:2px">'+ml2+'</div></div>';
           }
         }
-        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #ec4899;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-        html += '<div style="font-size:0.7rem;font-weight:700;color:#ec4899;margin-bottom:8px;letter-spacing:0.5px">今日心情</div>';
+        html += '<div style="padding:8px 14px">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#be185d;margin-bottom:8px;letter-spacing:0.5px">今日心情</div>';
         html += '<div style="display:flex;flex-wrap:wrap;gap:8px">'+moodHtml2+'</div></div>';
       }
 
-      /* 2. 当前状态 */
-      if (s.status) {
-        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #8b5cf6;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-        html += '<div style="font-size:0.7rem;font-weight:700;color:#8b5cf6;margin-bottom:4px;letter-spacing:0.5px">当前状态</div>';
-        html += '<div style="font-size:0.9rem;color:#44403c">'+escapeHtml(s.status)+'</div></div>';
-      }
-
-      /* 3. 日记 */
-      if (s.diary) {
-        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #a8a29e;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-        html += '<div style="font-size:0.7rem;font-weight:700;color:#a8a29e;margin-bottom:6px;letter-spacing:0.5px">日记本</div>';
-        html += '<div style="font-size:0.86rem;color:#44403c;line-height:1.7;white-space:pre-wrap">'+escapeHtml(s.diary)+'</div></div>';
-      }
-
-      /* 4. 自律打卡 */
-      var discItemsRO = [{key:'earlyRise',icon:'',label:'早起'},{key:'water',icon:'',label:'喝水'},{key:'meditation',icon:'',label:'冥想'},{key:'podcast',icon:'',label:'听播客'},{key:'read',icon:'',label:'阅读'},{key:'news',icon:'',label:'今日新闻'},{key:'study',icon:'',label:'学习打卡'},{key:'newSkill',icon:'',label:'学习新技能'},{key:'english',icon:'',label:'学英语'},{key:'journal',icon:'',label:'写日记'},{key:'gratitude',icon:'',label:'感恩日记'},{key:'plan',icon:'',label:'写今日规划'},{key:'cook',icon:'',label:'做饭'},{key:'cleanRoom',icon:'',label:'打扫房间'},{key:'exercise',icon:'',label:'运动'},{key:'declutter',icon:'',label:'断舍离'},{key:'lessScreen',icon:'',label:'少玩电子产品'},{key:'skincare',icon:'',label:'护肤'},{key:'earlySleep',icon:'',label:'早睡'}];
+      /* 2. 自律打卡 — 透明，椭圆胶囊浅粉紫蓝渐变 */
+      var discItemsRO = [{key:'earlyRise',label:'早起'},{key:'water',label:'喝水'},{key:'meditation',label:'冥想'},{key:'podcast',label:'听播客'},{key:'read',label:'阅读'},{key:'news',label:'今日新闻'},{key:'study',label:'学习打卡'},{key:'newSkill',label:'学习新技能'},{key:'english',label:'学英语'},{key:'journal',label:'写日记'},{key:'gratitude',label:'感恩日记'},{key:'plan',label:'写今日规划'},{key:'cook',label:'做饭'},{key:'cleanRoom',label:'打扫房间'},{key:'exercise',label:'运动'},{key:'declutter',label:'断舍离'},{key:'lessScreen',label:'少玩电子产品'},{key:'skincare',label:'护肤'},{key:'earlySleep',label:'早睡'}];
       var activeDiscRO = discItemsRO.filter(function(item) { return s.discipline && s.discipline[item.key]; });
       if (activeDiscRO.length > 0 || (s.customCheck && s.customCheck.trim())) {
-        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #10b981;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-        html += '<div style="font-size:0.7rem;font-weight:700;color:#10b981;margin-bottom:8px;letter-spacing:0.5px">自律打卡</div>';
+        html += '<div style="padding:8px 14px">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#be185d;margin-bottom:8px;letter-spacing:0.5px">自律打卡</div>';
         html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
         activeDiscRO.forEach(function(item) {
-          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(16,185,129,0.08);color:#059669">'+item.icon+' '+item.label+'</span>';
+          html += '<span style="padding:5px 14px;border-radius:100px;font-size:0.73rem;font-weight:600;background:linear-gradient(135deg,#e8e0ff,#dce0ff);color:#be185d;border:1.5px solid #ec4899">'+item.label+'</span>';
         });
         if (s.customCheck && s.customCheck.trim()) {
-          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(245,158,11,0.08);color:#d97706;border:1px dashed #fcd34d"> '+escapeHtml(s.customCheck)+'</span>';
+          html += '<span style="padding:5px 14px;border-radius:100px;font-size:0.73rem;font-weight:600;background:rgba(236,72,153,0.08);color:#be185d;border:1.5px dashed #ec4899">'+escapeHtml(s.customCheck)+'</span>';
         }
         html += '</div></div>';
       }
 
-      /* 5. 感恩日记 */
-      if (s.gratitude && s.gratitude.some(function(g){return g && g.trim()})) {
-        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #f59e0b;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-        html += '<div style="font-size:0.7rem;font-weight:700;color:#f59e0b;margin-bottom:8px;letter-spacing:0.5px">感恩日记</div>';
-        s.gratitude.forEach(function(g, gi) {
-          if (g && g.trim()) {
-            html += '<div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:0.84rem;color:#44403c;line-height:1.5">';
-            html += '<span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(245,158,11,0.12);color:#d97706;font-size:0.7rem;font-weight:700">'+(gi+1)+'</span>';
-            html += '<span>'+escapeHtml(g)+'</span></div>';
-          }
-        });
+      /* 3. 状态+日记+感恩 — 浅粉金色总栏 */
+      var hasStatusDiaryGrat = s.status || s.diary || (s.gratitude && s.gratitude.some(function(g){return g && g.trim()}));
+      if (hasStatusDiaryGrat) {
+        html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#fef9f0 0%,#fdf2f0 50%,#fef5f5 100%);border-radius:14px;box-shadow:none">';
+
+        /* 当前状态 — 玫红标题 */
+        if (s.status) {
+          html += '<div style="margin-bottom:10px">';
+          html += '<div style="font-size:0.7rem;font-weight:700;color:#be185d;margin-bottom:4px;letter-spacing:0.5px">当前状态</div>';
+          html += '<div style="font-size:0.9rem;color:#1c1917">'+escapeHtml(s.status)+'</div></div>';
+        }
+
+        /* 日记 — 玫红标题 */
+        if (s.diary) {
+          html += '<div style="margin-bottom:10px">';
+          html += '<div style="font-size:0.7rem;font-weight:700;color:#be185d;margin-bottom:4px;letter-spacing:0.5px">日记本</div>';
+          html += '<div style="font-size:0.86rem;color:#1c1917;line-height:1.7;white-space:pre-wrap">'+escapeHtml(s.diary)+'</div></div>';
+        }
+
+        /* 感恩日记 — 橘色标题和序号 */
+        if (s.gratitude && s.gratitude.some(function(g){return g && g.trim()})) {
+          html += '<div>';
+          html += '<div style="font-size:0.7rem;font-weight:700;color:#d97706;margin-bottom:8px;letter-spacing:0.5px">感恩日记</div>';
+          s.gratitude.forEach(function(g, gi) {
+            if (g && g.trim()) {
+              html += '<div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:0.84rem;color:#1c1917;line-height:1.5">';
+              html += '<span style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(217,119,6,0.12);color:#d97706;font-size:0.7rem;font-weight:700">'+(gi+1)+'</span>';
+              html += '<span>'+escapeHtml(g)+'</span></div>';
+            }
+          });
+          html += '</div>';
+        }
+
         html += '</div>';
       }
 
