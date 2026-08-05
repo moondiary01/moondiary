@@ -14,7 +14,15 @@ Page({
     showEditModal: false,
     editField: '',
     editLabel: '',
-    editValue: ''
+    editValue: '',
+    statMaxWeight: '',
+    statMinWeight: '',
+    statAvgWeight: '',
+    statRecordDays: 0,
+    statRemain: '',
+    statStartFat: '',
+    statLatestFat: '',
+    statFatDiff: ''
   },
 
   onLoad: function () {
@@ -87,6 +95,66 @@ Page({
     if (hasData) {
       this.drawChart(morningData, eveningData, fatData, dates, unit)
     }
+
+    // 数据统计
+    var weights = [];
+    for (var i = 0; i < days.length; i++) {
+      var w = days[i].weightAM || days[i].weightPM;
+      if (w) weights.push(Number(w));
+    }
+    var maxW = '—', minW = '—', avgW = '—';
+    if (weights.length > 0) {
+      var unitLabel = state.unit || '斤';
+      maxW = Math.max.apply(null, weights);
+      minW = Math.min.apply(null, weights);
+      avgW = (weights.reduce(function(a,b){return a+b}, 0) / weights.length);
+      if (unitLabel === '斤') {
+        maxW = (maxW * 2).toFixed(1);
+        minW = (minW * 2).toFixed(1);
+        avgW = (avgW * 2).toFixed(1);
+      } else {
+        maxW = maxW.toFixed(1);
+        minW = minW.toFixed(1);
+        avgW = avgW.toFixed(1);
+      }
+    }
+
+    // 距目标
+    var remainStr = '—';
+    var latestWeight = null;
+    for (var j = days.length - 1; j >= 0; j--) {
+      if (days[j].weightAM) { latestWeight = Number(days[j].weightAM); break; }
+    }
+    if (state.targetWeight && latestWeight) {
+      var unitLabel = state.unit || '斤';
+      var diff = latestWeight - Number(state.targetWeight);
+      var displayDiff = unitLabel === '斤' ? (diff * 2).toFixed(1) : diff.toFixed(1);
+      remainStr = displayDiff;
+    }
+
+    // 体脂率统计
+    var startFatStr = state.startFat !== null && state.startFat !== undefined ? state.startFat + '%' : '—';
+    var latestFat = null;
+    for (var k = days.length - 1; k >= 0; k--) {
+      if (days[k].fat) { latestFat = Number(days[k].fat); break; }
+    }
+    var latestFatStr = latestFat !== null ? latestFat + '%' : '—';
+    var fatDiffStr = '—';
+    if (state.startFat !== null && state.startFat !== undefined && latestFat !== null) {
+      var fd = latestFat - Number(state.startFat);
+      fatDiffStr = (fd > 0 ? '+' : '') + fd.toFixed(1) + '%';
+    }
+
+    this.setData({
+      statMaxWeight: maxW,
+      statMinWeight: minW,
+      statAvgWeight: avgW,
+      statRecordDays: weights.length,
+      statRemain: remainStr,
+      statStartFat: startFatStr,
+      statLatestFat: latestFatStr,
+      statFatDiff: fatDiffStr
+    })
   },
 
   calcBMI: function (state) {

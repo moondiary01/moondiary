@@ -101,3 +101,50 @@
   font-weight: 400;
   color: #a8a29e;
 }
+
+/* BMI 分类标签 */
+.bmi-tags {
+  display: flex;
+  gap: 8rpx;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+}
+.bmi-tag {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
+  font-weight: 600;
+}
+.bmi-tag-thin { background: #fef3c7; color: #d97706; }
+.bmi-tag-normal { background: #ecfdf5; color: #059669; }
+.bmi-tag-over { background: #fef3c7; color: #d97706; }
+.bmi-tag-obese { background: #fef2f2; color: #dc2626; }
+
+/* 数据统计网格 */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+.stat-item {
+  text-align: center;
+  padding: 18rpx 8rpx;
+  background: #faf5ff;
+  border-radius: 12rpx;
+}
+.stat-val {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #1c1917;
+  line-height: 1.2;
+}
+.stat-lbl {
+  font-size: 20rpx;
+  color: #a8a29e;
+  margin-top: 6rpx;
+}
+.stat-val.amber { color: #d97706; }
+.stat-val.mint { color: #10b981; }
+.stat-val.pink { color: #ec4899; }
+.stat-val.rose { color: #be185d; }
+.stat-val.coral { color: #f97316; }

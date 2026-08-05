@@ -44,9 +44,27 @@
     </view>
   </view>
 
+  <!-- 付费管理 -->
+  <view class="card">
+    <view class="card-title">💰 付费管理 <text class="sub">手动开通用户</text></view>
+    <view class="input-group">
+      <input class="input" type="number" maxlength="11" placeholder="输入用户手机号（11位）" value="{{paymentPhone}}" bindinput="onPaymentPhoneInput" />
+    </view>
+    <view class="pay-btns">
+      <button class="btn btn-primary pay-basic-btn" bindtap="onGrantStorage">开通 19.9元\n云端存储</button>
+      <button class="btn btn-primary pay-upgrade-btn" bindtap="onGrantBeauty">开通 29.9元\n变美计划+云存储</button>
+    </view>
+    <text class="pay-status">{{paymentStatus}}</text>
+  </view>
+
   <!-- 密钥列表 -->
   <view class="card">
     <view class="card-title">密钥管理 ({{keyList.length}})</view>
+
+    <!-- 手机号搜索 -->
+    <view class="input-group" style="margin-bottom:16rpx">
+      <input class="input" type="number" maxlength="11" placeholder="输入手机号搜索用户" value="{{searchPhone}}" bindinput="onSearchPhoneInput" />
+    </view>
 
     <!-- 筛选 -->
     <view class="filter-row">
@@ -77,6 +95,24 @@
         </view>
       </view>
     </view>
+  </view>
+
+  <!-- 管理员密码修改 -->
+  <view class="card">
+    <view class="card-title">🔑 管理员密码 <text class="sub">登录后可修改</text></view>
+    <view class="input-group">
+      <text class="input-label">当前密码</text>
+      <input class="input" password="{{true}}" placeholder="输入当前管理员密码" value="{{oldPw}}" bindinput="onOldPwInput" />
+    </view>
+    <view class="input-group">
+      <text class="input-label">新密码</text>
+      <input class="input" password="{{true}}" placeholder="设置新密码" value="{{newPw}}" bindinput="onNewPwInput" />
+    </view>
+    <view class="input-group">
+      <text class="input-label">确认新密码</text>
+      <input class="input" password="{{true}}" placeholder="再次输入新密码" value="{{newPw2}}" bindinput="onNewPw2Input" />
+    </view>
+    <button class="btn btn-primary" bindtap="onChangeAdminPw">💾 保存新密码</button>
   </view>
 
 </view>

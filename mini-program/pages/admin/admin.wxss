@@ -151,3 +151,33 @@
   border: 2rpx solid #e5e7eb;
   color: #78716c;
 }
+
+/* 付费管理 */
+.pay-btns {
+  display: flex;
+  gap: 12rpx;
+  margin: 16rpx 0 8rpx;
+}
+.pay-basic-btn {
+  flex: 1;
+  background: #10b981 !important;
+  font-size: 24rpx !important;
+  line-height: 1.4;
+  white-space: pre-line;
+  padding: 16rpx 12rpx !important;
+}
+.pay-upgrade-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899) !important;
+  font-size: 24rpx !important;
+  line-height: 1.4;
+  white-space: pre-line;
+  padding: 16rpx 12rpx !important;
+}
+.pay-status {
+  font-size: 24rpx;
+  color: #a8a29e;
+  text-align: center;
+  display: block;
+  min-height: 32rpx;
+}

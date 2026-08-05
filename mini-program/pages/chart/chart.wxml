@@ -33,6 +33,13 @@
       </view>
       <view class="bmi-status {{bmiClass}}">{{bmiStatus}}</view>
     </view>
+    <!-- BMI 分类标签 -->
+    <view class="bmi-tags">
+      <text class="bmi-tag bmi-tag-thin">偏瘦 &lt;18.5</text>
+      <text class="bmi-tag bmi-tag-normal">正常 18.5-23.9</text>
+      <text class="bmi-tag bmi-tag-over">偏胖 24-27.9</text>
+      <text class="bmi-tag bmi-tag-obese">肥胖 ≥28</text>
+    </view>
   </view>
 
   <!-- 三围记录 -->
@@ -50,6 +57,49 @@
       <view class="measure-item" bindtap="onEditMeasure" data-field="hip">
         <text class="measure-label">臀围</text>
         <text class="measure-value">{{hip || '--'}} <text class="measure-unit">cm</text></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数据统计 -->
+  <view class="card">
+    <view class="card-title">📊 数据统计</view>
+    <view class="stat-grid">
+      <view class="stat-item">
+        <text class="stat-val amber">{{statMaxWeight || '—'}}</text>
+        <text class="stat-lbl">最高体重</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val mint">{{statMinWeight || '—'}}</text>
+        <text class="stat-lbl">最低体重</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val">{{statAvgWeight || '—'}}</text>
+        <text class="stat-lbl">平均体重</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val pink">{{statRecordDays || 0}}</text>
+        <text class="stat-lbl">记录天数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val rose">{{bmiValue || '—'}}</text>
+        <text class="stat-lbl">当前BMI</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val coral">{{statRemain || '—'}}</text>
+        <text class="stat-lbl">距目标还差</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val amber">{{statStartFat || '—'}}</text>
+        <text class="stat-lbl">起始体脂率</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val amber">{{statLatestFat || '—'}}</text>
+        <text class="stat-lbl">最新体脂率</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val mint">{{statFatDiff || '—'}}</text>
+        <text class="stat-lbl">体脂变化</text>
       </view>
     </view>
   </view>

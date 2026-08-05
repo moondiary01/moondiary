@@ -29,7 +29,21 @@ Page({
     exerciseTrioOptions: ['—', '✓ 有', '✗ 无'],
     exerciseIndex: 0,
     // 饮食选项
-    dietOptions: ['液断', '轻断食', '少餐', '正餐', '放纵']
+    dietOptions: ['液断', '轻断食', '少餐', '正餐', '放纵'],
+    // 仪表盘数据
+    dashMaxWeight: '',
+    dashMinWeight: '',
+    dashAvgWeight: '',
+    dashRecordDays: 0,
+    dashBmi: '',
+    dashRemain: '',
+    // 用户信息
+    userGender: '',
+    userAge: '',
+    userHeight: '',
+    // 完整记录
+    showRecords: false,
+    recentRecords: []
   },
 
   onLoad: function () {
@@ -194,8 +208,14 @@ Page({
       waterCups: waterCups,
       bmIndex: bmIndex,
       exerciseIndex: exerciseIndex,
-      periodStatusText: periodStatusText
+      periodStatusText: periodStatusText,
+      // 用户信息
+      userGender: state.gender || '',
+      userAge: state.age ? String(state.age) : '',
+      userHeight: state.height ? state.height + 'cm' : ''
     })
+
+    this.renderDashboard(state);
 
     this.currentState = state
     this.currentToday = today
@@ -411,5 +431,118 @@ Page({
     wx.navigateTo({
       url: '/subpkg-beauty/pages/mood/mood'
     })
-  }
+  },
+
+  // ===== 单位切换 =====
+  onSwitchUnit: function (e) {
+    var newUnit = e.currentTarget.dataset.unit;
+    if (newUnit === this.data.unitLabel) return;
+    this.currentState.unit = newUnit;
+    app.globalData.state = this.currentState;
+    store.saveState(app.globalData.userKey, this.currentState);
+    // 重新加载页面
+    this.initPage(this.currentState, this.currentToday);
+    wx.showToast({ title: '已切换为' + newUnit, icon: 'success' });
+  },
+
+  // ===== 设置 =====
+  onOpenSettings: function () {
+    wx.navigateTo({ url: '/pages/plan/plan' });
+  },
+
+  // ===== 退出登录 =====
+  onLogout: function () {
+    var self = this;
+    wx.showModal({
+      title: '退出登录',
+      content: '确定要退出登录吗？',
+      success: function (res) {
+        if (res.confirm) {
+          app.logout();
+          wx.reLaunch({ url: '/pages/login/login' });
+        }
+      }
+    });
+  },
+
+  // ===== 仪表盘 =====
+  renderDashboard: function (state) {
+    var days = state.days || [];
+    var unitLabel = state.unit || '斤';
+    var weights = [];
+    for (var i = 0; i < days.length; i++) {
+      var w = days[i].weightAM || days[i].weightPM;
+      if (w) weights.push(Number(w));
+    }
+
+    var maxW = '—', minW = '—', avgW = '—';
+    if (weights.length > 0) {
+      maxW = Math.max.apply(null, weights);
+      minW = Math.min.apply(null, weights);
+      avgW = (weights.reduce(function(a,b){return a+b}, 0) / weights.length);
+      if (unitLabel === '斤') {
+        maxW = (maxW * 2).toFixed(1) + ' ' + unitLabel;
+        minW = (minW * 2).toFixed(1) + ' ' + unitLabel;
+        avgW = (avgW * 2).toFixed(1) + ' ' + unitLabel;
+      } else {
+        maxW = maxW.toFixed(1) + ' ' + unitLabel;
+        minW = minW.toFixed(1) + ' ' + unitLabel;
+        avgW = avgW.toFixed(1) + ' ' + unitLabel;
+      }
+    }
+
+    // BMI
+    var height = state.height;
+    var latestWeight = null;
+    for (var j = days.length - 1; j >= 0; j--) {
+      if (days[j].weightAM) { latestWeight = Number(days[j].weightAM); break; }
+    }
+    var bmiStr = '—';
+    if (height && latestWeight) {
+      var bmi = latestWeight / ((height / 100) * (height / 100));
+      bmiStr = bmi.toFixed(1);
+    }
+
+    // 距目标
+    var remainStr = '—';
+    if (state.targetWeight && latestWeight) {
+      var diff = latestWeight - Number(state.targetWeight);
+      var displayDiff = unitLabel === '斤' ? (diff * 2).toFixed(1) : diff.toFixed(1);
+      remainStr = (diff > 0 ? '' : '') + displayDiff + ' ' + unitLabel;
+    }
+
+    this.setData({
+      dashMaxWeight: maxW,
+      dashMinWeight: minW,
+      dashAvgWeight: avgW,
+      dashRecordDays: weights.length,
+      dashBmi: bmiStr,
+      dashRemain: remainStr
+    });
+  },
+
+  // ===== 完整记录折叠 =====
+  onToggleRecords: function () {
+    var show = !this.data.showRecords;
+    if (show) {
+      var state = this.currentState;
+      var days = (state.days || []).slice(-30).reverse();
+      var unitLabel = state.unit || '斤';
+      var records = [];
+      for (var i = 0; i < days.length; i++) {
+        var d = days[i];
+        var w = d.weightAM || d.weightPM;
+        records.push({
+          date: d.date.substring(5),
+          weight: w ? (unitLabel === '斤' ? (Number(w) * 2).toFixed(1) : Number(w).toFixed(1)) + ' ' + unitLabel : '—',
+          bm: d.bm || '—',
+          exercise: d.exercise || '—',
+          diet: d.diet || '—'
+        });
+      }
+      this.setData({ showRecords: true, recentRecords: records });
+    } else {
+      this.setData({ showRecords: false });
+    }
+  },
 })

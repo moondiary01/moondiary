@@ -15,7 +15,13 @@ Page({
     noticeSent: false,
     keyList: [],
     filteredKeys: [],
-    filterStatus: 'all'
+    filterStatus: 'all',
+    paymentPhone: '',
+    paymentStatus: '',
+    searchPhone: '',
+    oldPw: '',
+    newPw: '',
+    newPw2: '',
   },
 
   onLoad: function () {
@@ -154,8 +160,16 @@ Page({
   },
 
   applyFilter: function () {
+    var self = this
     var status = this.data.filterStatus
     var keys = this.data.keyList
+
+    // 先按手机号搜索过滤
+    if (this.data.searchPhone) {
+      keys = keys.filter(function (k) {
+        return k.phone && k.phone.indexOf(self.data.searchPhone) !== -1
+      })
+    }
 
     if (status === 'all') {
       this.setData({ filteredKeys: keys })
@@ -238,5 +252,106 @@ Page({
         }
       }
     })
+  },
+
+  // ===== 付费管理 =====
+  onPaymentPhoneInput: function (e) {
+    this.setData({ paymentPhone: e.detail.value });
+  },
+
+  onGrantStorage: function () {
+    var phone = this.data.paymentPhone;
+    if (!phone || !/^1\d{10}$/.test(phone)) {
+      wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
+      return;
+    }
+    var self = this;
+    var store = require('../../utils/store.js');
+    store.loadWxUsers(function (wxUsers) {
+      wxUsers = wxUsers || {};
+      var found = false;
+      var keys = Object.keys(wxUsers);
+      for (var i = 0; i < keys.length; i++) {
+        var u = wxUsers[keys[i]];
+        if (u && u.phone === phone) {
+          u.paidUntil = Date.now() + 36500 * 24 * 60 * 60 * 1000;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        // 创建新用户
+        var newKey = 'wx_' + phone;
+        wxUsers[newKey] = {
+          phone: phone,
+          paidUntil: Date.now() + 36500 * 24 * 60 * 60 * 1000,
+          firstLoginTime: Date.now()
+        };
+      }
+      store.saveWxUsers(wxUsers);
+      self.setData({ paymentStatus: '✅ 已为 ' + phone + ' 开通云端存储（永久）' });
+      wx.showToast({ title: '开通成功', icon: 'success' });
+    });
+  },
+
+  onGrantBeauty: function () {
+    var phone = this.data.paymentPhone;
+    if (!phone || !/^1\d{10}$/.test(phone)) {
+      wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
+      return;
+    }
+    var self = this;
+    var store = require('../../utils/store.js');
+    store.loadWxUsers(function (wxUsers) {
+      wxUsers = wxUsers || {};
+      var found = false;
+      var keys = Object.keys(wxUsers);
+      for (var i = 0; i < keys.length; i++) {
+        var u = wxUsers[keys[i]];
+        if (u && u.phone === phone) {
+          u.paidUntil = Date.now() + 36500 * 24 * 60 * 60 * 1000;
+          u.upgradePaidUntil = Date.now() + 36500 * 24 * 60 * 60 * 1000;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        var newKey = 'wx_' + phone;
+        wxUsers[newKey] = {
+          phone: phone,
+          paidUntil: Date.now() + 36500 * 24 * 60 * 60 * 1000,
+          upgradePaidUntil: Date.now() + 36500 * 24 * 60 * 60 * 1000,
+          firstLoginTime: Date.now()
+        };
+      }
+      store.saveWxUsers(wxUsers);
+      self.setData({ paymentStatus: '✅ 已为 ' + phone + ' 开通变美计划+云存储（永久）' });
+      wx.showToast({ title: '开通成功', icon: 'success' });
+    });
+  },
+
+  // ===== 手机号搜索 =====
+  onSearchPhoneInput: function (e) {
+    this.setData({ searchPhone: e.detail.value });
+    this.applyFilter();
+  },
+
+  // ===== 管理员密码修改 =====
+  onOldPwInput: function (e) { this.setData({ oldPw: e.detail.value }); },
+  onNewPwInput: function (e) { this.setData({ newPw: e.detail.value }); },
+  onNewPw2Input: function (e) { this.setData({ newPw2: e.detail.value }); },
+
+  onChangeAdminPw: function () {
+    var oldPw = this.data.oldPw;
+    var newPw = this.data.newPw;
+    var newPw2 = this.data.newPw2;
+    if (!oldPw) { wx.showToast({ title: '请输入当前密码', icon: 'none' }); return; }
+    if (!newPw) { wx.showToast({ title: '请输入新密码', icon: 'none' }); return; }
+    if (newPw !== newPw2) { wx.showToast({ title: '两次密码不一致', icon: 'none' }); return; }
+    if (oldPw !== config.DEFAULT_ADMIN_PW) { wx.showToast({ title: '当前密码不正确', icon: 'none' }); return; }
+    // 小程序中密码存储在本地
+    wx.setStorageSync('admin_pw', newPw);
+    this.setData({ oldPw: '', newPw: '', newPw2: '' });
+    wx.showToast({ title: '密码修改成功', icon: 'success' });
   }
 })

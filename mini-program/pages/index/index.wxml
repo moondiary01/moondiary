@@ -27,6 +27,29 @@
         </view>
       </view>
     </view>
+    <!-- 性别/年龄/身高 + 单位切换 + 设置/退出 -->
+    <view class="hero-info-row">
+      <view class="hero-info-item">
+        <text class="hero-info-label">性别</text>
+        <text class="hero-info-val">{{userGender || '—'}}</text>
+      </view>
+      <view class="hero-info-item">
+        <text class="hero-info-label">年龄</text>
+        <text class="hero-info-val">{{userAge || '—'}}</text>
+      </view>
+      <view class="hero-info-item">
+        <text class="hero-info-label">身高</text>
+        <text class="hero-info-val">{{userHeight || '—'}}</text>
+      </view>
+      <view class="hero-unit-toggle">
+        <text class="hero-unit-btn {{unitLabel === 'kg' ? 'hero-unit-active' : ''}}" bindtap="onSwitchUnit" data-unit="kg">kg</text>
+        <text class="hero-unit-btn {{unitLabel === '斤' ? 'hero-unit-active' : ''}}" bindtap="onSwitchUnit" data-unit="斤">斤</text>
+      </view>
+    </view>
+    <view class="hero-actions-row">
+      <text class="hero-action-btn" bindtap="onOpenSettings">⚙ 设置</text>
+      <text class="hero-action-btn" bindtap="onLogout">退出</text>
+    </view>
   </view>
 
   <!-- 体重 + 体脂 Hero 卡片 -->
@@ -164,6 +187,55 @@
     <view class="admin-entry" bindtap="onGoAdmin">
       <text class="admin-entry-text">⚙️ 管理后台</text>
       <text class="admin-entry-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 每日仪表盘 -->
+  <view class="dash-card">
+    <view class="dash-title">📊 数据概览</view>
+    <view class="dash-grid">
+      <view class="dash-item">
+        <text class="dash-val amber">{{dashMaxWeight || '—'}}</text>
+        <text class="dash-lbl">最高体重</text>
+      </view>
+      <view class="dash-item">
+        <text class="dash-val mint">{{dashMinWeight || '—'}}</text>
+        <text class="dash-lbl">最低体重</text>
+      </view>
+      <view class="dash-item">
+        <text class="dash-val">{{dashAvgWeight || '—'}}</text>
+        <text class="dash-lbl">平均体重</text>
+      </view>
+      <view class="dash-item">
+        <text class="dash-val pink">{{dashRecordDays || '0'}}</text>
+        <text class="dash-lbl">记录天数</text>
+      </view>
+      <view class="dash-item">
+        <text class="dash-val rose">{{dashBmi || '—'}}</text>
+        <text class="dash-lbl">当前BMI</text>
+      </view>
+      <view class="dash-item">
+        <text class="dash-val coral">{{dashRemain || '—'}}</text>
+        <text class="dash-lbl">距目标还差</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 完整记录折叠表 -->
+  <view class="record-accordion">
+    <view class="record-accordion-header" bindtap="onToggleRecords">
+      <text>📋 完整记录</text>
+      <text class="record-arrow {{showRecords ? 'record-arrow-open' : ''}}">›</text>
+    </view>
+    <view class="record-body" wx:if="{{showRecords}}">
+      <view class="record-row" wx:for="{{recentRecords}}" wx:key="date">
+        <text class="record-date">{{item.date}}</text>
+        <text class="record-weight">{{item.weight || '—'}}</text>
+        <text class="record-bm">{{item.bm || '—'}}</text>
+        <text class="record-exercise">{{item.exercise || '—'}}</text>
+        <text class="record-diet">{{item.diet || '—'}}</text>
+      </view>
+      <view class="record-empty" wx:if="{{recentRecords.length === 0}}">暂无记录</view>
     </view>
   </view>
 

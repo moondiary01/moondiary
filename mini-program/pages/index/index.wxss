@@ -580,3 +580,161 @@ page {
   font-size: 32rpx;
   color: #a8a29e;
 }
+
+/* ===== Hero 内嵌信息行 ===== */
+.hero-info-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid rgba(255,255,255,0.15);
+  flex-wrap: wrap;
+}
+.hero-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+}
+.hero-info-label {
+  font-size: 20rpx;
+  color: rgba(255,255,255,0.55);
+}
+.hero-info-val {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #fff;
+}
+.hero-unit-toggle {
+  display: flex;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10rpx;
+  padding: 3rpx;
+  margin-left: auto;
+}
+.hero-unit-btn {
+  padding: 6rpx 16rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  border-radius: 8rpx;
+  color: rgba(255,255,255,0.7);
+}
+.hero-unit-active {
+  background: #fff;
+  color: #9333EA;
+}
+.hero-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16rpx;
+  margin-top: 14rpx;
+  padding-top: 12rpx;
+  border-top: 1rpx solid rgba(255,255,255,0.1);
+}
+.hero-action-btn {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.6);
+  padding: 4rpx 0;
+}
+
+/* ===== 每日仪表盘 ===== */
+.dash-card {
+  margin: 0 24rpx 20rpx;
+  background: #fff;
+  border: 2rpx solid #EDE4F5;
+  border-radius: 20rpx;
+  padding: 24rpx;
+}
+.dash-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1c1917;
+  margin-bottom: 18rpx;
+}
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+.dash-item {
+  text-align: center;
+  padding: 16rpx 8rpx;
+  background: #faf5ff;
+  border-radius: 12rpx;
+}
+.dash-val {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #1c1917;
+  line-height: 1.2;
+}
+.dash-lbl {
+  font-size: 20rpx;
+  color: #a8a29e;
+  margin-top: 6rpx;
+}
+.dash-val.amber { color: #d97706; }
+.dash-val.mint { color: #10b981; }
+.dash-val.pink { color: #ec4899; }
+.dash-val.rose { color: #be185d; }
+.dash-val.coral { color: #f97316; }
+
+/* ===== 完整记录折叠表 ===== */
+.record-accordion {
+  margin: 0 24rpx 20rpx;
+  background: #fff;
+  border: 2rpx solid #EDE4F5;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+.record-accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22rpx 24rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1c1917;
+}
+.record-arrow {
+  font-size: 32rpx;
+  color: #a8a29e;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+.record-arrow-open {
+  transform: rotate(90deg);
+}
+.record-body {
+  border-top: 2rpx solid #f3f4f6;
+  padding: 0 16rpx 16rpx;
+}
+.record-row {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 8rpx;
+  border-bottom: 1rpx solid #f9fafb;
+  font-size: 24rpx;
+  gap: 8rpx;
+}
+.record-date {
+  width: 140rpx;
+  color: #a8a29e;
+  flex-shrink: 0;
+}
+.record-weight {
+  flex: 1;
+  font-weight: 700;
+  color: #1c1917;
+}
+.record-bm, .record-exercise, .record-diet {
+  flex: 1;
+  color: #78716c;
+  text-align: center;
+}
+.record-empty {
+  text-align: center;
+  padding: 32rpx;
+  color: #a8a29e;
+  font-size: 26rpx;
+}

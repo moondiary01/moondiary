@@ -100,6 +100,63 @@
     </view>
   </view>
 
+  <!-- 每日饮食参考 -->
+  <view class="card">
+    <view class="card-title">🍽️ 每日饮食参考</view>
+    <view class="meal-table">
+      <view class="meal-row meal-header">
+        <text class="meal-cell meal-time">餐次</text>
+        <text class="meal-cell meal-time-range">时间</text>
+        <text class="meal-cell meal-food">食物建议</text>
+        <text class="meal-cell meal-cal">热量</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">🥣 早餐</text>
+        <text class="meal-cell meal-time-range">7:00-8:00</text>
+        <text class="meal-cell meal-food">燕麦粥+1鸡蛋+脱脂牛奶</text>
+        <text class="meal-cell meal-cal">~350</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">🍎 加餐</text>
+        <text class="meal-cell meal-time-range">10:30</text>
+        <text class="meal-cell meal-food">苹果或坚果</text>
+        <text class="meal-cell meal-cal">~100</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">🍱 午餐</text>
+        <text class="meal-cell meal-time-range">12:00</text>
+        <text class="meal-cell meal-food">糙米+鸡胸肉+蔬菜</text>
+        <text class="meal-cell meal-cal">~450</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">🥒 加餐</text>
+        <text class="meal-cell meal-time-range">15:30</text>
+        <text class="meal-cell meal-food">无糖酸奶或黄瓜</text>
+        <text class="meal-cell meal-cal">~80</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">🥗 晚餐</text>
+        <text class="meal-cell meal-time-range">18:00</text>
+        <text class="meal-cell meal-food">红薯+清蒸鱼+蔬菜</text>
+        <text class="meal-cell meal-cal">~350</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关键提醒 -->
+  <view class="card">
+    <view class="card-title">💡 关键提醒</view>
+    <view class="tip-list">
+      <text class="tip-item">每天固定时间称重：晨起空腹排便后 + 晚餐后睡前</text>
+      <text class="tip-item">晨起体重最准，反映真实减脂效果</text>
+      <text class="tip-item">排便情况影响体重波动，排便后称重更准</text>
+      <text class="tip-item">体重自然波动属正常，关注周趋势而非单日</text>
+      <text class="tip-item">每周减重不超过 1 kg / 2 斤，不要节食暴瘦</text>
+      <text class="tip-item">保证每天 7-8 小时睡眠，多喝水促进代谢</text>
+      <text class="tip-item">如有不适，立即停止并咨询医生</text>
+    </view>
+  </view>
+
 </view>
 
 <!-- 编辑弹窗 -->
