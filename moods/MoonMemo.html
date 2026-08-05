@@ -1075,15 +1075,15 @@ _loadCosSdk(0);
         <div class="pf-item" onclick="openSettings()"><span class="pf-label">身高</span><span class="pf-value" id="pf-height">—</span></div>
       </div>
     </div>
-    <!-- 升级版快捷入口（仅已购/试用用户可见） -->
+    <!-- 升级版快捷入口（仅已购用户可见） -->
     <div id="beautyQuickBtns" style="display:none;display:flex;gap:10px;margin-top:12px">
-      <div onclick="openBeautySkincare();playClick()" style="flex:1;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#f5f3ff,#ede9fe);cursor:pointer;text-align:center;transition:all 0.2s;border:1.5px solid #c4b5fd" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(139,92,246,0.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:0.85rem;font-weight:700;color:#7c3aed">护肤日记</div>
-        <div style="font-size:0.65rem;color:#a78bfa;margin-top:2px">打卡 · 照片 · do脸</div>
+      <div onclick="openBeautySkincare();playClick()" style="flex:1;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#f5f3ff,#ede9fe);cursor:pointer;text-align:center;transition:all 0.25s;border:1.5px solid #c4b5fd;position:relative;overflow:hidden" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(139,92,246,0.18)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="position:absolute;top:-12px;right:-12px;width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.12),transparent 70%);pointer-events:none"></div>
+        <div style="position:relative;z-index:1;font-size:0.95rem;font-weight:800;color:#7c3aed;letter-spacing:1px">护肤日记</div>
       </div>
-      <div onclick="openBeautyMood();playClick()" style="flex:1;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#fdf2f8,#fce7f3);cursor:pointer;text-align:center;transition:all 0.2s;border:1.5px solid #fbcfe8" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(236,72,153,0.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:0.85rem;font-weight:700;color:#be185d">心情日记</div>
-        <div style="font-size:0.65rem;color:#f472b6;margin-top:2px">心情 · 自律 · 感恩</div>
+      <div onclick="openBeautyMood();playClick()" style="flex:1;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#fdf2f8,#fce7f3);cursor:pointer;text-align:center;transition:all 0.25s;border:1.5px solid #fbcfe8;position:relative;overflow:hidden" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(236,72,153,0.18)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="position:absolute;top:-12px;right:-12px;width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,0.12),transparent 70%);pointer-events:none"></div>
+        <div style="position:relative;z-index:1;font-size:0.95rem;font-weight:800;color:#be185d;letter-spacing:1px">心情日记</div>
       </div>
     </div>
   </div>
@@ -2556,18 +2556,26 @@ function refreshPaymentsFromCloud(callback) {
   });
 }
 
-/* 检查29.9元变美计划权限 */
+/* 检查29.9元变美计划权限（仅付费用户，试用用户不算） */
 function hasBeautyPermission() {
   if (isAdminUser()) return true;
   var phone = getCurrentPhone();
   if (phone === 'local' || !phone) return false;
   var payments = loadPayments();
   if (!payments[phone]) return false;
-  /* 已付费29.9元 或 管理员开启试用 */
-  return !!(payments[phone].beautyPaid || payments[phone].beautyTrial);
+  return !!payments[phone].beautyPaid;
 }
 
-/* 检查19.9元云端存储权限 */
+/* 检查试用是否过期（7天） */
+function isTrialExpired(phone) {
+  if (!phone) return true;
+  var payments = loadPayments();
+  if (!payments[phone] || !payments[phone].beautyTrial || !payments[phone].beautyTrialAt) return true;
+  var sevenDays = 7 * 24 * 3600 * 1000;
+  return (Date.now() - payments[phone].beautyTrialAt) > sevenDays;
+}
+
+/* 检查19.9元云端存储权限（试用7天内可用，过期需购买） */
 function hasCloudStoragePermission() {
   if (isAdminUser()) return true;
   var phone = getCurrentPhone();
@@ -2577,9 +2585,11 @@ function hasCloudStoragePermission() {
   var payments = loadPayments();
   /* 29.9元用户自动包含云端存储 */
   if (payments[phone] && payments[phone].beautyPaid) return true;
-  /* 升级版试用期间同样有云端存储 */
-  if (payments[phone] && payments[phone].beautyTrial) return true;
-  return !!(payments[phone] && payments[phone].storagePaid);
+  /* 已购19.9元普通版 */
+  if (payments[phone] && payments[phone].storagePaid) return true;
+  /* 试用7天内可用云端存储 */
+  if (payments[phone] && payments[phone].beautyTrial && !isTrialExpired(phone)) return true;
+  return false;
 }
 
 /* ---------- 数据迁移：密钥路径 → 手机号路径 ---------- */

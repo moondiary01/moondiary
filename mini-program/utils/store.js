@@ -359,8 +359,8 @@ function checkUserStatus(wxUserInfo) {
   if (paidUntil && paidUntil > now) {
     return { canUse: true, isPaid: true, isTrial: false };
   }
-  // 试用中（24小时内）
-  var trialMs = 24 * 60 * 60 * 1000;
+  // 试用中（7天内）
+  var trialMs = 7 * 24 * 60 * 60 * 1000;
   if (now - firstLogin < trialMs) {
     var remaining = trialMs - (now - firstLogin);
     return { canUse: true, isPaid: false, isTrial: true, remaining: remaining };
