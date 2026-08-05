@@ -173,7 +173,7 @@ body{
 .gate-hint{font-size:0.72rem;color:var(--text-l);margin-top:16px;line-height:1.6}
 .gate-tabs{display:flex;gap:4px;background:var(--rose-50);border-radius:12px;padding:4px;margin-bottom:18px}
 .gate-tab{flex:1;text-align:center;padding:10px 4px;border-radius:10px;font-size:0.78rem;font-weight:600;color:var(--text-l);cursor:pointer;transition:all 0.2s}
-.gate-tab.active{background:#fff;color:var(--rose-600);box-shadow:0 2px 8px rgba(124,58,237,0.12)}
+.gate-tab.active{background:linear-gradient(135deg,#ec4899,#f43f5e);color:#fff;box-shadow:0 2px 12px rgba(236,72,153,0.3)}
 /* ===== Splash 动画 ===== */
 .splash{position:fixed;inset:0;background:var(--grad-hero);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:600;animation:splashFade 2.8s ease forwards}
 @keyframes splashFade{0%{opacity:1}85%{opacity:1}100%{opacity:0;visibility:hidden}}
@@ -1653,7 +1653,7 @@ _loadCosSdk(0);
     <div class="card-title">📈 体重趋势图</div>
     <canvas id="chartCanvas"></canvas>
     <div class="chart-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#C026D3"></div>晨起体重</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ec4899"></div>晨起体重</div>
       <div class="legend-item"><div class="legend-dot" style="background:#EC4899"></div>睡前体重</div>
       <div class="legend-item"><div class="legend-dash" style="border-color:#C026D3"></div>起始体重</div>
       <div class="legend-item"><div class="legend-dash" style="border-color:#F59E0B"></div>目标体重</div>
@@ -1798,7 +1798,7 @@ _loadCosSdk(0);
 <!-- ===== Page 5: 管理员 ===== -->
 <div class="page" id="page5">
   <div class="card">
-    <div class="card-title">🔐 管理后台 <span class="sub">Moon 专属</span></div>
+    <div class="card-title">⚙️ 管理后台 <span class="sub">Moon 专属</span></div>
     <div class="admin-stat">
       <div class="admin-stat-item admin-stat-clickable" onclick="showUsersByType('free')">
         <div class="admin-stat-num" id="adminFree">0</div>
@@ -1825,7 +1825,7 @@ _loadCosSdk(0);
       <div class="card-title">📢 版本更新通知 <span class="sub">推送全局通知</span></div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
         <div>
-          <div style="font-size:0.9rem;font-weight:600;color:var(--ink)">当前版本 v8</div>
+          <div style="font-size:0.9rem;font-weight:600;color:var(--ink)">当前版本 v<span id="adminVersion">8</span></div>
           <div style="font-size:0.78rem;color:var(--text-l)" id="noticeStatus">通知未发送</div>
         </div>
         <button class="btn btn-outline" style="border-color:#c4b5fd;color:#7c3aed" onclick="sendVersionNotice()" id="noticeBtn">发送通知</button>
@@ -1951,8 +1951,8 @@ _loadCosSdk(0);
       <div id="beautyLockMsg" style="display:none">
         <!-- Tab切换 -->
         <div class="pay-tabs" style="display:flex;gap:8px;margin-bottom:16px">
-          <div class="pay-tab tab-active" id="payTabBasic" onclick="switchPayTab('basic')" style="flex:1;text-align:center;padding:12px 0;font-size:0.82rem;font-weight:600;border-radius:14px;cursor:pointer;transition:all 0.2s">基础版</div>
-          <div class="pay-tab" id="payTabUpgrade" onclick="switchPayTab('upgrade')" style="flex:1;text-align:center;padding:12px 0;font-size:0.82rem;font-weight:600;border-radius:14px;cursor:pointer;transition:all 0.2s">升级版</div>
+          <div class="pay-tab tab-active" id="payTabBasic" onclick="switchPayTab('basic')" style="flex:1;text-align:center;padding:12px 0;font-size:0.78rem;font-weight:600;border-radius:14px;cursor:pointer;transition:all 0.2s">基础版 19.9元</div>
+          <div class="pay-tab" id="payTabUpgrade" onclick="switchPayTab('upgrade')" style="flex:1;text-align:center;padding:12px 0;font-size:0.78rem;font-weight:600;border-radius:14px;cursor:pointer;transition:all 0.2s">升级版 29.9元</div>
         </div>
         <!-- 基础版内容 -->
         <div id="payContentBasic">
@@ -4616,7 +4616,7 @@ function drawChart() {
     ctx.fillStyle = color; ctx.textAlign = 'left'; ctx.font = 'bold 11px sans-serif';
     ctx.fillText(label+' '+w.toFixed(1), pad.left+4, y-4);
   }
-  if (state.startWeight) drawLine(state.startWeight, '#C026D3', '起始');
+  if (state.startWeight) drawLine(state.startWeight, '#ec4899', '起始');
   if (state.targetWeight) drawLine(state.targetWeight, '#F59E0B', '目标');
   if (pmD.length > 0) {
     ctx.strokeStyle = '#EC4899'; ctx.lineWidth = 3; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.beginPath();
@@ -4633,7 +4633,7 @@ function drawChart() {
     });
   }
   if (amD.length > 0) {
-    ctx.strokeStyle = '#C026D3'; ctx.lineWidth = 3.5; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.beginPath();
+    ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 3.5; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.beginPath();
     amD.forEach((d,i) => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
@@ -4643,7 +4643,7 @@ function drawChart() {
     amD.forEach(d => {
       const x = pad.left + (d.idx/Math.max(1,total-1))*cw;
       const y = pad.top + (1-(d.w-minW)/(maxW-minW))*ch;
-      ctx.fillStyle = '#C026D3'; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#ec4899'; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
     });
   }
   /* 体脂率曲线（右侧Y轴，桔黄色） */
@@ -5558,6 +5558,9 @@ function renderKeyList() {
     html = '<div style="text-align:center;padding:20px;color:var(--text-l);font-size:0.85rem">正在搜索微信用户...</div>';
   }
   document.getElementById('keyList').innerHTML = html;
+  /* 设置版本号 */
+  var adminVerEl = document.getElementById('adminVersion');
+  if (adminVerEl) adminVerEl.textContent = APP_VERSION;
   /* 更新密钥总数标签 */
   var keyCountEl = document.getElementById('keyCountLabel');
   if (keyCountEl) {
@@ -5751,7 +5754,7 @@ function sendVersionNotice() {
   if (!confirm('确定向所有用户发送版本更新通知吗？')) return;
   var pi = loadPresetInfo();
   pi.noticeSent = true;
-  pi.noticeVersion = '8';
+  pi.noticeVersion = APP_VERSION;
   pi.noticeTime = Date.now();
   localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(pi));
   savePresetInfo(pi);
