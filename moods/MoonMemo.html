@@ -155,14 +155,18 @@ body{
 .gate::after{content:'';position:absolute;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,118,0.15) 0%,transparent 70%);bottom:-120px;left:-100px;animation:float 10s ease-in-out infinite reverse}
 @keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.05)}}
 
-.gate-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-radius:32px;padding:28px 24px 24px;max-width:390px;width:100%;box-shadow:0 32px 80px rgba(26,21,48,0.3),0 0 0 1px rgba(255,255,255,0.2) inset;text-align:center;position:relative;z-index:1;animation:gateIn 0.8s cubic-bezier(0.34,1.56,0.64,1)}
+.gate-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-radius:32px;padding:40px 34px 34px;max-width:390px;width:100%;box-shadow:0 32px 80px rgba(26,21,48,0.3),0 0 0 1px rgba(255,255,255,0.2) inset;text-align:center;position:relative;z-index:1;animation:gateIn 0.8s cubic-bezier(0.34,1.56,0.64,1)}
 @keyframes gateIn{from{opacity:0;transform:translateY(30px) scale(0.92) rotate(-2deg)}to{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
 
-.gate-logo-icon{font-size:3.2rem;margin-bottom:4px;line-height:1}
-.gate-logo-title{font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-0.5px;margin-bottom:2px}
-.gate-logo-subtitle{font-size:0.8rem;color:var(--text-l);margin-bottom:20px}
-.gate-content{padding:4px 0}
-.wx-login-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#ec4899,#f43f5e);box-shadow:0 4px 16px rgba(236,72,153,0.3)}
+/* moon Logo 动画 */
+.moon-logo{width:96px;height:96px;margin:0 auto 2px;position:relative}
+.moon-logo svg{width:100%;height:100%;animation:logoSpin 20s linear infinite;filter:drop-shadow(0 4px 16px rgba(147,51,234,0.3))}
+@keyframes logoSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.moon-logo .glow{position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,0.25) 0%,transparent 65%);animation:glowPulse 3s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:0.4;transform:scale(1)}50%{opacity:0.75;transform:scale(1.12)}}
+
+.gate-title{font-size:1.5rem;font-weight:900;color:var(--ink);margin-bottom:6px;letter-spacing:-0.5px}
+.gate-title .brand{background:linear-gradient(135deg,var(--rose-600),var(--coral));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic;font-weight:900;font-size:1.7rem}
 .gate-sub{font-size:0.8rem;color:var(--text-l);margin-bottom:24px}
 .gate-input{width:100%;text-align:center;letter-spacing:10px;font-size:1.5rem;font-weight:800;padding:14px;border:2px solid var(--border);border-radius:var(--radius-sm);outline:none;color:var(--rose-600);font-family:inherit;transition:all 0.2s;background:var(--rose-50)}
 .gate-input:focus{border-color:var(--rose-400);box-shadow:0 0 0 4px rgba(168,85,247,0.12)}
@@ -171,9 +175,6 @@ body{
 .gate-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(147,51,234,0.35)}
 .gate-btn:active{transform:scale(0.98)}
 .gate-hint{font-size:0.72rem;color:var(--text-l);margin-top:16px;line-height:1.6}
-.gate-tabs{display:flex;gap:4px;background:var(--rose-50);border-radius:12px;padding:4px;margin-bottom:18px}
-.gate-tab{flex:1;text-align:center;padding:10px 4px;border-radius:10px;font-size:0.78rem;font-weight:600;color:var(--text-l);cursor:pointer;transition:all 0.2s}
-.gate-tab.active{background:linear-gradient(135deg,#ec4899,#f43f5e);color:#fff;box-shadow:0 2px 12px rgba(236,72,153,0.3)}
 /* ===== Splash 动画 ===== */
 .splash{position:fixed;inset:0;background:var(--grad-hero);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:600;animation:splashFade 2.8s ease forwards}
 @keyframes splashFade{0%{opacity:1}85%{opacity:1}100%{opacity:0;visibility:hidden}}
@@ -1386,49 +1387,48 @@ _loadCosSdk(0);
 <!-- ===== 登录门 ===== -->
 <div class="gate" id="gate">
   <div class="gate-card">
-    <div class="gate-logo-icon">🌙</div>
-    <div class="gate-logo-title">Moon Memo</div>
-    <div class="gate-logo-subtitle">月亮日记</div>
-    <!-- Tab切换 -->
-    <div class="gate-tabs">
-      <div class="gate-tab active" onclick="switchGateTab(0)" id="gateTab0">微信登录</div>
-      <div class="gate-tab" onclick="switchGateTab(1)" id="gateTab1">密钥登录</div>
-      <div class="gate-tab" onclick="switchGateTab(2)" id="gateTab2">管理员登录</div>
+    <div class="moon-logo" id="gateLogo">
+      <div class="glow"></div>
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#7C3AED"/>
+            <stop offset="50%" style="stop-color:#C026D3"/>
+            <stop offset="100%" style="stop-color:#EC4899"/>
+          </linearGradient>
+          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#D4A574"/>
+            <stop offset="100%" style="stop-color:#E8C9A0"/>
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="none" stroke="url(#moonGrad)" stroke-width="2" opacity="0.3"/>
+        <path d="M 62 18 A 34 34 0 1 0 62 82 A 28 28 0 1 1 62 18 Z" fill="url(#moonGrad)"/>
+        <circle cx="78" cy="30" r="2.5" fill="url(#goldGrad)"/>
+        <circle cx="82" cy="50" r="1.8" fill="url(#goldGrad)" opacity="0.7"/>
+        <circle cx="75" cy="68" r="2" fill="url(#goldGrad)" opacity="0.8"/>
+        <ellipse cx="56" cy="38" rx="4" ry="6" fill="#fff" opacity="0.25" transform="rotate(-20 56 38)"/>
+      </svg>
     </div>
-    <!-- 微信登录 -->
-    <div class="gate-content" id="gateContent0">
-      <div class="gate-sub">使用微信快速登录，新用户可免费试用24小时</div>
-      <button class="gate-btn wx-login-btn" onclick="onWxLogin()">
-        <span>💚</span>
-        <span>微信一键登录</span>
-      </button>
-    </div>
-    <!-- 密钥登录 -->
-    <div class="gate-content" id="gateContent1" style="display:none">
-      <div class="input-group" style="margin-bottom:12px">
-        <label style="font-size:0.8rem;color:var(--text-l);display:block;text-align:left;margin-bottom:4px">手机号</label>
-        <input class="gate-input" type="tel" id="keyPhone" maxlength="11" inputmode="numeric" placeholder="请输入手机号" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
-      </div>
-      <div class="input-group" style="margin-bottom:12px">
-        <label style="font-size:0.8rem;color:var(--text-l);display:block;text-align:left;margin-bottom:4px">密钥</label>
-        <input class="gate-input" type="text" id="keyInput" maxlength="6" inputmode="numeric" placeholder="请输入6位密钥" style="letter-spacing:4px;font-size:1.15rem" autocomplete="off">
-      </div>
+    <div class="gate-title"><span class="brand">MoonMemo</span></div>
+    <!-- 用户手机号+密钥登录（默认显示） -->
+    <div id="gateUser">
+      <div class="gate-sub">请输入专属6位密钥进入</div>
+      <input type="text" class="gate-input" id="keyInput" maxlength="6" inputmode="numeric" placeholder="6位数字密钥" style="letter-spacing:4px;font-size:1.15rem" autocomplete="off">
+      <input type="tel" class="gate-input" id="userPhone" placeholder="手机号（11位）" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
       <div class="gate-error" id="gateError"></div>
-      <button class="gate-btn" onclick="tryLogin()">登录</button>
+      <button class="gate-btn" onclick="tryLogin()">进 入</button>
       <div class="gate-hint">绑定微信可直接登陆，若需密钥登陆请联系管理员<br>一个手机号只能绑定一个密钥</div>
+      <div style="margin-top:14px;text-align:center"><a href="#" onclick="switchGate('admin');playClick();return false" style="font-size:0.7rem;color:var(--text-l);opacity:0.6">管理员入口</a></div>
     </div>
-    <!-- 管理员登录 -->
-    <div class="gate-content" id="gateContent2" style="display:none">
-      <div class="input-group" style="margin-bottom:12px">
-        <label style="font-size:0.8rem;color:var(--text-l);display:block;text-align:left;margin-bottom:4px">手机号</label>
-        <input class="gate-input" type="tel" id="adminPhone" maxlength="11" inputmode="numeric" placeholder="请输入管理员手机号" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
-      </div>
-      <div class="input-group" style="margin-bottom:12px">
-        <label style="font-size:0.8rem;color:var(--text-l);display:block;text-align:left;margin-bottom:4px">密码</label>
-        <input class="gate-input" type="password" id="adminPw" placeholder="请输入密码" style="letter-spacing:2px;font-size:1.1rem" autocomplete="off">
-      </div>
+    <!-- 管理员手机号+密码登录（隐藏，点击小字触发） -->
+    <div id="gateAdmin" style="display:none">
+      <div class="gate-sub">管理员登录</div>
+      <input type="tel" class="gate-input" id="adminPhone" placeholder="管理员手机号" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
+      <input type="password" class="gate-input" id="adminPw" placeholder="管理员密码" style="letter-spacing:2px;font-size:1.1rem" autocomplete="off">
       <div class="gate-error" id="adminError"></div>
-      <button class="gate-btn" onclick="adminLogin()">登录</button>
+      <button class="gate-btn" onclick="adminLogin()">管理员进入</button>
+      <div class="gate-hint" id="adminPwHint">请输入管理员手机号与密码</div>
+      <div style="margin-top:14px;text-align:center"><a href="#" onclick="switchGate('user');playClick();return false" style="font-size:0.7rem;color:var(--text-l);opacity:0.6">← 返回用户登录</a></div>
     </div>
   </div>
 </div>
@@ -3326,16 +3326,11 @@ function playSwipe(dir) {
   } catch(e) {}
 }
 
-function switchGateTab(idx) {
-  for (let i = 0; i < 3; i++) {
-    document.getElementById('gateContent'+i).style.display = i === idx ? 'block' : 'none';
-    document.getElementById('gateTab'+i).classList.toggle('active', i === idx);
-  }
+function switchGate(mode) {
+  document.getElementById('gateUser').style.display = mode === 'admin' ? 'none' : 'block';
+  document.getElementById('gateAdmin').style.display = mode === 'admin' ? 'block' : 'none';
   document.getElementById('gateError').textContent = '';
   document.getElementById('adminError').textContent = '';
-}
-function onWxLogin() {
-  showToast('微信登录请使用小程序版本');
 }
 function adminLogin() {
   const phone = document.getElementById('adminPhone').value.trim();
@@ -3359,7 +3354,7 @@ function adminLogin() {
 }
 
 function tryLogin() {
-  const phone = document.getElementById('keyPhone').value.trim();
+  const phone = document.getElementById('userPhone').value.trim();
   const k = document.getElementById('keyInput').value.trim();
   const err = document.getElementById('gateError');
   if (!phone) { err.textContent = '请输入手机号'; return; }
@@ -3481,13 +3476,14 @@ function logout() {
   currentPhone = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('gate').style.display = 'flex';
-  document.getElementById('keyPhone').value = '';
+  document.getElementById('userPhone').value = '';
   document.getElementById('keyInput').value = '';
   document.getElementById('adminPhone').value = '';
   document.getElementById('adminPw').value = '';
   document.getElementById('gateError').textContent = '';
   document.getElementById('adminError').textContent = '';
-  switchGateTab(1);
+  document.getElementById('gateUser').style.display = 'block';
+  document.getElementById('gateAdmin').style.display = 'none';
 }
 
 function enterApp(isAdmin) {
@@ -6597,7 +6593,8 @@ function renderAll() {
   }
   /* 未登录则显示登录门，默认用户登录区（手机号+密钥） */
   document.getElementById('gate').style.display = 'flex';
-  switchGateTab(1);
+  document.getElementById('gateUser').style.display = 'block';
+  document.getElementById('gateAdmin').style.display = 'none';
   setTimeout(() => { const el = document.getElementById('keyInput'); if (el) el.focus(); }, 100);
 })();
 
