@@ -197,17 +197,37 @@ body{
 .gate-tab.active{background:#fff;color:var(--rose-600);box-shadow:0 2px 6px rgba(124,58,237,0.1)}
 .gate-error{color:var(--rose-500);font-size:0.78rem;margin-top:8px;min-height:18px;font-weight:600}
 
-/* ===== Hero 顶部 ===== */
+/* ===== Hero 顶部（同步小程序 f5c02e6：深紫渐变 + 体重 + 快捷入口） ===== */
 .hero{
-  background:var(--grad-hero);
+  background: linear-gradient(135deg, #6D28D9 0%, #9333EA 40%, #C026D3 100%);
   color:#fff;
-  padding:18px 20px;
+  padding:24px 20px 22px;
   position:sticky;
   top:0;
   z-index:100;
-  box-shadow:0 8px 32px rgba(225,29,72,0.2);
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.22);
 }
 .hero-inner{max-width:1100px;margin:0 auto}
+.hero-top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.hero-name{font-size:1.05rem;font-weight:700}
+.hero-date{font-size:0.78rem;opacity:0.8}
+.hero-bottom-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.hero-weight-col{flex-shrink:0}
+.hero-weight{display:flex;align-items:baseline;gap:6px}
+.hero-weight-num{font-size:3rem;font-weight:700;line-height:1}
+.hero-weight-unit{font-size:1rem;opacity:0.8}
+.hero-weight-label{font-size:0.7rem;opacity:0.65;margin-top:4px}
+/* 快捷入口（已购用户在Hero同排） */
+.beauty-quick-entries{display:flex;align-items:center;flex-shrink:0}
+.hero-quick-btn{padding:8px 20px;border-radius:100px;background:rgba(255,255,255,0.92);cursor:pointer;border:1.5px solid transparent;text-align:center;transition:all 0.2s}
+.hero-quick-btn:active{transform:scale(0.94);opacity:0.85}
+.hero-quick-text{font-size:0.78rem;font-weight:700;letter-spacing:1px}
+.hero-quick-skincare{color:#7c3aed;border-color:rgba(167,139,250,0.5);box-shadow:0 3px 12px rgba(124,58,237,0.2),inset 0 1px 0 rgba(255,255,255,0.8)}
+.hero-quick-mood{color:#db2777;border-color:rgba(244,114,182,0.5);box-shadow:0 3px 12px rgba(236,72,153,0.2),inset 0 1px 0 rgba(255,255,255,0.8)}
+/* 旧的beauty-quick-btn保留兼容 */
+.beauty-quick-btn{padding:8px 20px;border-radius:100px;background:rgba(255,255,255,0.92);cursor:pointer;border:1.5px solid transparent;text-align:center;transition:all 0.2s}
+.beauty-quick-btn:active{transform:scale(0.94);opacity:0.85}
+/* 旧的 hero 组件保留兼容 */
 .hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .hero-left{display:flex;flex-direction:column;gap:6px}
 .hero-title{font-size:1.3rem;font-weight:800;letter-spacing:-0.5px;display:flex;align-items:baseline;justify-content:center;gap:8px}
@@ -235,7 +255,7 @@ body{
 .btn-danger:hover{background:#DC2626}
 .btn-gold{background:var(--grad-gold);color:#fff}
 .btn-sm{padding:5px 10px;font-size:0.72rem}
-/* ===== 个人信息条 ===== */
+/* ===== 个人信息条（保留兼容旧引用） ===== */
 .profile-bar{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap}
 .avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:1.6rem;backdrop-filter:blur(4px);border:2px solid rgba(255,255,255,0.5);cursor:pointer;transition:transform 0.2s;overflow:hidden;flex-shrink:0}
 .avatar:hover{transform:scale(1.08)}
@@ -679,6 +699,369 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .beauty-entry-hint {
   color: rgba(255, 255, 255, 0.25);
 }
+
+/* ===== 体重 Hero 卡片（同步小程序 weight-hero） ===== */
+.weight-hero-card {
+  background: linear-gradient(135deg, #6D28D9 0%, #9333EA 40%, #C026D3 100%);
+  margin: 0 12px 12px;
+  border-radius: 16px;
+  padding: 20px 18px 16px;
+  box-shadow: 0 6px 24px rgba(124, 58, 237, 0.22);
+}
+.weight-hero-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.weight-hero-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  flex-shrink: 0;
+}
+.weight-hero-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  flex: 1;
+}
+.weight-hero-unit {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.7);
+}
+.weight-hero-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.weight-input-am {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.95);
+  background: rgba(255,255,255,0.18);
+  border: 2px solid rgba(254,240,138,0.45);
+  border-radius: 14px;
+  padding: 18px 12px;
+  text-align: center;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+}
+.weight-input-am::placeholder {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+.weight-input-pm {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(250,204,21,0.55);
+  border-radius: 14px;
+  padding: 18px 12px;
+  text-align: center;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+}
+.weight-input-pm::placeholder {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+.weight-hero-fat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+.fat-label {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.75);
+  font-weight: 600;
+}
+.fat-input {
+  width: 110px;
+  padding: 10px 12px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #FACC15;
+  text-align: center;
+  background: rgba(255,255,255,0.1);
+  outline: none;
+  box-sizing: border-box;
+}
+.fat-input::placeholder {
+  color: rgba(255,255,255,0.3);
+  font-size: 0.85rem;
+}
+.fat-unit {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ===== 喝水打卡卡片（同步小程序 water-block） ===== */
+.water-block-card {
+  margin: 0 12px 12px;
+  background: linear-gradient(160deg, #F0F9FF 0%, #E0F2FE 40%, #BAE6FD 100%);
+  border: 2px solid rgba(14, 165, 233, 0.15);
+  border-radius: 16px;
+  padding: 18px 18px 14px;
+  box-shadow: 0 2px 10px rgba(14, 165, 233, 0.06);
+}
+.water-block-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.water-block-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #38BDF8, #0EA5E9);
+  flex-shrink: 0;
+}
+.water-block-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0369A1;
+}
+.water-cups-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.water-cup {
+  width: 46px; height: 58px;
+  border-radius: 7px 7px 10px 10px;
+  border: 2.5px solid #7DD3FC;
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 4px;
+  font-size: 0.65rem;
+  color: #0EA5E9;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.water-cup-filled {
+  background: linear-gradient(180deg, #38BDF8, #0284C7);
+  border-color: #0284C7;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.25);
+}
+.water-info-row {
+  font-size: 0.78rem;
+  color: #0C4A6E;
+  margin-top: 8px;
+}
+.water-count-num {
+  font-weight: 700;
+  color: #0284C7;
+}
+.water-goal-text {
+  font-size: 0.7rem;
+  color: #7BA5BE;
+  margin-top: 3px;
+}
+
+/* ===== 健康三合一卡片（同步小程序 health-trio） ===== */
+.health-trio-card {
+  margin: 0 12px 12px;
+  background: linear-gradient(160deg, #FFFBF0 0%, #FFF7E0 30%, #FFF3CC 60%, #FFEDB3 100%);
+  border: 2px solid rgba(217, 165, 60, 0.15);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(217, 165, 60, 0.06);
+}
+.health-trio-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.health-trio-cell {
+  width: 50%;
+  padding: 18px 16px;
+  border-right: 2px solid rgba(217, 165, 60, 0.12);
+  border-bottom: 2px solid rgba(217, 165, 60, 0.12);
+  box-sizing: border-box;
+}
+.health-trio-cell:nth-child(2n) { border-right: none; }
+.health-trio-diet {
+  width: 100%;
+  border-right: none;
+  border-bottom: none;
+  background: linear-gradient(160deg, rgba(255,255,255,0.55) 0%, rgba(255,250,240,0.6) 50%, rgba(255,245,225,0.5) 100%);
+}
+.health-trio-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #B8860B;
+  margin-bottom: 10px;
+  letter-spacing: 0.03em;
+}
+.health-trio-picker {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid rgba(217, 165, 60, 0.25);
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1c1917;
+  background: rgba(255,255,255,0.75);
+  outline: none;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.diet-tag-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+}
+.diet-tag-list::-webkit-scrollbar { display: none; }
+.diet-tag {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.7);
+  color: #8B7355;
+  border: 2px solid rgba(217, 165, 60, 0.2);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.diet-tag-active {
+  background: linear-gradient(135deg, #D4A853, #C9973A);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 6px rgba(184, 134, 11, 0.25);
+}
+
+/* ===== 生理期卡片（同步小程序 period-block） ===== */
+.period-block-card {
+  margin: 0 12px 12px;
+  background: linear-gradient(160deg, #FFF5F5 0%, #FFE4E6 40%, #FECDD3 100%);
+  border: 2px solid rgba(225, 29, 72, 0.1);
+  border-radius: 16px;
+  padding: 18px 16px;
+  box-shadow: 0 2px 10px rgba(225, 29, 72, 0.04);
+}
+.period-block-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.period-block-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FB7185, #E11D48);
+  flex-shrink: 0;
+}
+.period-block-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #9F1239;
+}
+.period-chip-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.period-chip {
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #fff;
+  color: #BE123C;
+  border: 2px solid rgba(225, 29, 72, 0.25);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-block;
+}
+.period-chip-active {
+  background: linear-gradient(135deg, #E11D48, #BE123C);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.2);
+}
+.period-status {
+  font-size: 0.75rem;
+  color: #881337;
+  margin-bottom: 10px;
+}
+.period-note {
+  width: 100%;
+  min-height: 70px;
+  padding: 12px 14px;
+  border: 2px solid rgba(225, 29, 72, 0.15);
+  border-radius: 12px;
+  font-size: 0.82rem;
+  background: rgba(255,255,255,0.7);
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+/* ===== 心情日记卡片（同步小程序 note-block） ===== */
+.note-block-card {
+  margin: 0 12px 12px;
+  background: linear-gradient(160deg, #F8FAFC 0%, #F1F5F9 50%, #E8EEF4 100%);
+  border: 2px solid rgba(148, 163, 184, 0.15);
+  border-radius: 16px;
+  padding: 18px 16px;
+  box-shadow: 0 2px 10px rgba(100, 116, 139, 0.04);
+}
+.note-block-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.note-block-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #A78BFA, #7C3AED);
+  flex-shrink: 0;
+}
+.note-block-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4C1D95;
+}
+.note-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 14px 16px;
+  border: 2px solid rgba(148, 163, 184, 0.18);
+  border-radius: 12px;
+  font-size: 0.82rem;
+  background: rgba(255,255,255,0.8);
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+  line-height: 1.6;
+  color: #1c1917;
+}
+
+/* 保留旧版兼容 */
 .comm-post{background:linear-gradient(180deg,#fff 0%,#fafafa 100%);border-radius:16px;padding:14px 16px;border:1px solid #ece7e3;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(139,92,246,0.03);transition:all 0.25s}
 .comm-post:hover{box-shadow:0 4px 16px rgba(139,92,246,0.08),0 1px 3px rgba(0,0,0,0.06)}
 .comm-post{background:linear-gradient(135deg,#ffffff 0%,#fdfaff 50%,#faf5fb 100%);border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(139,92,246,0.06),0 1px 3px rgba(0,0,0,0.03);transition:all 0.2s;border:1px solid rgba(139,92,246,0.05)}
@@ -1077,38 +1460,44 @@ _loadCosSdk(0);
 <!-- ===== 主应用 ===== -->
 <div id="app" style="display:none">
 
-<!-- Hero -->
+<!-- Hero（同步小程序 f5c02e6：深紫渐变 + 体重数字 + 快捷入口同排） -->
 <header class="hero">
   <div class="hero-inner">
-    <div class="hero-top">
-      <div class="hero-left">
-        <div class="hero-title" id="heroTitle"><span class="brand">Moon Memo</span><span class="hero-sub">月亮日记</span></div>
-        <div class="hero-clock" id="clock">—</div>
-        <div class="hero-actions">
-          <div class="unit-toggle">
-            <button id="unitBtnKg" onclick="setUnit('kg');playToggle()">kg</button>
-            <button id="unitBtnJin" onclick="setUnit('斤');playToggle()">斤</button>
-          </div>
-          <button class="btn btn-glass" onclick="openSettings();playClick()">设置</button>
-          <button class="btn btn-glass" onclick="logout();playClick()">退出</button>
+    <div class="hero-top-row">
+      <span class="hero-name" id="heroNameDisplay">你好</span>
+      <span class="hero-date" id="clock">—</span>
+    </div>
+    <div class="hero-bottom-row">
+      <div class="hero-weight-col">
+        <div class="hero-weight">
+          <span class="hero-weight-num" id="heroWeight">—</span>
+          <span class="hero-weight-unit" id="heroWeightUnit">kg</span>
+        </div>
+        <div class="hero-weight-label">今日体重</div>
+      </div>
+      <div class="beauty-quick-entries" id="beautyQuickEntries" style="display:none;gap:10px">
+        <div class="hero-quick-btn hero-quick-skincare" onclick="openBeautySkincare();playClick()">
+          <span class="hero-quick-text">护肤日记</span>
+        </div>
+        <div class="hero-quick-btn hero-quick-mood" onclick="openBeautyMood();playClick()">
+          <span class="hero-quick-text">心情日记</span>
         </div>
       </div>
-      <div class="hero-avatar-box">
-        <div class="avatar avatar-lg" id="avatar" onclick="openAvatarPicker();playClick()"></div>
-        <div class="hero-nickname" id="heroNickname" onclick="openSettings()">点击设置</div>
-      </div>
     </div>
-    <div class="profile-bar">
-      <div class="profile-info">
-        <div class="pf-item pf-weight" onclick="switchTab(0)"><span class="pf-value pf-weight-val" id="heroWeight" style="color:#FFD700 !important">—</span><span class="pf-label">今日体重</span></div>
-        <div class="pf-item" onclick="openSettings()"><span class="pf-label">性别</span><span class="pf-value" id="pf-gender">—</span></div>
-        <div class="pf-item" onclick="openSettings()"><span class="pf-label">年龄</span><span class="pf-value" id="pf-age">—</span></div>
-        <div class="pf-item" onclick="openSettings()"><span class="pf-label">身高</span><span class="pf-value" id="pf-height">—</span></div>
-      </div>
-      <div class="beauty-quick-entries" id="beautyQuickEntries" style="display:none;margin-left:auto;display:flex;gap:10px">
-        <div class="beauty-quick-btn" onclick="openBeautySkincare();playClick()" style="padding:8px 20px;border-radius:100px;background:rgba(255,255,255,0.92);cursor:pointer;border:1.5px solid rgba(167,139,250,0.5);text-align:center;box-shadow:0 3px 12px rgba(124,58,237,0.2),inset 0 1px 0 rgba(255,255,255,0.8);transition:all 0.2s" onmousedown="this.style.transform='scale(0.94)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''"><span style="font-size:0.82rem;font-weight:700;color:#7c3aed">护肤日记</span></div>
-        <div class="beauty-quick-btn" onclick="openBeautyMood();playClick()" style="padding:8px 20px;border-radius:100px;background:rgba(255,255,255,0.92);cursor:pointer;border:1.5px solid rgba(244,114,182,0.5);text-align:center;box-shadow:0 3px 12px rgba(236,72,153,0.2),inset 0 1px 0 rgba(255,255,255,0.8);transition:all 0.2s" onmousedown="this.style.transform='scale(0.94)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''"><span style="font-size:0.82rem;font-weight:700;color:#db2777">心情日记</span></div>
-      </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+      <span class="pf-value" id="pf-gender" style="color:rgba(255,255,255,0.7);font-size:0.72rem">—</span>
+      <span style="color:rgba(255,255,255,0.3);font-size:0.65rem">·</span>
+      <span class="pf-value" id="pf-age" style="color:rgba(255,255,255,0.7);font-size:0.72rem">—</span>
+      <span style="color:rgba(255,255,255,0.3);font-size:0.65rem">·</span>
+      <span class="pf-value" id="pf-height" style="color:rgba(255,255,255,0.7);font-size:0.72rem">—</span>
+      <span style="margin-left:auto;display:flex;gap:6px">
+        <button class="btn btn-glass" onclick="openSettings();playClick()" style="font-size:0.68rem;padding:3px 10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);border-radius:100px">设置</button>
+        <button class="btn btn-glass" onclick="logout();playClick()" style="font-size:0.68rem;padding:3px 10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);border-radius:100px">退出</button>
+      </span>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:6px">
+      <button id="unitBtnKg" onclick="setUnit('kg');playToggle()" style="font-size:0.65rem;padding:2px 10px;border-radius:100px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);cursor:pointer">kg</button>
+      <button id="unitBtnJin" onclick="setUnit('斤');playToggle()" style="font-size:0.65rem;padding:2px 10px;border-radius:100px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);cursor:pointer">斤</button>
     </div>
   </div>
 </header>
@@ -1128,103 +1517,110 @@ _loadCosSdk(0);
 <!-- ===== Page 0: 每日记录 ===== -->
 <div class="page active" id="page0">
   <div class="dash">
-    <div class="dash-item dash-clickable" onclick="editField('startDate','开始日期');playClick()"><div class="dash-label">📅 计划天数</div><div class="dash-value" id="d-total">—</div></div>
-    <div class="dash-item" ><div class="dash-label">📍 当前第几天</div><div class="dash-value light-pink" id="d-current">—</div></div>
-    <div class="dash-item dash-clickable" onclick="editField('startWeight','起始体重');playClick()"><div class="dash-label">🏁 起始体重</div><div class="dash-value" id="d-start">—</div></div>
-    <div class="dash-item dash-clickable" onclick="editField('targetWeight','目标体重');playClick()"><div class="dash-label">🎯 目标体重</div><div class="dash-value coral" id="d-target">—</div></div>
-    <div class="dash-item"><div class="dash-label">📉 已减重</div><div class="dash-value mint" id="d-lost">—</div></div>
-    <div class="dash-item"><div class="dash-label">⚖️ 最新体重</div><div class="dash-value amber" id="d-latest" style="color:#FF8C00;font-weight:900">—</div></div>
+    <div class="dash-item dash-clickable" onclick="editField('startDate','开始日期');playClick()"><div class="dash-label">计划天数</div><div class="dash-value" id="d-total">—</div></div>
+    <div class="dash-item" ><div class="dash-label">当前第几天</div><div class="dash-value light-pink" id="d-current">—</div></div>
+    <div class="dash-item dash-clickable" onclick="editField('startWeight','起始体重');playClick()"><div class="dash-label">起始体重</div><div class="dash-value" id="d-start">—</div></div>
+    <div class="dash-item dash-clickable" onclick="editField('targetWeight','目标体重');playClick()"><div class="dash-label">目标体重</div><div class="dash-value coral" id="d-target">—</div></div>
+    <div class="dash-item"><div class="dash-label">已减重</div><div class="dash-value mint" id="d-lost">—</div></div>
+    <div class="dash-item"><div class="dash-label">最新体重</div><div class="dash-value amber" id="d-latest" style="color:#FF8C00;font-weight:900">—</div></div>
   </div>
 
-  <div class="card">
-    <div class="card-title">🎯 减重进度</div>
-    <div class="progress-wrap">
+  <div class="card" style="background:transparent;padding:0;box-shadow:none;border:none">
+    <div class="card-title" style="padding:0 4px 8px">减重进度</div>
+    <div class="progress-wrap" style="background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 1px 6px rgba(0,0,0,0.04)">
       <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
       <div class="progress-text" id="progressText">0%</div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">✏️ 今日记录 <span class="sub">输入自动保存</span></div>
-    <div class="checkin-box">
-      <h3>⚖️ 早晚体重打卡</h3>
-      <div class="am-pm-row">
-        <div class="am-pm-item">
-          <label>🌅 晨起体重（空腹排便后）<span id="lblAmUnit">（斤）</span></label>
-          <input type="number" class="weight-input" id="todayWeightAM" step="0.1" oninput="autoSave('am')" placeholder="0.0">
-        </div>
-        <div class="am-pm-item">
-          <label>🌙 睡前体重<span id="lblPmUnit">（斤）</span></label>
-          <input type="number" class="weight-input" id="todayWeightPM" step="0.1" oninput="autoSave('pm')" placeholder="0.0">
-        </div>
-      </div>
+  <!-- 体重+体脂 Hero 卡片（同步小程序 weight-hero） -->
+  <div class="weight-hero-card">
+    <div class="weight-hero-header">
+      <div class="weight-hero-dot"></div>
+      <span class="weight-hero-title">早晚体重打卡</span>
+      <span class="weight-hero-unit" id="whUnitLabel">kg</span>
     </div>
-
-    <div class="fat-box" style="background:linear-gradient(135deg,rgba(255,249,224,0.8),rgba(255,253,233,0.95));border:1px solid rgba(230,200,100,0.3);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px">
-      <h3 style="font-size:0.78rem;color:#9A8C00;margin-bottom:10px;font-weight:700">📊 今日体脂率</h3>
-      <div class="water-row">
-        <input type="text" id="fatInput" placeholder="输入体脂率" inputmode="decimal" style="width:110px;padding:8px 12px;border:1px solid rgba(230,200,100,0.35);border-radius:10px;font-size:1.1rem;font-weight:700;color:#9A8C00;text-align:center;outline:none;background:rgba(255,255,255,0.9);transition:border-color 0.2s" onfocus="this.style.borderColor='#D4B800'" onblur="this.style.borderColor='rgba(230,200,100,0.35)';saveFat()" oninput="onFatInput(this)">
-        <span style="font-size:1rem;font-weight:700;color:#9A8C00;opacity:0.6">%</span>
-        <span id="fatHistory" style="font-size:0.75rem;color:var(--text-l);margin-left:6px"></span>
-      </div>
+    <div class="weight-hero-row">
+      <input class="weight-input-am" id="todayWeightAM" type="number" step="0.1" placeholder="晨起体重（空腹排便后）" oninput="autoSave('am')">
+      <input class="weight-input-pm" id="todayWeightPM" type="number" step="0.1" placeholder="睡前体重" oninput="autoSave('pm')">
     </div>
-
-    <div class="water-box">
-      <h3>💧 喝水打卡（点击杯子记录）</h3>
-      <div class="water-row">
-        <div class="water-cups" id="waterCups"></div>
-        <div class="water-info">今日已喝 <b id="waterCount">0</b> 杯 ≈ <b id="waterMl">0</b> ml</div>
-      </div>
-      <div class="water-goal-progress" id="waterGoalText">目标 2000 ml</div>
+    <div class="weight-hero-fat">
+      <span class="fat-label">体脂率</span>
+      <input class="fat-input" id="fatInput" type="text" placeholder="--" inputmode="decimal" onfocus="this.style.borderColor='#FACC15'" onblur="this.style.borderColor='rgba(255,255,255,0.2)';saveFat()" oninput="onFatInput(this)">
+      <span class="fat-unit">%</span>
+      <span id="fatHistory" style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-left:auto"></span>
     </div>
+  </div>
 
-    <div class="period-box" id="periodBox" style="display:none">
-      <h3>🌸 生理期记录</h3>
-      <div class="period-row">
-        <div class="period-chip" id="periodChip" onclick="togglePeriod()">今天来月经</div>
-        <div class="period-chip" id="periodEndChip" onclick="togglePeriodEnd()" style="display:none">标记结束</div>
-      </div>
-      <div class="period-status" id="periodStatus"></div>
-      <textarea class="period-note" id="periodNote" placeholder="症状/流量备注（如：量多、痛经）" oninput="autoSave('periodNote')"></textarea>
+  <!-- 喝水打卡（同步小程序 water-block） -->
+  <div class="water-block-card">
+    <div class="water-block-header">
+      <div class="water-block-dot"></div>
+      <span class="water-block-title">喝水打卡</span>
     </div>
+    <div class="water-cups-row" id="waterCups"></div>
+    <div class="water-info-row">已喝 <b class="water-count-num" id="waterCount">0</b> 杯 <b class="water-count-num" id="waterMl">0</b>ml</div>
+    <div class="water-goal-text" id="waterGoalText">目标 2000 ml</div>
+  </div>
 
-    <div class="input-card">
-      <div class="input-group">
-        <label>🚽 排便情况</label>
-        <select id="todayBM" onchange="autoSave('bm');playToggle()">
+  <!-- 健康三合一：排便+运动+饮食（同步小程序 health-trio） -->
+  <div class="health-trio-card">
+    <div class="health-trio-row">
+      <div class="health-trio-cell">
+        <div class="health-trio-label">排便</div>
+        <select id="todayBM" onchange="autoSave('bm');playToggle()" class="health-trio-picker">
           <option value="">—</option>
           <option value="有">✓ 有</option>
           <option value="无">✗ 无</option>
           <option value="便秘">便秘</option>
         </select>
       </div>
-      <div class="input-group">
-        <label>🏃 运动</label>
-        <select id="todayExercise" onchange="autoSave('exercise');playToggle()">
+      <div class="health-trio-cell">
+        <div class="health-trio-label">运动</div>
+        <select id="todayExercise" onchange="autoSave('exercise');playToggle()" class="health-trio-picker">
           <option value="">—</option>
           <option value="有运动">✓ 有</option>
           <option value="无运动">✗ 无</option>
         </select>
       </div>
-      <div class="input-group">
-        <label>🥗 饮食记录</label>
-        <div class="toggle-options" id="todayDiet">
-          <button type="button" class="toggle-opt" data-val="液断" onclick="setDiet('液断');playToggle()">液断</button>
-          <button type="button" class="toggle-opt" data-val="轻断食" onclick="setDiet('轻断食');playToggle()">轻断食</button>
-          <button type="button" class="toggle-opt" data-val="少餐" onclick="setDiet('少餐');playToggle()">少餐</button>
-          <button type="button" class="toggle-opt" data-val="正餐" onclick="setDiet('正餐');playToggle()">正餐</button>
-          <button type="button" class="toggle-opt" data-val="放纵" onclick="setDiet('放纵');playToggle()">放纵</button>
+      <div class="health-trio-cell health-trio-diet">
+        <div class="health-trio-label">饮食</div>
+        <div class="diet-tag-list" id="todayDiet">
+          <span class="diet-tag" data-val="液断" onclick="setDiet('液断');playToggle()">液断</span>
+          <span class="diet-tag" data-val="轻断食" onclick="setDiet('轻断食');playToggle()">轻断食</span>
+          <span class="diet-tag" data-val="少餐" onclick="setDiet('少餐');playToggle()">少餐</span>
+          <span class="diet-tag" data-val="正餐" onclick="setDiet('正餐');playToggle()">正餐</span>
+          <span class="diet-tag" data-val="放纵" onclick="setDiet('放纵');playToggle()">放纵</span>
         </div>
-      </div>
-      <div class="input-group">
-        <label>📝 备注/日记</label>
-        <textarea id="todayNote" oninput="autoSave('note')" placeholder="记录今天的心情/感悟..." style="width:100%;min-height:60px;resize:vertical;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.88rem;font-family:inherit;background:var(--card);color:var(--text);outline:none"></textarea>
       </div>
     </div>
   </div>
 
+  <!-- 生理期记录（同步小程序 period-block） -->
+  <div class="period-block-card" id="periodBox" style="display:none">
+    <div class="period-block-header">
+      <div class="period-block-dot"></div>
+      <span class="period-block-title">生理期记录</span>
+    </div>
+    <div class="period-chip-row">
+      <span class="period-chip" id="periodChip" onclick="togglePeriod()">今天来月经</span>
+      <span class="period-chip" id="periodEndChip" onclick="togglePeriodEnd()" style="display:none">标记结束</span>
+    </div>
+    <div class="period-status" id="periodStatus"></div>
+    <textarea class="period-note" id="periodNote" placeholder="症状/流量备注（如：量多、痛经）" oninput="autoSave('periodNote')"></textarea>
+  </div>
+
+  <!-- 心情日记（同步小程序 note-block） -->
+  <div class="note-block-card">
+    <div class="note-block-header">
+      <div class="note-block-dot"></div>
+      <span class="note-block-title">心情日记</span>
+    </div>
+    <textarea class="note-textarea" id="todayNote" placeholder="今天怎么样..." oninput="autoSave('note')" maxlength="500"></textarea>
+  </div>
+
   <div class="card">
-    <div class="card-title">📊 完整记录表</div>
+    <div class="card-title">完整记录表</div>
     <div id="recordAccordion"></div>
   </div>
 
@@ -3203,7 +3599,7 @@ function setDiet(val) {
   if (idx < 0 || idx >= state.days.length) return;
   const day = state.days[idx];
   day.diet = (day.diet === val) ? '' : val; /* 再次点击取消 */
-  document.querySelectorAll('#todayDiet .toggle-opt').forEach(b => b.classList.toggle('selected', b.dataset.val === day.diet));
+  document.querySelectorAll('#todayDiet .diet-tag').forEach(b => b.classList.toggle('diet-tag-active', b.dataset.val === day.diet));
   saveState(); renderTable();
 }
 
@@ -3264,12 +3660,12 @@ function renderPeriod() {
   const note = document.getElementById('periodNote');
   if (day.period) {
     chip.textContent = '🌸 经期中';
-    chip.classList.add('active');
+    chip.classList.add('period-chip-active');
     endChip.style.display = 'inline-block';
     status.innerHTML = '<b>经期第 ' + countPeriodDays(day.date) + ' 天</b>';
   } else {
     chip.textContent = '今天来月经';
-    chip.classList.remove('active');
+    chip.classList.remove('period-chip-active');
     endChip.style.display = 'none';
     status.textContent = '';
   }
@@ -3502,8 +3898,7 @@ function setUnit(u) {
   /* 更新所有单位标签 */
   const lbls = ['lblStartUnit','lblTargetUnit'];
   lbls.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = u; });
-  const amL = document.getElementById('lblAmUnit'); if (amL) amL.textContent = '（' + u + '）';
-  const pmL = document.getElementById('lblPmUnit'); if (pmL) pmL.textContent = '（' + u + '）';
+  var whUnit = document.getElementById('whUnitLabel'); if (whUnit) whUnit.textContent = u;
   /* 更新设置弹窗体重值 */
   const swEl = document.getElementById('setStartWeight');
   const twEl = document.getElementById('setTargetWeight');
@@ -3609,8 +4004,14 @@ document.addEventListener('touchend', e => {
 /* ---------- 渲染 ---------- */
 function renderHero() {
   const n = state.name;
-  document.getElementById('heroTitle').innerHTML = '<span class="brand">Moon Memo</span><span class="hero-sub">' + (n ? n + '的' : '') + '月亮日记</span>';
-  document.getElementById('heroNickname').textContent = n || '点击设置';
+  /* 新 Hero：用户名+日期顶部行 */
+  var nameEl = document.getElementById('heroNameDisplay');
+  if (nameEl) nameEl.textContent = n || '你好';
+  /* 旧 Hero 元素兼容 */
+  var titleEl = document.getElementById('heroTitle');
+  if (titleEl) titleEl.innerHTML = '<span class="brand">Moon Memo</span><span class="hero-sub">' + (n ? n + '的' : '') + '月亮日记</span>';
+  var nickEl = document.getElementById('heroNickname');
+  if (nickEl) nickEl.textContent = n || '点击设置';
   document.getElementById('pf-gender').textContent = state.gender || '—';
   document.getElementById('pf-age').textContent = state.age ? state.age + '岁' : '—';
   document.getElementById('pf-height').textContent = state.height ? state.height + 'cm' : '—';
@@ -3618,28 +4019,31 @@ function renderHero() {
   const idx = getCurrentDayIndex();
   const day = state.days[idx];
   const w = day ? getEffectiveWeight(day) : null;
+  const u = state.unit;
   const wEl = document.getElementById('heroWeight');
+  const wUnitEl = document.getElementById('heroWeightUnit');
   if (w) {
-    wEl.textContent = (state.unit === '斤' ? (w * 2).toFixed(1) : w.toFixed(1)) + state.unit;
+    if (wEl) wEl.textContent = (u === '斤' ? (w * 2).toFixed(1) : w.toFixed(1));
+    if (wUnitEl) wUnitEl.textContent = u;
   } else {
-    wEl.textContent = '— ' + state.unit;
+    if (wEl) wEl.textContent = '—';
+    if (wUnitEl) wUnitEl.textContent = u;
   }
   const avEl = document.getElementById('avatar');
-  /* 如果是旧默认笑脸，自动替换为月亮图标 */
-  if (state.avatar === '😊') state.avatar = MOON_AVATAR;
-  if (state.avatar && typeof state.avatar === 'string' && state.avatar.indexOf('data:image') === 0) {
-    avEl.innerHTML = '<img src="' + state.avatar + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
-  } else {
-    avEl.textContent = state.avatar || MOON_AVATAR;
+  if (avEl) {
+    if (state.avatar === '😊') state.avatar = MOON_AVATAR;
+    if (state.avatar && typeof state.avatar === 'string' && state.avatar.indexOf('data:image') === 0) {
+      avEl.innerHTML = '<img src="' + state.avatar + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+    } else {
+      avEl.textContent = state.avatar || MOON_AVATAR;
+    }
   }
   document.title = (n ? n + ' · ' : '') + 'MoonMemo 月亮日记';
   document.getElementById('periodBox').style.display = (state.gender === '女') ? 'block' : 'none';
-  /* 男性：经期日历→运动日历 */
   const calTab = document.getElementById('calendarTab');
   if (calTab) calTab.textContent = (state.gender === '男') ? '运动日历' : '经期日历';
   const calCardTitle = document.getElementById('calCardTitle');
   if (calCardTitle) calCardTitle.textContent = (state.gender === '男') ? '运动日历' : '经期日历';
-  /* 男性：隐藏经期图例 */
   const legendPeriod = document.getElementById('legendPeriod');
   if (legendPeriod) legendPeriod.style.display = (state.gender === '男') ? 'none' : '';
 }
@@ -3675,10 +4079,13 @@ function loadTodayInput() {
   const day = state.days[idx];
   document.getElementById('todayWeightAM').value = day.weightAM !== null ? (state.unit === '斤' ? (day.weightAM * 2).toFixed(1) : day.weightAM) : '';
   document.getElementById('todayWeightPM').value = day.weightPM !== null ? (state.unit === '斤' ? (day.weightPM * 2).toFixed(1) : day.weightPM) : '';
-  document.querySelectorAll('#todayDiet .toggle-opt').forEach(b => b.classList.toggle('selected', b.dataset.val === (day.diet||'')));
+  document.querySelectorAll('#todayDiet .diet-tag').forEach(b => b.classList.toggle('diet-tag-active', b.dataset.val === (day.diet||'')));
   document.getElementById('todayExercise').value = day.exercise || '';
   document.getElementById('todayBM').value = day.bm || '';
   document.getElementById('todayNote').value = day.note || '';
+  /* 更新体重卡片单位标签 */
+  var whUnit = document.getElementById('whUnitLabel');
+  if (whUnit) whUnit.textContent = state.unit;
   renderWater();
   renderPeriod();
 }
@@ -3692,7 +4099,7 @@ function renderWater() {
   const maxCups = Math.max(8, goalCups);
   let html = '';
   for (let i = 1; i <= maxCups; i++) {
-    html += '<div class="water-cup' + (i <= cups ? ' filled' : '') + '" onclick="setWater(' + i + ')" title="' + (i*WATER_CUP_ML) + 'ml">' + (i <= cups ? '✓' : i) + '</div>';
+    html += '<div class="water-cup' + (i <= cups ? ' water-cup-filled' : '') + '" onclick="setWater(' + i + ')" title="' + (i*WATER_CUP_ML) + 'ml">' + (i <= cups ? '✓' : i) + '</div>';
   }
   document.getElementById('waterCups').innerHTML = html;
   document.getElementById('waterCount').textContent = cups;
@@ -4460,8 +4867,7 @@ function openSettings() {
   const u = unitLabel();
   document.getElementById('lblStartUnit').textContent = u;
   document.getElementById('lblTargetUnit').textContent = u;
-  document.getElementById('lblAmUnit').textContent = '（' + u + '）';
-  document.getElementById('lblPmUnit').textContent = '（' + u + '）';
+  var whUnit = document.getElementById('whUnitLabel'); if (whUnit) whUnit.textContent = u;
   document.getElementById('setStartDate').value = state.startDate || '';
   document.getElementById('setTargetDate').value = state.targetDate || '';
   document.getElementById('setCalGoal').value = state.calGoal || '';
@@ -5738,6 +6144,21 @@ function renderAll() {
   renderTable();
   document.getElementById('unitBtnKg').classList.toggle('active', state.unit === 'kg');
   document.getElementById('unitBtnJin').classList.toggle('active', state.unit === '斤');
+  /* unit btn active style in dark hero */
+  ['unitBtnKg','unitBtnJin'].forEach(function(id) {
+    var b = document.getElementById(id);
+    if (b) {
+      if (b.classList.contains('active')) {
+        b.style.background = '#fff';
+        b.style.color = '#7c3aed';
+        b.style.borderColor = '#fff';
+      } else {
+        b.style.background = 'rgba(255,255,255,0.1)';
+        b.style.color = 'rgba(255,255,255,0.7)';
+        b.style.borderColor = 'rgba(255,255,255,0.2)';
+      }
+    }
+  });
   checkVersionNotice();
   /* 100天变美日记入口：管理员始终显示，非管理员的已购用户隐藏 */
   var isAdmin = (currentKey === ADMIN_SESSION);
