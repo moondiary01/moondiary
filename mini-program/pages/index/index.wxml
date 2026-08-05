@@ -50,25 +50,21 @@
       <!-- 升级版快捷入口（仅已购用户可见） -->
       <view class="beauty-quick-btns" wx:if="{{showBeautyQuick}}">
         <view class="beauty-quick-btn beauty-quick-skincare" bindtap="onOpenSkincare">
-          <text class="beauty-quick-icon">🧴</text>
           <text class="beauty-quick-title">护肤日记</text>
+          <text class="beauty-quick-sub">SKINCARE DIARY</text>
         </view>
         <view class="beauty-quick-btn beauty-quick-mood" bindtap="onOpenMood">
-          <text class="beauty-quick-icon">💜</text>
           <text class="beauty-quick-title">心情日记</text>
+          <text class="beauty-quick-sub">MOOD DIARY</text>
         </view>
       </view>
       <!-- 19.9元普通版购买入口（试用/未购用户可见） -->
       <view class="basic-plan-entry" wx:if="{{showBasicPlanEntry}}" bindtap="onOpenBasicPay">
         <view class="basic-plan-glow basic-plan-glow-gold"></view>
-        <view class="basic-plan-glow basic-plan-glow-white"></view>
         <view class="basic-plan-inner">
           <view class="basic-plan-left">
-            <text class="basic-plan-icon">🌙</text>
-            <view class="basic-plan-text">
-              <text class="basic-plan-title">解锁全部功能 · 永久云端储存</text>
-              <text class="basic-plan-sub">一次购买 · 永久会员权益 · 云端储存</text>
-            </view>
+            <text class="basic-plan-title">解锁全部功能</text>
+            <text class="basic-plan-sub">一次购买 · 永久会员权益 · 云端储存</text>
           </view>
           <view class="basic-plan-price-pill">
             <text class="basic-plan-yuan">¥</text>

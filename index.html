@@ -1076,32 +1076,28 @@ _loadCosSdk(0);
       </div>
     </div>
     <!-- 升级版快捷入口（仅已购用户可见） -->
-    <div id="beautyQuickBtns" style="display:none;display:flex;gap:10px;margin-top:12px">
-      <div onclick="openBeautySkincare();playClick()" style="padding:9px 18px;border-radius:100px;background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(139,92,246,0.06));cursor:pointer;transition:all 0.25s;border:1px solid rgba(139,92,246,0.2);display:flex;align-items:center;gap:7px;backdrop-filter:blur(6px)" onmouseover="this.style.transform='translateY(-1px)';this.style.borderColor='rgba(139,92,246,0.4)';this.style.boxShadow='0 4px 16px rgba(139,92,246,0.15)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(139,92,246,0.2)';this.style.boxShadow=''">
-        <span style="font-size:0.85rem">🧴</span>
-        <span style="font-size:0.78rem;font-weight:700;color:#7c3aed;letter-spacing:0.5px">护肤日记</span>
+    <div id="beautyQuickBtns" style="display:none;display:flex;gap:10px;margin-top:14px">
+      <div onclick="openBeautySkincare();playClick()" style="flex:1;padding:12px 0;border-radius:14px;background:linear-gradient(135deg,#f3e8ff,#ede4ff);cursor:pointer;text-align:center;transition:all 0.25s;border:1px solid #d8c9f0;position:relative;overflow:hidden" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 18px rgba(139,92,246,0.15)';this.style.borderColor='#c4b5fd'" onmouseout="this.style.transform='';this.style.boxShadow='';this.style.borderColor='#d8c9f0'">
+        <div style="font-size:0.82rem;font-weight:700;color:#5b21b6;letter-spacing:2px">护肤日记</div>
+        <div style="font-size:0.6rem;color:#8b5cf6;margin-top:2px;letter-spacing:0.5px">SKINCARE DIARY</div>
       </div>
-      <div onclick="openBeautyMood();playClick()" style="padding:9px 18px;border-radius:100px;background:linear-gradient(135deg,rgba(236,72,153,0.12),rgba(236,72,153,0.06));cursor:pointer;transition:all 0.25s;border:1px solid rgba(236,72,153,0.2);display:flex;align-items:center;gap:7px;backdrop-filter:blur(6px)" onmouseover="this.style.transform='translateY(-1px)';this.style.borderColor='rgba(236,72,153,0.4)';this.style.boxShadow='0 4px 16px rgba(236,72,153,0.15)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(236,72,153,0.2)';this.style.boxShadow=''">
-        <span style="font-size:0.85rem">💜</span>
-        <span style="font-size:0.78rem;font-weight:700;color:#be185d;letter-spacing:0.5px">心情日记</span>
+      <div onclick="openBeautyMood();playClick()" style="flex:1;padding:12px 0;border-radius:14px;background:linear-gradient(135deg,#fce7f3,#fdf2f8);cursor:pointer;text-align:center;transition:all 0.25s;border:1px solid #f0c4da;position:relative;overflow:hidden" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 18px rgba(236,72,153,0.15)';this.style.borderColor='#f9a8d4'" onmouseout="this.style.transform='';this.style.boxShadow='';this.style.borderColor='#f0c4da'">
+        <div style="font-size:0.82rem;font-weight:700;color:#9d174d;letter-spacing:2px">心情日记</div>
+        <div style="font-size:0.6rem;color:#ec4899;margin-top:2px;letter-spacing:0.5px">MOOD DIARY</div>
       </div>
     </div>
     <!-- 19.9元普通版购买入口（试用/未购用户可见） -->
-    <div id="basicPlanEntry" style="display:none;margin-top:14px;padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);cursor:pointer;position:relative;overflow:hidden;transition:all 0.25s" onclick="openBasicPlanFromHero();playClick()" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(245,158,11,0.25)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-      <div style="position:absolute;top:-20px;right:-10px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.2),transparent 70%);pointer-events:none"></div>
-      <div style="position:absolute;bottom:-15px;left:-10px;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.1),transparent 70%);pointer-events:none"></div>
+    <div id="basicPlanEntry" style="display:none;margin-top:14px;padding:14px 18px;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,0.18),rgba(255,255,255,0.06));backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);cursor:pointer;position:relative;overflow:hidden;transition:all 0.25s" onclick="openBasicPlanFromHero();playClick()" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 24px rgba(245,158,11,0.3)';this.style.borderColor='rgba(255,255,255,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow='';this.style.borderColor='rgba(255,255,255,0.25)'">
+      <div style="position:absolute;top:-30px;right:-15px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.2),transparent 70%);pointer-events:none"></div>
       <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:1.3rem;filter:drop-shadow(0 2px 6px rgba(245,158,11,0.4))"></span>
-          <div>
-            <div style="font-size:0.88rem;font-weight:700;color:#fff;letter-spacing:1px">解锁全部功能 · 永久云端储存</div>
-            <div style="font-size:0.65rem;color:rgba(255,255,255,0.55);margin-top:2px">一次购买 · 永久会员权益 · 云端储存</div>
-          </div>
+        <div>
+          <div style="font-size:0.84rem;font-weight:700;color:#fff;letter-spacing:2px">解锁全部功能</div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.6);margin-top:2px;letter-spacing:0.5px">一次购买 · 永久会员权益 · 云端储存</div>
         </div>
-        <div style="display:flex;align-items:center;gap:6px;padding:6px 16px;border-radius:100px;background:linear-gradient(135deg,#f59e0b,#fbbf24);box-shadow:0 3px 14px rgba(245,158,11,0.4);flex-shrink:0">
-          <span style="font-size:0.7rem;font-weight:500;color:#92400e">¥</span>
-          <span style="font-size:1.05rem;font-weight:900;color:#1a1025;line-height:1">19.9</span>
-          <span style="font-size:0.55rem;font-weight:700;color:#5c3d0a">永久</span>
+        <div style="display:flex;align-items:center;gap:5px;padding:7px 18px;border-radius:100px;background:linear-gradient(135deg,#f59e0b,#fbbf24);box-shadow:0 3px 14px rgba(245,158,11,0.45);flex-shrink:0">
+          <span style="font-size:0.65rem;font-weight:600;color:#92400e">¥</span>
+          <span style="font-size:1rem;font-weight:900;color:#1a1025;line-height:1">19.9</span>
+          <span style="font-size:0.52rem;font-weight:700;color:#5c3d0a">永久</span>
         </div>
       </div>
     </div>
