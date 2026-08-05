@@ -52,11 +52,12 @@ page {
 
 /* 卡片 */
 .card {
-  background: var(--card);
+  background: var(--grad-card);
   border-radius: 40rpx;
   padding: 30rpx;
-  margin: 0 24rpx 20rpx;
+  margin-bottom: 28rpx;
   box-shadow: var(--shadow);
+  border: 1rpx solid var(--border);
 }
 .card-title {
   font-size: 32rpx;

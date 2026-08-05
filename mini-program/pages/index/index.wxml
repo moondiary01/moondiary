@@ -50,6 +50,7 @@
     </view>
   </view>
 
+  <view class="main-content">
   <!-- ===== 仪表盘 6项 ===== -->
   <view class="dash">
     <view class="dash-item" bindtap="onEditField" data-field="startDate">
@@ -254,4 +255,5 @@
   <!-- 底部留白 -->
   <view style="height: 120rpx;"></view>
 
+  </view><!-- main-content -->
 </view>
