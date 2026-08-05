@@ -1077,13 +1077,13 @@ _loadCosSdk(0);
     </div>
     <!-- 升级版快捷入口（仅已购用户可见） -->
     <div id="beautyQuickBtns" style="display:none;display:flex;gap:10px;margin-top:14px">
-      <div onclick="openBeautySkincare();playClick()" style="flex:1;padding:8px 14px;border-radius:12px;background:linear-gradient(135deg,#f3e8ff,#ede4ff);cursor:pointer;text-align:center;transition:all 0.25s;border:1px solid #d8c9f0" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 14px rgba(139,92,246,0.12)';this.style.borderColor='#c4b5fd'" onmouseout="this.style.transform='';this.style.boxShadow='';this.style.borderColor='#d8c9f0'">
-        <div style="font-size:0.8rem;font-weight:700;color:#5b21b6;letter-spacing:2px">护肤日记</div>
-        <div style="font-size:0.55rem;color:#8b5cf6;margin-top:1px;letter-spacing:0.5px">SKINCARE DIARY</div>
+      <div onclick="openBeautySkincare();playClick()" style="flex:1;padding:5px 14px;border-radius:10px;background:linear-gradient(135deg,#f3e8ff,#ede4ff);cursor:pointer;text-align:center;transition:all 0.25s;border:1px solid #d8c9f0" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 14px rgba(139,92,246,0.12)';this.style.borderColor='#c4b5fd'" onmouseout="this.style.transform='';this.style.boxShadow='';this.style.borderColor='#d8c9f0'">
+        <div style="font-size:0.78rem;font-weight:700;color:#5b21b6;letter-spacing:2px;line-height:1.2">护肤日记</div>
+        <div style="font-size:0.5rem;color:#8b5cf6;margin-top:0px;letter-spacing:0.3px;line-height:1.2">SKINCARE DIARY</div>
       </div>
-      <div onclick="openBeautyMood();playClick()" style="flex:1;padding:8px 14px;border-radius:12px;background:linear-gradient(135deg,#fce7f3,#fdf2f8);cursor:pointer;text-align:center;transition:all 0.25s;border:1px solid #f0c4da" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 14px rgba(236,72,153,0.12)';this.style.borderColor='#f9a8d4'" onmouseout="this.style.transform='';this.style.boxShadow='';this.style.borderColor='#f0c4da'">
-        <div style="font-size:0.8rem;font-weight:700;color:#9d174d;letter-spacing:2px">心情日记</div>
-        <div style="font-size:0.55rem;color:#ec4899;margin-top:1px;letter-spacing:0.5px">MOOD DIARY</div>
+      <div onclick="openBeautyMood();playClick()" style="flex:1;padding:5px 14px;border-radius:10px;background:linear-gradient(135deg,#fce7f3,#fdf2f8);cursor:pointer;text-align:center;transition:all 0.25s;border:1px solid #f0c4da" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 14px rgba(236,72,153,0.12)';this.style.borderColor='#f9a8d4'" onmouseout="this.style.transform='';this.style.boxShadow='';this.style.borderColor='#f0c4da'">
+        <div style="font-size:0.78rem;font-weight:700;color:#9d174d;letter-spacing:2px;line-height:1.2">心情日记</div>
+        <div style="font-size:0.5rem;color:#ec4899;margin-top:0px;letter-spacing:0.3px;line-height:1.2">MOOD DIARY</div>
       </div>
     </div>
     <!-- 19.9元普通版购买入口（试用/未购用户可见） -->
@@ -1246,7 +1246,7 @@ _loadCosSdk(0);
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div style="display:flex;align-items:center;gap:10px">
           <span style="font-size:1.15rem;font-weight:800;color:#fff;letter-spacing:1.5px">100天变美日记</span>
-          <span style="font-size:0.6rem;padding:3px 10px;border-radius:100px;background:rgba(255,255,255,0.18);color:rgba(255,255,255,0.9);font-weight:600;letter-spacing:0.5px;backdrop-filter:blur(4px)">升级版</span>
+          <span style="font-size:0.6rem;padding:3px 10px;border-radius:100px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-weight:700;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(245,158,11,0.35)">升级版</span>
         </div>
         <span style="font-size:1.4rem;color:rgba(255,255,255,0.4);line-height:1">›</span>
       </div>
@@ -3937,13 +3937,19 @@ function refreshBeautyEntryUI() {
 var _trialExpiredShown = false;
 function checkTrialExpiredPopup() {
   if (_trialExpiredShown) return;
-  if (isAdminUser()) return;
   if (hasBeautyPermission()) return;
   var phone = getCurrentPhone();
   if (phone === 'local' || !phone) return;
   var payments = loadPayments();
   /* 已购普通版（storagePaid）不弹窗 */
   if (payments[phone] && payments[phone].storagePaid) return;
+  /* 管理员模拟：未模拟购买过普通版则弹窗，方便调试 */
+  if (isAdminUser()) {
+    if (sessionStorage.getItem('admin_sim_basic') === '1') return;
+    _trialExpiredShown = true;
+    document.getElementById('trialExpiredModal').classList.add('show');
+    return;
+  }
   /* 没有试用记录不弹窗 */
   if (!payments[phone] || !payments[phone].beautyTrial) return;
   /* 试用未过期不弹窗 */

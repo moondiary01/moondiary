@@ -133,8 +133,8 @@ page {
 }
 .beauty-quick-btn {
   flex: 1;
-  padding: 14rpx 24rpx;
-  border-radius: 18rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 14rpx;
   text-align: center;
 }
 .beauty-quick-skincare {
@@ -146,16 +146,18 @@ page {
   border: 2rpx solid #f0c4da;
 }
 .beauty-quick-title {
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 700;
   letter-spacing: 4rpx;
   display: block;
+  line-height: 1.2;
 }
 .beauty-quick-sub {
-  font-size: 18rpx;
-  margin-top: 2rpx;
+  font-size: 16rpx;
+  margin-top: 0rpx;
   letter-spacing: 1rpx;
   display: block;
+  line-height: 1.2;
 }
 .beauty-quick-skincare .beauty-quick-title { color: #5b21b6; }
 .beauty-quick-skincare .beauty-quick-sub { color: #8b5cf6; }
@@ -771,12 +773,13 @@ page {
 }
 .beauty-entry-badge {
   font-size: 20rpx;
-  font-weight: 600;
-  color: rgba(255,255,255,0.9);
-  background: rgba(255,255,255,0.18);
+  font-weight: 700;
+  color: #1a1025;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
   padding: 4rpx 16rpx;
   border-radius: 100rpx;
   letter-spacing: 1rpx;
+  box-shadow: 0 4rpx 12rpx rgba(245,158,11,0.35);
 }
 .beauty-entry-arrow {
   font-size: 36rpx;

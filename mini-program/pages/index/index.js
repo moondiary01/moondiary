@@ -86,6 +86,16 @@ Page({
       this.setData({ showPayModal: true })
       return
     }
+    /* 管理员模拟试用过期弹窗（调试用） */
+    if (app.globalData.loginType === 'admin') {
+      try {
+        var adminSim = wx.getStorageSync('admin_sim_basic')
+        if (adminSim !== '1') {
+          this.setData({ showPayModal: true })
+          return
+        }
+      } catch (e) {}
+    }
     if (this.data.showPayModal) {
       this.setData({ showPayModal: false })
     }
@@ -93,6 +103,10 @@ Page({
   },
 
   onPayModalClose: function () {
+    /* 管理员关闭弹窗标记为已模拟购买 */
+    if (app.globalData.loginType === 'admin') {
+      try { wx.setStorageSync('admin_sim_basic', '1') } catch (e) {}
+    }
     this.setData({ showPayModal: false })
   },
 
