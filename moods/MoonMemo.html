@@ -574,7 +574,111 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .beauty-date-item{flex:1;text-align:center;cursor:pointer}
 .beauty-date-label{font-size:0.7rem;color:rgba(255,255,255,0.7);display:block}
 .beauty-date-value{font-size:0.82rem;font-weight:600;color:#fff;padding:4px 12px;border-radius:100px;background:rgba(255,255,255,0.15);display:inline-block;margin-top:4px}
-.beauty-entry-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,92,246,0.12)}
+/* ===== 100天变美日记入口卡片（同步小程序 f5c02e6 深色高级风） ===== */
+.beauty-entry-card {
+  margin: 0 12px 12px;
+  background: linear-gradient(160deg, #1a1025 0%, #2d1b4e 35%, #4c1d6b 65%, #7c3aed 100%);
+  border-radius: 20px;
+  padding: 22px 18px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(124, 58, 237, 0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.beauty-entry-card:active { transform: scale(0.98); }
+.beauty-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.beauty-glow-pink {
+  top: -40px;
+  right: -25px;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.22), transparent 70%);
+}
+.beauty-glow-purple {
+  bottom: -25px;
+  left: -20px;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.18), transparent 70%);
+}
+.beauty-entry-inner { position: relative; z-index: 1; }
+.beauty-entry-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.beauty-entry-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 2px;
+}
+.beauty-entry-arrow {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  line-height: 1;
+}
+.beauty-entry-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.beauty-entry-subtitle {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 2px;
+}
+.beauty-entry-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #422006;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  padding: 3px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+.beauty-features-scroll {
+  white-space: nowrap;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.beauty-features-scroll::-webkit-scrollbar { display: none; }
+.beauty-feat-chip {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 5px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  margin-right: 8px;
+}
+.beauty-feat-chip:last-child { margin-right: 0; }
+.beauty-entry-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.08);
+}
+.beauty-entry-subline {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.3px;
+}
+.beauty-entry-hint {
+  color: rgba(255, 255, 255, 0.25);
+}
 .comm-post{background:linear-gradient(180deg,#fff 0%,#fafafa 100%);border-radius:16px;padding:14px 16px;border:1px solid #ece7e3;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(139,92,246,0.03);transition:all 0.25s}
 .comm-post:hover{box-shadow:0 4px 16px rgba(139,92,246,0.08),0 1px 3px rgba(0,0,0,0.06)}
 .comm-post{background:linear-gradient(135deg,#ffffff 0%,#fdfaff 50%,#faf5fb 100%);border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(139,92,246,0.06),0 1px 3px rgba(0,0,0,0.03);transition:all 0.2s;border:1px solid rgba(139,92,246,0.05)}
@@ -1124,18 +1228,30 @@ _loadCosSdk(0);
     <div id="recordAccordion"></div>
   </div>
 
-  <!-- 升级版入口卡片 -->
-  <div class="card beauty-entry-card" onclick="openBeautyUpgrade();playClick()" style="cursor:pointer;background:linear-gradient(135deg,#f5f3ff,#fce7f3);border:1.5px solid rgba(139,92,246,0.15);margin-top:12px">
-    <div style="display:flex;align-items:center;gap:14px">
-      <span style="font-size:2rem">✨</span>
-      <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:1.1rem;font-weight:700;color:#8b5cf6">100天变美日记</span>
-          <span style="font-size:0.65rem;padding:2px 10px;border-radius:100rpx;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:600">升级版</span>
-        </div>
-        <div style="font-size:0.78rem;color:#78716c;margin-top:4px">护肤日记 · 心情记录</div>
+  <!-- 100天变美日记入口（同步小程序 f5c02e6） -->
+  <div class="beauty-entry-card" id="beautyEntryCard" onclick="openBeautyUpgrade();playClick()" style="cursor:pointer;display:none">
+    <div class="beauty-glow beauty-glow-pink"></div>
+    <div class="beauty-glow beauty-glow-purple"></div>
+    <div class="beauty-entry-inner">
+      <div class="beauty-entry-top">
+        <span class="beauty-entry-title">100天变美日记</span>
+        <span class="beauty-entry-arrow">›</span>
       </div>
-      <span style="font-size:1.5rem;color:#c4b5fd">›</span>
+      <div class="beauty-entry-sub-row">
+        <span class="beauty-entry-subtitle">UPGRADE · YOUR BEST SELF</span>
+        <span class="beauty-entry-badge">升级版</span>
+      </div>
+      <div class="beauty-features-scroll">
+        <span class="beauty-feat-chip">护肤日记</span>
+        <span class="beauty-feat-chip">心情记录</span>
+        <span class="beauty-feat-chip">感恩日记</span>
+        <span class="beauty-feat-chip">自律打卡</span>
+        <span class="beauty-feat-chip">日历照片</span>
+      </div>
+      <div class="beauty-entry-bottom">
+        <span class="beauty-entry-subline">一次购买 · 永久会员权益 · 云端储存</span>
+        <span class="beauty-entry-subline beauty-entry-hint">点击查看 ›</span>
+      </div>
     </div>
   </div>
 </div>
@@ -1357,11 +1473,27 @@ _loadCosSdk(0);
       </div>
     </div>
     <div style="background:#fff;padding:20px 24px 16px;position:relative;margin-top:-12px;border-radius:20px 20px 0 0;z-index:2">
-      <div onclick="openBeautySkincare();playClick()" style="padding:10px 20px;border-radius:100px;background:rgba(255,255,255,0.92);cursor:pointer;margin-bottom:10px;border:1.5px solid rgba(167,139,250,0.5);text-align:center;box-shadow:0 3px 12px rgba(124,58,237,0.2),inset 0 1px 0 rgba(255,255,255,0.8);transition:all 0.25s" onmousedown="this.style.transform='scale(0.96)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''">
-        <span style="font-size:0.95rem;font-weight:700;color:#7c3aed">护肤日记</span>
+      <!-- 护肤日记入口卡片（同步小程序 f5c02e6） -->
+      <div onclick="openBeautySkincare();playClick()" class="upgrade-section-card" style="margin-bottom:12px">
+        <div class="section-icon-wrap section-icon-skincare">
+          <span class="section-icon">💄</span>
+        </div>
+        <div class="section-info">
+          <div class="section-title">护肤日记</div>
+          <div class="section-desc">每日护肤打卡 · 日历照片 · do脸记录</div>
+        </div>
+        <span class="section-arrow">›</span>
       </div>
-      <div onclick="openBeautyMood();playClick()" style="padding:10px 20px;border-radius:100px;background:rgba(255,255,255,0.92);cursor:pointer;margin-bottom:10px;border:1.5px solid rgba(244,114,182,0.5);text-align:center;box-shadow:0 3px 12px rgba(236,72,153,0.2),inset 0 1px 0 rgba(255,255,255,0.8);transition:all 0.25s" onmousedown="this.style.transform='scale(0.96)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''">
-        <span style="font-size:0.95rem;font-weight:700;color:#db2777">心情日记</span>
+      <!-- 心情日记入口卡片（同步小程序 f5c02e6） -->
+      <div onclick="openBeautyMood();playClick()" class="upgrade-section-card" style="margin-bottom:12px">
+        <div class="section-icon-wrap section-icon-mood">
+          <span class="section-icon">💖</span>
+        </div>
+        <div class="section-info">
+          <div class="section-title">心情日记</div>
+          <div class="section-desc">心情记录 · 日历照片 · 感恩日记 · 自律打卡</div>
+        </div>
+        <span class="section-arrow">›</span>
       </div>
       <div id="beautyLockMsg" style="display:none;text-align:center;padding:20px 16px;background:linear-gradient(135deg,#fffbeb,#fef2f2);border-radius:16px;border:1px solid rgba(251,191,36,0.2)">
         <div style="font-size:2.2rem;margin-bottom:8px">🔒</div>
@@ -5607,6 +5739,17 @@ function renderAll() {
   document.getElementById('unitBtnKg').classList.toggle('active', state.unit === 'kg');
   document.getElementById('unitBtnJin').classList.toggle('active', state.unit === '斤');
   checkVersionNotice();
+  /* 100天变美日记入口：管理员始终显示，非管理员的已购用户隐藏 */
+  var isAdmin = (currentKey === ADMIN_SESSION);
+  var hasBeauty = hasBeautyPermission();
+  var entryCard = document.getElementById('beautyEntryCard');
+  if (entryCard) {
+    if (isAdmin || !hasBeauty) {
+      entryCard.style.display = 'block';
+    } else {
+      entryCard.style.display = 'none';
+    }
+  }
 }
 
 /* ---------- 启动 ---------- */
