@@ -92,7 +92,6 @@ Page({
 
   onPayModalClose: function () {
     this.setData({ showPayModal: false })
-    wx.navigateTo({ url: '/pages/pay/pay' })
   },
 
   loadUserData: function () {

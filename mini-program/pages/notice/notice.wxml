@@ -1,49 +1,31 @@
-<!-- pages/notice/notice.wxml -->
+<!-- pages/notice/notice.wxml — 购买须知 -->
 <view class="notice-page">
   <view class="card">
     <view class="section">
-      <view class="section-title">1. 服务内容</view>
-      <view class="section-item">- MoonMemo 月亮日记是一款身材记录工具</view>
-      <view class="section-item">- 会员可使用全部功能：每日体重记录、趋势统计、经期日历、运动打卡、照片上传、云端数据同步</view>
+      <view class="section-title">1. 会员档位</view>
+      <view class="section-item">• <text class="bold">19.9元 永久普通版</text>：永久云端存储 + 趋势图表 + 周度复盘，不含护肤日记/心情日记功能。</view>
+      <view class="section-item">• <text class="bold">29.9元 永久升级版</text>：包含云端存储 + 100天变美计划（护肤日记、心情日记），永久有效。</view>
     </view>
 
     <view class="section">
-      <view class="section-title">2. 订阅规则</view>
-      <view class="section-item">- 会员费：19.9元/月</view>
-      <view class="section-item">- 付费后30天内可使用全部功能</view>
-      <view class="section-item">- 到期后需重新付费才能继续使用</view>
-      <view class="section-item">- 永久云存储：您的数据始终保存在云端，即使会员到期数据也不会丢失</view>
+      <view class="section-title">2. 退款政策</view>
+      <view class="section-item">• 数字商品一经开通，不支持退款。</view>
     </view>
 
     <view class="section">
-      <view class="section-title">3. 试用规则</view>
-      <view class="section-item">- 新用户可免费试用24小时</view>
-      <view class="section-item">- 试用期间可使用全部功能</view>
-      <view class="section-item">- 试用结束后需开通会员才能继续使用</view>
+      <view class="section-title">3. 使用期限</view>
+      <view class="section-item">• 均为<text class="bold">永久有效</text>，一次购买终身使用。</view>
+      <view class="section-item">• 无限期权益仅在本小程序正常运营存续期间内有效。</view>
     </view>
 
     <view class="section">
-      <view class="section-title">4. 退款政策</view>
-      <view class="section-item">- 虚拟商品一经购买不支持退款</view>
-      <view class="section-item">- 请在试用期内充分体验后再决定购买</view>
+      <view class="section-title">4. 开通方式</view>
+      <view class="section-item">• 联系管理员手动开通，开通后立即生效。</view>
     </view>
 
     <view class="section">
-      <view class="section-title">5. 使用期限说明</view>
-      <view class="section-item">- 永久会员权益为无限期有效</view>
-      <view class="section-item">- 无限期权益仅在本小程序正常运营存续期间内有效</view>
-    </view>
-
-    <view class="section">
-      <view class="section-title">5. 自动续费</view>
-      <view class="section-item">- 暂不支持自动续费</view>
-      <view class="section-item">- 会员到期后需手动续费</view>
-    </view>
-
-    <view class="section">
-      <view class="section-title">6. 联系方式</view>
-      <view class="section-item">- 客服微信：moon_diary_service</view>
-      <view class="section-item">- 问题反馈：moon_diary_service</view>
+      <view class="section-title">5. 数据安全</view>
+      <view class="section-item">• 您的数据仅存储在您的个人云端空间，其他用户无法访问。</view>
     </view>
   </view>
 </view>

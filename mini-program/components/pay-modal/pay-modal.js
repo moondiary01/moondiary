@@ -9,25 +9,27 @@ Component({
 
   methods: {
     onNotice: function () {
+      // 打开购买须知页面
       wx.navigateTo({
         url: '/pages/notice/notice'
       })
     },
 
     onPrivacy: function () {
+      // 打开隐私协议页面
       wx.navigateTo({
         url: '/pages/privacy/privacy'
       })
     },
 
     onPay: function () {
+      // 跳转到支付页面
       wx.navigateTo({
         url: '/pages/pay/pay'
       })
     },
 
     onClose: function () {
-      // 只通知父组件关闭，不自行修改 property
       this.triggerEvent('close')
     }
   }

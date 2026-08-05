@@ -1513,7 +1513,7 @@ _loadCosSdk(0);
     <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:14px">购买须知</h3>
     <div style="font-size:0.82rem;color:var(--text-d);line-height:1.8">
       <p><b>1. 会员档位</b></p>
-      <p style="margin-left:12px">• <b>19.9元 永久云端存储</b>：月亮日记数据的永久云端存储，不含100天变美计划功能。</p>
+      <p style="margin-left:12px">• <b>19.9元 永久普通版</b>：永久云端存储 + 趋势图表 + 周度复盘，不含护肤日记/心情日记功能。</p>
       <p style="margin-left:12px">• <b>29.9元 永久升级版</b>：包含云端存储 + 100天变美计划（护肤日记、心情日记），永久有效。</p>
       <p><b>2. 退款政策</b></p>
       <p style="margin-left:12px">• 数字商品一经开通，不支持退款。</p>
@@ -1527,7 +1527,7 @@ _loadCosSdk(0);
     </div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="document.getElementById('purchaseNoticeModal').classList.remove('show');playClick()">关闭</button>
-      <button class="btn btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none" onclick="confirmBeautyUpgrade();playClick()">我已阅读并同意 · 确认开通</button>
+      <button class="btn btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none" onclick="confirmPurchase();playClick()">我已阅读并同意 · 确认开通</button>
     </div>
   </div>
 </div>
@@ -1555,6 +1555,73 @@ _loadCosSdk(0);
     </div>
   </div>
   <button class="float-back-fab" onclick="document.getElementById('beautyHomeModal').classList.remove('show');playClick()">←</button>
+</div>
+
+<!-- ===== 试用到期弹窗（7天到期自动弹出，19.9元购买普通版） ===== -->
+<div class="modal-overlay" id="trialExpiredModal">
+  <div class="modal" style="max-width:420px;padding:0;overflow:hidden;border-radius:24px;background:transparent;box-shadow:0 24px 80px rgba(124,58,237,0.35),0 8px 24px rgba(0,0,0,0.15)">
+    <!-- 顶部渐变背景区 -->
+    <div style="background:linear-gradient(160deg,#1a1025 0%,#2d1b4e 35%,#4c1d6b 65%,#7c3aed 100%);padding:36px 28px 32px;text-align:center;position:relative;overflow:hidden">
+      <!-- 光晕装饰 -->
+      <div style="position:absolute;top:-40px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,0.25),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-50px;left:-20px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.15),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.12),transparent 60%);pointer-events:none"></div>
+      <!-- 图标 -->
+      <div style="position:relative;z-index:1;font-size:3rem;margin-bottom:8px;filter:drop-shadow(0 4px 12px rgba(245,158,11,0.4))"></div>
+      <!-- 标题 -->
+      <div style="position:relative;z-index:1;font-size:1.35rem;font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:6px">试用已到期</div>
+      <div style="position:relative;z-index:1;font-size:0.78rem;color:rgba(255,255,255,0.6);letter-spacing:0.5px">7天免费试用结束，购买后继续使用</div>
+    </div>
+    <!-- 底部白色内容区 -->
+    <div style="background:#fff;padding:28px 24px 24px">
+      <!-- 权益清单 -->
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(139,92,246,0.05),rgba(139,92,246,0.02))">
+          <span style="font-size:1.2rem"></span>
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">云端数据永久储存</div>
+            <div style="font-size:0.68rem;color:#a8a29e">体重/经期/运动数据安全同步，换手机不丢失</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(236,72,153,0.05),rgba(236,72,153,0.02))">
+          <span style="font-size:1.2rem"></span>
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">趋势图表 & 周度复盘</div>
+            <div style="font-size:0.68rem;color:#a8a29e">体重趋势分析、饮食运动复盘，数据驱动变美</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(245,158,11,0.05),rgba(245,158,11,0.02))">
+          <span style="font-size:1.2rem"></span>
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">一次购买 · 永久有效</div>
+            <div style="font-size:0.68rem;color:#a8a29e">无月费无年费，一次付费终身使用</div>
+          </div>
+        </div>
+      </div>
+      <!-- 价格卡 -->
+      <div style="background:linear-gradient(135deg,#1a1025,#2d1b4e);border-radius:18px;padding:18px 20px;text-align:center;position:relative;overflow:hidden;margin-bottom:16px">
+        <div style="position:absolute;top:-15px;right:-15px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.3),transparent 70%);pointer-events:none"></div>
+        <div style="position:relative;z-index:1">
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:4px">
+            <span style="font-size:0.7rem;color:rgba(255,255,255,0.5);font-weight:500">¥</span>
+            <span style="font-size:2.4rem;font-weight:900;color:#fbbf24;line-height:1;letter-spacing:-1px">19.9</span>
+          </div>
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.55);margin-bottom:12px">一次购买 · 永久会员权益 · 云端储存</div>
+          <button onclick="purchaseBasicPlan();playClick()" style="width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-size:0.95rem;font-weight:800;letter-spacing:1.5px;cursor:pointer;box-shadow:0 6px 24px rgba(245,158,11,0.4);transition:all 0.25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(245,158,11,0.4)'"> 立即购买 · 永久开通</button>
+        </div>
+      </div>
+      <!-- 购买须知 + 隐私协议 -->
+      <div style="display:flex;justify-content:center;align-items:center;gap:20px">
+        <a href="#" onclick="showPurchaseNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:3px"><span style="font-size:0.85rem">📋</span> 购买须知</a>
+        <span style="color:#e5e7eb">|</span>
+        <a href="#" onclick="showPrivacyNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:3px"><span style="font-size:0.85rem">🔒</span> 隐私协议</a>
+      </div>
+      <!-- 稍后再说 -->
+      <div style="text-align:center;margin-top:14px">
+        <a href="#" onclick="dismissTrialModal();return false" style="font-size:0.72rem;color:#c4b5fd;text-decoration:none">稍后再说</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- 护肤日记弹窗 -->
@@ -3811,6 +3878,72 @@ function refreshBeautyEntryUI() {
     if (quickBtns) quickBtns.style.display = 'none';
     if (bottomCard) bottomCard.style.display = '';
   }
+  /* 试用过期检测 */
+  checkTrialExpiredPopup();
+}
+
+/* 检测试用是否过期，过期弹窗 */
+var _trialExpiredShown = false;
+function checkTrialExpiredPopup() {
+  if (_trialExpiredShown) return;
+  if (isAdminUser()) return;
+  if (hasBeautyPermission()) return;
+  var phone = getCurrentPhone();
+  if (phone === 'local' || !phone) return;
+  var payments = loadPayments();
+  /* 已购普通版（storagePaid）不弹窗 */
+  if (payments[phone] && payments[phone].storagePaid) return;
+  /* 没有试用记录不弹窗 */
+  if (!payments[phone] || !payments[phone].beautyTrial) return;
+  /* 试用未过期不弹窗 */
+  if (!isTrialExpired(phone)) return;
+  /* 显示试用到期弹窗 */
+  _trialExpiredShown = true;
+  document.getElementById('trialExpiredModal').classList.add('show');
+}
+
+/* 从试用弹窗打开购买须知 */
+function showPurchaseNoticeFromTrial() {
+  _pendingPurchaseType = 'basic';
+  document.getElementById('trialExpiredModal').classList.remove('show');
+  showPurchaseNotice();
+}
+
+/* 从试用弹窗打开隐私协议 */
+function showPrivacyNoticeFromTrial() {
+  document.getElementById('trialExpiredModal').classList.remove('show');
+  showPrivacyNotice();
+}
+
+/* 关闭试用弹窗（稍后再说） */
+function dismissTrialModal() {
+  document.getElementById('trialExpiredModal').classList.remove('show');
+}
+
+/* 19.9元购买普通版 */
+function purchaseBasicPlan() {
+  document.getElementById('trialExpiredModal').classList.remove('show');
+  var phone = getCurrentPhone();
+  if (!phone || phone === 'local' || phone === 'admin') {
+    showToast('请先登录手机号');
+    return;
+  }
+  var payments = loadPayments();
+  if (!payments[phone]) payments[phone] = {};
+  payments[phone].storagePaid = true;
+  payments[phone].storagePaidAt = Date.now();
+  savePayments(payments);
+  showToast(' 普通版已开通，永久有效');
+  refreshBeautyEntryUI();
+  /* 同步到云端 */
+  syncPaymentsToCloud();
+}
+
+function syncPaymentsToCloud() {
+  var payments = loadPayments();
+  saveToCloud('_payments', payments, function() {
+    console.log('支付数据已同步到云端');
+  });
 }
 
 function renderDashboard() {
@@ -6480,10 +6613,24 @@ function confirmBeautyUpgrade() {
     });
   }
   showToast(' 升级版已开通，永久有效');
+  syncPaymentsToCloud();
   refreshBeautyEntryUI();
   openBeautyUpgrade();
 }
+
+/* 购买须知确认 — 根据来源执行不同购买逻辑 */
+var _pendingPurchaseType = 'beauty'; // 'beauty' | 'basic'
+function confirmPurchase() {
+  document.getElementById('purchaseNoticeModal').classList.remove('show');
+  if (_pendingPurchaseType === 'basic') {
+    purchaseBasicPlan();
+  } else {
+    confirmBeautyUpgrade();
+  }
+}
+
 function showPurchaseNotice() {
+  _pendingPurchaseType = 'beauty'; // 默认从升级版入口来
   document.getElementById('purchaseNoticeModal').classList.add('show');
   playClick();
 }
