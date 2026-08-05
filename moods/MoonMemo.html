@@ -1638,7 +1638,7 @@ _loadCosSdk(0);
 
 <!-- 护肤日历日期详情弹窗 -->
 <div class="modal-overlay" id="skincareDayDetailModal">
-  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto;padding:0;border-radius:20px;overflow:hidden">
+  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto;padding:0;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#faf8ff 0%,#f5f0fa 30%,#faf5ff 60%,#fdf2f8 100%)">
     <div style="background:linear-gradient(135deg,#8b5cf6,#ec4899);padding:20px 24px;text-align:center">
       <h2 id="skincareDayDetailTitle" style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;letter-spacing:1px">日期详情</h2>
     </div>
@@ -7156,7 +7156,7 @@ function renderSkincareDayDetail() {
 
   /* 顶部：照片展示（卡片式） */
   if (s.photos && s.photos.length > 0) {
-    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #0ea5e9;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-bottom:10px">';
+    html += '<div style="padding:12px 14px;border-radius:12px;box-shadow:none;margin-bottom:10px">';
     html += '<div style="font-size:0.7rem;font-weight:700;color:#0ea5e9;margin-bottom:8px;letter-spacing:0.5px">照片</div>';
     html += '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start">';
     for (var i = 0; i < s.photos.length; i++) {
@@ -7168,7 +7168,7 @@ function renderSkincareDayDetail() {
       html += '</div>';
     }
     if (editing && s.photos.length < 4) {
-      html += '<div onclick="uploadDetailPhoto();playClick()" style="width:68px;height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #e5e7eb;border-radius:10px;cursor:pointer;background:#fafaf9;flex-shrink:0">';
+      html += '<div onclick="uploadDetailPhoto();playClick()" style="width:68px;height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:2px dashed #e5e7eb;border-radius:10px;cursor:pointer;background:rgba(255,255,255,0.4);flex-shrink:0">';
       html += '<span style="font-size:1.2rem">📷</span>';
       html += '<span style="font-size:0.6rem;color:#a8a29e">上传照片 '+s.photos.length+'/4</span>';
       html += '</div>';
@@ -7176,9 +7176,9 @@ function renderSkincareDayDetail() {
     html += '</div>';
     html += '</div>';
   } else if (editing) {
-    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #0ea5e9;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-bottom:10px">';
+    html += '<div style="padding:12px 14px;border-radius:12px;box-shadow:none;margin-bottom:10px">';
     html += '<div style="font-size:0.7rem;font-weight:700;color:#0ea5e9;margin-bottom:8px;letter-spacing:0.5px">照片</div>';
-    html += '<div onclick="uploadDetailPhoto();playClick()" style="padding:20px;border:2px dashed #e5e7eb;border-radius:10px;text-align:center;cursor:pointer;background:#fafaf9">';
+    html += '<div onclick="uploadDetailPhoto();playClick()" style="padding:20px;border:2px dashed #e5e7eb;border-radius:10px;text-align:center;cursor:pointer;background:rgba(255,255,255,0.4)">';
     html += '<span style="font-size:1.5rem">📷</span><br>';
     html += '<span style="font-size:0.8rem;color:#a8a29e">上传照片</span>';
     html += '</div>';
@@ -7191,61 +7191,61 @@ function renderSkincareDayDetail() {
     html += '<div style="display:flex;flex-direction:column;gap:10px">';
     
     /* 打卡项目卡片 */
-    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #8b5cf6;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-    html += '<div style="font-size:0.7rem;font-weight:700;color:#8b5cf6;margin-bottom:8px;letter-spacing:0.5px">打卡项目</div>';
+    html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 50%,#f3e8ff 100%);border-radius:16px;box-shadow:none">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#7c3aed;margin-bottom:8px;letter-spacing:0.5px">打卡项目</div>';
     html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
     var allBodyCares = ['faceCare','oralCare','neckCare','lipsCare','bodyCare','handCare','footCare','eyeCare','chestCare','intimateCare','hairCare','nailCare'];
     allBodyCares.forEach(function(k) {
       var active = s.bodyCare.indexOf(k) > -1;
-      html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:rgba(139,92,246,0.1);color:#7c3aed;border:1px solid #c4b5fd':'background:#fafaf9;color:#78716c;border:1px solid #e5e7eb')+'">'+bodyCareLabels[k]+'</span>';
+      html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;border:1px solid #8b5cf6':'background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:#7c3aed;border:1.5px solid #8b5cf6')+'">'+bodyCareLabels[k]+'</span>';
     });
     /* 自定义预设标签 */
     var customPresets = {mask:'面膜',eyeMask:'眼膜',lipsCare:'唇部护理'};
     if (!s.customChecks) s.customChecks = s.customCheck ? s.customCheck.split('、').filter(function(x){return x.trim()}) : [];
     Object.keys(customPresets).forEach(function(k) {
       var active = s.customChecks.indexOf(customPresets[k]) > -1;
-      html += '<span onclick="toggleDetailCustomCheck(this,\''+customPresets[k]+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:rgba(139,92,246,0.1);color:#7c3aed;border:1px solid #c4b5fd':'background:#fafaf9;color:#78716c;border:1px solid #e5e7eb')+'">'+customPresets[k]+'</span>';
+      html += '<span onclick="toggleDetailCustomCheck(this,\''+customPresets[k]+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;border:1px solid #8b5cf6':'background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:#7c3aed;border:1.5px solid #8b5cf6')+'">'+customPresets[k]+'</span>';
     });
     html += '</div>';
-    html += '<input type="text" id="skincareDetailCustomCheck" placeholder="其他自定义项目，如：面膜" value="" style="width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;margin-top:8px;box-sizing:border-box" oninput="autoSaveDetailSkincare()"></div>';
+    html += '<input type="text" id="skincareDetailCustomCheck" placeholder="其他自定义项目，如：面膜" value="" style="width:100%;padding:8px 10px;border:1.5px solid #c4b5fd;border-radius:8px;font-size:0.85rem;outline:none;background:transparent;margin-top:8px;box-sizing:border-box;color:#1c1917" oninput="autoSaveDetailSkincare()"></div>';
 
     /* 美容院护理卡片 */
-    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #10b981;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<div style="padding:12px 14px;border-radius:12px;box-shadow:none">';
     html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px" onclick="toggleDetailCheck(\'salon\');playClick()">';
-    html += '<span style="width:24px;height:24px;border:2px solid '+(s.salon?'#10b981':'#d6d3d1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.salon?'#10b981':'transparent')+'">✓</span>';
-    html += '<span style="font-size:0.85rem;font-weight:600;color:#44403c">美容院护理</span></label>';
+    html += '<span style="width:24px;height:24px;border:2px solid '+(s.salon?'#8b5cf6':'#d6d3d1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.salon?'#8b5cf6':'transparent')+'">✓</span>';
+    html += '<span style="font-size:0.85rem;font-weight:600;color:#1c1917">美容院护理</span></label>';
     if (s.salon) {
-      html += '<textarea id="skincareDetailSalonNote" placeholder="护理心得..." style="width:100%;min-height:50px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;resize:vertical;font-family:inherit;box-sizing:border-box" oninput="autoSaveDetailSkincare()">'+s.salonNote+'</textarea>';
+      html += '<textarea id="skincareDetailSalonNote" placeholder="护理心得..." style="width:100%;min-height:50px;padding:8px 10px;border:1.5px solid #8b5cf6;border-radius:8px;font-size:0.85rem;outline:none;background:transparent;resize:vertical;font-family:inherit;box-sizing:border-box;color:#1c1917" oninput="autoSaveDetailSkincare()">'+s.salonNote+'</textarea>';
     }
     html += '</div>';
 
     /* do脸小记卡片 */
-    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #f59e0b;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
+    html += '<div style="padding:12px 14px;border-radius:12px;box-shadow:none">';
     html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px" onclick="toggleDetailCheck(\'cosmetic\');playClick()">';
-    html += '<span style="width:24px;height:24px;border:2px solid '+(s.cosmetic?'#f59e0b':'#d6d3d1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.cosmetic?'#f59e0b':'transparent')+'">✓</span>';
-    html += '<span style="font-size:0.85rem;font-weight:600;color:#44403c">do脸小记</span></label>';
+    html += '<span style="width:24px;height:24px;border:2px solid '+(s.cosmetic?'#8b5cf6':'#d6d3d1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.cosmetic?'#8b5cf6':'transparent')+'">✓</span>';
+    html += '<span style="font-size:0.85rem;font-weight:600;color:#1c1917">do脸小记</span></label>';
     if (s.cosmetic) {
-      html += '<textarea id="skincareDetailCosmeticNote" placeholder="do脸项目感受..." style="width:100%;min-height:50px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;resize:vertical;font-family:inherit;box-sizing:border-box" oninput="autoSaveDetailSkincare()">'+s.cosmeticNote+'</textarea>';
+      html += '<textarea id="skincareDetailCosmeticNote" placeholder="do脸项目感受..." style="width:100%;min-height:50px;padding:8px 10px;border:1.5px solid #8b5cf6;border-radius:8px;font-size:0.85rem;outline:none;background:transparent;resize:vertical;font-family:inherit;box-sizing:border-box;color:#1c1917" oninput="autoSaveDetailSkincare()">'+s.cosmeticNote+'</textarea>';
     }
     html += '</div>';
 
     /* 备注卡片 */
-    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #a8a29e;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-    html += '<div style="font-size:0.7rem;font-weight:700;color:#a8a29e;margin-bottom:8px;letter-spacing:0.5px">备注</div>';
-    html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;resize:vertical;outline:none;font-family:inherit;box-sizing:border-box" oninput="autoSaveDetailSkincare()">'+s.note+'</textarea></div>';
+    html += '<div style="padding:12px 14px;border-radius:12px;box-shadow:none">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#1c1917;margin-bottom:8px;letter-spacing:0.5px">备注</div>';
+    html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:60px;padding:8px 10px;border:1.5px solid #d6d3d1;border-radius:8px;font-size:0.85rem;resize:vertical;outline:none;font-family:inherit;box-sizing:border-box;background:transparent;color:#1c1917" oninput="autoSaveDetailSkincare()">'+s.note+'</textarea></div>';
 
     /* 皮肤状态卡片 */
-    html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #ec4899;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-    html += '<div style="font-size:0.7rem;font-weight:700;color:#ec4899;margin-bottom:8px;letter-spacing:0.5px">今日皮肤状态</div>';
+    html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#fdf2f8 0%,#fce7f3 50%,#f5f3ff 100%);border-radius:16px;box-shadow:none">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#be185d;margin-bottom:8px;letter-spacing:0.5px">今日皮肤状态</div>';
     var skinStatusPresets = ['hydrated','dry','oily','mixed','acne','dull','fine','sensitive'];
     var skinStatusLabels = {hydrated:'水润',dry:'干燥',oily:'出油',mixed:'混合',acne:'长痘',dull:'暗沉',fine:'细纹',sensitive:'敏感泛红'};
     html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">';
     skinStatusPresets.forEach(function(sk) {
       var active = s.skinStatus.indexOf(sk) > -1;
-      html += '<span onclick="toggleDetailSkinStatus(this,\''+sk+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:rgba(236,72,153,0.1);color:#db2777;border:1px solid #f9a8d4':'background:#fafaf9;color:#78716c;border:1px solid #e5e7eb')+'">'+skinStatusLabels[sk]+'</span>';
+      html += '<span onclick="toggleDetailSkinStatus(this,\''+sk+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#ec4899,#db2777);color:#fff;border:1px solid #ec4899':'background:linear-gradient(135deg,#fce7f3,#fbcfe8);color:#be185d;border:1.5px solid #ec4899')+'">'+skinStatusLabels[sk]+'</span>';
     });
     html += '</div>';
-    html += '<input type="text" id="skincareDetailSkinCustom" placeholder="自定义皮肤状态，如：毛孔粗大" value="'+(s.skinStatusCustom||'')+'" style="width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;outline:none;background:#fafaf9;box-sizing:border-box" oninput="skincareDayDetailState.skinStatusCustom=this.value;autoSaveDetailSkincare()"></div>';
+    html += '<input type="text" id="skincareDetailSkinCustom" placeholder="自定义皮肤状态，如：毛孔粗大" value="'+(s.skinStatusCustom||'')+'" style="width:100%;padding:8px 10px;border:1.5px solid #ec4899;border-radius:8px;font-size:0.85rem;outline:none;background:rgba(255,255,255,0.6);box-sizing:border-box;color:#be185d" oninput="skincareDayDetailState.skinStatusCustom=this.value;autoSaveDetailSkincare()"></div>';
 
     html += '</div>';
 
@@ -7261,30 +7261,30 @@ function renderSkincareDayDetail() {
       
       /* 1. 护理项目 + 自定义 */
       if (isChecked) {
-        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #8b5cf6;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-        html += '<div style="font-size:0.7rem;font-weight:700;color:#8b5cf6;margin-bottom:8px;letter-spacing:0.5px">打卡项目</div>';
+        html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 50%,#f3e8ff 100%);border-radius:16px;box-shadow:none">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#7c3aed;margin-bottom:8px;letter-spacing:0.5px">打卡项目</div>';
         html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
         s.bodyCare.forEach(function(k) {
-          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(139,92,246,0.08);color:#7c3aed">'+(bodyCareLabels[k]||k)+'</span>';
+          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff">'+(bodyCareLabels[k]||k)+'</span>';
         });
         if (s.customCheck) {
           var customItems = s.customCheck.split('、').filter(function(x){return x.trim()});
           customItems.forEach(function(item) {
-            html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(139,92,246,0.06);color:#6d28d9;border:1px dashed #c4b5fd">'+item+'</span>';
+            html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(139,92,246,0.15);color:#7c3aed;border:1px dashed #8b5cf6">'+item+'</span>';
           });
         }
         html += '</div>';
         /* 美容院 / do脸 子项 */
         if (s.salon) {
-          html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,92,246,0.1)">';
-          html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#10b981;color:#fff;font-size:0.6rem">✓</span><span style="font-size:0.78rem;font-weight:600;color:#44403c">美容院护理</span></div>';
-          if (s.salonNote) html += '<div style="font-size:0.75rem;color:#78716c;margin-top:4px;padding-left:24px;line-height:1.5;white-space:pre-wrap">'+s.salonNote+'</div>';
+          html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,92,246,0.15)">';
+          html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#8b5cf6;color:#fff;font-size:0.6rem">✓</span><span style="font-size:0.78rem;font-weight:600;color:#1c1917">美容院护理</span></div>';
+          if (s.salonNote) html += '<div style="font-size:0.75rem;color:#1c1917;margin-top:4px;padding-left:24px;line-height:1.5;white-space:pre-wrap">'+s.salonNote+'</div>';
           html += '</div>';
         }
         if (s.cosmetic) {
-          html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,92,246,0.1)">';
-          html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#10b981;color:#fff;font-size:0.6rem">✓</span><span style="font-size:0.78rem;font-weight:600;color:#44403c">do脸小记</span></div>';
-          if (s.cosmeticNote) html += '<div style="font-size:0.75rem;color:#78716c;margin-top:4px;padding-left:24px;line-height:1.5;white-space:pre-wrap">'+s.cosmeticNote+'</div>';
+          html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,92,246,0.15)">';
+          html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#8b5cf6;color:#fff;font-size:0.6rem">✓</span><span style="font-size:0.78rem;font-weight:600;color:#1c1917">do脸小记</span></div>';
+          if (s.cosmeticNote) html += '<div style="font-size:0.75rem;color:#1c1917;margin-top:4px;padding-left:24px;line-height:1.5;white-space:pre-wrap">'+s.cosmeticNote+'</div>';
           html += '</div>';
         }
         html += '</div>';
@@ -7293,23 +7293,23 @@ function renderSkincareDayDetail() {
       /* 2. 皮肤状态 */
       if (s.skinStatus.length > 0 || (s.skinStatusCustom && s.skinStatusCustom.trim())) {
         var skinStatusLabels2 = {hydrated:'水润',dry:'干燥',oily:'出油',mixed:'混合',acne:'长痘',dull:'暗沉',fine:'细纹',sensitive:'敏感泛红'};
-        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #ec4899;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-        html += '<div style="font-size:0.7rem;font-weight:700;color:#ec4899;margin-bottom:8px;letter-spacing:0.5px">今日皮肤状态</div>';
+        html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#fdf2f8 0%,#fce7f3 50%,#f5f3ff 100%);border-radius:16px;box-shadow:none">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#be185d;margin-bottom:8px;letter-spacing:0.5px">今日皮肤状态</div>';
         html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
         s.skinStatus.forEach(function(sk) {
-          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(236,72,153,0.08);color:#db2777">'+(skinStatusLabels2[sk]||sk)+'</span>';
+          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:linear-gradient(135deg,#ec4899,#db2777);color:#fff">'+(skinStatusLabels2[sk]||sk)+'</span>';
         });
         if (s.skinStatusCustom && s.skinStatusCustom.trim()) {
-          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(236,72,153,0.06);color:#be185d;border:1px dashed #f9a8d4">'+s.skinStatusCustom+'</span>';
+          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(236,72,153,0.12);color:#be185d;border:1px dashed #ec4899">'+s.skinStatusCustom+'</span>';
         }
         html += '</div></div>';
       }
 
       /* 3. 备注 */
       if (s.note) {
-        html += '<div style="padding:12px 14px;background:#fff;border-radius:12px;border-left:4px solid #a8a29e;box-shadow:0 1px 4px rgba(0,0,0,0.04)">';
-        html += '<div style="font-size:0.7rem;font-weight:700;color:#a8a29e;margin-bottom:6px;letter-spacing:0.5px">备注</div>';
-        html += '<div style="font-size:0.84rem;color:#44403c;line-height:1.65;white-space:pre-wrap">'+s.note+'</div>';
+        html += '<div style="padding:12px 14px;border-radius:12px;box-shadow:none">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#1c1917;margin-bottom:6px;letter-spacing:0.5px">备注</div>';
+        html += '<div style="font-size:0.84rem;color:#1c1917;line-height:1.65;white-space:pre-wrap">'+s.note+'</div>';
         html += '</div>';
       }
 

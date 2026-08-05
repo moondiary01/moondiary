@@ -603,22 +603,23 @@
   border-radius: 24rpx;
   font-size: 24rpx;
   font-weight: 600;
-  background: #fafaf9;
-  color: #78716c;
-  border: 2rpx solid #e5e7eb;
+  background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+  color: #be185d;
+  border: 3rpx solid #ec4899;
 }
 .skin-tag-active {
-  background: linear-gradient(135deg, #fce7f3, #f5f3ff);
-  color: #ec4899;
-  border-color: #f9a8d4;
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  color: #fff;
+  border-color: #ec4899;
 }
 .detail-skin-custom {
   width: 100%;
   padding: 14rpx 18rpx;
-  border: 2rpx solid #e5e7eb;
+  border: 3rpx solid #ec4899;
   border-radius: 12rpx;
   font-size: 26rpx;
-  background: #fafaf9;
+  background: rgba(255,255,255,0.6);
+  color: #be185d;
   box-sizing: border-box;
 }
 
@@ -647,7 +648,7 @@
   width: 80%;
   max-height: 75vh;
   overflow-y: auto;
-  background: #fff;
+  background: linear-gradient(180deg, #faf8ff 0%, #f5f0fa 30%, #faf5ff 60%, #fdf2f8 100%);
   border-radius: 24rpx;
   padding: 28rpx 28rpx;
 }
@@ -694,15 +695,13 @@
 .detail-card {
   margin-bottom: 16rpx;
   padding: 22rpx 22rpx;
-  background: #fff;
   border-radius: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
-  border-left: 6rpx solid transparent;
+  box-shadow: none;
 }
 
-.detail-card-purple { border-left-color: #8b5cf6; }
-.detail-card-pink { border-left-color: #ec4899; }
-.detail-card-gray { border-left-color: #a8a29e; }
+.detail-card-purple { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #f3e8ff 100%); }
+.detail-card-pink { background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #f5f3ff 100%); }
+.detail-card-gray { background: transparent; }
 
 .detail-card-title {
   font-size: 24rpx;
@@ -711,9 +710,9 @@
   letter-spacing: 1rpx;
 }
 
-.detail-card-purple .detail-card-title { color: #8b5cf6; }
-.detail-card-pink .detail-card-title { color: #ec4899; }
-.detail-card-gray .detail-card-title { color: #a8a29e; }
+.detail-card-purple .detail-card-title { color: #7c3aed; }
+.detail-card-pink .detail-card-title { color: #be185d; }
+.detail-card-gray .detail-card-title { color: #1c1917; }
 
 /* 子项目 */
 .detail-sub-item {
@@ -724,7 +723,7 @@
 .detail-sub-check {
   font-size: 24rpx;
   font-weight: 600;
-  color: #059669;
+  color: #1c1917;
   margin-bottom: 6rpx;
   padding-left: 4rpx;
 }
@@ -742,11 +741,11 @@
   min-height: 80rpx;
   padding: 14rpx 18rpx;
   border-radius: 12rpx;
-  background: #fafaf9;
+  background: transparent;
   font-size: 26rpx;
-  color: #44403c;
+  color: #1c1917;
   line-height: 1.6;
-  border: 1rpx solid #f0ebe8;
+  border: 3rpx solid #8b5cf6;
 }
 
 /* ===== 紧凑打卡标签 ===== */
@@ -763,17 +762,18 @@
   font-weight: 500;
 }
 
-/* 有（玫瑰色系） */
+/* 有（紫色系） */
 .detail-mini-tag.mini-on {
-  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
-  color: #be185d;
-  border: 1rpx solid #fbcfe8;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #fff;
+  border: 2rpx solid #8b5cf6;
 }
 
-/* 无（灰色系） */
+/* 无（浅紫色系） */
 .detail-mini-tag.mini-off {
-  background: #f5f5f4;
-  color: #a8a29e;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #7c3aed;
+  border: 3rpx solid #8b5cf6;
 }
 
 /* ===== 照片区域（紧凑入口） ===== */
@@ -836,7 +836,7 @@
   gap: 8rpx;
   padding: 14rpx 20rpx;
   border-radius: 100rpx;
-  background: #fafaf9;
+  background: rgba(255,255,255,0.4);
   border: 2rpx dashed #d6d3d1;
 }
 
