@@ -5,7 +5,7 @@ const config = require('../../utils/config.js')
 
 Page({
   data: {
-    currentTab: 0,
+    mode: 'user',
     keyPhone: '',
     keyCode: '',
     adminPhone: '',
@@ -23,98 +23,10 @@ Page({
     }
   },
 
-  // ===== Tab 切换 =====
-  switchTab: function (e) {
-    var tab = e.currentTarget.dataset.tab
-    this.setData({ currentTab: Number(tab) })
-  },
-
-  // ===== 微信登录 =====
-  onWxLogin: function () {
-    var self = this
-    wx.showLoading({ title: '登录中...' })
-
-    // 使用固定的设备标识（等后端部署后替换为真实openid）
-    var deviceId = store.getLocal('_device_id')
-    if (!deviceId) {
-      deviceId = 'dev_' + Date.now() + '_' + Math.floor(Math.random() * 1000000)
-      store.setLocal('_device_id', deviceId)
-    }
-
-    wx.login({
-      success: function (res) {
-        // 临时方案：用固定设备ID生成用户标识（等后端部署后替换为真实openid）
-        var userKey = 'wx_' + deviceId
-
-        // 查询 _wx_users.json 看是否已注册
-        store.loadWxUsers(function (wxUsers) {
-          wxUsers = wxUsers || {}
-          var userInfo = wxUsers[userKey]
-
-          if (userInfo) {
-            // 检查是否被管理员停用
-            if (userInfo.disabled === true) {
-              wx.hideLoading()
-              wx.showToast({ title: '您的账号已被停用，请联系管理员', icon: 'none', duration: 3000 })
-              return
-            }
-            // 已注册用户
-            var status = store.checkUserStatus(userInfo)
-            app.globalData.loginType = 'wx'
-            app.globalData.userKey = userKey
-            app.globalData.isPaid = status.isPaid
-            app.globalData.isTrial = status.isTrial
-            app.globalData.trialExpired = status.trialExpired || false
-            app.globalData.wxUserInfo = userInfo
-            app.globalData.statusReady = true
-
-            // 缓存到本地
-            store.setLocal('_wx_users_cache', wxUsers)
-
-            store.setLocal('loginType', 'wx')
-            store.setLocal('userKey', userKey)
-
-            wx.hideLoading()
-            self.goHome()
-          } else {
-            // 未注册，创建记录
-            var now = Date.now()
-            var newUserInfo = {
-              openid: deviceId,
-              firstLoginTime: now,
-              paidUntil: null,
-              createdAt: now
-            }
-            wxUsers[userKey] = newUserInfo
-            store.saveWxUsers(wxUsers)
-
-            app.globalData.loginType = 'wx'
-            app.globalData.userKey = userKey
-            app.globalData.isPaid = false
-            app.globalData.isTrial = true
-            app.globalData.trialExpired = false
-            app.globalData.wxUserInfo = newUserInfo
-            app.globalData.statusReady = true
-
-            // 缓存到本地
-            store.setLocal('_wx_users_cache', wxUsers)
-
-            store.setLocal('loginType', 'wx')
-            store.setLocal('userKey', userKey)
-
-            wx.hideLoading()
-            wx.showToast({ title: '欢迎！24小时免费试用', icon: 'none', duration: 2000 })
-            setTimeout(function () {
-              self.goHome()
-            }, 1500)
-          }
-        })
-      },
-      fail: function () {
-        wx.hideLoading()
-        wx.showToast({ title: '登录失败，请重试', icon: 'none' })
-      }
-    })
+  // ===== 模式切换 =====
+  switchMode: function (e) {
+    var mode = e.currentTarget.dataset.mode
+    this.setData({ mode: mode })
   },
 
   // ===== 密钥登录 =====

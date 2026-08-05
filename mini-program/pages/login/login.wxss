@@ -1,7 +1,6 @@
 /* pages/login/login.wxss */
 .login-page {
   min-height: 100vh;
-  padding-bottom: 60rpx;
   background: linear-gradient(135deg, #6D28D9 0%, #9333EA 30%, #C026D3 100%);
   display: flex;
   flex-direction: column;
@@ -21,6 +20,7 @@
   background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
   top: -200rpx;
   right: -150rpx;
+  animation: float 8s ease-in-out infinite;
 }
 .login-page::after {
   content: '';
@@ -31,102 +31,183 @@
   background: radial-gradient(circle, rgba(201,168,118,0.15) 0%, transparent 70%);
   bottom: -120rpx;
   left: -100rpx;
+  animation: float 10s ease-in-out infinite reverse;
+}
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30rpx, -20rpx) scale(1.05); }
 }
 
-/* Logo */
-.logo-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 0 30rpx;
-  position: relative;
-  z-index: 1;
-}
-.logo-icon {
-  font-size: 100rpx;
-  margin-bottom: 20rpx;
-}
-.logo-title {
-  font-size: 48rpx;
-  font-weight: 700;
-  color: #1c1917;
-}
-.logo-subtitle {
-  font-size: 28rpx;
-  color: #78716c;
-  margin-top: 8rpx;
-}
-
-/* Tab */
-.tab-bar {
-  display: flex;
-  margin: 0 24rpx 10rpx;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 16rpx;
-  padding: 8rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
-  position: relative;
-  z-index: 1;
-  max-width: 700rpx;
-  width: 100%;
-  align-self: center;
-}
-.tab-item {
-  flex: 1;
-  text-align: center;
-  padding: 20rpx 0;
-  font-size: 26rpx;
-  color: #78716c;
-  border-radius: 12rpx;
-  transition: all 0.2s;
-}
-.tab-item.active {
-  background: linear-gradient(135deg, #f43f5e, #ec4899);
-  color: #fff;
-  font-weight: 600;
-}
-
-/* 内容 */
-.login-content {
-  margin-top: 10rpx;
-  position: relative;
-  z-index: 1;
-  max-width: 700rpx;
-  width: 100%;
-  align-self: center;
-}
-/* 毛玻璃卡片 */
-.login-content .card {
+/* ===== 毛玻璃卡片 ===== */
+.gate-card {
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(20px);
   border-radius: 32rpx;
-  padding: 40rpx 34rpx 34rpx;
+  padding: 60rpx 48rpx 48rpx;
+  max-width: 700rpx;
+  width: 100%;
   box-shadow: 0 32rpx 80rpx rgba(26,21,48,0.3), 0 0 0 2rpx rgba(255,255,255,0.2) inset;
+  text-align: center;
+  position: relative;
+  z-index: 1;
 }
-.login-tip {
+
+/* ===== 月亮 Logo（CSS 绘制） ===== */
+.moon-logo {
+  width: 160rpx;
+  height: 160rpx;
+  margin: 0 auto 8rpx;
+  position: relative;
+  animation: logoSpin 20s linear infinite;
+  filter: drop-shadow(0 8rpx 32rpx rgba(147,51,234,0.3));
+}
+@keyframes logoSpin {
+  from { transform: rotate(0); }
+  to { transform: rotate(360deg); }
+}
+
+/* 光晕 */
+.moon-glow {
+  position: absolute;
+  inset: -20rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,85,247,0.25) 0%, transparent 65%);
+  animation: glowPulse 3s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.12); }
+}
+
+/* 月牙 — 紫粉渐变圆形 + 白色圆形覆盖右侧形成月牙 */
+.moon-crescent {
+  position: absolute;
+  top: 16rpx;
+  left: 16rpx;
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7C3AED 0%, #C026D3 50%, #EC4899 100%);
+}
+/* 右侧白色遮罩挖出月牙形状 */
+.moon-crescent::after {
+  content: '';
+  position: absolute;
+  top: -12rpx;
+  right: -28rpx;
+  width: 112rpx;
+  height: 148rpx;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* 金色星星 */
+.moon-star {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #D4A574, #E8C9A0);
+}
+.moon-star.s1 {
+  width: 12rpx;
+  height: 12rpx;
+  top: 24rpx;
+  right: 20rpx;
+}
+.moon-star.s2 {
+  width: 9rpx;
+  height: 9rpx;
+  top: 60rpx;
+  right: 8rpx;
+  opacity: 0.7;
+}
+.moon-star.s3 {
+  width: 10rpx;
+  height: 10rpx;
+  top: 100rpx;
+  right: 28rpx;
+  opacity: 0.8;
+}
+
+/* ===== 品牌标题 ===== */
+.gate-title {
+  font-size: 44rpx;
+  font-weight: 900;
+  color: #1c1917;
+  margin-bottom: 36rpx;
+  letter-spacing: -1rpx;
+}
+.gate-title .brand {
+  background: linear-gradient(135deg, #e11d48, #f97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-style: italic;
+  font-weight: 900;
+  font-size: 50rpx;
+}
+
+/* ===== 登录内容 ===== */
+.gate-content {
+  position: relative;
+  z-index: 1;
+}
+.gate-sub {
   font-size: 26rpx;
   color: #78716c;
-  text-align: center;
-  margin-bottom: 30rpx;
-  line-height: 1.6;
+  margin-bottom: 36rpx;
 }
-.login-hint {
+
+/* 输入框 */
+.gate-input {
+  width: 100%;
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: 800;
+  padding: 28rpx;
+  border: 3rpx solid #e7e5e4;
+  border-radius: 16rpx;
+  outline: none;
+  color: #e11d48;
+  background: #fff1f2;
+  box-sizing: border-box;
+  margin-bottom: 20rpx;
+}
+.gate-input-key {
+  letter-spacing: 12rpx;
+}
+.gate-input-phone {
+  letter-spacing: 6rpx;
+  font-size: 32rpx;
+}
+
+/* 按钮 */
+.gate-btn {
+  width: 100%;
+  margin-top: 20rpx;
+  padding: 28rpx;
+  border: none;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #7C3AED, #C026D3);
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+  box-shadow: 0 8rpx 32rpx rgba(147,51,234,0.25);
+}
+
+/* 提示文字 */
+.gate-hint {
   font-size: 22rpx;
   color: #a8a29e;
-  text-align: center;
-  margin-top: 20rpx;
-  line-height: 1.5;
+  margin-top: 24rpx;
+  line-height: 1.6;
   white-space: pre-line;
 }
-.wx-login-btn {
-  font-size: 32rpx;
-  padding: 24rpx 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12rpx;
-}
-.wx-icon {
-  font-size: 36rpx;
+
+/* 管理员入口链接 */
+.gate-switch-link {
+  margin-top: 20rpx;
+  font-size: 22rpx;
+  color: #a8a29e;
+  opacity: 0.6;
 }
