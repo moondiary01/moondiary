@@ -10,40 +10,43 @@ var _autoSaveTimer = null
 Page({
   data: {
     userName: '',
+    userAvatar: '',
     todayStr: '',
     todayWeightDisplay: '--',
     unitLabel: '斤',
     isFemale: false,
     isAdmin: false,
-    isBeautyUser: false,   // 是否已购升级版
+    isBeautyUser: false,
+    hideBeautyEntry: false,
     dayData: {},
     waterMl: 0,
     waterGoal: 2000,
-    waterCups: [],          // 杯子列表 [{filled: bool}]
+    waterCups: [],
     showPayModal: false,
     periodStatusText: '',
     // 排便选项
     bmOptions: ['—', '✓ 有', '✗ 无', '便秘'],
     bmIndex: 0,
-    // 运动选项
-    exerciseTrioOptions: ['—', '✓ 有', '✗ 无'],
+    // 运动选项 — 扩展为7个（对齐HTML版）
+    exerciseTrioOptions: ['—', '✓ 有', '✗ 无', '有氧运动', '力量训练', '瑜伽拉伸', '散步'],
     exerciseIndex: 0,
     // 饮食选项
     dietOptions: ['液断', '轻断食', '少餐', '正餐', '放纵'],
-    // 仪表盘数据
-    dashMaxWeight: '',
-    dashMinWeight: '',
-    dashAvgWeight: '',
-    dashRecordDays: 0,
-    dashBmi: '',
-    dashRemain: '',
+    // 仪表盘数据 — HTML版6项
+    dashTotalDays: '',
+    dashCurrentDay: '',
+    dashStartWeight: '',
+    dashTargetWeight: '',
+    dashLostWeight: '',
+    dashLatestWeight: '',
+    // 进度条
+    progressPercent: 0,
     // 用户信息
     userGender: '',
     userAge: '',
     userHeight: '',
-    // 完整记录
-    showRecords: false,
-    recentRecords: []
+    // 完整记录 — 按月分组
+    monthGroups: []
   },
 
   onLoad: function () {
@@ -67,12 +70,10 @@ Page({
   },
 
   onHide: function () {
-    // 页面隐藏时立即保存
     this.saveNow()
   },
 
   onUnload: function () {
-    // 页面卸载时立即保存
     if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null }
     this.saveNow()
   },
@@ -174,14 +175,14 @@ Page({
     // 排便/运动 index 映射
     var bmMap = { '': 0, '有': 1, '无': 2, '便秘': 3 }
     var bmIndex = bmMap[todayData.bm] || 0
-    var exMap = { '': 0, '有运动': 1, '无运动': 2 }
+    // 运动扩展映射（7项）
+    var exMap = { '': 0, '有运动': 1, '无运动': 2, '有氧运动': 3, '力量训练': 4, '瑜伽拉伸': 5, '散步': 6 }
     var exerciseIndex = exMap[todayData.exercise] || 0
 
     // 经期状态文本
     var periodStatusText = ''
     if (todayData.period) {
       var startDate = new Date(today)
-      // 查找经期起始日
       for (var pi = 0; pi < days.length; pi++) {
         if (days[pi].period && days[pi].date < today) {
           startDate = new Date(days[pi].date)
@@ -195,13 +196,14 @@ Page({
 
     this.setData({
       userName: state.name || '',
+      userAvatar: state.avatar || '',
       todayStr: todayStr,
       todayWeightDisplay: weightDisplay,
       unitLabel: unitLabel,
       isFemale: isFemale,
       isAdmin: app.globalData.loginType === 'admin',
       isBeautyUser: app.globalData.canUseUpgrade || app.globalData.loginType === 'admin' || app.globalData.loginType === 'key',
-      hideBeautyEntry: app.globalData.canUseUpgrade && app.globalData.loginType !== 'admin',  // 底部入口：非管理员的已购用户才隐藏
+      hideBeautyEntry: app.globalData.canUseUpgrade && app.globalData.loginType !== 'admin',
       dayData: todayData,
       waterMl: waterMl,
       waterGoal: waterGoal,
@@ -209,13 +211,13 @@ Page({
       bmIndex: bmIndex,
       exerciseIndex: exerciseIndex,
       periodStatusText: periodStatusText,
-      // 用户信息
       userGender: state.gender || '',
       userAge: state.age ? String(state.age) : '',
       userHeight: state.height ? state.height + 'cm' : ''
     })
 
-    this.renderDashboard(state);
+    this.renderDashboard(state)
+    this.renderMonthGroups(state)
 
     this.currentState = state
     this.currentToday = today
@@ -301,7 +303,7 @@ Page({
   // ===== 运动 =====
   onExerciseChange: function (e) {
     var idx = parseInt(e.detail.value)
-    var valMap = { 0: '', 1: '有运动', 2: '无运动' }
+    var valMap = { 0: '', 1: '有运动', 2: '无运动', 3: '有氧运动', 4: '力量训练', 5: '瑜伽拉伸', 6: '散步' }
     var val = valMap[idx] || ''
     this.setData({ exerciseIndex: idx })
     this.updateDayData('exercise', val)
@@ -324,16 +326,13 @@ Page({
     this.updateDayData('water', cups)
     this.setData({ waterMl: cups * 250 })
 
-    // 更新杯子列表
     var waterCups = this.data.waterCups
     for (var i = 0; i < waterCups.length; i++) {
       waterCups[i].filled = i < cups
     }
     this.setData({ waterCups: waterCups })
 
-    // 播放水滴音效
     audio.playWater()
-
     this.autoSave()
   },
 
@@ -380,7 +379,7 @@ Page({
     this.saveNow()
   },
 
-  // ===== 心情日记 =====
+  // ===== 备注/日记 =====
   onNoteInput: function (e) {
     this.updateDayData('note', e.detail.value)
     this.autoSave()
@@ -405,6 +404,16 @@ Page({
       display = this.data.unitLabel === '斤' ? (weightVal * 2).toFixed(1) : Number(weightVal).toFixed(1)
     }
     this.setData({ todayWeightDisplay: display })
+  },
+
+  // ===== 编辑字段（仪表盘可点击项） =====
+  onEditField: function (e) {
+    var field = e.currentTarget.dataset.field
+    wx.navigateTo({ url: '/pages/plan/plan' })
+  },
+
+  onScrollToTop: function () {
+    wx.pageScrollTo({ scrollTop: 0, duration: 300 })
   },
 
   // ===== 导航 =====
@@ -440,7 +449,6 @@ Page({
     this.currentState.unit = newUnit;
     app.globalData.state = this.currentState;
     store.saveState(app.globalData.userKey, this.currentState);
-    // 重新加载页面
     this.initPage(this.currentState, this.currentToday);
     wx.showToast({ title: '已切换为' + newUnit, icon: 'success' });
   },
@@ -465,84 +473,139 @@ Page({
     });
   },
 
-  // ===== 仪表盘 =====
+  // ===== 仪表盘 — HTML版6项 =====
   renderDashboard: function (state) {
     var days = state.days || [];
     var unitLabel = state.unit || '斤';
-    var weights = [];
-    for (var i = 0; i < days.length; i++) {
-      var w = days[i].weightAM || days[i].weightPM;
-      if (w) weights.push(Number(w));
+
+    // 计划天数
+    var startDate = state.startDate;
+    var targetDate = state.targetDate;
+    var totalDays = '—';
+    var currentDay = '—';
+    if (startDate && targetDate) {
+      var s = new Date(startDate);
+      var t = new Date(targetDate);
+      var diffTotal = Math.round((t - s) / (1000 * 60 * 60 * 24));
+      totalDays = diffTotal > 0 ? diffTotal + '天' : '—';
+      var today = new Date();
+      var diffCurrent = Math.floor((today - s) / (1000 * 60 * 60 * 24)) + 1;
+      currentDay = diffCurrent > 0 ? diffCurrent : '—';
+      if (typeof currentDay === 'number') currentDay = currentDay + '天';
     }
 
-    var maxW = '—', minW = '—', avgW = '—';
-    if (weights.length > 0) {
-      maxW = Math.max.apply(null, weights);
-      minW = Math.min.apply(null, weights);
-      avgW = (weights.reduce(function(a,b){return a+b}, 0) / weights.length);
-      if (unitLabel === '斤') {
-        maxW = (maxW * 2).toFixed(1) + ' ' + unitLabel;
-        minW = (minW * 2).toFixed(1) + ' ' + unitLabel;
-        avgW = (avgW * 2).toFixed(1) + ' ' + unitLabel;
+    // 起始体重
+    var startWeight = '—';
+    if (state.startWeight) {
+      var sw = Number(state.startWeight);
+      startWeight = unitLabel === '斤' ? (sw * 2).toFixed(1) : sw.toFixed(1);
+      startWeight += ' ' + unitLabel;
+    }
+
+    // 目标体重
+    var targetWeight = '—';
+    if (state.targetWeight) {
+      var tw = Number(state.targetWeight);
+      targetWeight = unitLabel === '斤' ? (tw * 2).toFixed(1) : tw.toFixed(1);
+      targetWeight += ' ' + unitLabel;
+    }
+
+    // 最新体重
+    var latestWeight = null;
+    for (var j = days.length - 1; j >= 0; j--) {
+      if (days[j].weightAM || days[j].weightPM) {
+        latestWeight = Number(days[j].weightAM || days[j].weightPM);
+        break;
+      }
+    }
+    var latestStr = '—';
+    if (latestWeight) {
+      latestStr = unitLabel === '斤' ? (latestWeight * 2).toFixed(1) : latestWeight.toFixed(1);
+      latestStr += ' ' + unitLabel;
+    }
+
+    // 已减重
+    var lostStr = '—';
+    if (state.startWeight && latestWeight) {
+      var lost = Number(state.startWeight) - latestWeight;
+      if (lost > 0) {
+        lostStr = unitLabel === '斤' ? (lost * 2).toFixed(1) : lost.toFixed(1);
+        lostStr += ' ' + unitLabel;
       } else {
-        maxW = maxW.toFixed(1) + ' ' + unitLabel;
-        minW = minW.toFixed(1) + ' ' + unitLabel;
-        avgW = avgW.toFixed(1) + ' ' + unitLabel;
+        lostStr = '0 ' + unitLabel;
       }
     }
 
-    // BMI
-    var height = state.height;
-    var latestWeight = null;
-    for (var j = days.length - 1; j >= 0; j--) {
-      if (days[j].weightAM) { latestWeight = Number(days[j].weightAM); break; }
-    }
-    var bmiStr = '—';
-    if (height && latestWeight) {
-      var bmi = latestWeight / ((height / 100) * (height / 100));
-      bmiStr = bmi.toFixed(1);
-    }
-
-    // 距目标
-    var remainStr = '—';
-    if (state.targetWeight && latestWeight) {
-      var diff = latestWeight - Number(state.targetWeight);
-      var displayDiff = unitLabel === '斤' ? (diff * 2).toFixed(1) : diff.toFixed(1);
-      remainStr = (diff > 0 ? '' : '') + displayDiff + ' ' + unitLabel;
+    // 进度条
+    var progressPercent = 0;
+    if (state.startWeight && state.targetWeight && latestWeight) {
+      var total = Number(state.startWeight) - Number(state.targetWeight);
+      if (total > 0) {
+        var done = Number(state.startWeight) - latestWeight;
+        progressPercent = Math.round((done / total) * 100);
+        if (progressPercent < 0) progressPercent = 0;
+        if (progressPercent > 100) progressPercent = 100;
+      }
     }
 
     this.setData({
-      dashMaxWeight: maxW,
-      dashMinWeight: minW,
-      dashAvgWeight: avgW,
-      dashRecordDays: weights.length,
-      dashBmi: bmiStr,
-      dashRemain: remainStr
+      dashTotalDays: totalDays,
+      dashCurrentDay: currentDay,
+      dashStartWeight: startWeight,
+      dashTargetWeight: targetWeight,
+      dashLostWeight: lostStr,
+      dashLatestWeight: latestStr,
+      progressPercent: progressPercent
     });
   },
 
-  // ===== 完整记录折叠 =====
-  onToggleRecords: function () {
-    var show = !this.data.showRecords;
-    if (show) {
-      var state = this.currentState;
-      var days = (state.days || []).slice(-30).reverse();
-      var unitLabel = state.unit || '斤';
-      var records = [];
-      for (var i = 0; i < days.length; i++) {
-        var d = days[i];
-        var w = d.weightAM || d.weightPM;
-        records.push({
-          date: d.date.substring(5),
-          weight: w ? (unitLabel === '斤' ? (Number(w) * 2).toFixed(1) : Number(w).toFixed(1)) + ' ' + unitLabel : '—',
-          bm: d.bm || '—',
-          exercise: d.exercise || '—',
-          diet: d.diet || '—'
-        });
+  // ===== 完整记录 — 按月分组 =====
+  renderMonthGroups: function (state) {
+    var days = (state.days || []).slice().reverse();
+    var unitLabel = state.unit || '斤';
+    var groups = {};
+    var groupOrder = [];
+
+    for (var i = 0; i < days.length; i++) {
+      var d = days[i];
+      var monthKey = d.date.substring(0, 7); // YYYY-MM
+      if (!groups[monthKey]) {
+        groups[monthKey] = [];
+        groupOrder.push(monthKey);
       }
-      this.setData({ showRecords: true, recentRecords: records });
-    } else {
-      this.setData({ showRecords: false });
+      var w = d.weightAM || d.weightPM;
+      groups[monthKey].push({
+        date: d.date,
+        dateStr: d.date.substring(5),
+        weight: w ? (unitLabel === '斤' ? (Number(w) * 2).toFixed(1) : Number(w).toFixed(1)) + ' ' + unitLabel : '—',
+        bm: d.bm || '—',
+        exercise: d.exercise || '—',
+        diet: d.diet || '—'
+      });
+    }
+
+    var monthGroups = groupOrder.map(function (key) {
+      return {
+        month: key,
+        records: groups[key],
+        expanded: false
+      };
+    });
+
+    this.setData({ monthGroups: monthGroups });
+  },
+
+  onToggleMonth: function (e) {
+    var month = e.currentTarget.dataset.month;
+    var groups = this.data.monthGroups;
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].month === month) {
+        var key = 'monthGroups[' + i + '].expanded';
+        var obj = {};
+        obj[key] = !groups[i].expanded;
+        this.setData(obj);
+        break;
+      }
     }
   },
 })
