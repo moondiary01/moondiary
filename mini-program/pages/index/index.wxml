@@ -56,6 +56,25 @@
           <text class="beauty-quick-title">心情日记</text>
         </view>
       </view>
+      <!-- 19.9元普通版购买入口（试用/未购用户可见） -->
+      <view class="basic-plan-entry" wx:if="{{showBasicPlanEntry}}" bindtap="onOpenBasicPay">
+        <view class="basic-plan-glow basic-plan-glow-gold"></view>
+        <view class="basic-plan-glow basic-plan-glow-white"></view>
+        <view class="basic-plan-inner">
+          <view class="basic-plan-left">
+            <text class="basic-plan-icon">🌙</text>
+            <view class="basic-plan-text">
+              <text class="basic-plan-title">解锁全部功能 · 永久云端储存</text>
+              <text class="basic-plan-sub">一次购买 · 永久会员权益 · 云端储存</text>
+            </view>
+          </view>
+          <view class="basic-plan-price-pill">
+            <text class="basic-plan-yuan">¥</text>
+            <text class="basic-plan-num">19.9</text>
+            <text class="basic-plan-perm">永久</text>
+          </view>
+        </view>
+      </view>
     </view>
   </view>
 </view>

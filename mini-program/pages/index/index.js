@@ -20,6 +20,7 @@ Page({
     hideBeautyEntry: false,
     showBeautyQuick: false,
     canSeeUpgrade: false,
+    showBasicPlanEntry: false,
     dayData: {},
     waterMl: 0,
     waterGoal: 2000,
@@ -207,6 +208,7 @@ Page({
       hideBeautyEntry: app.globalData.canUseUpgrade && app.globalData.loginType !== 'admin',
       showBeautyQuick: app.globalData.canUseUpgrade || app.globalData.loginType === 'admin' || app.globalData.loginType === 'key',
       canSeeUpgrade: app.globalData.canUseUpgrade || app.globalData.isPaid || app.globalData.loginType === 'admin' || app.globalData.loginType === 'key',
+      showBasicPlanEntry: !app.globalData.canUseUpgrade && !app.globalData.isPaid && app.globalData.loginType !== 'admin' && app.globalData.loginType !== 'key',
       dayData: todayData,
       waterMl: waterMl,
       waterGoal: waterGoal,
@@ -442,6 +444,13 @@ Page({
     audio.playEnter()
     wx.navigateTo({
       url: '/subpkg-beauty/pages/mood/mood'
+    })
+  },
+
+  onOpenBasicPay: function () {
+    audio.playEnter()
+    wx.navigateTo({
+      url: '/pages/pay/pay'
     })
   },
 
