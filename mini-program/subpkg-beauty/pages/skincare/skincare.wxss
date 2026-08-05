@@ -603,7 +603,7 @@
   border-radius: 100rpx;
   font-size: 24rpx;
   font-weight: 600;
-  background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
   color: #be185d;
   border: 3rpx solid #ec4899;
 }
@@ -709,8 +709,8 @@
   box-shadow: none;
 }
 
-.detail-card-purple { background: linear-gradient(135deg, #fdf2f8 0%, #f5f3ff 50%, #ede9fe 100%); }
-.detail-card-pink { background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #f5f3ff 100%); }
+.detail-card-purple { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #e9d5ff 100%); }
+.detail-card-pink { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 50%, #f5f3ff 100%); }
 .detail-card-gray { background: transparent; }
 
 .detail-card-title {
@@ -781,7 +781,7 @@
 
 /* 无（浅紫色系 — 比底色深一点） */
 .detail-mini-tag.mini-off {
-  background: linear-gradient(135deg, #e9d5ff, #d8b4fe);
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
   color: #7c3aed;
   border: 3rpx solid #8b5cf6;
 }
