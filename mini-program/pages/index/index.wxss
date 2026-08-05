@@ -789,12 +789,14 @@ page {
   display: flex;
   gap: 10rpx;
   margin-bottom: 20rpx;
-  flex-wrap: wrap;
+  overflow-x: auto;
 }
 .beauty-feat-chip {
   padding: 8rpx 18rpx;
   border-radius: 16rpx;
   background: rgba(255,255,255,0.08);
+  white-space: nowrap;
+  flex-shrink: 0;
   font-size: 24rpx;
   color: rgba(255,255,255,0.8);
   font-weight: 500;

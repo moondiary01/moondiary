@@ -263,10 +263,6 @@
       </view>
       <view class="beauty-entry-bottom">
         <text class="beauty-entry-subline">一次购买 · 永久会员权益 · 云端储存</text>
-        <view class="beauty-price-pill">
-          <text class="beauty-price-num">29.9</text>
-          <text class="beauty-price-unit">元 永久</text>
-        </view>
       </view>
     </view>
   </view>
