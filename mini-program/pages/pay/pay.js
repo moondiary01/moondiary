@@ -21,15 +21,56 @@ Page({
   onPay: function () {
     var tab = this.data.currentTab
     if (tab === 'basic') {
-      wx.showToast({
-        title: '基础版支付功能即将开通，请联系客服',
-        icon: 'none',
-        duration: 2500
-      })
+      this.onPayBasic()
     } else {
-      // 升级版支付
       this.onPayUpgrade()
     }
+  },
+
+  onPayBasic: function () {
+    var self = this
+    var userKey = app.globalData.userKey
+    var loginType = app.globalData.loginType
+
+    if (loginType === 'key' || loginType === 'admin') {
+      wx.showToast({ title: '您已是会员用户', icon: 'success' })
+      return
+    }
+
+    wx.showModal({
+      title: '基础版会员',
+      content: '19.9元永久使用云端存储，是否立即开通？',
+      confirmText: '立即开通',
+      confirmColor: '#8b5cf6',
+      success: function (res) {
+        if (res.confirm) { self.processBasicPayment() }
+      }
+    })
+  },
+
+  processBasicPayment: function () {
+    var self = this
+    wx.showLoading({ title: '支付中...' })
+    var store = require('../../utils/store.js')
+    var userKey = app.globalData.userKey
+
+    store.loadFromCloud('_wx_users', function (data) {
+      if (!data) data = {}
+      if (!data[userKey]) data[userKey] = {}
+      var now = Date.now()
+      data[userKey].paidUntil = now + 36500 * 24 * 60 * 60 * 1000
+      store.saveToCloud('_wx_users', data, function (success) {
+        wx.hideLoading()
+        if (success) {
+          app.globalData.isPaid = true
+          app.globalData.statusReady = true
+          wx.showToast({ title: '开通成功！', icon: 'success', duration: 2000 })
+          setTimeout(function () { wx.navigateBack() }, 1500)
+        } else {
+          wx.showToast({ title: '支付失败，请重试', icon: 'none' })
+        }
+      })
+    })
   },
 
   onPayUpgrade: function () {

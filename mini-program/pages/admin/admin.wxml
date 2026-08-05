@@ -5,29 +5,29 @@
   <view class="card">
     <view class="card-title">用户统计</view>
     <view class="stat-row">
-      <view class="stat-cell">
+      <view class="stat-cell" bindtap="onShowUsersByType" data-type="free">
         <text class="stat-num">{{freeUsers}}</text>
         <text class="stat-label">免费用户</text>
       </view>
-      <view class="stat-cell">
+      <view class="stat-cell" bindtap="onShowUsersByType" data-type="trial">
         <text class="stat-num">{{trialUsers}}</text>
         <text class="stat-label">试用未充值</text>
       </view>
     </view>
     <view class="stat-row stat-row-second">
-      <view class="stat-cell">
+      <view class="stat-cell" bindtap="onShowUsersByType" data-type="basic">
         <text class="stat-num">{{vipBasicUsers}}</text>
         <text class="stat-label">VIP基础版</text>
       </view>
-      <view class="stat-cell" wx:if="{{showUpgradeStat}}">
+      <view class="stat-cell" bindtap="onShowUsersByType" data-type="upgrade" wx:if="{{showUpgradeStat}}">
         <text class="stat-num">{{vipUpgradeUsers}}</text>
         <text class="stat-label">VIP升级版</text>
       </view>
     </view>
     <view class="stat-row stat-row-second">
-      <view class="stat-cell stat-total">
+      <view class="stat-cell stat-total" bindtap="onShowUsersByType" data-type="all">
         <text class="stat-num">{{totalUsers}}</text>
-        <text class="stat-label">总人数</text>
+        <text class="stat-label">总人数（点击查看）</text>
       </view>
     </view>
   </view>
@@ -46,13 +46,13 @@
 
   <!-- 付费管理 -->
   <view class="card">
-    <view class="card-title">💰 付费管理 <text class="sub">手动开通用户</text></view>
+    <view class="card-title">付费管理 <text class="sub">手动开通用户</text></view>
     <view class="input-group">
       <input class="input" type="number" maxlength="11" placeholder="输入用户手机号（11位）" value="{{paymentPhone}}" bindinput="onPaymentPhoneInput" />
     </view>
     <view class="pay-btns">
-      <button class="btn btn-primary pay-basic-btn" bindtap="onGrantStorage">开通 19.9元\n云端存储</button>
-      <button class="btn btn-primary pay-upgrade-btn" bindtap="onGrantBeauty">开通 29.9元\n变美计划+云存储</button>
+      <button class="btn btn-primary pay-basic-btn" bindtap="onGrantStorage">开通 19.9元 云端存储</button>
+      <button class="btn btn-primary pay-upgrade-btn" bindtap="onGrantBeauty">开通 29.9元 变美计划+云存储</button>
     </view>
     <text class="pay-status">{{paymentStatus}}</text>
   </view>
@@ -74,22 +74,35 @@
       <view class="filter-btn {{filterStatus === 'revoked' ? 'filter-active' : ''}}" bindtap="onFilter" data-status="revoked">已作废</view>
     </view>
 
+    <!-- 动态密钥 -->
+    <view class="dynamic-key-row" style="margin-top:16rpx;display:flex;gap:12rpx">
+      <input class="input" type="number" maxlength="6" placeholder="自定义6位密钥" value="{{newDynamicKey}}" bindinput="onDynamicKeyInput" style="flex:1" />
+      <button class="btn btn-primary" bindtap="onAddDynamicKey" style="flex-shrink:0;padding:0 24rpx">添加密钥</button>
+    </view>
+
     <!-- 密钥列表 -->
-    <view class="key-list">
+    <view class="key-list" style="margin-top:16rpx">
       <view class="key-item" wx:for="{{filteredKeys}}" wx:key="key">
-        <view class="key-info">
-          <view class="key-num">{{item.key}}</view>
+        <view class="key-main">
+          <view class="key-header">
+            <text class="key-num">{{item.key}}</text>
+            <text class="key-version-tag {{item.isUpgrade ? 'ver-upgrade' : 'ver-normal'}}">{{item.isUpgrade ? '升级版' : '普通版'}}</text>
+            <text class="key-login-status" wx:if="{{item.hasLogin}}">登录中</text>
+            <text class="key-login-status key-login-off" wx:else>未登录</text>
+          </view>
           <view class="key-detail">
             <text class="key-phone">{{item.phone || '未绑定'}}</text>
-            <text class="key-remark">{{item.remark || ''}}</text>
+            <text class="key-user-info" wx:if="{{item.userInfo}}">{{item.userInfo}}</text>
+            <text class="key-remark" bindtap="onEditKeyNote" data-key="{{item.key}}">{{item.remark || '点击添加备注'}}</text>
           </view>
         </view>
         <view class="key-right">
           <view class="key-status {{item.statusClass}}">{{item.statusText}}</view>
           <view class="key-actions">
+            <button class="mini-btn mini-btn-outline" wx:if="{{item.status === 'active' && !item.isUpgrade}}" bindtap="onToggleBeautyTrial" data-key="{{item.key}}" data-action="enable">开升级版</button>
+            <button class="mini-btn mini-btn-outline" wx:if="{{item.status === 'active' && item.isUpgrade}}" bindtap="onToggleBeautyTrial" data-key="{{item.key}}" data-action="disable">关升级版</button>
             <button class="mini-btn mini-btn-outline" wx:if="{{item.status === 'active'}}" bindtap="onToggleKey" data-key="{{item.key}}" data-action="revoke">作废</button>
             <button class="mini-btn mini-btn-outline" wx:if="{{item.status === 'inactive'}}" bindtap="onToggleKey" data-key="{{item.key}}" data-action="activate">启用</button>
-            <button class="mini-btn mini-btn-outline" wx:if="{{item.status === 'inactive'}}" bindtap="onToggleKey" data-key="{{item.key}}" data-action="revoke">作废</button>
             <button class="mini-btn mini-btn-outline" wx:if="{{item.status === 'revoked'}}" bindtap="onToggleKey" data-key="{{item.key}}" data-action="activate">恢复</button>
           </view>
         </view>
@@ -99,20 +112,51 @@
 
   <!-- 管理员密码修改 -->
   <view class="card">
-    <view class="card-title">🔑 管理员密码 <text class="sub">登录后可修改</text></view>
+    <view class="card-title">管理员密码 <text class="sub">登录后可修改</text></view>
     <view class="input-group">
       <text class="input-label">当前密码</text>
       <input class="input" password="{{true}}" placeholder="输入当前管理员密码" value="{{oldPw}}" bindinput="onOldPwInput" />
     </view>
     <view class="input-group">
-      <text class="input-label">新密码</text>
+      <text class="input-label">新密码（至少6位）</text>
       <input class="input" password="{{true}}" placeholder="设置新密码" value="{{newPw}}" bindinput="onNewPwInput" />
     </view>
     <view class="input-group">
       <text class="input-label">确认新密码</text>
       <input class="input" password="{{true}}" placeholder="再次输入新密码" value="{{newPw2}}" bindinput="onNewPw2Input" />
     </view>
-    <button class="btn btn-primary" bindtap="onChangeAdminPw">💾 保存新密码</button>
+    <button class="btn btn-primary" bindtap="onChangeAdminPw">保存新密码</button>
   </view>
 
+</view>
+
+<!-- 用户手机号弹窗 -->
+<view class="overlay" wx:if="{{showUsersModal}}" bindtap="onCloseUsersModal">
+  <view class="modal" catchtap="">
+    <view class="modal-title">{{usersModalTitle}}</view>
+    <view class="users-list">
+      <view class="user-phone-item" wx:for="{{displayUsers}}" wx:key="*this">
+        <text class="user-phone-text">{{item}}</text>
+      </view>
+      <view class="users-empty" wx:if="{{displayUsers.length === 0}}">暂无用户</view>
+    </view>
+    <view class="modal-actions">
+      <button class="btn btn-primary" bindtap="onCloseUsersModal">关闭</button>
+    </view>
+  </view>
+</view>
+
+<!-- 密钥备注编辑弹窗 -->
+<view class="overlay" wx:if="{{showNoteModal}}" bindtap="onCloseNoteModal">
+  <view class="modal" catchtap="">
+    <view class="modal-title">编辑备注</view>
+    <view class="input-group">
+      <text class="input-label">密钥 {{editNoteKey}}</text>
+      <input class="input" placeholder="备注信息（如：朋友、家人等）" value="{{editNoteValue}}" bindinput="onNoteInput" />
+    </view>
+    <view class="modal-actions">
+      <button class="btn btn-outline" bindtap="onCloseNoteModal">取消</button>
+      <button class="btn btn-primary" bindtap="onSaveNote">保存</button>
+    </view>
+  </view>
 </view>

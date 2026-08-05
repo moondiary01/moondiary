@@ -25,7 +25,117 @@
     <view class="edit-hint">点击编辑</view>
   </view>
 
-  <!-- 计划卡片 -->
+  <!-- 三阶段计划 -->
+  <view class="card">
+    <view class="card-title">三阶段计划</view>
+    <view class="stage-card stage-s1">
+      <view class="stage-header">
+        <text class="stage-num">阶段一</text>
+        <text class="stage-name">适应期</text>
+        <text class="stage-range">第 1-30 天</text>
+      </view>
+      <view class="stage-goal">目标：建立记录习惯，了解身体数据变化规律</view>
+      <view class="stage-tips">
+        <text>• 每天固定时间称重（晨起空腹 + 睡前）</text>
+        <text>• 记录排便、运动、饮食情况</text>
+        <text>• 不需要刻意节食，保持日常饮食习惯</text>
+        <text>• 建立喝水习惯，每天至少 1500ml</text>
+      </view>
+    </view>
+    <view class="stage-card stage-s2">
+      <view class="stage-header">
+        <text class="stage-num">阶段二</text>
+        <text class="stage-name">加速期</text>
+        <text class="stage-range">第 31-60 天</text>
+      </view>
+      <view class="stage-goal">目标：稳定减重节奏，每周减 0.5-1 kg</view>
+      <view class="stage-tips">
+        <text>• 控制每日热量摄入，参考饮食表</text>
+        <text>• 每周至少 3 次有氧运动（30分钟以上）</text>
+        <text>• 增加蛋白质摄入，减少精制碳水</text>
+        <text>• 保证 7-8 小时睡眠，减少压力</text>
+      </view>
+    </view>
+    <view class="stage-card stage-s3">
+      <view class="stage-header">
+        <text class="stage-num">阶段三</text>
+        <text class="stage-name">巩固期</text>
+        <text class="stage-range">第 61-100 天</text>
+      </view>
+      <view class="stage-goal">目标：维持减重成果，养成健康生活习惯</view>
+      <view class="stage-tips">
+        <text>• 逐步恢复正常饮食，但保持健康搭配</text>
+        <text>• 加入力量训练，提高基础代谢</text>
+        <text>• 每周称重 2-3 次，关注体脂率变化</text>
+        <text>• 形成长期可持续的健康生活方式</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 每日饮食参考表 5列 -->
+  <view class="card">
+    <view class="card-title">每日饮食参考</view>
+    <view class="meal-table">
+      <view class="meal-row meal-header">
+        <text class="meal-cell meal-time">餐次</text>
+        <text class="meal-cell meal-time-range">时间</text>
+        <text class="meal-cell meal-food">食物建议</text>
+        <text class="meal-cell meal-cal">热量</text>
+        <text class="meal-cell meal-note">备注</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">早餐</text>
+        <text class="meal-cell meal-time-range">7:00-8:00</text>
+        <text class="meal-cell meal-food">燕麦粥+1鸡蛋+脱脂牛奶</text>
+        <text class="meal-cell meal-cal">~350</text>
+        <text class="meal-cell meal-note">高蛋白</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">加餐</text>
+        <text class="meal-cell meal-time-range">10:30</text>
+        <text class="meal-cell meal-food">苹果或坚果</text>
+        <text class="meal-cell meal-cal">~100</text>
+        <text class="meal-cell meal-note">膳食纤维</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">午餐</text>
+        <text class="meal-cell meal-time-range">12:00</text>
+        <text class="meal-cell meal-food">糙米+鸡胸肉+蔬菜</text>
+        <text class="meal-cell meal-cal">~450</text>
+        <text class="meal-cell meal-note">均衡</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">加餐</text>
+        <text class="meal-cell meal-time-range">15:30</text>
+        <text class="meal-cell meal-food">无糖酸奶或黄瓜</text>
+        <text class="meal-cell meal-cal">~80</text>
+        <text class="meal-cell meal-note">低卡</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">晚餐</text>
+        <text class="meal-cell meal-time-range">18:00</text>
+        <text class="meal-cell meal-food">红薯+清蒸鱼+蔬菜</text>
+        <text class="meal-cell meal-cal">~350</text>
+        <text class="meal-cell meal-note">清淡</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关键提醒 -->
+  <view class="card">
+    <view class="card-title">关键提醒</view>
+    <view class="tip-list">
+      <text class="tip-item">• 每天固定时间称重：晨起空腹排便后 + 晚餐后睡前</text>
+      <text class="tip-item">• 晨起体重最准，反映真实减脂效果</text>
+      <text class="tip-item">• 排便情况影响体重波动，排便后称重更准</text>
+      <text class="tip-item">• 体重自然波动属正常，关注周趋势而非单日</text>
+      <text class="tip-item">• 每周减重不超过 1 kg / 2 斤，不要节食暴瘦</text>
+      <text class="tip-item">• 保证每天 7-8 小时睡眠，多喝水促进代谢</text>
+      <text class="tip-item">• 如有不适，立即停止并咨询医生</text>
+    </view>
+  </view>
+
+  <!-- 减重计划卡片 -->
   <view class="card" bindtap="onEditCard" data-card="plan">
     <view class="card-title">减重计划</view>
     <view class="info-grid">
@@ -53,26 +163,6 @@
     <view class="edit-hint">点击编辑</view>
   </view>
 
-  <!-- 三围卡片 -->
-  <view class="card" bindtap="onEditCard" data-card="measure">
-    <view class="card-title">三围记录</view>
-    <view class="measure-row">
-      <view class="measure-cell">
-        <text class="measure-num">{{state.bust || '--'}}</text>
-        <text class="measure-lbl">胸围</text>
-      </view>
-      <view class="measure-cell">
-        <text class="measure-num">{{state.waist || '--'}}</text>
-        <text class="measure-lbl">腰围</text>
-      </view>
-      <view class="measure-cell">
-        <text class="measure-num">{{state.hip || '--'}}</text>
-        <text class="measure-lbl">臀围</text>
-      </view>
-    </view>
-    <view class="edit-hint">点击编辑</view>
-  </view>
-
   <!-- 进度卡片 -->
   <view class="card">
     <view class="card-title">进度</view>
@@ -90,8 +180,6 @@
         <text class="progress-value {{lostWeight > 0 ? 'progress-good' : ''}} {{lostWeight < 0 ? 'progress-bad' : ''}}">{{lostWeightStr}}</text>
       </view>
     </view>
-
-    <!-- 进度条 -->
     <view class="progress-bar-wrap" wx:if="{{totalDays > 0}}">
       <view class="progress-bar">
         <view class="progress-bar-fill" style="width: {{progressPercent}}%"></view>
@@ -100,61 +188,24 @@
     </view>
   </view>
 
-  <!-- 每日饮食参考 -->
-  <view class="card">
-    <view class="card-title">🍽️ 每日饮食参考</view>
-    <view class="meal-table">
-      <view class="meal-row meal-header">
-        <text class="meal-cell meal-time">餐次</text>
-        <text class="meal-cell meal-time-range">时间</text>
-        <text class="meal-cell meal-food">食物建议</text>
-        <text class="meal-cell meal-cal">热量</text>
+  <!-- 三围记录 -->
+  <view class="card" bindtap="onEditCard" data-card="measure">
+    <view class="card-title">三围记录</view>
+    <view class="measure-row">
+      <view class="measure-cell">
+        <text class="measure-num">{{state.bust || '--'}}</text>
+        <text class="measure-lbl">胸围 cm</text>
       </view>
-      <view class="meal-row">
-        <text class="meal-cell meal-time">🥣 早餐</text>
-        <text class="meal-cell meal-time-range">7:00-8:00</text>
-        <text class="meal-cell meal-food">燕麦粥+1鸡蛋+脱脂牛奶</text>
-        <text class="meal-cell meal-cal">~350</text>
+      <view class="measure-cell">
+        <text class="measure-num">{{state.waist || '--'}}</text>
+        <text class="measure-lbl">腰围 cm</text>
       </view>
-      <view class="meal-row">
-        <text class="meal-cell meal-time">🍎 加餐</text>
-        <text class="meal-cell meal-time-range">10:30</text>
-        <text class="meal-cell meal-food">苹果或坚果</text>
-        <text class="meal-cell meal-cal">~100</text>
-      </view>
-      <view class="meal-row">
-        <text class="meal-cell meal-time">🍱 午餐</text>
-        <text class="meal-cell meal-time-range">12:00</text>
-        <text class="meal-cell meal-food">糙米+鸡胸肉+蔬菜</text>
-        <text class="meal-cell meal-cal">~450</text>
-      </view>
-      <view class="meal-row">
-        <text class="meal-cell meal-time">🥒 加餐</text>
-        <text class="meal-cell meal-time-range">15:30</text>
-        <text class="meal-cell meal-food">无糖酸奶或黄瓜</text>
-        <text class="meal-cell meal-cal">~80</text>
-      </view>
-      <view class="meal-row">
-        <text class="meal-cell meal-time">🥗 晚餐</text>
-        <text class="meal-cell meal-time-range">18:00</text>
-        <text class="meal-cell meal-food">红薯+清蒸鱼+蔬菜</text>
-        <text class="meal-cell meal-cal">~350</text>
+      <view class="measure-cell">
+        <text class="measure-num">{{state.hip || '--'}}</text>
+        <text class="measure-lbl">臀围 cm</text>
       </view>
     </view>
-  </view>
-
-  <!-- 关键提醒 -->
-  <view class="card">
-    <view class="card-title">💡 关键提醒</view>
-    <view class="tip-list">
-      <text class="tip-item">每天固定时间称重：晨起空腹排便后 + 晚餐后睡前</text>
-      <text class="tip-item">晨起体重最准，反映真实减脂效果</text>
-      <text class="tip-item">排便情况影响体重波动，排便后称重更准</text>
-      <text class="tip-item">体重自然波动属正常，关注周趋势而非单日</text>
-      <text class="tip-item">每周减重不超过 1 kg / 2 斤，不要节食暴瘦</text>
-      <text class="tip-item">保证每天 7-8 小时睡眠，多喝水促进代谢</text>
-      <text class="tip-item">如有不适，立即停止并咨询医生</text>
-    </view>
+    <view class="edit-hint">点击编辑</view>
   </view>
 
 </view>
@@ -164,7 +215,6 @@
   <view class="modal" catchtap="">
     <view class="modal-title">编辑信息</view>
 
-    <!-- 基本信息编辑 -->
     <block wx:if="{{editCard === 'basic'}}">
       <view class="input-group">
         <text class="input-label">姓名</text>
@@ -187,7 +237,6 @@
       </view>
     </block>
 
-    <!-- 计划编辑 -->
     <block wx:if="{{editCard === 'plan'}}">
       <view class="input-group">
         <text class="input-label">开始日期</text>
@@ -215,7 +264,6 @@
       </view>
     </block>
 
-    <!-- 三围编辑 -->
     <block wx:if="{{editCard === 'measure'}}">
       <view class="input-group">
         <text class="input-label">胸围(cm)</text>

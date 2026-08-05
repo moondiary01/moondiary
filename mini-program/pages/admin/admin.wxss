@@ -2,41 +2,48 @@
 .admin-page {
   padding-bottom: 40rpx;
 }
+.sub {
+  font-size: 22rpx;
+  color: var(--text-l);
+  font-weight: 400;
+  margin-left: 8rpx;
+}
 
 /* 统计 */
 .stat-row {
   display: flex;
-  gap: 20rpx;
+  gap: 16rpx;
+  margin-bottom: 12rpx;
 }
 .stat-row-second {
-  margin-top: 20rpx;
+  margin-top: 0;
 }
 .stat-cell {
   flex: 1;
   text-align: center;
-  background: #faf5f9;
-  border-radius: 16rpx;
-  padding: 24rpx 10rpx;
+  padding: 20rpx;
+  background: var(--rose-50);
+  border-radius: 24rpx;
+  border: 2rpx solid var(--border);
 }
 .stat-total {
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-}
-.stat-total .stat-num {
-  color: #b45309;
+  background: var(--rose-100);
+  border-color: var(--rose-300);
 }
 .stat-num {
-  font-size: 44rpx;
-  font-weight: 700;
-  color: #ec4899;
+  font-size: 48rpx;
+  font-weight: 800;
+  color: var(--rose-600);
   display: block;
 }
 .stat-label {
   font-size: 24rpx;
-  color: #78716c;
-  margin-top: 4rpx;
+  color: var(--text-l);
+  margin-top: 8rpx;
+  display: block;
 }
 
-/* 版本通知 */
+/* 通知 */
 .notice-row {
   display: flex;
   align-items: center;
@@ -45,139 +52,199 @@
 .notice-info {
   display: flex;
   flex-direction: column;
-  gap: 6rpx;
+  gap: 4rpx;
 }
 .notice-version {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #1c1917;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--ink);
 }
 .notice-status {
   font-size: 24rpx;
-  color: #a8a29e;
+  color: var(--text-l);
 }
 .notice-btn {
-  font-size: 26rpx;
-  padding: 14rpx 28rpx;
+  font-size: 24rpx;
+  padding: 12rpx 24rpx;
+}
+
+/* 付费管理 */
+.pay-btns {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+.pay-basic-btn {
+  background: linear-gradient(135deg, #7C3AED, #A855F7);
+}
+.pay-upgrade-btn {
+  background: linear-gradient(135deg, #A855F7, #EC4899);
+}
+.pay-status {
+  font-size: 24rpx;
+  color: var(--mint);
+  display: block;
+  margin-top: 12rpx;
+  text-align: center;
 }
 
 /* 筛选 */
 .filter-row {
   display: flex;
-  gap: 12rpx;
-  margin-bottom: 20rpx;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+  flex-wrap: wrap;
 }
 .filter-btn {
-  flex: 1;
-  text-align: center;
-  padding: 12rpx 0;
+  padding: 10rpx 20rpx;
+  border-radius: 20rpx;
   font-size: 24rpx;
-  color: #78716c;
-  background: #f5f5f4;
-  border-radius: 12rpx;
+  color: var(--text-l);
+  background: var(--rose-50);
+  border: 2rpx solid var(--border);
   transition: all 0.15s;
 }
 .filter-active {
-  background: #fce7f3;
-  color: #ec4899;
-  font-weight: 600;
+  background: var(--rose-500);
+  color: #fff;
+  border-color: var(--rose-500);
 }
 
 /* 密钥列表 */
 .key-list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 12rpx;
 }
 .key-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 20rpx;
-  background: #faf5f9;
-  border-radius: 16rpx;
+  padding: 16rpx;
+  background: var(--rose-50);
+  border-radius: 24rpx;
+  border: 2rpx solid var(--border);
+  gap: 12rpx;
 }
-.key-info {
+.key-main {
   flex: 1;
+  min-width: 0;
+}
+.key-header {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 8rpx;
+  flex-wrap: wrap;
 }
 .key-num {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #1c1917;
-  font-family: monospace;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: var(--ink);
+}
+.key-version-tag {
+  font-size: 18rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+}
+.ver-upgrade {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: #78350f;
+}
+.ver-normal {
+  background: var(--rose-100);
+  color: var(--rose-600);
+}
+.key-login-status {
+  font-size: 18rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  background: var(--mint-l);
+  color: var(--mint);
+}
+.key-login-off {
+  background: #f5f5f4;
+  color: var(--text-l);
 }
 .key-detail {
   display: flex;
   flex-direction: column;
   gap: 4rpx;
-  margin-top: 6rpx;
 }
 .key-phone {
   font-size: 24rpx;
-  color: #78716c;
+  color: var(--text-l);
+}
+.key-user-info {
+  font-size: 22rpx;
+  color: var(--rose-400);
 }
 .key-remark {
   font-size: 22rpx;
-  color: #a8a29e;
+  color: var(--gold-d);
 }
 .key-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 8rpx;
+  flex-shrink: 0;
 }
 .key-status {
-  padding: 6rpx 16rpx;
-  border-radius: 12rpx;
   font-size: 22rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
   font-weight: 600;
 }
-.status-active { background: #dcfce7; color: #16a34a; }
-.status-inactive { background: #f5f5f4; color: #a8a29e; }
-.status-revoked { background: #fee2e2; color: #dc2626; }
-
+.key-status.active {
+  background: var(--mint-l);
+  color: var(--mint);
+}
+.key-status.inactive {
+  background: var(--amber-l);
+  color: var(--amber);
+}
+.key-status.revoked {
+  background: #fee2e2;
+  color: #dc2626;
+}
 .key-actions {
   display: flex;
-  gap: 8rpx;
+  gap: 6rpx;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 .mini-btn {
-  font-size: 22rpx;
-  padding: 8rpx 16rpx;
-  border-radius: 10rpx;
-  line-height: 1.5;
+  font-size: 20rpx;
+  padding: 6rpx 14rpx;
+  border-radius: 12rpx;
+  border: none;
+  font-weight: 600;
 }
 .mini-btn-outline {
-  background: transparent;
-  border: 2rpx solid #e5e7eb;
-  color: #78716c;
+  background: #fff;
+  color: var(--rose-600);
+  border: 2rpx solid var(--rose-300);
 }
 
-/* 付费管理 */
-.pay-btns {
-  display: flex;
-  gap: 12rpx;
-  margin: 16rpx 0 8rpx;
+/* 用户弹窗 */
+.users-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 20rpx;
 }
-.pay-basic-btn {
-  flex: 1;
-  background: #10b981 !important;
-  font-size: 24rpx !important;
-  line-height: 1.4;
-  white-space: pre-line;
-  padding: 16rpx 12rpx !important;
+.user-phone-item {
+  padding: 16rpx;
+  border-bottom: 1rpx solid var(--border);
 }
-.pay-upgrade-btn {
-  flex: 1;
-  background: linear-gradient(135deg, #8b5cf6, #ec4899) !important;
-  font-size: 24rpx !important;
-  line-height: 1.4;
-  white-space: pre-line;
-  padding: 16rpx 12rpx !important;
+.user-phone-text {
+  font-size: 28rpx;
+  color: var(--ink);
 }
-.pay-status {
-  font-size: 24rpx;
-  color: #a8a29e;
+.users-empty {
   text-align: center;
-  display: block;
-  min-height: 32rpx;
+  padding: 40rpx;
+  color: var(--text-l);
+  font-size: 26rpx;
 }
