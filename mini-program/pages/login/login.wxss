@@ -126,8 +126,6 @@
   align-items: center;
   justify-content: center;
   gap: 12rpx;
-  background: linear-gradient(135deg, #07c160, #06ad56) !important;
-  box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.3);
 }
 .wx-icon {
   font-size: 36rpx;
