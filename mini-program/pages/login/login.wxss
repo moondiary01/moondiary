@@ -108,8 +108,9 @@
 }
 
 /* ===== 登录页面 ===== */
+.login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #6D28D9 0%, #9333EA 30%, #C026D3 100%);
+  background: var(--grad-hero);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -261,7 +262,7 @@
 }
 .gate-sub {
   font-size: 26rpx;
-  color: #78716c;
+  color: var(--text-l);
   margin-bottom: 36rpx;
 }
 
@@ -275,8 +276,8 @@
   border: 3rpx solid #e7e5e4;
   border-radius: 16rpx;
   outline: none;
-  color: #e11d48;
-  background: #fff1f2;
+  color: var(--rose-600);
+  background: var(--rose-50);
   box-sizing: border-box;
   margin-bottom: 20rpx;
 }
@@ -295,7 +296,7 @@
   padding: 28rpx;
   border: none;
   border-radius: 16rpx;
-  background: linear-gradient(135deg, #7C3AED, #C026D3);
+  background: var(--grad-hero);
   color: #fff;
   font-size: 32rpx;
   font-weight: 700;
