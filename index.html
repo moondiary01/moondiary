@@ -2633,6 +2633,18 @@ function hasBeautyPermission() {
   return !!payments[phone].beautyPaid;
 }
 
+/* 检查是否有资格看到升级版入口（已购普通版或已购升级版才可见） */
+function canSeeUpgradeEntry() {
+  if (isAdminUser()) return true;
+  if (hasBeautyPermission()) return true;
+  var phone = getCurrentPhone();
+  if (phone === 'local' || !phone) return false;
+  var payments = loadPayments();
+  if (!payments[phone]) return false;
+  /* 已购普通版：可见升级版入口 */
+  return !!payments[phone].storagePaid;
+}
+
 /* 检查试用是否过期（7天） */
 function isTrialExpired(phone) {
   if (!phone) return true;
@@ -3870,13 +3882,17 @@ function refreshBeautyEntryUI() {
   var quickBtns = document.getElementById('beautyQuickBtns');
   var bottomCard = document.querySelector('.beauty-entry-card');
   if (hasBeautyPermission()) {
-    /* 已购用户：显示快捷入口，隐藏底部升级卡片 */
+    /* 已购29.9升级版：显示快捷入口，隐藏底部升级卡片 */
     if (quickBtns) quickBtns.style.display = 'flex';
     if (bottomCard) bottomCard.style.display = 'none';
-  } else {
-    /* 未购用户：隐藏快捷入口，显示底部升级卡片 */
+  } else if (canSeeUpgradeEntry()) {
+    /* 已购19.9普通版但未购升级版：隐藏快捷入口，显示底部升级卡片 */
     if (quickBtns) quickBtns.style.display = 'none';
     if (bottomCard) bottomCard.style.display = '';
+  } else {
+    /* 试用用户/未购用户：全部隐藏 */
+    if (quickBtns) quickBtns.style.display = 'none';
+    if (bottomCard) bottomCard.style.display = 'none';
   }
   /* 试用过期检测 */
   checkTrialExpiredPopup();

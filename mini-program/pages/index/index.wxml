@@ -225,8 +225,8 @@
     </view>
   </view>
 
-  <!-- ===== 升级版入口卡片 ===== -->
-  <view class="beauty-entry-card" bindtap="onGoBeauty" wx:if="{{!hideBeautyEntry}}">
+  <!-- ===== 升级版入口卡片（仅已购普通版或升级版用户可见） ===== -->
+  <view class="beauty-entry-card" bindtap="onGoBeauty" wx:if="{{!hideBeautyEntry && canSeeUpgrade}}">
     <view class="beauty-glow beauty-glow-pink"></view>
     <view class="beauty-glow beauty-glow-gold"></view>
     <view class="beauty-entry-inner">

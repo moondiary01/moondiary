@@ -13,8 +13,9 @@ App({
     trialExpired: false,   // 试用是否过期
     wxUserInfo: null,      // 微信用户信息
     statusReady: false,    // 状态检查是否完成（异步）
-    canUseUpgrade: false,  // 是否可使用升级版
-    upgradeExpired: false  // 升级版是否过期
+    canUseUpgrade: false,  // 是否可使用升级版（仅beautyPaid）
+    upgradeExpired: false, // 升级版是否过期
+    canSeeUpgrade: false   // 是否有资格看到升级版入口（已购普通版或升级版）
   },
 
   onLaunch: function () {

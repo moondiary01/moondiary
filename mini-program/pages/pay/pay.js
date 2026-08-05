@@ -136,6 +136,16 @@ Page({
     this.setData({ showNoticeModal: false })
   },
 
+  confirmPurchase: function () {
+    this.setData({ showNoticeModal: false })
+    // 根据当前 tab 执行对应购买
+    if (this.data.currentTab === 0) {
+      this.onBasicPay()
+    } else {
+      this.onBeautyPay()
+    }
+  },
+
   showPrivacyNotice: function () {
     this.setData({ showPrivacyModal: true })
   },

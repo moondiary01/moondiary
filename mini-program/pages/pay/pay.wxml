@@ -11,7 +11,7 @@
     <view class="pay-card">
       <view class="pay-card-header">
         <text class="pay-card-title">19.9元</text>
-        <text class="pay-card-sub">永久云端存储</text>
+        <text class="pay-card-sub">永久普通版</text>
       </view>
       <view class="pay-benefits">
         <view class="pay-benefit-item"> 全部功能解锁</view>
@@ -58,7 +58,7 @@
     <scroll-view scroll-y style="max-height:60vh">
       <view class="notice-content">
         <view class="notice-section"><text class="notice-bold">1. 会员档位</text></view>
-        <view class="notice-item">• 19.9元 永久云端存储：月亮日记数据的永久云端存储，不含100天变美计划功能。</view>
+        <view class="notice-item">• 19.9元 永久普通版：永久云端存储 + 趋势图表 + 周度复盘，不含护肤日记/心情日记功能。</view>
         <view class="notice-item">• 29.9元 永久升级版：包含云端存储 + 100天变美计划（护肤日记、心情日记），永久有效。</view>
         <view class="notice-section"><text class="notice-bold">2. 退款政策</text></view>
         <view class="notice-item">• 数字商品一经开通，不支持退款。</view>
@@ -73,6 +73,7 @@
     </scroll-view>
     <view class="modal-actions">
       <button class="btn btn-outline" bindtap="closeNoticeModal">关闭</button>
+      <button class="btn btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none" bindtap="confirmPurchase">我已阅读并同意 · 确认开通</button>
     </view>
   </view>
 </view>
