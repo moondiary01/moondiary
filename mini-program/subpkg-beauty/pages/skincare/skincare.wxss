@@ -599,8 +599,8 @@
   margin-bottom: 14rpx;
 }
 .detail-skin-tag {
-  padding: 8rpx 20rpx;
-  border-radius: 24rpx;
+  padding: 8rpx 24rpx;
+  border-radius: 100rpx;
   font-size: 24rpx;
   font-weight: 600;
   background: linear-gradient(135deg, #fce7f3, #fbcfe8);
@@ -691,15 +691,25 @@
   margin-bottom: 24rpx;
 }
 
+/* ===== 日历详情 - 总容器 ===== */
+.detail-wrap {
+  background: linear-gradient(180deg, #f5f3ff 0%, #ede9fe 40%, #f3e8ff 100%);
+  border-radius: 20rpx;
+  padding: 18rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
 /* ===== 日历详情 - 卡片式布局 ===== */
 .detail-card {
-  margin-bottom: 16rpx;
+  margin-bottom: 0;
   padding: 22rpx 22rpx;
   border-radius: 16rpx;
   box-shadow: none;
 }
 
-.detail-card-purple { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #f3e8ff 100%); }
+.detail-card-purple { background: linear-gradient(135deg, #fdf2f8 0%, #f5f3ff 50%, #ede9fe 100%); }
 .detail-card-pink { background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #f5f3ff 100%); }
 .detail-card-gray { background: transparent; }
 
@@ -756,7 +766,7 @@
 }
 
 .detail-mini-tag {
-  padding: 6rpx 16rpx;
+  padding: 8rpx 24rpx;
   border-radius: 100rpx;
   font-size: 22rpx;
   font-weight: 500;
@@ -766,12 +776,12 @@
 .detail-mini-tag.mini-on {
   background: linear-gradient(135deg, #8b5cf6, #7c3aed);
   color: #fff;
-  border: 2rpx solid #8b5cf6;
+  border: 3rpx solid #7c3aed;
 }
 
-/* 无（浅紫色系） */
+/* 无（浅紫色系 — 比底色深一点） */
 .detail-mini-tag.mini-off {
-  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  background: linear-gradient(135deg, #e9d5ff, #d8b4fe);
   color: #7c3aed;
   border: 3rpx solid #8b5cf6;
 }

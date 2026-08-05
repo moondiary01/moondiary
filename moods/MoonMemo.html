@@ -7187,31 +7187,44 @@ function renderSkincareDayDetail() {
 
   /* 下方：打卡项目 + 备注（卡片式） */
   if (editing) {
-    /* 编辑模式：卡片式 */
-    html += '<div style="display:flex;flex-direction:column;gap:10px">';
+    /* 编辑模式：统一浅紫渐变总容器 */
+    html += '<div style="display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,#f5f3ff 0%,#ede9fe 40%,#f3e8ff 100%);border-radius:18px;padding:14px">';
     
-    /* 打卡项目卡片 */
-    html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 50%,#f3e8ff 100%);border-radius:16px;box-shadow:none">';
+    /* 皮肤状态卡片 — 粉色渐变背景 */
+    html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#fdf2f8 0%,#fce7f3 50%,#f5f3ff 100%);border-radius:14px;box-shadow:none">';
+    html += '<div style="font-size:0.7rem;font-weight:700;color:#be185d;margin-bottom:8px;letter-spacing:0.5px">今日皮肤状态</div>';
+    var skinStatusPresets = ['hydrated','dry','oily','mixed','acne','dull','fine','sensitive'];
+    var skinStatusLabels = {hydrated:'水润',dry:'干燥',oily:'出油',mixed:'混合',acne:'长痘',dull:'暗沉',fine:'细纹',sensitive:'敏感泛红'};
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">';
+    skinStatusPresets.forEach(function(sk) {
+      var active = s.skinStatus.indexOf(sk) > -1;
+      html += '<span onclick="toggleDetailSkinStatus(this,\''+sk+'\');playClick()" style="padding:5px 14px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#ec4899,#db2777);color:#fff;border:1.5px solid #ec4899':'background:linear-gradient(135deg,#fce7f3,#fbcfe8);color:#be185d;border:1.5px solid #ec4899')+'">'+skinStatusLabels[sk]+'</span>';
+    });
+    html += '</div>';
+    html += '<input type="text" id="skincareDetailSkinCustom" placeholder="自定义皮肤状态，如：毛孔粗大" value="'+(s.skinStatusCustom||'')+'" style="width:100%;padding:8px 10px;border:1.5px solid #ec4899;border-radius:100px;font-size:0.85rem;outline:none;background:rgba(255,255,255,0.6);box-sizing:border-box;color:#be185d" oninput="skincareDayDetailState.skinStatusCustom=this.value;autoSaveDetailSkincare()"></div>';
+    
+    /* 打卡项目卡片 — 浅粉紫渐变背景 */
+    html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 50%,#ede9fe 100%);border-radius:14px;box-shadow:none">';
     html += '<div style="font-size:0.7rem;font-weight:700;color:#7c3aed;margin-bottom:8px;letter-spacing:0.5px">打卡项目</div>';
     html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
     var allBodyCares = ['faceCare','oralCare','neckCare','lipsCare','bodyCare','handCare','footCare','eyeCare','chestCare','intimateCare','hairCare','nailCare'];
     allBodyCares.forEach(function(k) {
       var active = s.bodyCare.indexOf(k) > -1;
-      html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;border:1px solid #8b5cf6':'background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:#7c3aed;border:1.5px solid #8b5cf6')+'">'+bodyCareLabels[k]+'</span>';
+      html += '<span onclick="toggleDetailBodyCare(this,\''+k+'\');playClick()" style="padding:5px 14px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;border:1.5px solid #8b5cf6':'background:linear-gradient(135deg,#e9d5ff,#d8b4fe);color:#7c3aed;border:1.5px solid #8b5cf6')+'">'+bodyCareLabels[k]+'</span>';
     });
     /* 自定义预设标签 */
     var customPresets = {mask:'面膜',eyeMask:'眼膜',lipsCare:'唇部护理'};
     if (!s.customChecks) s.customChecks = s.customCheck ? s.customCheck.split('、').filter(function(x){return x.trim()}) : [];
     Object.keys(customPresets).forEach(function(k) {
       var active = s.customChecks.indexOf(customPresets[k]) > -1;
-      html += '<span onclick="toggleDetailCustomCheck(this,\''+customPresets[k]+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;border:1px solid #8b5cf6':'background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:#7c3aed;border:1.5px solid #8b5cf6')+'">'+customPresets[k]+'</span>';
+      html += '<span onclick="toggleDetailCustomCheck(this,\''+customPresets[k]+'\');playClick()" style="padding:5px 14px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;border:1.5px solid #8b5cf6':'background:linear-gradient(135deg,#e9d5ff,#d8b4fe);color:#7c3aed;border:1.5px solid #8b5cf6')+'">'+customPresets[k]+'</span>';
     });
     html += '</div>';
-    html += '<input type="text" id="skincareDetailCustomCheck" placeholder="其他自定义项目，如：面膜" value="" style="width:100%;padding:8px 10px;border:1.5px solid #c4b5fd;border-radius:8px;font-size:0.85rem;outline:none;background:transparent;margin-top:8px;box-sizing:border-box;color:#1c1917" oninput="autoSaveDetailSkincare()"></div>';
+    html += '<input type="text" id="skincareDetailCustomCheck" placeholder="其他自定义项目，如：面膜" value="" style="width:100%;padding:8px 10px;border:1.5px solid #c4b5fd;border-radius:100px;font-size:0.85rem;outline:none;background:transparent;margin-top:8px;box-sizing:border-box;color:#1c1917" oninput="autoSaveDetailSkincare()"></div>';
 
     /* 美容院护理卡片 */
-    html += '<div style="padding:12px 14px;border-radius:12px;box-shadow:none">';
-    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px" onclick="toggleDetailCheck(\'salon\');playClick()">';
+    html += '<div style="padding:8px 14px;border-radius:12px;box-shadow:none">';
+    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:4px" onclick="toggleDetailCheck(\'salon\');playClick()">';
     html += '<span style="width:24px;height:24px;border:2px solid '+(s.salon?'#8b5cf6':'#d6d3d1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.salon?'#8b5cf6':'transparent')+'">✓</span>';
     html += '<span style="font-size:0.85rem;font-weight:600;color:#1c1917">美容院护理</span></label>';
     if (s.salon) {
@@ -7220,8 +7233,8 @@ function renderSkincareDayDetail() {
     html += '</div>';
 
     /* do脸小记卡片 */
-    html += '<div style="padding:12px 14px;border-radius:12px;box-shadow:none">';
-    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px" onclick="toggleDetailCheck(\'cosmetic\');playClick()">';
+    html += '<div style="padding:8px 14px;border-radius:12px;box-shadow:none">';
+    html += '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:4px" onclick="toggleDetailCheck(\'cosmetic\');playClick()">';
     html += '<span style="width:24px;height:24px;border:2px solid '+(s.cosmetic?'#8b5cf6':'#d6d3d1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:'+(s.cosmetic?'#8b5cf6':'transparent')+'">✓</span>';
     html += '<span style="font-size:0.85rem;font-weight:600;color:#1c1917">do脸小记</span></label>';
     if (s.cosmetic) {
@@ -7229,23 +7242,10 @@ function renderSkincareDayDetail() {
     }
     html += '</div>';
 
-    /* 备注卡片 */
-    html += '<div style="padding:12px 14px;border-radius:12px;box-shadow:none">';
+    /* 备注卡片 — 透明背景 */
+    html += '<div style="padding:8px 14px;border-radius:12px;box-shadow:none">';
     html += '<div style="font-size:0.7rem;font-weight:700;color:#1c1917;margin-bottom:8px;letter-spacing:0.5px">备注</div>';
     html += '<textarea id="skincareDetailNote" placeholder="记录当天的备注..." style="width:100%;min-height:60px;padding:8px 10px;border:1.5px solid #d6d3d1;border-radius:8px;font-size:0.85rem;resize:vertical;outline:none;font-family:inherit;box-sizing:border-box;background:transparent;color:#1c1917" oninput="autoSaveDetailSkincare()">'+s.note+'</textarea></div>';
-
-    /* 皮肤状态卡片 */
-    html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#fdf2f8 0%,#fce7f3 50%,#f5f3ff 100%);border-radius:16px;box-shadow:none">';
-    html += '<div style="font-size:0.7rem;font-weight:700;color:#be185d;margin-bottom:8px;letter-spacing:0.5px">今日皮肤状态</div>';
-    var skinStatusPresets = ['hydrated','dry','oily','mixed','acne','dull','fine','sensitive'];
-    var skinStatusLabels = {hydrated:'水润',dry:'干燥',oily:'出油',mixed:'混合',acne:'长痘',dull:'暗沉',fine:'细纹',sensitive:'敏感泛红'};
-    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">';
-    skinStatusPresets.forEach(function(sk) {
-      var active = s.skinStatus.indexOf(sk) > -1;
-      html += '<span onclick="toggleDetailSkinStatus(this,\''+sk+'\');playClick()" style="padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;'+(active?'background:linear-gradient(135deg,#ec4899,#db2777);color:#fff;border:1px solid #ec4899':'background:linear-gradient(135deg,#fce7f3,#fbcfe8);color:#be185d;border:1.5px solid #ec4899')+'">'+skinStatusLabels[sk]+'</span>';
-    });
-    html += '</div>';
-    html += '<input type="text" id="skincareDetailSkinCustom" placeholder="自定义皮肤状态，如：毛孔粗大" value="'+(s.skinStatusCustom||'')+'" style="width:100%;padding:8px 10px;border:1.5px solid #ec4899;border-radius:8px;font-size:0.85rem;outline:none;background:rgba(255,255,255,0.6);box-sizing:border-box;color:#be185d" oninput="skincareDayDetailState.skinStatusCustom=this.value;autoSaveDetailSkincare()"></div>';
 
     html += '</div>';
 
@@ -7256,21 +7256,36 @@ function renderSkincareDayDetail() {
     if (!hasData && s.photos.length === 0) {
       html += '<div style="text-align:center;padding:40px 20px;color:#a8a29e;font-size:0.85rem">该日未打卡</div>';
     } else {
-      /* 统一信息卡片容器 */
-      html += '<div style="display:flex;flex-direction:column;gap:10px">';
+      /* 统一浅紫渐变总容器 */
+      html += '<div style="display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,#f5f3ff 0%,#ede9fe 40%,#f3e8ff 100%);border-radius:18px;padding:14px">';
       
-      /* 1. 护理项目 + 自定义 */
+      /* 1. 皮肤状态 — 粉色渐变背景 */
+      if (s.skinStatus.length > 0 || (s.skinStatusCustom && s.skinStatusCustom.trim())) {
+        var skinStatusLabels2 = {hydrated:'水润',dry:'干燥',oily:'出油',mixed:'混合',acne:'长痘',dull:'暗沉',fine:'细纹',sensitive:'敏感泛红'};
+        html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#fdf2f8 0%,#fce7f3 50%,#f5f3ff 100%);border-radius:14px;box-shadow:none">';
+        html += '<div style="font-size:0.7rem;font-weight:700;color:#be185d;margin-bottom:8px;letter-spacing:0.5px">今日皮肤状态</div>';
+        html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+        s.skinStatus.forEach(function(sk) {
+          html += '<span style="padding:5px 14px;border-radius:100px;font-size:0.73rem;font-weight:600;background:linear-gradient(135deg,#ec4899,#db2777);color:#fff">'+(skinStatusLabels2[sk]||sk)+'</span>';
+        });
+        if (s.skinStatusCustom && s.skinStatusCustom.trim()) {
+          html += '<span style="padding:5px 14px;border-radius:100px;font-size:0.73rem;font-weight:600;background:rgba(236,72,153,0.12);color:#be185d;border:1.5px dashed #ec4899">'+s.skinStatusCustom+'</span>';
+        }
+        html += '</div></div>';
+      }
+
+      /* 2. 护理项目 + 自定义 — 浅粉紫渐变背景 */
       if (isChecked) {
-        html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 50%,#f3e8ff 100%);border-radius:16px;box-shadow:none">';
+        html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#fdf2f8 0%,#f5f3ff 50%,#ede9fe 100%);border-radius:14px;box-shadow:none">';
         html += '<div style="font-size:0.7rem;font-weight:700;color:#7c3aed;margin-bottom:8px;letter-spacing:0.5px">打卡项目</div>';
         html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
         s.bodyCare.forEach(function(k) {
-          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff">'+(bodyCareLabels[k]||k)+'</span>';
+          html += '<span style="padding:5px 14px;border-radius:100px;font-size:0.73rem;font-weight:600;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff">'+(bodyCareLabels[k]||k)+'</span>';
         });
         if (s.customCheck) {
           var customItems = s.customCheck.split('、').filter(function(x){return x.trim()});
           customItems.forEach(function(item) {
-            html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(139,92,246,0.15);color:#7c3aed;border:1px dashed #8b5cf6">'+item+'</span>';
+            html += '<span style="padding:5px 14px;border-radius:100px;font-size:0.73rem;font-weight:600;background:rgba(139,92,246,0.15);color:#7c3aed;border:1.5px dashed #8b5cf6">'+item+'</span>';
           });
         }
         html += '</div>';
@@ -7290,24 +7305,9 @@ function renderSkincareDayDetail() {
         html += '</div>';
       }
 
-      /* 2. 皮肤状态 */
-      if (s.skinStatus.length > 0 || (s.skinStatusCustom && s.skinStatusCustom.trim())) {
-        var skinStatusLabels2 = {hydrated:'水润',dry:'干燥',oily:'出油',mixed:'混合',acne:'长痘',dull:'暗沉',fine:'细纹',sensitive:'敏感泛红'};
-        html += '<div style="padding:12px 14px;background:linear-gradient(135deg,#fdf2f8 0%,#fce7f3 50%,#f5f3ff 100%);border-radius:16px;box-shadow:none">';
-        html += '<div style="font-size:0.7rem;font-weight:700;color:#be185d;margin-bottom:8px;letter-spacing:0.5px">今日皮肤状态</div>';
-        html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
-        s.skinStatus.forEach(function(sk) {
-          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:linear-gradient(135deg,#ec4899,#db2777);color:#fff">'+(skinStatusLabels2[sk]||sk)+'</span>';
-        });
-        if (s.skinStatusCustom && s.skinStatusCustom.trim()) {
-          html += '<span style="padding:4px 10px;border-radius:8px;font-size:0.73rem;font-weight:600;background:rgba(236,72,153,0.12);color:#be185d;border:1px dashed #ec4899">'+s.skinStatusCustom+'</span>';
-        }
-        html += '</div></div>';
-      }
-
-      /* 3. 备注 */
+      /* 3. 备注 — 透明背景 */
       if (s.note) {
-        html += '<div style="padding:12px 14px;border-radius:12px;box-shadow:none">';
+        html += '<div style="padding:8px 14px;border-radius:12px;box-shadow:none">';
         html += '<div style="font-size:0.7rem;font-weight:700;color:#1c1917;margin-bottom:6px;letter-spacing:0.5px">备注</div>';
         html += '<div style="font-size:0.84rem;color:#1c1917;line-height:1.65;white-space:pre-wrap">'+s.note+'</div>';
         html += '</div>';
