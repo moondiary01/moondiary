@@ -760,10 +760,21 @@ page {
   justify-content: space-between;
   margin-bottom: 20rpx;
 }
-.beauty-entry-title-row {
+.beauty-entry-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.beauty-entry-sub-row {
   display: flex;
   align-items: center;
-  gap: 14rpx;
+  gap: 12rpx;
+}
+.beauty-entry-en {
+  font-size: 20rpx;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 2rpx;
+  font-weight: 500;
 }
 .beauty-entry-title {
   font-size: 34rpx;
@@ -772,14 +783,14 @@ page {
   letter-spacing: 3rpx;
 }
 .beauty-entry-badge {
-  font-size: 20rpx;
+  font-size: 22rpx;
   font-weight: 700;
   color: #1a1025;
   background: linear-gradient(135deg, #f59e0b, #fbbf24);
-  padding: 4rpx 16rpx;
+  padding: 4rpx 18rpx;
   border-radius: 100rpx;
   letter-spacing: 1rpx;
-  box-shadow: 0 4rpx 12rpx rgba(245,158,11,0.35);
+  box-shadow: 0 0 24rpx rgba(245,158,11,0.5), 0 4rpx 12rpx rgba(245,158,11,0.35);
 }
 .beauty-entry-arrow {
   font-size: 36rpx;
