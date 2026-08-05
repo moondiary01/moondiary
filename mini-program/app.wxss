@@ -12,7 +12,7 @@ page {
   --primary: #7C3AED;
   --primary-d: #6D28D9;
   --primary-l: #F5F3FF;
-  --coral: #A855F7;
+  --coral: #EC4899;
   --coral-d: #DB2777;
   --coral-l: #FCE7F3;
   --mauve: #A78BFA;

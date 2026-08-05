@@ -99,12 +99,13 @@
 }
 .splash-loader-bar {
   height: 100%;
-  background: linear-gradient(90deg, transparent, #fff, transparent);
-  animation: loaderSlide 1.2s ease-in-out infinite;
+  background: linear-gradient(90deg, #C026D3, #EC4899);
+  border-radius: 4rpx;
+  animation: loaderFill 1.2s ease-in-out infinite;
 }
-@keyframes loaderSlide {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+@keyframes loaderFill {
+  0% { width: 0; }
+  100% { width: 100%; }
 }
 
 /* ===== 登录页面 ===== */
@@ -151,7 +152,7 @@
 .gate-card {
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(20px);
-  border-radius: 32rpx;
+  border-radius: 64rpx;
   padding: 80rpx 68rpx 68rpx;
   max-width: 700rpx;
   width: 100%;
@@ -159,6 +160,11 @@
   text-align: center;
   position: relative;
   z-index: 1;
+  animation: gateIn 0.8s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes gateIn {
+  from { opacity: 0; transform: translateY(60rpx) scale(0.92) rotate(-2deg); }
+  to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
 }
 
 /* ===== 月亮 Logo（CSS 绘制） ===== */
@@ -239,10 +245,10 @@
 
 /* ===== 品牌标题 ===== */
 .gate-title {
-  font-size: 44rpx;
+  font-size: 48rpx;
   font-weight: 900;
   color: #1c1917;
-  margin-bottom: 36rpx;
+  margin-bottom: 12rpx;
   letter-spacing: -1rpx;
 }
 .gate-title .brand {
@@ -273,8 +279,8 @@
   font-size: 36rpx;
   font-weight: 800;
   padding: 28rpx;
-  border: 3rpx solid #e7e5e4;
-  border-radius: 16rpx;
+  border: 4rpx solid var(--border);
+  border-radius: 24rpx;
   outline: none;
   color: var(--rose-600);
   background: var(--rose-50);
@@ -288,6 +294,10 @@
   letter-spacing: 6rpx;
   font-size: 32rpx;
 }
+/* placeholder 颜色 */
+.gate-input-placeholder {
+  color: var(--rose-200);
+}
 
 /* 按钮 */
 .gate-btn {
@@ -295,7 +305,7 @@
   margin-top: 20rpx;
   padding: 28rpx;
   border: none;
-  border-radius: 16rpx;
+  border-radius: 24rpx;
   background: var(--grad-hero);
   color: #fff;
   font-size: 32rpx;
@@ -303,20 +313,33 @@
   letter-spacing: 6rpx;
   box-shadow: 0 8rpx 32rpx rgba(147,51,234,0.25);
 }
+.gate-btn-hover {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
 
 /* 提示文字 */
 .gate-hint {
   font-size: 22rpx;
-  color: #a8a29e;
-  margin-top: 24rpx;
+  color: var(--text-l);
+  margin-top: 32rpx;
   line-height: 1.6;
   white-space: pre-line;
 }
 
 /* 管理员入口链接 */
 .gate-switch-link {
-  margin-top: 20rpx;
+  margin-top: 28rpx;
   font-size: 22rpx;
-  color: #a8a29e;
+  color: var(--text-l);
   opacity: 0.6;
+}
+
+/* 错误提示 */
+.gate-error {
+  color: var(--rose-500);
+  font-size: 26rpx;
+  margin-top: 16rpx;
+  min-height: 36rpx;
+  font-weight: 600;
 }
