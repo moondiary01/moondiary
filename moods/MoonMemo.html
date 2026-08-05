@@ -613,8 +613,11 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 }
 
 /* ===== 升级版样式 ===== */
-.beauty-tag{padding:6px 16px;border-radius:100px;background:#f5f5f4;font-size:0.82rem;color:#78716c;font-weight:500;cursor:pointer;transition:all 0.2s;user-select:none}
-.beauty-tag.beauty-tag-active{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(139,92,246,0.3)}
+.beauty-tag{padding:6px 16px;border-radius:100px;background:linear-gradient(135deg,#fce7f3,#fbcfe8);font-size:0.82rem;color:#be185d;font-weight:500;cursor:pointer;transition:all 0.2s;user-select:none;border:1.5px solid #ec4899}
+.beauty-tag.beauty-tag-active{background:linear-gradient(135deg,#ec4899,#db2777);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(236,72,153,0.3);border-color:transparent}
+/* 打卡胶囊 — 紫色系 */
+.bodycare-tag{padding:6px 16px;border-radius:100px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);font-size:0.82rem;color:#7c3aed;font-weight:500;cursor:pointer;transition:all 0.2s;user-select:none;border:1.5px solid #8b5cf6}
+.bodycare-tag.bodycare-tag-active{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(139,92,246,0.3);border-color:transparent}
 .beauty-check{padding:8px 16px;border-radius:12px;background:#f5f5f4;font-size:0.82rem;color:#57534e;cursor:pointer;transition:all 0.2s;user-select:none;display:inline-flex;align-items:center;gap:6px}
 .beauty-check.beauty-check-active{background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;font-weight:600;box-shadow:0 1px 6px rgba(139,92,246,0.12)}
 .beauty-check::before{content:'○';font-size:0.85rem;color:#d6d3d1}
@@ -923,12 +926,12 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .skincare-summary-body{background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#6d28d9;border:1px solid #ddd6fe}
 /* ===== checkbox 打勾列表 ===== */
 .skincare-check-list{display:flex;flex-direction:column}
-.skincare-check-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f5f5f4;cursor:pointer;transition:all 0.2s}
+.skincare-check-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #ede9fe;cursor:pointer;transition:all 0.2s}
 .skincare-check-row:last-child{border-bottom:none}
-.skincare-check-label{font-size:0.92rem;color:#44403c;font-weight:500}
-.skincare-check-box{width:26px;height:26px;border-radius:8px;border:2px solid #d6d3d1;display:flex;align-items:center;justify-content:center;transition:all 0.2s;background:#fafaf9;flex-shrink:0}
-.skincare-check-on .skincare-check-box{background:linear-gradient(135deg,#ec4899,#8b5cf6);border-color:transparent;box-shadow:0 2px 8px rgba(236,72,153,0.3)}
-.skincare-check-on .skincare-check-label{color:#be185d;font-weight:600}
+.skincare-check-label{font-size:0.92rem;color:#1c1917;font-weight:500}
+.skincare-check-box{width:26px;height:26px;border-radius:8px;border:2px solid #8b5cf6;display:flex;align-items:center;justify-content:center;transition:all 0.2s;background:rgba(255,255,255,0.6);flex-shrink:0}
+.skincare-check-on .skincare-check-box{background:linear-gradient(135deg,#8b5cf6,#7c3aed);border-color:transparent;box-shadow:0 2px 8px rgba(139,92,246,0.3)}
+.skincare-check-on .skincare-check-label{color:#7c3aed;font-weight:600}
 .skincare-check-tick{font-size:16px;color:#fff;font-weight:800;line-height:1}
 /* ===== 紧凑弹窗照片入口 ===== */
 .skincare-photo-action-row{display:flex;gap:8px}
@@ -1548,14 +1551,14 @@ _loadCosSdk(0);
 
 <!-- 护肤日记弹窗 -->
 <div class="modal-overlay" id="beautySkincareModal">
-  <div class="modal" style="max-width:580px;max-height:85vh;overflow-y:auto">
+  <div class="modal" style="max-width:580px;max-height:85vh;overflow-y:auto;background:linear-gradient(180deg,#faf8ff 0%,#f5f0fa 30%,#faf5ff 60%,#fdf2f8 100%)">
     <div id="skincareContent">
       <!-- 倒计时卡片+皮肤状态小字（JS动态填充） -->
       <div id="skincareCountdown"></div>
 
       <!-- 今日皮肤状态（多选标签 + 自定义输入） -->
-      <div style="margin-bottom:16px">
-        <div class="card-title" style="margin-bottom:4px">今日皮肤状态</div>
+      <div style="margin-bottom:16px;background:linear-gradient(135deg,#fdf2f8 0%,#fce7f3 50%,#f5f3ff 100%);border-radius:16px;padding:14px">
+        <div class="card-title" style="margin-bottom:4px;color:#be185d">今日皮肤状态</div>
         <div id="skinStatusTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;margin-bottom:12px">
           <span class="beauty-tag" data-key="hydrated" onclick="toggleSkinStatus(this,'hydrated')">水润</span>
           <span class="beauty-tag" data-key="dry" onclick="toggleSkinStatus(this,'dry')">干燥</span>
@@ -1573,44 +1576,44 @@ _loadCosSdk(0);
           <span class="beauty-tag" data-key="edema" onclick="toggleSkinStatus(this,'edema')">水肿</span>
           <span class="beauty-tag" data-key="sensitive" onclick="toggleSkinStatus(this,'sensitive')">敏感泛红</span>
         </div>
-        <input type="text" id="skinStatusCustom" placeholder="自定义皮肤状态，如：毛孔粗大" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:0.9rem;outline:none;background:#fafaf9;font-family:inherit" oninput="autoSaveSkincare()">
+        <input type="text" id="skinStatusCustom" placeholder="自定义皮肤状态，如：毛孔粗大" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid #ec4899;border-radius:12px;font-size:0.9rem;outline:none;background:rgba(255,255,255,0.6);font-family:inherit;color:#be185d" oninput="autoSaveSkincare()">
       </div>
 
       <!-- 今日打卡（护理项目 + 打勾项） -->
-      <div style="margin-bottom:16px">
-        <div class="card-title" style="margin-bottom:4px">今日打卡</div>
+      <div style="margin-bottom:16px;background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 50%,#f3e8ff 100%);border-radius:16px;padding:14px">
+        <div class="card-title" style="margin-bottom:4px;color:#7c3aed">今日打卡</div>
 
         <!-- 护理项目（多选标签） -->
         <div id="bodyCareTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;margin-bottom:12px">
-          <span class="beauty-tag" data-key="faceCare" onclick="toggleBodyCare(this,'faceCare')">面部护理</span>
-          <span class="beauty-tag" data-key="oralCare" onclick="toggleBodyCare(this,'oralCare')">口腔护理</span>
-          <span class="beauty-tag" data-key="neckCare" onclick="toggleBodyCare(this,'neckCare')">颈部护理</span>
-          <span class="beauty-tag" data-key="lipsCare" onclick="toggleBodyCare(this,'lipsCare')">护唇</span>
-          <span class="beauty-tag" data-key="bodyCare" onclick="toggleBodyCare(this,'bodyCare')">身体护理</span>
-          <span class="beauty-tag" data-key="handCare" onclick="toggleBodyCare(this,'handCare')">手部护理</span>
-          <span class="beauty-tag" data-key="footCare" onclick="toggleBodyCare(this,'footCare')">脚部护理</span>
-          <span class="beauty-tag" data-key="eyeCare" onclick="toggleBodyCare(this,'eyeCare')">护眼</span>
-          <span class="beauty-tag" data-key="chestCare" onclick="toggleBodyCare(this,'chestCare')">胸部护理</span>
-          <span class="beauty-tag" data-key="intimateCare" onclick="toggleBodyCare(this,'intimateCare')">私处护理</span>
-          <span class="beauty-tag" data-key="hairCare" onclick="toggleBodyCare(this,'hairCare')">头发护理</span>
-          <span class="beauty-tag" data-key="nailCare" onclick="toggleBodyCare(this,'nailCare')">美甲</span>
+          <span class="bodycare-tag" data-key="faceCare" onclick="toggleBodyCare(this,'faceCare')">面部护理</span>
+          <span class="bodycare-tag" data-key="oralCare" onclick="toggleBodyCare(this,'oralCare')">口腔护理</span>
+          <span class="bodycare-tag" data-key="neckCare" onclick="toggleBodyCare(this,'neckCare')">颈部护理</span>
+          <span class="bodycare-tag" data-key="lipsCare" onclick="toggleBodyCare(this,'lipsCare')">护唇</span>
+          <span class="bodycare-tag" data-key="bodyCare" onclick="toggleBodyCare(this,'bodyCare')">身体护理</span>
+          <span class="bodycare-tag" data-key="handCare" onclick="toggleBodyCare(this,'handCare')">手部护理</span>
+          <span class="bodycare-tag" data-key="footCare" onclick="toggleBodyCare(this,'footCare')">脚部护理</span>
+          <span class="bodycare-tag" data-key="eyeCare" onclick="toggleBodyCare(this,'eyeCare')">护眼</span>
+          <span class="bodycare-tag" data-key="chestCare" onclick="toggleBodyCare(this,'chestCare')">胸部护理</span>
+          <span class="bodycare-tag" data-key="intimateCare" onclick="toggleBodyCare(this,'intimateCare')">私处护理</span>
+          <span class="bodycare-tag" data-key="hairCare" onclick="toggleBodyCare(this,'hairCare')">头发护理</span>
+          <span class="bodycare-tag" data-key="nailCare" onclick="toggleBodyCare(this,'nailCare')">美甲</span>
         </div>
 
         <!-- 自定义打卡项目 -->
-        <textarea id="beautyCustomCheck" placeholder="自定义打卡项目，如：面膜" style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-bottom:12px;resize:vertical;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
+        <textarea id="beautyCustomCheck" placeholder="自定义打卡项目，如：面膜" style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid #c4b5fd;border-radius:10px;font-size:0.9rem;outline:none;background:transparent;margin-bottom:12px;resize:vertical;font-family:inherit;color:#1c1917" oninput="autoSaveSkincare()"></textarea>
 
         <div class="skincare-check-list">
           <div class="skincare-check-row" id="check-salon" onclick="toggleSkincareCheck('salon');playClick()">
             <span class="skincare-check-label">美容院护理</span>
             <span class="skincare-check-box"><span class="skincare-check-tick" style="display:none">✓</span></span>
           </div>
-          <textarea id="beautySalonNote" placeholder="护理心得..." style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;margin-bottom:8px;display:none;resize:vertical;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
+          <textarea id="beautySalonNote" placeholder="护理心得..." style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid #c4b5fd;border-radius:10px;font-size:0.9rem;outline:none;background:transparent;margin-top:8px;margin-bottom:8px;display:none;resize:vertical;font-family:inherit;color:#1c1917" oninput="autoSaveSkincare()"></textarea>
           <div class="skincare-check-row" id="check-cosmetic" onclick="toggleSkincareCheck('cosmetic');playClick()">
             <span class="skincare-check-label">do脸小记</span>
             <span class="skincare-check-box"><span class="skincare-check-tick" style="display:none">✓</span></span>
           </div>
         </div>
-        <textarea id="beautyCosmeticNote" placeholder="do脸项目感受..." style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;display:none;resize:vertical;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
+        <textarea id="beautyCosmeticNote" placeholder="do脸项目感受..." style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid #c4b5fd;border-radius:10px;font-size:0.9rem;outline:none;background:transparent;margin-top:8px;display:none;resize:vertical;font-family:inherit;color:#1c1917" oninput="autoSaveSkincare()"></textarea>
       </div>
 
       <!-- 自拍打卡 -->
@@ -1628,8 +1631,8 @@ _loadCosSdk(0);
 
       <!-- 备注（日历下方） -->
       <div style="margin-bottom:16px">
-        <div class="card-title" style="margin-bottom:8px"> 备注</div>
-        <textarea id="beautyNote" placeholder="记录今天的备注..." style="width:100%;min-height:80px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
+        <div class="card-title" style="margin-bottom:8px;color:#1c1917"> 备注</div>
+        <textarea id="beautyNote" placeholder="记录今天的备注..." style="width:100%;min-height:80px;padding:10px 12px;border:1.5px solid #d6d3d1;border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit;background:transparent;color:#1c1917" oninput="autoSaveSkincare()"></textarea>
       </div>
     </div>
   </div>
@@ -6904,7 +6907,7 @@ function toggleBodyCare(el, key) {
   var idx = beautySkincareState.bodyCare.indexOf(key);
   if (idx > -1) beautySkincareState.bodyCare.splice(idx, 1);
   else beautySkincareState.bodyCare.push(key);
-  el.classList.toggle('beauty-tag-active');
+  el.classList.toggle('bodycare-tag-active');
   playClick();
   autoSaveSkincare();
 }
