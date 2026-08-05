@@ -951,6 +951,10 @@ _loadCosSdk(0);
         <div class="pf-item" onclick="openSettings()"><span class="pf-label">年龄</span><span class="pf-value" id="pf-age">—</span></div>
         <div class="pf-item" onclick="openSettings()"><span class="pf-label">身高</span><span class="pf-value" id="pf-height">—</span></div>
       </div>
+      <div class="beauty-quick-entries" id="beautyQuickEntries" style="display:none;margin-left:auto;display:flex;gap:10px">
+        <div class="beauty-quick-btn" onclick="openBeautySkincare();playClick()" style="padding:8px 20px;border-radius:100px;background:rgba(255,255,255,0.92);cursor:pointer;border:1.5px solid rgba(167,139,250,0.5);text-align:center;box-shadow:0 3px 12px rgba(124,58,237,0.2),inset 0 1px 0 rgba(255,255,255,0.8);transition:all 0.2s" onmousedown="this.style.transform='scale(0.94)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''"><span style="font-size:0.82rem;font-weight:700;color:#7c3aed">护肤日记</span></div>
+        <div class="beauty-quick-btn" onclick="openBeautyMood();playClick()" style="padding:8px 20px;border-radius:100px;background:rgba(255,255,255,0.92);cursor:pointer;border:1.5px solid rgba(244,114,182,0.5);text-align:center;box-shadow:0 3px 12px rgba(236,72,153,0.2),inset 0 1px 0 rgba(255,255,255,0.8);transition:all 0.2s" onmousedown="this.style.transform='scale(0.94)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''"><span style="font-size:0.82rem;font-weight:700;color:#db2777">心情日记</span></div>
+      </div>
     </div>
   </div>
 </header>
@@ -1451,7 +1455,7 @@ _loadCosSdk(0);
       </div>
     </div>
   </div>
-  <button class="float-back-fab" onclick="document.getElementById('beautySkincareModal').classList.remove('show');document.getElementById('beautyHomeModal').classList.add('show');playClick()">←</button>
+  <button class="float-back-fab" onclick="closeBeautySkincare();playClick()">←</button>
 </div>
 
 <!-- 护肤日历日期详情弹窗 -->
@@ -1560,7 +1564,7 @@ _loadCosSdk(0);
       <div id="moodCalendar"></div>
     </div>
   </div>
-  <button class="float-back-fab" onclick="document.getElementById('beautyMoodModal').classList.remove('show');document.getElementById('beautyHomeModal').classList.add('show');playClick()">←</button>
+  <button class="float-back-fab" onclick="closeBeautyMood();playClick()">←</button>
 </div>
 
 <!-- 心情日历日期详情弹窗 -->
@@ -7907,6 +7911,15 @@ function _shouldRefreshComm() {
 function startCommAutoRefresh() { return; /* 月友圈已下架 */ }
 function stopCommAutoRefresh() { return; /* 月友圈已下架 */
   if (_commRefreshTimer) { clearInterval(_commRefreshTimer); _commRefreshTimer = null; }
+}
+
+/* 关闭护肤日记弹窗（不跳回购买页） */
+function closeBeautySkincare() {
+  document.getElementById('beautySkincareModal').classList.remove('show');
+}
+/* 关闭心情日记弹窗（不跳回购买页） */
+function closeBeautyMood() {
+  document.getElementById('beautyMoodModal').classList.remove('show');
 }
 
 /* 全局徽章轮询：即使用户不在月友圈页面也能及时收到新评论/点赞提醒 */

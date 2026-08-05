@@ -267,6 +267,7 @@ Page({
     app.globalData.isTrial = false
     app.globalData.trialExpired = false
     app.globalData.statusReady = true
+    app.globalData.canUseUpgrade = true
 
     store.setLocal('loginType', 'admin')
     store.setLocal('userKey', 'admin')
