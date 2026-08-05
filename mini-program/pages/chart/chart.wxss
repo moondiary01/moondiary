@@ -1,21 +1,23 @@
 /* pages/chart/chart.wxss */
 .chart-page {
-  padding-bottom: 40rpx;
+  padding: 16rpx 32rpx 40rpx;
+  background: var(--bg);
 }
 
-/* 图例 */
+/* 图例 — 对齐HTML: gap 12px→24rpx, font-size 0.75rem→24rpx */
 .chart-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 20rpx;
+  gap: 24rpx;
+  margin-top: 20rpx;
   margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: var(--text);
 }
 .legend-item {
   display: flex;
   align-items: center;
   gap: 8rpx;
-  font-size: 24rpx;
-  color: var(--text-l);
 }
 .legend-dot {
   width: 20rpx;
@@ -28,34 +30,35 @@
 .legend-period { background: #D4A574; }
 .legend-period-zone { background: rgba(236,72,153,0.15); border: 2rpx solid rgba(236,72,153,0.3); }
 
-/* Canvas */
+/* Canvas — HTML: 380px→760rpx, 200px→400rpx */
 .chart-canvas {
   width: 100%;
-  height: 420rpx;
+  height: 760rpx;
 }
 .chart-bar-canvas {
   width: 100%;
-  height: 240rpx;
+  height: 400rpx;
 }
 .chart-empty {
   text-align: center;
   padding: 60rpx 0;
   color: var(--text-l);
-  font-size: 26rpx;
+  font-size: 28rpx;
 }
 
-/* BMI 环形图 */
+/* BMI 环形图 — HTML: 84px→168rpx, num 1.5rem→48rpx */
 .bmi-row-new {
   display: flex;
   align-items: center;
-  gap: 24rpx;
+  gap: 32rpx;
+  flex-wrap: wrap;
 }
 .bmi-ring-wrap {
   flex-shrink: 0;
 }
 .bmi-ring {
-  width: 160rpx;
-  height: 160rpx;
+  width: 168rpx;
+  height: 168rpx;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -70,24 +73,25 @@
 .bmi-ring.bmi-obese { border-color: #fca5a5; background: #fef2f2; }
 .bmi-ring-num {
   font-size: 48rpx;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--ink);
   line-height: 1;
 }
 .bmi-ring-lbl {
-  font-size: 22rpx;
+  font-size: 20rpx;
   font-weight: 600;
   color: var(--text-l);
   margin-top: 4rpx;
 }
 .bmi-info-right {
   flex: 1;
+  min-width: 160rpx;
 }
 .bmi-cat {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 700;
   color: var(--ink);
-  margin-bottom: 6rpx;
+  margin-bottom: 4rpx;
 }
 .bmi-desc {
   font-size: 24rpx;
@@ -113,33 +117,32 @@
 .bmi-tag-over { background: #fef3c7; color: #d97706; }
 .bmi-tag-obese { background: #fef2f2; color: #dc2626; }
 
-/* 数据统计网格 10项 2列 */
+/* 数据统计网格 — HTML: gap 10px→20rpx, 2列 */
 .stat-grid-new {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12rpx;
+  gap: 20rpx;
 }
 .stat-item {
   text-align: center;
-  padding: 18rpx 8rpx;
+  padding: 28rpx 16rpx;
   background: var(--card);
   border-radius: 24rpx;
-  border: 1px solid var(--border);
-}
-.dash-clickable {
-  cursor: pointer;
+  border: 2rpx solid var(--border);
+  box-shadow: var(--shadow-soft);
 }
 .stat-val {
-  font-size: 30rpx;
+  font-size: 42rpx;
   font-weight: 800;
   color: var(--rose-600);
   line-height: 1.2;
 }
 .stat-lbl {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--text-l);
-  margin-top: 6rpx;
+  margin-top: 8rpx;
   display: block;
+  font-weight: 600;
 }
 .stat-val.coral { color: var(--rose-500); }
 .stat-val.amber { color: #FF8C00; }

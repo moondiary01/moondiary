@@ -1,20 +1,21 @@
 /* pages/plan/plan.wxss */
 .plan-page {
-  padding-bottom: 40rpx;
+  padding: 16rpx 32rpx 40rpx;
+  background: var(--bg);
 }
 
-/* 基本信息网格 */
+/* 基本信息网格 — HTML: gap 10px→20rpx */
 .info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16rpx;
+  gap: 20rpx;
   margin-bottom: 8rpx;
 }
 .info-cell {
   padding: 12rpx;
 }
 .info-label {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: var(--text-l);
   display: block;
   margin-bottom: 4rpx;
@@ -32,12 +33,12 @@
   margin-top: 4rpx;
 }
 
-/* 三阶段计划 */
+/* 三阶段计划 — HTML: padding 16px→32rpx, margin-bottom 10px→20rpx, border-left 3px→6rpx */
 .stage-card {
-  border-radius: 24rpx;
-  padding: 24rpx;
-  margin-bottom: 16rpx;
-  border: 2rpx solid;
+  border-radius: 0 20rpx 20rpx 0;
+  padding: 32rpx;
+  margin-bottom: 20rpx;
+  border-left: 6rpx solid;
 }
 .stage-s1 {
   background: linear-gradient(135deg, #f5f3ff, #fce7f3);
@@ -58,7 +59,7 @@
   margin-bottom: 12rpx;
 }
 .stage-num {
-  font-size: 26rpx;
+  font-size: 28rpx;
   font-weight: 800;
   color: var(--rose-600);
 }
@@ -73,19 +74,19 @@
   margin-left: auto;
 }
 .stage-goal {
-  font-size: 26rpx;
+  font-size: 28rpx;
   font-weight: 600;
   color: var(--rose-500);
   margin-bottom: 12rpx;
 }
 .stage-tips text {
   display: block;
-  font-size: 24rpx;
-  color: var(--text-l);
+  font-size: 26rpx;
+  color: var(--text);
   line-height: 2;
 }
 
-/* 饮食参考表 — 5列 */
+/* 饮食参考表 — HTML: th padding 10px→20rpx, th font 0.85rem→28rpx */
 .meal-table {
   border-radius: 24rpx;
   overflow: hidden;
@@ -99,12 +100,12 @@
 }
 .meal-header .meal-cell {
   color: #fff;
-  font-weight: 700;
-  font-size: 24rpx;
+  font-weight: 600;
+  font-size: 26rpx;
 }
 .meal-cell {
-  padding: 14rpx 8rpx;
-  font-size: 24rpx;
+  padding: 20rpx 14rpx;
+  font-size: 26rpx;
   color: var(--text);
   text-align: center;
   border-bottom: 1rpx solid var(--border);
@@ -121,23 +122,24 @@
   background: var(--rose-50);
 }
 
-/* 关键提醒 */
+/* 关键提醒 — HTML: padding 12px 16px→24rpx 32rpx, font 0.8rem→26rpx, border-left 3px→6rpx */
 .tip-list {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 10rpx;
 }
 .tip-item {
   font-size: 26rpx;
-  color: var(--text-l);
+  color: var(--text);
+  font-weight: 500;
   line-height: 1.6;
-  padding: 12rpx 16rpx;
-  background: var(--rose-50);
+  padding: 24rpx 32rpx;
+  background: #FFE4E6;
   border-radius: 16rpx;
   border-left: 6rpx solid var(--rose-400);
 }
 
-/* 进度 */
+/* 进度 — HTML: 进度条高度 8px→16rpx */
 .progress-list {
   display: flex;
   flex-direction: column;
@@ -151,11 +153,11 @@
   padding: 8rpx 0;
 }
 .progress-label {
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: var(--text-l);
 }
 .progress-value {
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 700;
   color: var(--ink);
 }
@@ -189,24 +191,24 @@
 /* 三围 */
 .measure-row {
   display: flex;
-  gap: 16rpx;
+  gap: 20rpx;
 }
 .measure-cell {
   flex: 1;
   text-align: center;
-  padding: 20rpx 10rpx;
+  padding: 28rpx 10rpx;
   background: var(--rose-50);
   border-radius: 24rpx;
   border: 2rpx solid var(--border);
 }
 .measure-num {
-  font-size: 40rpx;
+  font-size: 42rpx;
   font-weight: 800;
   color: var(--rose-600);
   display: block;
 }
 .measure-lbl {
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--text-l);
   margin-top: 4rpx;
   display: block;

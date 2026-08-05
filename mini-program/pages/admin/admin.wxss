@@ -9,7 +9,7 @@
 .admin-stat-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16rpx;
+  gap: 20rpx;
 }
 .admin-stat-item {
   background: var(--rose-50);
@@ -75,7 +75,7 @@
   background: var(--card);
   border: 2rpx solid var(--border);
   border-radius: 24rpx;
-  padding: 20rpx;
+  padding: 24rpx;
   margin-bottom: 16rpx;
 }
 .key-row-main {

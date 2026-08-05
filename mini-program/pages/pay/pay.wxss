@@ -36,7 +36,7 @@
 .pay-card {
   background: var(--card);
   border-radius: 40rpx;
-  padding: 48rpx 32rpx 32rpx;
+  padding: 48rpx;
   text-align: center;
   box-shadow: var(--shadow-lg);
   border: 2rpx solid var(--border);
