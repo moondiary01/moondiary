@@ -155,18 +155,14 @@ body{
 .gate::after{content:'';position:absolute;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,118,0.15) 0%,transparent 70%);bottom:-120px;left:-100px;animation:float 10s ease-in-out infinite reverse}
 @keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.05)}}
 
-.gate-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-radius:32px;padding:40px 34px 34px;max-width:390px;width:100%;box-shadow:0 32px 80px rgba(26,21,48,0.3),0 0 0 1px rgba(255,255,255,0.2) inset;text-align:center;position:relative;z-index:1;animation:gateIn 0.8s cubic-bezier(0.34,1.56,0.64,1)}
+.gate-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-radius:32px;padding:28px 24px 24px;max-width:390px;width:100%;box-shadow:0 32px 80px rgba(26,21,48,0.3),0 0 0 1px rgba(255,255,255,0.2) inset;text-align:center;position:relative;z-index:1;animation:gateIn 0.8s cubic-bezier(0.34,1.56,0.64,1)}
 @keyframes gateIn{from{opacity:0;transform:translateY(30px) scale(0.92) rotate(-2deg)}to{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
 
-/* moon Logo 动画 */
-.moon-logo{width:96px;height:96px;margin:0 auto 2px;position:relative}
-.moon-logo svg{width:100%;height:100%;animation:logoSpin 20s linear infinite;filter:drop-shadow(0 4px 16px rgba(147,51,234,0.3))}
-@keyframes logoSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.moon-logo .glow{position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,0.25) 0%,transparent 65%);animation:glowPulse 3s ease-in-out infinite}
-@keyframes glowPulse{0%,100%{opacity:0.4;transform:scale(1)}50%{opacity:0.75;transform:scale(1.12)}}
-
-.gate-title{font-size:1.5rem;font-weight:900;color:var(--ink);margin-bottom:6px;letter-spacing:-0.5px}
-.gate-title .brand{background:linear-gradient(135deg,var(--rose-600),var(--coral));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic;font-weight:900;font-size:1.7rem}
+.gate-logo-icon{font-size:3.2rem;margin-bottom:4px;line-height:1}
+.gate-logo-title{font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-0.5px;margin-bottom:2px}
+.gate-logo-subtitle{font-size:0.8rem;color:var(--text-l);margin-bottom:20px}
+.gate-content{padding:4px 0}
+.wx-login-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#07c160,#06ad56)}
 .gate-sub{font-size:0.8rem;color:var(--text-l);margin-bottom:24px}
 .gate-input{width:100%;text-align:center;letter-spacing:10px;font-size:1.5rem;font-weight:800;padding:14px;border:2px solid var(--border);border-radius:var(--radius-sm);outline:none;color:var(--rose-600);font-family:inherit;transition:all 0.2s;background:var(--rose-50)}
 .gate-input:focus{border-color:var(--rose-400);box-shadow:0 0 0 4px rgba(168,85,247,0.12)}
@@ -175,7 +171,9 @@ body{
 .gate-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(147,51,234,0.35)}
 .gate-btn:active{transform:scale(0.98)}
 .gate-hint{font-size:0.72rem;color:var(--text-l);margin-top:16px;line-height:1.6}
-.gate-tabs{display:flex;gap:4px;background:var(--rose-50);border-radius:10px;padding:3px;margin-bottom:16px}
+.gate-tabs{display:flex;gap:4px;background:var(--rose-50);border-radius:12px;padding:4px;margin-bottom:18px}
+.gate-tab{flex:1;text-align:center;padding:10px 4px;border-radius:10px;font-size:0.78rem;font-weight:600;color:var(--text-l);cursor:pointer;transition:all 0.2s}
+.gate-tab.active{background:#fff;color:var(--rose-600);box-shadow:0 2px 8px rgba(124,58,237,0.12)}
 /* ===== Splash 动画 ===== */
 .splash{position:fixed;inset:0;background:var(--grad-hero);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:600;animation:splashFade 2.8s ease forwards}
 @keyframes splashFade{0%{opacity:1}85%{opacity:1}100%{opacity:0;visibility:hidden}}
@@ -193,8 +191,6 @@ body{
 .splash-loader{width:120px;height:3px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:30px;overflow:hidden;animation:splashTextIn 0.6s 0.7s ease both}
 .splash-loader-bar{height:100%;background:#fff;border-radius:2px;animation:loaderFill 1.5s 0.8s ease forwards;width:0}
 @keyframes loaderFill{from{width:0}to{width:100%}}
-.gate-tab{flex:1;text-align:center;padding:8px;border-radius:8px;font-size:0.82rem;font-weight:600;color:var(--text-l);cursor:pointer;transition:all 0.2s}
-.gate-tab.active{background:#fff;color:var(--rose-600);box-shadow:0 2px 6px rgba(124,58,237,0.1)}
 .gate-error{color:var(--rose-500);font-size:0.78rem;margin-top:8px;min-height:18px;font-weight:600}
 
 /* ===== Hero 顶部（同步小程序 f5c02e6：深紫渐变 + 体重 + 快捷入口） ===== */
@@ -434,6 +430,7 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .key-toggle-off:hover{background:#A7F3D0}
 .key-toggle-revoked{background:#E5E7EB;color:#6B7280;border:1px solid #9CA3AF;cursor:pointer}
 .key-toggle-revoked:hover{background:#D1D5DB}
+.filter-active{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;border:1px solid #7c3aed !important;font-weight:700}
 .key-row-info{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--card);border-top:1px solid var(--border);cursor:pointer;transition:background 0.15s}
 .key-row-info:hover{background:var(--rose-50)}
 .key-info-icon{font-size:0.85rem;flex-shrink:0}
@@ -1389,51 +1386,49 @@ _loadCosSdk(0);
 <!-- ===== 登录门 ===== -->
 <div class="gate" id="gate">
   <div class="gate-card">
-    <div class="moon-logo" id="gateLogo">
-      <div class="glow"></div>
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#7C3AED"/>
-            <stop offset="50%" style="stop-color:#C026D3"/>
-            <stop offset="100%" style="stop-color:#EC4899"/>
-          </linearGradient>
-          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#D4A574"/>
-            <stop offset="100%" style="stop-color:#E8C9A0"/>
-          </linearGradient>
-        </defs>
-        <circle cx="50" cy="50" r="46" fill="none" stroke="url(#moonGrad)" stroke-width="2" opacity="0.3"/>
-        <path d="M 62 18 A 34 34 0 1 0 62 82 A 28 28 0 1 1 62 18 Z" fill="url(#moonGrad)"/>
-        <circle cx="78" cy="30" r="2.5" fill="url(#goldGrad)"/>
-        <circle cx="82" cy="50" r="1.8" fill="url(#goldGrad)" opacity="0.7"/>
-        <circle cx="75" cy="68" r="2" fill="url(#goldGrad)" opacity="0.8"/>
-        <ellipse cx="56" cy="38" rx="4" ry="6" fill="#fff" opacity="0.25" transform="rotate(-20 56 38)"/>
-      </svg>
+    <div class="gate-logo-icon">🌙</div>
+    <div class="gate-logo-title">Moon Memo</div>
+    <div class="gate-logo-subtitle">月亮日记</div>
+    <!-- Tab切换 -->
+    <div class="gate-tabs">
+      <div class="gate-tab active" onclick="switchGateTab(0)" id="gateTab0">微信登录</div>
+      <div class="gate-tab" onclick="switchGateTab(1)" id="gateTab1">密钥登录</div>
+      <div class="gate-tab" onclick="switchGateTab(2)" id="gateTab2">管理员登录</div>
     </div>
-    <div class="gate-title"><span class="brand">MoonMemo</span></div>
-    <!-- 用户手机号+密钥登录（默认显示） -->
-    <div id="gateUser">
-      <!-- 密钥+手机号登录 -->
-      <div id="keyLoginBox">
-        <div class="gate-sub">请输入专属6位密钥进入</div>
-        <input type="text" class="gate-input" id="keyInput" maxlength="6" inputmode="numeric" placeholder="6位数字密钥" style="letter-spacing:4px;font-size:1.15rem" autocomplete="off">
-        <input type="tel" class="gate-input" id="userPhone" placeholder="手机号（11位）" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
-        <div class="gate-error" id="gateError"></div>
-        <button class="gate-btn" onclick="tryLogin()">进 入</button>
-        <div class="gate-hint">绑定微信可直接登陆，若需密钥登陆请联系管理员<br>一个手机号只能绑定一个密钥</div>
-        <div style="margin-top:14px;text-align:center"><a href="#" onclick="switchGate('admin');playClick();return false" style="font-size:0.7rem;color:var(--text-l);opacity:0.6">管理员入口</a></div>
+    <!-- 微信登录 -->
+    <div class="gate-content" id="gateContent0">
+      <div class="gate-sub">使用微信快速登录，新用户可免费试用24小时</div>
+      <button class="gate-btn wx-login-btn" onclick="onWxLogin()">
+        <span>💚</span>
+        <span>微信一键登录</span>
+      </button>
+    </div>
+    <!-- 密钥登录 -->
+    <div class="gate-content" id="gateContent1" style="display:none">
+      <div class="input-group" style="margin-bottom:12px">
+        <label style="font-size:0.8rem;color:var(--text-l);display:block;text-align:left;margin-bottom:4px">手机号</label>
+        <input class="gate-input" type="tel" id="keyPhone" maxlength="11" inputmode="numeric" placeholder="请输入手机号" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
       </div>
+      <div class="input-group" style="margin-bottom:12px">
+        <label style="font-size:0.8rem;color:var(--text-l);display:block;text-align:left;margin-bottom:4px">密钥</label>
+        <input class="gate-input" type="text" id="keyInput" maxlength="6" inputmode="numeric" placeholder="请输入6位密钥" style="letter-spacing:4px;font-size:1.15rem" autocomplete="off">
+      </div>
+      <div class="gate-error" id="gateError"></div>
+      <button class="gate-btn" onclick="tryLogin()">登录</button>
+      <div class="gate-hint">绑定微信可直接登陆，若需密钥登陆请联系管理员<br>一个手机号只能绑定一个密钥</div>
     </div>
-    <!-- 管理员手机号+密码登录（隐藏，点击小字触发） -->
-    <div id="gateAdmin" style="display:none">
-      <div class="gate-sub">管理员登录</div>
-      <input type="tel" class="gate-input" id="adminPhone" placeholder="管理员手机号" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
-      <input type="password" class="gate-input" id="adminPw" placeholder="管理员密码" style="letter-spacing:2px;font-size:1.1rem" autocomplete="off">
+    <!-- 管理员登录 -->
+    <div class="gate-content" id="gateContent2" style="display:none">
+      <div class="input-group" style="margin-bottom:12px">
+        <label style="font-size:0.8rem;color:var(--text-l);display:block;text-align:left;margin-bottom:4px">手机号</label>
+        <input class="gate-input" type="tel" id="adminPhone" maxlength="11" inputmode="numeric" placeholder="请输入管理员手机号" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
+      </div>
+      <div class="input-group" style="margin-bottom:12px">
+        <label style="font-size:0.8rem;color:var(--text-l);display:block;text-align:left;margin-bottom:4px">密码</label>
+        <input class="gate-input" type="password" id="adminPw" placeholder="请输入密码" style="letter-spacing:2px;font-size:1.1rem" autocomplete="off">
+      </div>
       <div class="gate-error" id="adminError"></div>
-      <button class="gate-btn" onclick="adminLogin()">管理员进入</button>
-      <div class="gate-hint" id="adminPwHint">请输入管理员手机号与密码</div>
-      <div style="margin-top:14px;text-align:center"><a href="#" onclick="switchGate('user');playClick();return false" style="font-size:0.7rem;color:var(--text-l);opacity:0.6">← 返回用户登录</a></div>
+      <button class="gate-btn" onclick="adminLogin()">登录</button>
     </div>
   </div>
 </div>
@@ -1667,15 +1662,18 @@ _loadCosSdk(0);
   </div>
   <div class="card">
     <div class="card-title">📊 BMI 健康指数 <span class="sub">自动计算</span></div>
-    <div class="bmi-card">
-      <div class="bmi-ring" id="bmiRing">
-        <div class="num" id="bmiNum">—</div>
-        <div class="lbl">BMI</div>
+    <div style="display:flex;align-items:center;gap:16px;padding:8px 0">
+      <div style="font-size:2.6rem;font-weight:800;color:var(--ink);line-height:1" id="bmiNum">—</div>
+      <div>
+        <div style="font-size:0.95rem;font-weight:700" id="bmiCat">数据不足</div>
+        <div style="font-size:0.72rem;color:var(--text-l);margin-top:2px">BMI = 体重(kg) ÷ 身高²(m²)</div>
       </div>
-      <div class="bmi-info">
-        <div class="bmi-cat" id="bmiCat">请先设置身高</div>
-        <div class="bmi-desc" id="bmiDesc">BMI = 体重(kg) ÷ 身高²(m²)，中国标准：18.5-23.9 为健康范围</div>
-      </div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+      <span style="font-size:0.68rem;padding:3px 10px;border-radius:10px;background:#f0fdf4;color:#16a34a">偏瘦 &lt;18.5</span>
+      <span style="font-size:0.68rem;padding:3px 10px;border-radius:10px;background:#ecfdf5;color:#059669">正常 18.5-23.9</span>
+      <span style="font-size:0.68rem;padding:3px 10px;border-radius:10px;background:#fef3c7;color:#d97706">偏胖 24-27.9</span>
+      <span style="font-size:0.68rem;padding:3px 10px;border-radius:10px;background:#fef2f2;color:#dc2626">肥胖 ≥28</span>
     </div>
   </div>
   <div class="card">
@@ -1700,6 +1698,39 @@ _loadCosSdk(0);
   <div class="card">
     <div class="card-title">👤 基本信息 <span class="sub">点击任意项可修改</span></div>
     <div id="planInfo"></div>
+  </div>
+  <div class="card" id="planWeightCard">
+    <div class="card-title">⚖️ 体重计划 <span class="sub">点击修改</span></div>
+    <div id="planWeightInfo"></div>
+  </div>
+  <!-- 进度统计 -->
+  <div class="card" id="planProgressCard">
+    <div class="card-title">📊 减重进度</div>
+    <!-- 进度条 -->
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text-l);margin-bottom:6px">
+        <span id="progressLabel">0 / 100 天</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div style="height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden">
+        <div id="progressBar" style="height:100%;background:linear-gradient(90deg,#7c3aed,#ec4899);border-radius:4px;transition:width 0.3s;width:0%"></div>
+      </div>
+    </div>
+    <!-- 统计数字 -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="flex:1;min-width:80px;text-align:center;padding:12px 8px;background:var(--rose-50);border-radius:12px">
+        <div style="font-size:1.4rem;font-weight:800;color:var(--rose-600);line-height:1" id="statCurrentDay">0</div>
+        <div style="font-size:0.7rem;color:var(--text-l);margin-top:4px">当前天数</div>
+      </div>
+      <div style="flex:1;min-width:80px;text-align:center;padding:12px 8px;background:#f0fdf4;border-radius:12px">
+        <div style="font-size:1.4rem;font-weight:800;color:#10b981;line-height:1" id="statRemaining">—</div>
+        <div style="font-size:0.7rem;color:var(--text-l);margin-top:4px">剩余天数</div>
+      </div>
+      <div style="flex:1;min-width:80px;text-align:center;padding:12px 8px;background:#fffbeb;border-radius:12px">
+        <div style="font-size:1.4rem;font-weight:800;color:#d97706;line-height:1" id="statLost">—</div>
+        <div style="font-size:0.7rem;color:var(--text-l);margin-top:4px">已减体重</div>
+      </div>
+    </div>
   </div>
   <div class="card">
     <div class="card-title">🏋️ 三阶段计划</div>
@@ -1732,9 +1763,17 @@ _loadCosSdk(0);
 
 <!-- ===== Page 3: 复盘 ===== -->
 <div class="page" id="page3">
-  <div class="card">
-    <div class="card-title">📒 周度复盘</div>
-    <div id="reviewList"></div>
+  <div class="review-tip" style="font-size:0.78rem;color:#78716c;text-align:center;padding:12px 20px 8px">每周记录一次复盘，回顾这周的成果与感受</div>
+  <div id="reviewList"></div>
+  <!-- 空状态 -->
+  <div id="reviewEmpty" style="display:none;text-align:center;padding:60px 0">
+    <div style="font-size:3rem;margin-bottom:12px">📝</div>
+    <div style="font-size:0.95rem;color:#78716c;font-weight:600;margin-bottom:6px">还没有复盘记录</div>
+    <div style="font-size:0.78rem;color:#a8a29e">设置开始日期后，周度复盘会自动生成</div>
+  </div>
+  <!-- 保存按钮 -->
+  <div id="reviewSaveArea" style="display:none;padding:12px 20px 20px">
+    <button class="btn btn-primary" style="width:100%;padding:14px;font-size:0.95rem;font-weight:700;border-radius:12px" onclick="saveReviewAll()">保存复盘</button>
   </div>
 </div>
 
@@ -1782,6 +1821,24 @@ _loadCosSdk(0);
         <div class="admin-stat-lbl">总人数 · 点击查看</div>
       </div>
     </div>
+    <div class="card">
+      <div class="card-title">📢 版本更新通知 <span class="sub">推送全局通知</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:0.9rem;font-weight:600;color:var(--ink)">当前版本 v8</div>
+          <div style="font-size:0.78rem;color:var(--text-l)" id="noticeStatus">通知未发送</div>
+        </div>
+        <button class="btn btn-outline" style="border-color:#c4b5fd;color:#7c3aed" onclick="sendVersionNotice()" id="noticeBtn">发送通知</button>
+      </div>
+    </div>
+    <!-- 密钥筛选 -->
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap" id="keyFilterRow">
+      <button class="btn btn-sm filter-btn filter-active" onclick="filterKeys('all')" id="filterBtnAll" style="border-radius:20px;padding:5px 14px;font-size:0.72rem">全部</button>
+      <button class="btn btn-sm btn-outline filter-btn" onclick="filterKeys('active')" id="filterBtnActive" style="border-radius:20px;padding:5px 14px;font-size:0.72rem">已启用</button>
+      <button class="btn btn-sm btn-outline filter-btn" onclick="filterKeys('inactive')" id="filterBtnInactive" style="border-radius:20px;padding:5px 14px;font-size:0.72rem">未启用</button>
+      <button class="btn btn-sm btn-outline filter-btn" onclick="filterKeys('revoked')" id="filterBtnRevoked" style="border-radius:20px;padding:5px 14px;font-size:0.72rem">已作废</button>
+    </div>
+    <div style="font-size:0.9rem;font-weight:700;color:var(--ink);margin-bottom:10px">🔑 密钥管理 <span style="font-size:0.75rem;color:var(--text-l);font-weight:400" id="keyCountLabel">(100)</span></div>
     <div id="keyListSearch" style="margin-bottom:12px">
       <input type="tel" id="keySearchPhone" placeholder="输入手机号搜索用户" maxlength="11" inputmode="numeric" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:1rem;outline:none;background:var(--bg-card)" oninput="renderKeyList()">
     </div>
@@ -1891,12 +1948,48 @@ _loadCosSdk(0);
         </div>
         <span class="section-arrow">›</span>
       </div>
-      <div id="beautyLockMsg" style="display:none;text-align:center;padding:20px 16px;background:linear-gradient(135deg,#fffbeb,#fef2f2);border-radius:16px;border:1px solid rgba(251,191,36,0.2)">
-        <div style="font-size:2.2rem;margin-bottom:8px">🔒</div>
-        <div style="font-size:0.92rem;font-weight:700;color:#92400e">升级版会员专享</div>
-        <div style="font-size:0.75rem;color:#a8a29e;margin-top:4px;line-height:1.5">29.9元永久解锁护肤日记 · 心情日记</div>
-        <button class="btn btn-primary" style="margin-top:14px;background:linear-gradient(135deg,#7c3aed,#ec4899);border:none;padding:12px 40px;font-size:0.9rem;font-weight:700;border-radius:12px;box-shadow:0 4px 16px rgba(124,58,237,0.3)" onclick="payBeautyUpgrade();playClick()">✨ 29.9元 永久开通</button>
-        <div style="font-size:0.68rem;color:#c4b5fd;margin-top:10px">一次购买 · 永久有效</div>
+      <div id="beautyLockMsg" style="display:none">
+        <!-- Tab切换 -->
+        <div class="pay-tabs" style="display:flex;gap:8px;margin-bottom:16px">
+          <div class="pay-tab tab-active" id="payTabBasic" onclick="switchPayTab('basic')" style="flex:1;text-align:center;padding:12px 0;font-size:0.82rem;font-weight:600;border-radius:14px;cursor:pointer;transition:all 0.2s">基础版</div>
+          <div class="pay-tab" id="payTabUpgrade" onclick="switchPayTab('upgrade')" style="flex:1;text-align:center;padding:12px 0;font-size:0.82rem;font-weight:600;border-radius:14px;cursor:pointer;transition:all 0.2s">升级版</div>
+        </div>
+        <!-- 基础版内容 -->
+        <div id="payContentBasic">
+          <div style="text-align:center;padding:12px;background:linear-gradient(135deg,#fce7f3,#fbcfe8);border-radius:16px;margin-bottom:14px">
+            <div style="font-size:2.4rem;font-weight:800;color:#ec4899;line-height:1">¥19.9</div>
+            <div style="font-size:0.78rem;color:#78716c;margin-top:4px">永久云端存储</div>
+          </div>
+          <div style="text-align:left;font-size:0.78rem;color:#44403c;line-height:2">
+            <div style="font-size:0.82rem;font-weight:700;color:#ec4899;margin-bottom:6px;border-bottom:1.5px solid #fdf2f8;padding-bottom:6px">基础版权益</div>
+            <div>💾 永久云端数据存储</div>
+            <div>📊 体重趋势图表</div>
+            <div>📅 经期日历追踪</div>
+            <div>🏃 运动饮食打卡</div>
+            <div>📝 每日心情日记</div>
+            <div>📸 照片上传记录</div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:14px;width:100%;background:linear-gradient(135deg,#ec4899,#f43f5e);border:none;padding:14px;font-size:0.92rem;font-weight:700;border-radius:12px;box-shadow:0 4px 16px rgba(236,72,153,0.3)" onclick="payBasic();playClick()">✨ 19.9元 永久开通</button>
+        </div>
+        <!-- 升级版内容 -->
+        <div id="payContentUpgrade" style="display:none">
+          <div style="text-align:center;padding:12px;background:linear-gradient(135deg,#ede9fe,#fce7f3,#fef3c7);border-radius:16px;margin-bottom:14px;position:relative;overflow:hidden">
+            <div style="display:inline-block;padding:4px 16px;border-radius:100px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-size:0.68rem;font-weight:600;margin-bottom:8px">🔥 永久会员</div>
+            <div style="font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1">¥29.9</div>
+            <div style="font-size:0.78rem;color:#78716c;margin-top:4px">永久升级版 · 全部功能</div>
+          </div>
+          <div style="text-align:left;font-size:0.78rem;color:#44403c;line-height:2">
+            <div style="font-size:0.82rem;font-weight:700;color:#8b5cf6;margin-bottom:6px;border-bottom:1.5px solid #f5f3ff;padding-bottom:6px">包含全部基础版权益</div>
+            <div style="font-size:0.82rem;font-weight:700;color:#8b5cf6;margin-top:10px;margin-bottom:6px;border-bottom:1.5px solid #f5f3ff;padding-bottom:6px">升级版专属</div>
+            <div>💄 护肤日记 · 每日打卡</div>
+            <div>💖 心情记录 · 日历照片</div>
+            <div>🙏 感恩日记 · 自律打卡</div>
+            <div>📸 do脸记录 · 前后对比</div>
+            <div>🔒 永久有效 · 一次购买</div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:14px;width:100%;background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none;padding:14px;font-size:0.92rem;font-weight:700;border-radius:12px;box-shadow:0 4px 16px rgba(139,92,246,0.35)" onclick="payBeautyUpgrade();playClick()">✨ 29.9元 永久开通</button>
+        </div>
+        <div style="font-size:0.68rem;color:#c4b5fd;margin-top:12px;text-align:center">一次购买 · 永久有效</div>
         <div style="margin-top:12px;display:flex;gap:16px;justify-content:center">
           <a href="#" onclick="showPurchaseNotice();return false" style="font-size:0.7rem;color:#8b5cf6;text-decoration:underline">购买须知</a>
           <a href="#" onclick="showPrivacyNotice();return false" style="font-size:0.7rem;color:#8b5cf6;text-decoration:underline">隐私说明</a>
@@ -1916,21 +2009,33 @@ _loadCosSdk(0);
   <div class="modal" style="max-width:450px;max-height:80vh;overflow-y:auto">
     <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:14px">📋 购买须知</h3>
     <div style="font-size:0.82rem;color:var(--text-d);line-height:1.8">
-      <p><b>1. 会员档位</b></p>
-      <p style="margin-left:12px">• <b>19.9元 永久云端存储</b>：月亮日记数据的永久云端存储，不含100天变美计划功能。</p>
-      <p style="margin-left:12px">• <b>29.9元 永久升级版</b>：包含云端存储 + 100天变美计划（护肤日记、心情日记），永久有效。</p>
-      <p><b>2. 退款政策</b></p>
-      <p style="margin-left:12px">• 数字商品一经开通，不支持退款。</p>
-      <p><b>3. 使用期限</b></p>
-      <p style="margin-left:12px">• 均为<b>永久有效</b>，一次购买终身使用。</p>
-      <p><b>4. 开通方式</b></p>
-      <p style="margin-left:12px">• 联系管理员手动开通，开通后立即生效。</p>
-      <p><b>5. 数据安全</b></p>
-      <p style="margin-left:12px">• 您的数据仅存储在您的个人云端空间，其他用户无法访问。</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">1. 服务内容</p>
+      <p style="margin-left:12px">• MoonMemo 月亮日记是一款身材记录工具</p>
+      <p style="margin-left:12px">• 会员可使用全部功能：每日体重记录、趋势统计、经期日历、运动打卡、照片上传、云端数据同步</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">2. 订阅规则</p>
+      <p style="margin-left:12px">• 基础版：19.9元/永久 · 云端存储</p>
+      <p style="margin-left:12px">• 升级版：29.9元/永久 · 全部功能</p>
+      <p style="margin-left:12px">• 付费后永久可使用全部功能</p>
+      <p style="margin-left:12px">• 永久云存储：您的数据始终保存在云端，即使会员到期数据也不会丢失</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">3. 试用规则</p>
+      <p style="margin-left:12px">• 新用户可免费试用24小时</p>
+      <p style="margin-left:12px">• 试用期间可使用全部功能</p>
+      <p style="margin-left:12px">• 试用结束后需开通会员才能继续使用</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">4. 退款政策</p>
+      <p style="margin-left:12px">• 虚拟商品一经购买不支持退款</p>
+      <p style="margin-left:12px">• 请在试用期内充分体验后再决定购买</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">5. 使用期限说明</p>
+      <p style="margin-left:12px">• 永久会员权益为无限期有效</p>
+      <p style="margin-left:12px">• 无限期权益仅在本小程序正常运营存续期间内有效</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">6. 自动续费</p>
+      <p style="margin-left:12px">• 暂不支持自动续费</p>
+      <p style="margin-left:12px">• 会员到期后需手动续费</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">7. 联系方式</p>
+      <p style="margin-left:12px">• 客服微信：moon_diary_service</p>
+      <p style="margin-left:12px">• 问题反馈：moon_diary_service</p>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-outline" onclick="document.getElementById('purchaseNoticeModal').classList.remove('show');playClick()">关闭</button>
-      <button class="btn btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none" onclick="confirmBeautyUpgrade();playClick()">我已阅读并同意 · 确认开通</button>
+      <button class="btn btn-primary" onclick="document.getElementById('purchaseNoticeModal').classList.remove('show');playClick()">我知道了</button>
     </div>
   </div>
 </div>
@@ -1940,18 +2045,29 @@ _loadCosSdk(0);
   <div class="modal" style="max-width:450px;max-height:80vh;overflow-y:auto">
     <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:14px">🔒 隐私说明</h3>
     <div style="font-size:0.82rem;color:var(--text-d);line-height:1.8">
-      <p><b>1. 数据收集</b></p>
-      <p style="margin-left:12px">• 我们仅收集您主动输入的身材数据、护肤记录、心情日记及自拍照片。</p>
-      <p style="margin-left:12px">• 手机号仅用于身份识别和数据绑定，不向第三方分享。</p>
-      <p><b>2. 数据存储</b></p>
-      <p style="margin-left:12px">• 您的数据存储在加密的云端服务器（腾讯云COS），仅您本人可访问。</p>
-      <p style="margin-left:12px">• 照片数据经压缩处理后存储，不会用于其他用途。</p>
-      <p><b>3. 数据隔离</b></p>
-      <p style="margin-left:12px">• 每个用户的数据独立存储，互不可见。一手机号一份数据。</p>
-      <p><b>4. 数据删除</b></p>
-      <p style="margin-left:12px">• 您可随时联系管理员删除所有个人数据。</p>
-      <p><b>5. 联系方式</b></p>
-      <p style="margin-left:12px">• 如有隐私相关问题，请联系管理员处理。</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">1. 信息收集</p>
+      <p style="margin-left:12px">• 手机号（密钥登录用户）</p>
+      <p style="margin-left:12px">• 微信授权信息（微信登录用户）</p>
+      <p style="margin-left:12px">• 体重、体脂、饮食、运动等健康记录数据</p>
+      <p style="margin-left:12px">• 经期记录、照片（用户主动上传）</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">2. 信息使用</p>
+      <p style="margin-left:12px">• 仅用于提供月亮日记记录服务</p>
+      <p style="margin-left:12px">• 不会用于其他商业用途</p>
+      <p style="margin-left:12px">• 不会分享给第三方</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">3. 信息存储</p>
+      <p style="margin-left:12px">• 数据存储在腾讯云COS（重庆区域）</p>
+      <p style="margin-left:12px">• 每个用户数据独立存储，互不可见</p>
+      <p style="margin-left:12px">• 数据传输使用HTTPS加密</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">4. 用户权利</p>
+      <p style="margin-left:12px">• 可随时导出自己的数据</p>
+      <p style="margin-left:12px">• 可随时删除自己的数据</p>
+      <p style="margin-left:12px">• 可拒绝授权微信信息</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">5. 信息安全</p>
+      <p style="margin-left:12px">• 采用HTTPS加密传输</p>
+      <p style="margin-left:12px">• COS采用腾讯云安全防护</p>
+      <p style="margin-left:12px">• 密钥使用加密存储</p>
+      <p style="font-weight:700;color:var(--ink);margin-top:12px">6. 联系方式</p>
+      <p style="margin-left:12px">• 如有隐私问题请联系：moon_diary_service</p>
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="document.getElementById('privacyNoticeModal').classList.remove('show');playClick()">我知道了</button>
@@ -2481,6 +2597,8 @@ var _savePending = {};
 var _saveTimers = {};
 function saveToCloudImmediate(key, data) {
   if (!cos || !key) { console.warn('saveToCloudImmediate skipped: cos=', !!cos, 'key=', key); return; }
+  /* 写入时间戳，用于后续合并比较 */
+  if (data && typeof data === 'object') data._updatedAt = Date.now();
   /* 防止空数据覆盖云端已有数据 */
   if (data && typeof data === 'object' && data.days) {
     var hasRealData = false;
@@ -2803,6 +2921,7 @@ var state = {
   days: [], weeklyReview: [], periods: [], avatar: MOON_AVATAR
 };
 let saveTimer = null, editCallback = null, keyEditingNote = null, lastNewKey = null, selectedAvatar = '😊';
+let keyFilterStatus = 'all';
 var currentKey = null;
 var currentPhone = null; /* 当前用户手机号（数据存储主键） */
 
@@ -3207,11 +3326,16 @@ function playSwipe(dir) {
   } catch(e) {}
 }
 
-function switchGate(mode) {
-  document.getElementById('gateUser').style.display = mode === 'user' ? 'block' : 'none';
-  document.getElementById('gateAdmin').style.display = mode === 'admin' ? 'block' : 'none';
+function switchGateTab(idx) {
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('gateContent'+i).style.display = i === idx ? 'block' : 'none';
+    document.getElementById('gateTab'+i).classList.toggle('active', i === idx);
+  }
   document.getElementById('gateError').textContent = '';
   document.getElementById('adminError').textContent = '';
+}
+function onWxLogin() {
+  showToast('微信登录请使用小程序版本');
 }
 function adminLogin() {
   const phone = document.getElementById('adminPhone').value.trim();
@@ -3235,7 +3359,7 @@ function adminLogin() {
 }
 
 function tryLogin() {
-  const phone = document.getElementById('userPhone').value.trim();
+  const phone = document.getElementById('keyPhone').value.trim();
   const k = document.getElementById('keyInput').value.trim();
   const err = document.getElementById('gateError');
   if (!phone) { err.textContent = '请输入手机号'; return; }
@@ -3357,13 +3481,13 @@ function logout() {
   currentPhone = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('gate').style.display = 'flex';
-  document.getElementById('userPhone').value = '';
+  document.getElementById('keyPhone').value = '';
   document.getElementById('keyInput').value = '';
   document.getElementById('adminPhone').value = '';
   document.getElementById('adminPw').value = '';
   document.getElementById('gateError').textContent = '';
   document.getElementById('adminError').textContent = '';
-  switchGate('user');
+  switchGateTab(1);
 }
 
 function enterApp(isAdmin) {
@@ -3511,12 +3635,20 @@ function loadState() {
   });
   function applyCloudData(cloudData) {
     if (cloudData) {
-      /* 只覆盖云端有值的字段，避免 null/undefined 覆盖本地有效数据 */
-      Object.keys(cloudData).forEach(function(key) {
-        if (cloudData[key] !== null && cloudData[key] !== undefined) {
-          state[key] = cloudData[key];
-        }
-      });
+      /* 比较 _updatedAt 时间戳，以较新的为准 */
+      var localUpdated = state._updatedAt || 0;
+      var cloudUpdated = cloudData._updatedAt || 0;
+      if (cloudUpdated > localUpdated) {
+        /* 云端更新，以云端为主 */
+        state = Object.assign({}, state, cloudData);
+      } else {
+        /* 云端更旧或时间戳缺失，只合并云端有值的字段（保留本地更新） */
+        Object.keys(cloudData).forEach(function(key) {
+          if (cloudData[key] !== null && cloudData[key] !== undefined) {
+            state[key] = cloudData[key];
+          }
+        });
+      }
       /* 确保 startFat 存在 */
       if (cloudData.startFat !== null && cloudData.startFat !== undefined) {
         state.startFat = cloudData.startFat;
@@ -3554,6 +3686,7 @@ function isStateEmpty() {
 
 function saveState() {
   try {
+    state._updatedAt = Date.now();
     localStorage.setItem(userStorageKey(getCurrentPhone()), JSON.stringify(state));
   } catch(e) {}
   /* 如果state是空状态，不保存到云端，避免覆盖已有数据 */
@@ -3823,11 +3956,11 @@ function calcBmi(weight, height) {
   return weight / (h * h);
 }
 function bmiCategory(bmi) {
-  if (bmi === null) return { cat: '—', color: '#A8A29E', desc: '请先设置身高和体重' };
-  if (bmi < 18.5) return { cat: '偏瘦', color: '#0EA5E9', desc: '体重偏低，注意营养均衡，适量增加优质蛋白摄入' };
-  if (bmi < 24) return { cat: '健康', color: '#10B981', desc: '体重在健康范围内，保持当前饮食和运动习惯' };
-  if (bmi < 28) return { cat: '超重', color: '#F59E0B', desc: '略高于健康范围，建议加强运动、控制热量摄入' };
-  return { cat: '肥胖', color: '#C026D3', desc: '高于健康范围，建议制定系统减重计划并咨询专业人士' };
+  if (bmi === null) return { cat: '数据不足', color: '#A8A29E' };
+  if (bmi < 18.5) return { cat: '偏瘦', color: '#f59e0b' };
+  if (bmi < 24) return { cat: '正常', color: '#10b981' };
+  if (bmi < 28) return { cat: '偏胖', color: '#f59e0b' };
+  return { cat: '肥胖', color: '#ef4444' };
 }
 function renderBmi() {
   let latest = null;
@@ -3837,24 +3970,18 @@ function renderBmi() {
   }
   const bmi = calcBmi(latest, state.height);
   const info = bmiCategory(bmi);
-  const ring = document.getElementById('bmiRing');
   const num = document.getElementById('bmiNum');
   const cat = document.getElementById('bmiCat');
-  const desc = document.getElementById('bmiDesc');
   if (bmi === null) {
     num.textContent = '—';
-    ring.style.background = 'var(--bg)';
-    ring.style.color = 'var(--text-l)';
-    cat.textContent = '请先设置身高';
+    num.style.color = 'var(--text-l)';
+    cat.textContent = '数据不足';
     cat.style.color = 'var(--text-l)';
-    desc.textContent = 'BMI = 体重(kg) ÷ 身高²(m²)，中国标准：18.5-23.9 为健康范围';
   } else {
     num.textContent = bmi.toFixed(1);
-    ring.style.background = info.color;
-    ring.style.color = '#fff';
+    num.style.color = info.color;
     cat.textContent = info.cat;
     cat.style.color = info.color;
-    desc.textContent = info.desc;
   }
   document.getElementById('s-bmi').innerHTML = bmi !== null ? bmi.toFixed(1) : '—';
   const remain = (latest !== null && state.targetWeight !== null) ? (latest - state.targetWeight) : null;
@@ -4460,6 +4587,15 @@ function drawChart() {
   all.forEach(d => { if (d.w < minW) minW = d.w; if (d.w > maxW) maxW = d.w; });
   minW = Math.floor(minW - 1); maxW = Math.ceil(maxW + 1);
   const tw = Math.ceil(total / 7);
+  /* 经期背景高亮 */
+  ctx.fillStyle = 'rgba(217,70,239,0.08)';
+  for (let i = 0; i < state.days.length; i++) {
+    if (isPeriodDay(state.days[i].date)) {
+      const x = pad.left + (i/Math.max(1,total-1))*cw;
+      const dayW = cw/Math.max(1,total-1);
+      ctx.fillRect(x - dayW/2, pad.top, dayW, ch);
+    }
+  }
   ctx.strokeStyle = '#F5D5D5'; ctx.lineWidth = 1; ctx.font = '11px sans-serif'; ctx.fillStyle = '#A8A29E';
   for (let i = 0; i <= 5; i++) {
     const y = pad.top + (ch/5)*i;
@@ -4584,6 +4720,86 @@ function renderPlan() {
   document.getElementById('planStages').innerHTML = stages.map((s,i) =>
     '<div class="stage-card s'+(i+1)+'"><h3>' + s.name + '（' + s.weeks + '）— 目标减 ' + s.target + '</h3><ul>' + s.items.map(it=>'<li>'+it+'</li>').join('') + '</ul></div>'
   ).join('');
+
+  // 体重计划信息
+  const sw = state.startWeight;
+  const twW = state.targetWeight;
+  const swDisplay = sw !== null && sw !== undefined ? (state.unit === '斤' ? (sw * 2).toFixed(1) : sw.toFixed(1)) + ' ' + u : '未设置';
+  const twDisplay = twW !== null && twW !== undefined ? (state.unit === '斤' ? (twW * 2).toFixed(1) : twW.toFixed(1)) + ' ' + u : '未设置';
+  const sfDisplay = state.startFat !== null && state.startFat !== undefined ? state.startFat + '%' : '未设置';
+
+  const weightItems = [
+    { label: '起始体重', value: swDisplay, key: 'startWeight' },
+    { label: '目标体重', value: twDisplay, key: 'targetWeight' },
+    { label: '起始体脂率', value: sfDisplay, key: 'startFat' },
+    { label: '开始日期', value: state.startDate || '未设置', key: 'startDate' },
+    { label: '目标日期', value: state.targetDate || '未设置', key: 'targetDate' },
+  ];
+
+  const planWeightEl = document.getElementById('planWeightInfo');
+  if (planWeightEl) {
+    planWeightEl.innerHTML = weightItems.map(it =>
+      '<div class="plan-item" onclick="editField(\'' + it.key + '\',\'' + it.label + '\')">' +
+      '<span class="plan-item-label">' + it.label + '</span>' +
+      '<span class="plan-item-value">' + it.value + '<span class="plan-item-arrow">›</span></span></div>'
+    ).join('');
+  }
+
+  // 进度统计
+  const today = new Date();
+  const todayStr = localDateStr(today);
+  const todayTime = new Date(todayStr).getTime();
+  let currentDay = 0, remainingDays = 0, totalDays = 0, progressPercent = 0;
+
+  if (state.startDate) {
+    const startTime = new Date(state.startDate).getTime();
+    currentDay = Math.floor((todayTime - startTime) / (24 * 60 * 60 * 1000)) + 1;
+    if (currentDay < 0) currentDay = 0;
+  }
+  if (state.targetDate) {
+    const targetTime = new Date(state.targetDate).getTime();
+    remainingDays = Math.ceil((targetTime - todayTime) / (24 * 60 * 60 * 1000));
+    if (remainingDays < 0) remainingDays = 0;
+  }
+  if (state.startDate && state.targetDate) {
+    const startTime2 = new Date(state.startDate).getTime();
+    const targetTime2 = new Date(state.targetDate).getTime();
+    totalDays = Math.floor((targetTime2 - startTime2) / (24 * 60 * 60 * 1000));
+    if (totalDays > 0) {
+      progressPercent = Math.min(100, Math.round((currentDay / totalDays) * 100));
+    }
+  }
+
+  // 已减体重
+  let lostWeight = 0;
+  let lostWeightStr = '—';
+  if (state.startWeight) {
+    const days = state.days || [];
+    let latestWeight = null;
+    for (let i = days.length - 1; i >= 0; i--) {
+      if (days[i].weightAM) { latestWeight = Number(days[i].weightAM); break; }
+    }
+    if (latestWeight !== null) {
+      lostWeight = Number(state.startWeight) - latestWeight;
+      const displayLost = state.unit === '斤' ? (lostWeight * 2).toFixed(1) : lostWeight.toFixed(1);
+      const sign = lostWeight > 0 ? '-' : lostWeight < 0 ? '+' : '';
+      lostWeightStr = sign + Math.abs(parseFloat(displayLost)) + ' ' + u;
+    }
+  }
+
+  const progressLabelEl = document.getElementById('progressLabel');
+  const progressPercentEl = document.getElementById('progressPercent');
+  const progressBarEl = document.getElementById('progressBar');
+  const statCurrentDayEl = document.getElementById('statCurrentDay');
+  const statRemainingEl = document.getElementById('statRemaining');
+  const statLostEl = document.getElementById('statLost');
+
+  if (progressLabelEl) progressLabelEl.textContent = currentDay + ' / ' + (totalDays || '—') + ' 天';
+  if (progressPercentEl) progressPercentEl.textContent = progressPercent + '%';
+  if (progressBarEl) progressBarEl.style.width = progressPercent + '%';
+  if (statCurrentDayEl) statCurrentDayEl.textContent = currentDay;
+  if (statRemainingEl) statRemainingEl.textContent = remainingDays || '—';
+  if (statLostEl) statLostEl.textContent = lostWeightStr;
 }
 
 function editStartFat() {
@@ -4627,7 +4843,7 @@ function editField(key, label) {
       /* 体重：从当前单位转回kg存储 */
       const v = newVal ? parseFloat(newVal) : null;
       state[key] = v !== null ? (state.unit === '斤' ? v / 2 : v) : null;
-    } else if (['age','height','calGoal','waterGoal','bust','waist','hip'].includes(key)) {
+    } else if (['age','height','calGoal','waterGoal','bust','waist','hip','startFat'].includes(key)) {
       state[key] = newVal ? parseFloat(newVal) : null;
     } else { state[key] = newVal; }
     if (key === 'startDate' || key === 'targetDate') initDays();
@@ -4646,23 +4862,57 @@ function confirmEdit() {
 
 /* ---------- 复盘 ---------- */
 function renderReview() {
-  const u = unitLabel();
   const weeks = Math.ceil(calcTotalDays() / 7);
-  let html = '';
-  for (let w = 0; w < weeks; w++) {
-    const si = w*7, ei = Math.min(si+6, state.days.length-1);
-    const mon = state.days[si], sun = state.days[ei];
-    const wd = state.days.slice(si, ei+1).filter(d => getEffectiveWeight(d) !== null);
-    const mW = getEffectiveWeight(mon), sW = getEffectiveWeight(sun);
-    let wd2 = '—'; if (mW && sW) wd2 = (state.unit === '斤' ? (sW-mW)*2 : (sW-mW)).toFixed(1);
-    let td2 = '—'; if (sW && state.startWeight) td2 = (state.unit === '斤' ? (sW-state.startWeight)*2 : (sW-state.startWeight)).toFixed(1);
-    const stage = getStage(w+1);
-    const bg = stage===1?'var(--rose-50)':stage===2?'var(--mint-l)':'#FCE7F3';
-    const periodDays = state.days.slice(si, ei+1).filter(d => isPeriodDay(d.date)).length;
-    const waterAvg = wd.length ? Math.round(state.days.slice(si, ei+1).reduce((a,d)=>a+(d.water||0),0) / (ei-si+1) * WATER_CUP_ML) : 0;
-    html += '<div class="card review-card" style="background:' + bg + '"><h3>第' + (w+1) + '周（' + (new Date(mon.date).getMonth()+1) + '/' + new Date(mon.date).getDate() + ' - ' + (new Date(sun.date).getMonth()+1) + '/' + new Date(sun.date).getDate() + '）</h3><div class="review-stats"><div class="review-stat">周一: <b>' + (mW?fmtW(mW)+' '+u:'—') + '</b></div><div class="review-stat">周日: <b>' + (sW?fmtW(sW)+' '+u:'—') + '</b></div><div class="review-stat">本周: <b class="' + (wd2!=='—'&&parseFloat(wd2)>0?'red':wd2!=='—'?'mint':'') + '">' + (wd2!=='—'?(parseFloat(wd2)>0?'+':'')+wd2+' '+u:'—') + '</b></div><div class="review-stat">累计: <b class="' + (td2!=='—'&&parseFloat(td2)>0?'red':td2!=='—'?'mint':'') + '">' + (td2!=='—'?(parseFloat(td2)>0?'+':'')+td2+' '+u:'—') + '</b></div><div class="review-stat">记录: <b>' + wd.length + '/' + (ei-si+1) + '</b></div>' + (periodDays?('<div class="review-stat">经期: <b style="color:var(--rose-600)">' + periodDays + '天</b></div>'):'') + '<div class="review-stat">日均水: <b style="color:var(--sky)">' + waterAvg + 'ml</b></div></div><textarea class="review-input" placeholder="本周感想/调整..." oninput="saveReview(' + w + ', this.value)">' + (state.weeklyReview[w]?state.weeklyReview[w].review:'') + '</textarea></div>';
+  const startDate = state.startDate;
+
+  if (!startDate || weeks <= 0) {
+    document.getElementById('reviewList').innerHTML = '';
+    document.getElementById('reviewEmpty').style.display = 'block';
+    document.getElementById('reviewSaveArea').style.display = 'none';
+    return;
   }
+
+  const dayMs = 24 * 60 * 60 * 1000;
+  const startTime = new Date(startDate).getTime();
+  const nowTime = new Date(localDateStr(new Date())).getTime();
+  const totalDays = Math.floor((nowTime - startTime) / dayMs) + 1;
+  const totalWeeks = Math.ceil(Math.max(1, totalDays) / 7);
+
+  let html = '';
+  for (let w = 1; w <= totalWeeks; w++) {
+    const weekStartDay = (w - 1) * 7;
+    const weekEndDay = Math.min(w * 7 - 1, Math.max(0, totalDays - 1));
+    const weekStart = new Date(startTime + weekStartDay * dayMs);
+    const weekEnd = new Date(startTime + weekEndDay * dayMs);
+    const startStr = (weekStart.getMonth() + 1) + '/' + weekStart.getDate();
+    const endStr = (weekEnd.getMonth() + 1) + '/' + weekEnd.getDate();
+
+    let review = '';
+    const weeklyReview = state.weeklyReview || [];
+    for (let i = 0; i < weeklyReview.length; i++) {
+      if (weeklyReview[i] && weeklyReview[i].week === w) {
+        review = weeklyReview[i].review || '';
+        break;
+      }
+    }
+
+    html += '<div class="card" style="margin-bottom:12px">' +
+      '<div class="card-title">第 ' + w + ' 周</div>' +
+      '<div style="font-size:0.72rem;color:#a8a29e;margin-bottom:12px">' + startStr + ' - ' + endStr + '</div>' +
+      '<textarea class="review-textarea" style="width:100%;min-height:100px;padding:12px 14px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:0.85rem;background:#fff;outline:none;line-height:1.6;resize:vertical;box-sizing:border-box;font-family:inherit" ' +
+      'placeholder="这周的感受、变化、调整..." ' +
+      'maxlength="500" ' +
+      'oninput="saveReview(' + (w - 1) + ', this.value)">' + (review || '') + '</textarea>' +
+      '</div>';
+  }
+
   document.getElementById('reviewList').innerHTML = html;
+  document.getElementById('reviewEmpty').style.display = 'none';
+  document.getElementById('reviewSaveArea').style.display = 'block';
+}
+function saveReviewAll() {
+  saveState();
+  showToast('保存成功');
 }
 function saveReview(w, v) {
   if (!state.weeklyReview[w]) state.weeklyReview[w] = {week:w+1, review:''};
@@ -5189,6 +5439,10 @@ function renderKeyList() {
       const phone = info && info.phone ? info.phone : '';
       if (phone.indexOf(searchTerm) === -1) return;
     }
+    /* 状态筛选 */
+    if (keyFilterStatus === 'active' && !(activated || used)) return;
+    if (keyFilterStatus === 'inactive' && (activated || used || revoked)) return;
+    if (keyFilterStatus === 'revoked' && !revoked) return;
     /* 版本状态标签 */
     var phone = info && info.phone ? info.phone : '';
     var versionBadge = '';
@@ -5217,7 +5471,7 @@ function renderKeyList() {
     var userType = '免费用户';
     let toggleBtn;
     if (revoked) {
-      toggleBtn = '<button class="key-toggle key-toggle-revoked" onclick="togglePresetKey(\'' + k + '\')">已停用</button>';
+      toggleBtn = '<button class="key-toggle key-toggle-revoked" onclick="togglePresetKey(\'' + k + '\')">已停用 · 点击恢复</button>';
     } else if (activated || used) {
       toggleBtn = '<button class="key-toggle key-toggle-on" onclick="togglePresetKey(\'' + k + '\')">已启用 · 点击停用</button>';
     } else {
@@ -5304,6 +5558,14 @@ function renderKeyList() {
     html = '<div style="text-align:center;padding:20px;color:var(--text-l);font-size:0.85rem">正在搜索微信用户...</div>';
   }
   document.getElementById('keyList').innerHTML = html;
+  /* 更新密钥总数标签 */
+  var keyCountEl = document.getElementById('keyCountLabel');
+  if (keyCountEl) {
+    var presetCount = PRESET_KEYS.length;
+    var dynamicCount = (searchTerm ? 0 : arr.length);
+    var totalKeyCount = presetCount + dynamicCount;
+    keyCountEl.textContent = '(' + totalKeyCount + ')';
+  }
   /* 更新统计：分别统计免费用户、试用未充值、VIP基础版 */
   const freeCount = PRESET_KEYS.filter(k => pi[k] && pi[k].phone).length + arr.filter(([k,i]) => i.phone).length;
   document.getElementById('adminFree').textContent = freeCount;
@@ -5467,6 +5729,35 @@ function updateProfileBlockBtn(phone) {
     btn.textContent = '🚫 拉黑';
     btn.classList.remove('blocked');
   }
+}
+
+/* 密钥筛选 */
+function filterKeys(status) {
+  keyFilterStatus = status;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.remove('filter-active');
+    b.classList.add('btn-outline');
+  });
+  const activeBtn = document.getElementById('filterBtn' + status.charAt(0).toUpperCase() + status.slice(1));
+  if (activeBtn) {
+    activeBtn.classList.add('filter-active');
+    activeBtn.classList.remove('btn-outline');
+  }
+  renderKeyList();
+}
+
+/* 发送版本更新通知 */
+function sendVersionNotice() {
+  if (!confirm('确定向所有用户发送版本更新通知吗？')) return;
+  var pi = loadPresetInfo();
+  pi.noticeSent = true;
+  pi.noticeVersion = '8';
+  pi.noticeTime = Date.now();
+  localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(pi));
+  savePresetInfo(pi);
+  document.getElementById('noticeStatus').textContent = '通知已发送';
+  document.getElementById('noticeBtn').textContent = '重新通知';
+  showToast('通知已发送');
 }
 
 /* 切换预设密钥启用状态 */
@@ -6303,7 +6594,7 @@ function renderAll() {
   }
   /* 未登录则显示登录门，默认用户登录区（手机号+密钥） */
   document.getElementById('gate').style.display = 'flex';
-  switchGate('user');
+  switchGateTab(1);
   setTimeout(() => { const el = document.getElementById('keyInput'); if (el) el.focus(); }, 100);
 })();
 
@@ -6425,6 +6716,25 @@ function openBeautyUpgrade() {
 
 function payBeautyUpgrade() {
   showPurchaseNotice();
+}
+
+function switchPayTab(tab) {
+  document.getElementById('payContentBasic').style.display = tab === 'basic' ? 'block' : 'none';
+  document.getElementById('payContentUpgrade').style.display = tab === 'upgrade' ? 'block' : 'none';
+  document.getElementById('payTabBasic').classList.toggle('tab-active', tab === 'basic');
+  document.getElementById('payTabUpgrade').classList.toggle('tab-active', tab === 'upgrade');
+  // tab-active 样式通过js动态设置
+  if (tab === 'basic') {
+    document.getElementById('payTabBasic').style.cssText = 'color:#fff;background:linear-gradient(135deg,#ec4899,#f43f5e);box-shadow:0 2px 8px rgba(236,72,153,0.3)';
+    document.getElementById('payTabUpgrade').style.cssText = 'color:#78716c;background:#f5f5f4;box-shadow:none';
+  } else {
+    document.getElementById('payTabUpgrade').style.cssText = 'color:#fff;background:linear-gradient(135deg,#8b5cf6,#ec4899);box-shadow:0 2px 8px rgba(139,92,246,0.3)';
+    document.getElementById('payTabBasic').style.cssText = 'color:#78716c;background:#f5f5f4;box-shadow:none';
+  }
+}
+
+function payBasic() {
+  showToast('基础版支付功能即将开通，请联系客服');
 }
 function confirmBeautyUpgrade() {
   document.getElementById('purchaseNoticeModal').classList.remove('show');
