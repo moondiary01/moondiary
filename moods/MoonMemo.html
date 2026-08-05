@@ -3181,6 +3181,7 @@ function logout() {
   sessionStorage.removeItem(SESSION_KEY);
   sessionStorage.removeItem(SESSION_PHONE);
   sessionStorage.removeItem(ADMIN_SESSION);
+  sessionStorage.removeItem('admin_sim_basic'); /* 清除管理员模拟购买标记 */
   /* 清理月友圈缓存，确保重新登录后从云端拉取最新数据 */
   commAllPosts = null;
   _lastCloudVersion = 0;
@@ -3903,10 +3904,19 @@ function refreshBeautyEntryUI() {
   var basicEntry = document.getElementById('basicPlanEntry'); /* 19.9元购买入口 */
   
   if (isAdminUser()) {
-    /* 管理员：全部显示，方便调试 */
-    if (quickBtns) quickBtns.style.display = 'flex';
-    if (bottomCard) bottomCard.style.display = '';
-    if (basicEntry) basicEntry.style.display = 'none';
+    /* 管理员：模拟试用用户流程 */
+    var adminSimulated = sessionStorage.getItem('admin_sim_basic') === '1';
+    if (adminSimulated) {
+      /* 已模拟购买：全显示 */
+      if (quickBtns) quickBtns.style.display = 'flex';
+      if (bottomCard) bottomCard.style.display = '';
+      if (basicEntry) basicEntry.style.display = 'none';
+    } else {
+      /* 未模拟购买：显示19.9入口+快捷入口+底部卡片（模拟试用用户） */
+      if (quickBtns) quickBtns.style.display = 'flex';
+      if (bottomCard) bottomCard.style.display = '';
+      if (basicEntry) basicEntry.style.display = '';
+    }
     return;
   }
   
@@ -3978,7 +3988,14 @@ function openBasicPlanFromHero() {
 function purchaseBasicPlan() {
   document.getElementById('trialExpiredModal').classList.remove('show');
   var phone = getCurrentPhone();
-  if (!phone || phone === 'local' || phone === 'admin') {
+  /* 管理员模拟购买：不走真实支付，直接标记并刷新UI */
+  if (isAdminUser()) {
+    sessionStorage.setItem('admin_sim_basic', '1');
+    showToast(' 普通版已开通（管理员模拟），永久有效');
+    refreshBeautyEntryUI();
+    return;
+  }
+  if (!phone || phone === 'local') {
     showToast('请先登录手机号');
     return;
   }

@@ -208,7 +208,7 @@ Page({
       hideBeautyEntry: app.globalData.canUseUpgrade && app.globalData.loginType !== 'admin',
       showBeautyQuick: app.globalData.canUseUpgrade || app.globalData.loginType === 'admin' || app.globalData.loginType === 'key',
       canSeeUpgrade: app.globalData.canUseUpgrade || app.globalData.isPaid || app.globalData.loginType === 'admin' || app.globalData.loginType === 'key',
-      showBasicPlanEntry: !app.globalData.canUseUpgrade && !app.globalData.isPaid && app.globalData.loginType !== 'admin' && app.globalData.loginType !== 'key',
+      showBasicPlanEntry: (!app.globalData.canUseUpgrade && !app.globalData.isPaid && app.globalData.loginType !== 'key') || app.globalData.loginType === 'admin',
       dayData: todayData,
       waterMl: waterMl,
       waterGoal: waterGoal,
