@@ -42,25 +42,6 @@
     </view>
   </view>
 
-  <!-- 三围记录 -->
-  <view class="card">
-    <view class="card-title">三围记录</view>
-    <view class="measure-row">
-      <view class="measure-item" bindtap="onEditMeasure" data-field="bust">
-        <text class="measure-label">胸围</text>
-        <text class="measure-value">{{bust || '--'}} <text class="measure-unit">cm</text></text>
-      </view>
-      <view class="measure-item" bindtap="onEditMeasure" data-field="waist">
-        <text class="measure-label">腰围</text>
-        <text class="measure-value">{{waist || '--'}} <text class="measure-unit">cm</text></text>
-      </view>
-      <view class="measure-item" bindtap="onEditMeasure" data-field="hip">
-        <text class="measure-label">臀围</text>
-        <text class="measure-value">{{hip || '--'}} <text class="measure-unit">cm</text></text>
-      </view>
-    </view>
-  </view>
-
   <!-- 数据统计 -->
   <view class="card">
     <view class="card-title">📊 数据统计</view>
@@ -100,6 +81,18 @@
       <view class="stat-item">
         <text class="stat-val mint">{{statFatDiff || '—'}}</text>
         <text class="stat-lbl">体脂变化</text>
+      </view>
+      <view class="stat-item" bindtap="onEditMeasure" data-field="bust">
+        <text class="stat-val rose">{{bust || '—'}}</text>
+        <text class="stat-lbl">胸围 cm</text>
+      </view>
+      <view class="stat-item" bindtap="onEditMeasure" data-field="waist">
+        <text class="stat-val rose">{{waist || '—'}}</text>
+        <text class="stat-lbl">腰围 cm</text>
+      </view>
+      <view class="stat-item" bindtap="onEditMeasure" data-field="hip">
+        <text class="stat-val rose">{{hip || '—'}}</text>
+        <text class="stat-lbl">臀围 cm</text>
       </view>
     </view>
   </view>

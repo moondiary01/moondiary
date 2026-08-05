@@ -33,24 +33,28 @@
       <view class="card-title">基础版权益</view>
       <view class="benefit-list">
         <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">全部功能解锁</text>
+          <text class="benefit-icon">💾</text>
+          <text class="benefit-text">永久云端数据存储</text>
         </view>
         <view class="benefit-item">
-          <text class="benefit-icon">☁️</text>
-          <text class="benefit-text">云端数据同步</text>
+          <text class="benefit-icon">📊</text>
+          <text class="benefit-text">体重趋势图表</text>
         </view>
         <view class="benefit-item">
           <text class="benefit-icon">📅</text>
-          <text class="benefit-text">经期日历</text>
+          <text class="benefit-text">经期日历追踪</text>
         </view>
         <view class="benefit-item">
-          <text class="benefit-icon">📷</text>
-          <text class="benefit-text">照片上传</text>
+          <text class="benefit-icon">🏃</text>
+          <text class="benefit-text">运动饮食打卡</text>
         </view>
         <view class="benefit-item">
-          <text class="benefit-icon">📤</text>
-          <text class="benefit-text">数据导出</text>
+          <text class="benefit-icon">📝</text>
+          <text class="benefit-text">每日心情日记</text>
+        </view>
+        <view class="benefit-item">
+          <text class="benefit-icon">📸</text>
+          <text class="benefit-text">照片上传记录</text>
         </view>
       </view>
     </view>
