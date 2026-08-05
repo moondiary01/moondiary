@@ -1,161 +1,112 @@
 /* pages/review/review.wxss */
 .review-page {
-  padding-bottom: 40rpx;
+  padding: 20rpx 0 40rpx;
+  background: var(--bg);
+  min-height: 100vh;
 }
+
 .review-tip {
   text-align: center;
   font-size: 26rpx;
   color: var(--text-l);
-  padding: 20rpx;
+  padding: 20rpx 32rpx 10rpx;
+  line-height: 1.6;
 }
 
-/* 导出按钮 */
-.export-bar {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 24rpx 8rpx;
+/* 周卡片 */
+.review-card {
+  margin-bottom: 20rpx;
 }
-.export-btn {
-  font-size: 24rpx;
-  padding: 12rpx 24rpx;
-}
-
-/* 每周卡片 */
-.review-week-card {
-  position: relative;
-  overflow: hidden;
-}
-.review-week-card.stage-s1 {
-  border-left: 6rpx solid var(--rose-300);
-}
-.review-week-card.stage-s2 {
-  border-left: 6rpx solid var(--rose-500);
-}
-.review-week-card.stage-s3 {
-  border-left: 6rpx solid var(--rose-700);
-}
-
-.week-header {
-  margin-bottom: 16rpx;
-}
-.week-title-row {
+.review-header {
   display: flex;
   align-items: baseline;
-  gap: 12rpx;
-}
-.week-num {
-  font-size: 32rpx;
-  font-weight: 800;
-  color: var(--ink);
-}
-.week-date {
-  font-size: 24rpx;
-  color: var(--text-l);
-}
-.week-stage {
-  font-size: 20rpx;
-  padding: 2rpx 12rpx;
-  border-radius: 8rpx;
-  background: var(--rose-100);
-  color: var(--rose-600);
-  font-weight: 600;
-  margin-left: auto;
-}
-
-/* 每周统计网格 */
-.week-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10rpx;
+  gap: 16rpx;
   margin-bottom: 16rpx;
 }
-.week-stat-item {
-  text-align: center;
-  padding: 10rpx 4rpx;
-  background: var(--rose-50);
-  border-radius: 16rpx;
+.review-week-num {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--rose-600);
 }
-.week-stat-lbl {
-  font-size: 20rpx;
+.review-week-date {
+  font-size: 26rpx;
   color: var(--text-l);
-  display: block;
+}
+
+/* 统计网格 */
+.review-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+.review-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.6);
+  border-radius: 20rpx;
+  padding: 12rpx 20rpx;
+  min-width: 120rpx;
+}
+.review-stat-label {
+  font-size: 22rpx;
+  color: var(--text-l);
   margin-bottom: 4rpx;
 }
-.week-stat-val {
-  font-size: 26rpx;
+.review-stat-val {
+  font-size: 30rpx;
   font-weight: 700;
-  color: var(--ink);
+  color: var(--rose-600);
 }
-.week-stat-val.good { color: var(--mint); }
-.week-stat-val.bad { color: #ef4444; }
+.review-stat-val.red {
+  color: var(--rose-500);
+}
+.review-stat-val.mint {
+  color: var(--mint);
+}
+.review-stat-period {
+  color: var(--rose-600) !important;
+}
+.review-stat-water {
+  color: var(--sky) !important;
+}
 
 /* 文本框 */
-.textarea {
+.review-textarea {
   width: 100%;
-  min-height: 120rpx;
+  min-height: 100rpx;
   padding: 16rpx;
   border: 2rpx solid var(--border);
-  border-radius: 16rpx;
+  border-radius: 24rpx;
   font-size: 28rpx;
-  color: var(--ink);
-  background: #fafaf9;
+  color: var(--text);
+  background: var(--card);
   box-sizing: border-box;
+  line-height: 1.6;
+}
+
+/* 保存按钮 */
+.review-save-btn {
+  margin-top: 16rpx;
+  width: 100%;
+}
+
+/* 导出区域 */
+.review-export-bar {
+  padding: 20rpx 32rpx 40rpx;
+  text-align: center;
+}
+.review-export-bar .btn {
+  width: 100%;
+  font-size: 30rpx;
+  padding: 28rpx;
 }
 
 /* 空状态 */
-.empty-state {
+.review-empty {
   text-align: center;
   padding: 100rpx 40rpx;
-}
-.empty-icon { font-size: 80rpx; display: block; margin-bottom: 20rpx; }
-.empty-text { font-size: 30rpx; color: var(--text-l); display: block; margin-bottom: 8rpx; }
-.empty-sub { font-size: 24rpx; color: #c4b5fd; display: block; }
-
-/* 保存 */
-.save-area {
-  padding: 20rpx 24rpx;
-}
-
-/* 导出弹窗 */
-.export-modal {
-  width: 90%;
-  max-height: 70vh;
-}
-.export-preview {
-  padding: 20rpx;
-  background: var(--bg);
-  border-radius: 16rpx;
-  margin-bottom: 20rpx;
-}
-.export-title {
-  font-size: 32rpx;
-  font-weight: 800;
-  color: var(--rose-600);
-  text-align: center;
-}
-.export-subtitle {
-  font-size: 24rpx;
   color: var(--text-l);
-  text-align: center;
-  margin-top: 4rpx;
-}
-.export-divider {
-  height: 2rpx;
-  background: var(--border);
-  margin: 16rpx 0;
-}
-.export-week-item {
-  padding: 12rpx 0;
-  border-bottom: 1rpx solid var(--border);
-}
-.export-week-title {
-  font-size: 26rpx;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 6rpx;
-}
-.export-week-review {
-  font-size: 24rpx;
-  color: var(--text-l);
-  line-height: 1.6;
+  font-size: 28rpx;
 }

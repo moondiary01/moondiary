@@ -6,9 +6,7 @@ Page({
   data: {
     weekList: [],
     userName: '',
-    todayStr: '',
-    showExportModal: false,
-    exportWeeks: []
+    todayStr: ''
   },
 
   onLoad: function () {
@@ -24,188 +22,280 @@ Page({
   },
 
   loadData: function () {
-    var self = this
-    var state = app.globalData.state
-
-    if (!state) {
-      store.loadState(app.globalData.userKey, function (data) {
-        if (data) {
-          app.globalData.state = data
-          self.buildWeekList(data)
-        }
-      })
-    } else {
-      self.buildWeekList(state)
-    }
-  },
-
-  buildWeekList: function (state) {
-    var startDate = state.startDate
-    if (!startDate) {
+    var state = store.loadState(app.globalData.userKey)
+    if (!state || !state.startDate) {
       this.setData({ weekList: [] })
       return
     }
-
-    var days = state.days || []
-    var weeklyReview = state.weeklyReview || []
-    var periods = state.periods || []
-    var startTime = new Date(startDate).getTime()
-    var nowTime = new Date(store.localDateStr(new Date())).getTime()
-    var dayMs = 24 * 60 * 60 * 1000
-    var totalDays = Math.floor((nowTime - startTime) / dayMs) + 1
-    if (totalDays < 1) totalDays = 1
-
-    var totalWeeks = Math.ceil(totalDays / 7)
-    var weekList = []
     var unit = state.unit || '斤'
-    var toDisplay = function (v) {
-      if (v === null || v === undefined) return '—'
-      return unit === '斤' ? (Number(v) * 2).toFixed(1) : Number(v).toFixed(1)
-    }
+    var totalDays = this.calcTotalDays(state)
+    var weeks = Math.ceil(totalDays / 7)
+    var weekList = []
 
-    // 累计起始体重（用于计算累计变化）
-    var startWeight = state.startWeight ? Number(state.startWeight) : null
+    for (var w = 0; w < weeks; w++) {
+      var si = w * 7
+      var ei = Math.min(si + 6, (state.days || []).length - 1)
+      if (ei < si) continue
+      var mon = state.days[si]
+      var sun = state.days[ei]
+      if (!mon || !sun) continue
 
-    for (var w = 1; w <= totalWeeks; w++) {
-      var weekStartDay = (w - 1) * 7
-      var weekEndDay = Math.min(w * 7 - 1, totalDays - 1)
-      var weekStartDate = new Date(startTime + weekStartDay * dayMs)
-      var weekEndDate = new Date(startTime + weekEndDay * dayMs)
+      var mW = this.getEffectiveWeight(mon)
+      var sW = this.getEffectiveWeight(sun)
+      var weekDays = state.days.slice(si, ei + 1)
+      var wd = weekDays.filter(function(d) { return this.getEffectiveWeight(d) !== null }.bind(this))
 
-      var startStr = (weekStartDate.getMonth() + 1) + '/' + weekStartDate.getDate()
-      var endStr = (weekEndDate.getMonth() + 1) + '/' + weekEndDate.getDate()
+      // 周一/周日体重
+      var mondayWeight = mW !== null ? this.fmtW(mW, unit) : '—'
+      var sundayWeight = sW !== null ? this.fmtW(sW, unit) : '—'
 
-      // 统计本周数据
-      var monWeight = null, sunWeight = null
-      var recordDays = 0, periodDays = 0, totalWater = 0, waterCount = 0
-
-      for (var d = weekStartDay; d <= weekEndDay; d++) {
-        var dayData = days[d]
-        if (!dayData) continue
-
-        // 周一晨重（本周第一条有weightAM的记录）
-        if (dayData.weightAM && monWeight === null) {
-          monWeight = Number(dayData.weightAM)
-        }
-        // 周日晨重（最后一条）
-        if (dayData.weightAM) {
-          sunWeight = Number(dayData.weightAM)
-        }
-
-        if (dayData.weightAM || dayData.weightPM) recordDays++
-
-        // 经期天数
-        for (var p = 0; p < periods.length; p++) {
-          var pStart = periods[p].start
-          var pEnd = periods[p].end || pStart
-          if (dayData.date >= pStart && dayData.date <= pEnd) {
-            periodDays++
-            break
-          }
-        }
-
-        // 饮水统计
-        if (dayData.waterCups && dayData.waterCups.length > 0) {
-          totalWater += dayData.waterCups.length * 200
-          waterCount += dayData.waterCups.length
-        }
+      // 本周变化
+      var weekChange = '—'
+      var weekChangeColor = ''
+      if (mW !== null && sW !== null) {
+        var wdVal = unit === '斤' ? (sW - mW) * 2 : sW - mW
+        weekChange = (wdVal > 0 ? '+' : '') + wdVal.toFixed(1) + ' ' + unit
+        weekChangeColor = wdVal > 0 ? 'red' : 'mint'
       }
 
-      var avgWater = waterCount > 0 ? Math.round(totalWater / waterCount * (waterCount / recordDays || 1)) : 0
-      var weekDiff = (monWeight !== null && sunWeight !== null) ? (sunWeight - monWeight) : null
-      var cumDiff = (startWeight !== null && sunWeight !== null) ? (sunWeight - startWeight) : null
-
-      // 阶段标签
-      var stageLabel = ''
-      var stageClass = ''
-      if (w <= 4) { stageLabel = '适应期'; stageClass = 'stage-s1' }
-      else if (w <= 8) { stageLabel = '加速期'; stageClass = 'stage-s2' }
-      else { stageLabel = '巩固期'; stageClass = 'stage-s3' }
-
-      var review = ''
-      for (var i = 0; i < weeklyReview.length; i++) {
-        if (weeklyReview[i] && weeklyReview[i].week === w) {
-          review = weeklyReview[i].review || ''
-          break
-        }
+      // 累计变化
+      var totalChange = '—'
+      var totalChangeColor = ''
+      if (sW !== null && state.startWeight !== null) {
+        var tdVal = unit === '斤' ? (sW - state.startWeight) * 2 : sW - state.startWeight
+        totalChange = (tdVal > 0 ? '+' : '') + tdVal.toFixed(1) + ' ' + unit
+        totalChangeColor = tdVal > 0 ? 'red' : 'mint'
       }
 
-      var hasStats = monWeight !== null || sunWeight !== null || recordDays > 0
+      // 记录天数
+      var recordDays = wd.length + '/' + (ei - si + 1)
+
+      // 经期天数
+      var periodDays = 0
+      weekDays.forEach(function(d) {
+        if (d.date && this.isPeriodDay(state, d.date)) periodDays++
+      }.bind(this))
+
+      // 日均饮水
+      var waterSum = weekDays.reduce(function(a, d) { return a + (d.water || 0) }, 0)
+      var waterAvg = wd.length ? Math.round(waterSum / (ei - si + 1) * (store.WATER_CUP_ML || 200)) : 0
+
+      // 阶段着色
+      var stage = this.getStage(w + 1, totalDays)
+      var bg = stage === 1 ? '#FAF5FF' : stage === 2 ? '#D1FAE5' : '#FCE7F3'
+
+      // 日期范围
+      var dateRange = this.formatDate(mon.date) + ' - ' + this.formatDate(sun.date)
 
       weekList.push({
         week: w,
-        dateRange: startStr + ' - ' + endStr,
-        review: review,
-        stageLabel: stageLabel,
-        stageClass: stageClass,
-        hasStats: hasStats,
-        monWeight: monWeight !== null ? toDisplay(monWeight) : '—',
-        sunWeight: sunWeight !== null ? toDisplay(sunWeight) : '—',
-        weekDiff: weekDiff !== null ? (weekDiff >= 0 ? '+' : '') + toDisplay(Math.abs(weekDiff)) : '—',
-        weekDiffClass: weekDiff !== null && weekDiff < 0 ? 'good' : 'bad',
-        cumDiff: cumDiff !== null ? (cumDiff >= 0 ? '+' : '') + toDisplay(Math.abs(cumDiff)) : '—',
-        cumDiffClass: cumDiff !== null && cumDiff < 0 ? 'good' : 'bad',
+        weekNum: w + 1,
+        dateRange: dateRange,
+        mondayWeight: mondayWeight,
+        sundayWeight: sundayWeight,
+        weekChange: weekChange,
+        weekChangeColor: weekChangeColor,
+        totalChange: totalChange,
+        totalChangeColor: totalChangeColor,
         recordDays: recordDays,
         periodDays: periodDays,
-        avgWater: avgWater
+        waterAvg: waterAvg,
+        bg: bg,
+        review: (state.weeklyReview && state.weeklyReview[w]) ? state.weeklyReview[w].review || '' : ''
       })
     }
 
-    var userName = state.name || ''
-    var now = new Date()
-    var todayStr = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate()
-
-    this.setData({ weekList: weekList, userName: userName, todayStr: todayStr })
+    this.setData({ weekList: weekList })
   },
 
-  onReviewInput: function (e) {
-    var index = e.currentTarget.dataset.index
-    var value = e.detail.value
-    var key = 'weekList[' + index + '].review'
-    var obj = {}
-    obj[key] = value
-    this.setData(obj)
+  calcTotalDays: function(state) {
+    if (!state.startDate) return 0
+    var start = new Date(state.startDate)
+    var target = state.targetDate ? new Date(state.targetDate) : null
+    if (!target || target <= start) return 100
+    return Math.ceil((target - start) / 86400000)
   },
 
-  onSave: function () {
-    var state = app.globalData.state
-    var weekList = this.data.weekList
-    var weeklyReview = []
-    for (var i = 0; i < weekList.length; i++) {
-      weeklyReview.push({ week: weekList[i].week, review: weekList[i].review })
+  getEffectiveWeight: function(day) {
+    if (!day) return null
+    if (day.weightAM !== null && day.weightAM !== undefined) return day.weightAM
+    if (day.weightPM !== null && day.weightPM !== undefined) return day.weightPM
+    return null
+  },
+
+  fmtW: function(w, unit) {
+    if (w === null || w === undefined) return '—'
+    return unit === '斤' ? (w * 2).toFixed(1) : w.toFixed(1)
+  },
+
+  formatDate: function(dateStr) {
+    if (!dateStr) return '—'
+    var d = new Date(dateStr)
+    return (d.getMonth() + 1) + '/' + d.getDate()
+  },
+
+  isPeriodDay: function(state, dateStr) {
+    if (!state.periods || !state.periods.length) return false
+    for (var i = 0; i < state.periods.length; i++) {
+      var p = state.periods[i]
+      var start = new Date(p.start)
+      var end = p.end ? new Date(p.end) : new Date(p.start)
+      var d = new Date(dateStr)
+      d.setHours(0, 0, 0, 0)
+      start.setHours(0, 0, 0, 0)
+      end.setHours(0, 0, 0, 0)
+      if (d >= start && d <= end) return true
     }
-    state.weeklyReview = weeklyReview
-    app.globalData.state = state
-    store.saveState(app.globalData.userKey, state)
-    wx.showToast({ title: '保存成功', icon: 'success' })
+    return false
   },
 
-  // 导出
-  onExport: function () {
-    var weeks = this.data.weekList.filter(function (w) { return w.review })
-    if (weeks.length === 0) {
-      wx.showToast({ title: '暂无复盘内容可导出', icon: 'none' })
+  getStage: function(week, totalDays) {
+    var tw = Math.ceil(totalDays / 7)
+    if (tw <= 3) return week <= 1 ? 1 : (week <= 2 ? 2 : 3)
+    if (week <= Math.ceil(tw * 0.25)) return 1
+    if (week <= Math.ceil(tw * 0.75)) return 2
+    return 3
+  },
+
+  onReviewInput: function(e) {
+    var weekIdx = parseInt(e.currentTarget.dataset.week)
+    var value = e.detail.value
+    var list = this.data.weekList
+    if (list[weekIdx]) list[weekIdx].review = value
+    this.setData({ weekList: list })
+    // 自动保存
+    this.autoSaveReview(weekIdx, value)
+  },
+
+  saveReview: function(e) {
+    var weekIdx = parseInt(e.currentTarget.dataset.week)
+    var value = this.data.weekList[weekIdx].review
+    this.autoSaveReview(weekIdx, value)
+    wx.showToast({ title: '已保存', icon: 'success', duration: 1000 })
+  },
+
+  autoSaveReview: function(weekIdx, value) {
+    if (this._saveTimer) clearTimeout(this._saveTimer)
+    this._saveTimer = setTimeout(function() {
+      var state = store.loadState(app.globalData.userKey)
+      if (!state) return
+      if (!state.weeklyReview) state.weeklyReview = []
+      if (!state.weeklyReview[weekIdx]) state.weeklyReview[weekIdx] = { week: weekIdx + 1, review: '' }
+      state.weeklyReview[weekIdx].review = value
+      store.saveState(app.globalData.userKey, state)
+    }.bind(this), 400)
+  },
+
+  exportReviewImage: function () {
+    var self = this
+    var list = this.data.weekList
+    if (!list.length) {
+      wx.showToast({ title: '暂无复盘数据', icon: 'none' })
       return
     }
-    this.setData({ showExportModal: true, exportWeeks: weeks })
-  },
 
-  onCloseExport: function () {
-    this.setData({ showExportModal: false })
-  },
-
-  onCopyExport: function () {
-    var weeks = this.data.exportWeeks
-    var text = 'Moon Memo 周度复盘\n' + this.data.userName + ' · ' + this.data.todayStr + '\n---\n'
-    for (var i = 0; i < weeks.length; i++) {
-      text += '第' + weeks[i].week + '周 (' + weeks[i].dateRange + ')\n'
-      text += (weeks[i].review || '暂无') + '\n\n'
+    // 使用当前周或第一周
+    var curWeekIdx = 0
+    var state = store.loadState(app.globalData.userKey)
+    if (state && state.startDate) {
+      var start = new Date(state.startDate)
+      var today = new Date()
+      today.setHours(0, 0, 0, 0)
+      curWeekIdx = Math.min(list.length - 1, Math.max(0, Math.floor((today - start) / 86400000 / 7)))
     }
-    wx.setClipboardData({
-      data: text,
-      success: function () {
-        wx.showToast({ title: '已复制到剪贴板', icon: 'success' })
-      }
+    var weekData = list[curWeekIdx]
+
+    var cw = 760, ch = 720
+    var dpr = 2
+    var ctx = wx.createCanvasContext('reviewExportCanvas', this)
+
+    if (!ctx) {
+      wx.showToast({ title: '当前环境不支持导出', icon: 'none' })
+      return
+    }
+
+    ctx.scale(dpr, dpr)
+
+    // 渐变背景
+    var g = ctx.createLinearGradient(0, 0, cw, 0)
+    g.addColorStop(0, '#7C3AED')
+    g.addColorStop(0.4, '#C026D3')
+    g.addColorStop(0.8, '#EC4899')
+    g.addColorStop(1, '#FECDD3')
+    ctx.setFillStyle(g)
+    ctx.fillRect(0, 0, cw, ch)
+
+    // 标题
+    ctx.setFillStyle('#fff')
+    ctx.setFontSize(30)
+    ctx.setTextAlign('left')
+    ctx.fillText((state && state.name ? state.name : 'MoonMemo') + '的月亮日记', 30, 50)
+    ctx.setFontSize(15)
+    ctx.setGlobalAlpha(0.85)
+    ctx.fillText('第' + weekData.weekNum + '周复盘报表 · ' + weekData.dateRange, 30, 76)
+    ctx.setGlobalAlpha(1)
+
+    // 白色内容区
+    ctx.setFillStyle('#fff')
+    ctx.fillRect(20, 100, cw - 40, ch - 130)
+    ctx.setFillStyle('#1C1917')
+    var y = 140
+    ctx.setFontSize(18)
+    ctx.fillText('本周数据总览', 40, y)
+    y += 28
+    ctx.setFontSize(14)
+    ctx.setFillStyle('#57534E')
+
+    var rows = [
+      ['周一体重', weekData.mondayWeight],
+      ['周日体重', weekData.sundayWeight],
+      ['本周变化', weekData.weekChange],
+      ['累计变化', weekData.totalChange],
+      ['记录天数', weekData.recordDays],
+      ['日均饮水', weekData.waterAvg + 'ml']
+    ]
+    rows.forEach(function(r) {
+      ctx.setFillStyle('#A8A29E')
+      ctx.fillText(r[0], 50, y)
+      ctx.setFillStyle('#1C1917')
+      ctx.fillText(r[1], 200, y)
+      y += 24
+    })
+
+    y += 10
+    ctx.setFillStyle('#1C1917')
+    ctx.setFontSize(16)
+    ctx.fillText('本周感想', 40, y)
+    y += 18
+    ctx.setFillStyle('#57534E')
+    ctx.setFontSize(13)
+    var review = weekData.review || '（未填写）'
+    ctx.fillText(review, 50, y)
+
+    ctx.setFillStyle('#A8A29E')
+    ctx.setFontSize(11)
+    ctx.fillText('MoonMemo 月亮日记 · ' + new Date().toLocaleDateString('zh-CN'), 40, ch - 25)
+
+    ctx.draw(false, function() {
+      wx.canvasToTempFilePath({
+        canvasId: 'reviewExportCanvas',
+        destWidth: cw * dpr,
+        destHeight: ch * dpr,
+        success: function(res) {
+          wx.saveImageToPhotosAlbum({
+            filePath: res.tempFilePath,
+            success: function() {
+              wx.showToast({ title: '图片已保存到相册', icon: 'success' })
+            },
+            fail: function() {
+              wx.showToast({ title: '保存失败，请授权相册权限', icon: 'none' })
+            }
+          })
+        },
+        fail: function() {
+          wx.showToast({ title: '导出失败', icon: 'none' })
+        }
+      })
     })
   }
 })

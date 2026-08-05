@@ -1,157 +1,134 @@
 /* pages/pay/pay.wxss */
 .pay-page {
   min-height: 100vh;
-  padding-bottom: 140rpx;
+  background: var(--bg);
+  padding: 20rpx 0 40rpx;
 }
 
-/* 头部 */
-.pay-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 60rpx 0 40rpx;
-}
-.pay-header-icon {
-  font-size: 80rpx;
-  margin-bottom: 16rpx;
-}
-.pay-header-title {
-  font-size: 40rpx;
-  font-weight: 700;
-  color: #1c1917;
-}
-
-/* Tab切换 */
+/* Tab */
 .pay-tabs {
   display: flex;
-  margin: 0 24rpx 24rpx;
-  gap: 16rpx;
+  margin: 0 32rpx 20rpx;
+  background: var(--card);
+  border-radius: 24rpx;
+  padding: 8rpx;
+  box-shadow: var(--shadow);
 }
-
 .pay-tab {
   flex: 1;
   text-align: center;
-  padding: 22rpx 0;
-  font-size: 28rpx;
+  padding: 24rpx 0;
+  font-size: 30rpx;
   font-weight: 600;
-  color: #78716c;
-  border-radius: 16rpx;
-  background: #f5f5f4;
+  color: var(--text-l);
+  border-radius: 20rpx;
   transition: all 0.2s;
 }
-
-.tab-active {
+.pay-tab.active {
+  background: var(--grad-hero);
   color: #fff;
-  background: linear-gradient(135deg, #ec4899, #f43f5e);
-  box-shadow: 0 4rpx 16rpx rgba(236, 72, 153, 0.3);
 }
 
-/* 价格卡片 */
-.price-card {
+/* 付费卡片 */
+.pay-content {
+  padding: 0 32rpx;
+}
+.pay-card {
+  background: var(--card);
+  border-radius: 40rpx;
+  padding: 48rpx 32rpx 32rpx;
   text-align: center;
+  box-shadow: var(--shadow-lg);
+  border: 2rpx solid var(--border);
 }
-
-.price-card-basic {
-  background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+.pay-card-upgrade {
+  border-color: var(--rose-300);
+  box-shadow: 0 32rpx 80rpx rgba(124,58,237,0.15);
 }
-
-.price-card-upgrade {
-  background: linear-gradient(135deg, #ede9fe, #fce7f3, #fef3c7);
-  position: relative;
-  overflow: hidden;
+.pay-card-header {
+  margin-bottom: 32rpx;
 }
-
-.upgrade-badge {
-  display: inline-block;
-  padding: 8rpx 28rpx;
-  border-radius: 100rpx;
-  background: linear-gradient(135deg, #8b5cf6, #ec4899);
-  color: #fff;
-  font-size: 24rpx;
-  font-weight: 600;
-  margin-bottom: 16rpx;
+.pay-card-title {
+  font-size: 72rpx;
+  font-weight: 900;
+  color: var(--ink);
+  display: block;
+  line-height: 1;
 }
-
-.price-amount {
-  font-size: 56rpx;
-  font-weight: 700;
-  color: #ec4899;
-}
-
-.price-card-upgrade .price-amount {
-  background: linear-gradient(135deg, #8b5cf6, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.price-desc {
-  font-size: 28rpx;
-  color: #78716c;
-  margin-top: 12rpx;
-}
-
-/* 权益列表 */
-.benefit-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
-}
-
-.benefit-section {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: #8b5cf6;
-  margin-top: 16rpx;
-  padding-bottom: 12rpx;
-  border-bottom: 2rpx solid #f5f3ff;
-}
-
-.benefit-section:first-child {
-  margin-top: 0;
-}
-
-.benefit-item {
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-}
-.benefit-icon {
+.pay-card-sub {
   font-size: 32rpx;
-}
-.benefit-text {
-  font-size: 28rpx;
-  color: #44403c;
+  color: var(--text-l);
+  display: block;
+  margin-top: 8rpx;
+  font-weight: 600;
 }
 
-/* 入口按钮 */
-.entry-btn {
-  font-size: 28rpx;
-  color: #ec4899;
-  padding: 24rpx 0;
-  text-align: center;
-  border-bottom: 2rpx solid #f3f4f6;
+/* 权益 */
+.pay-benefits {
+  text-align: left;
+  margin-bottom: 32rpx;
+  padding: 24rpx;
+  background: var(--rose-50);
+  border-radius: 24rpx;
 }
-.entry-btn:last-child {
+.pay-benefit-item {
+  font-size: 28rpx;
+  color: var(--text);
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid var(--rose-200);
+}
+.pay-benefit-item:last-child {
   border-bottom: none;
 }
 
-/* 底部支付 */
-.pay-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 20rpx 24rpx;
-  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  background: #fff;
-  box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.06);
-}
+/* 按钮 */
 .pay-btn {
+  width: 100%;
+  padding: 32rpx;
   font-size: 32rpx;
-  padding: 24rpx 0;
+  font-weight: 700;
+  border-radius: 32rpx;
+  margin-bottom: 16rpx;
 }
-
 .pay-btn-upgrade {
   background: linear-gradient(135deg, #8b5cf6, #ec4899) !important;
-  box-shadow: 0 8rpx 24rpx rgba(139, 92, 246, 0.3);
+  box-shadow: 0 8rpx 32rpx rgba(139,92,246,0.35);
+}
+
+.pay-note {
+  font-size: 24rpx;
+  color: var(--text-l);
+  letter-spacing: 1rpx;
+}
+
+/* 链接 */
+.pay-links {
+  display: flex;
+  justify-content: center;
+  gap: 48rpx;
+  margin-top: 32rpx;
+}
+.pay-link {
+  font-size: 26rpx;
+  color: var(--rose-600);
+  text-decoration: underline;
+}
+
+/* 须知弹窗 */
+.notice-content {
+  font-size: 28rpx;
+  color: var(--text);
+  line-height: 1.8;
+}
+.notice-section {
+  margin-top: 20rpx;
+  margin-bottom: 8rpx;
+}
+.notice-bold {
+  font-weight: 700;
+  color: var(--ink);
+}
+.notice-item {
+  padding-left: 24rpx;
+  margin-bottom: 6rpx;
 }

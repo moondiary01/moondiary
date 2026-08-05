@@ -1,156 +1,146 @@
 // pages/pay/pay.js
 var app = getApp()
+var store = require('../../utils/store.js')
 
 Page({
   data: {
-    currentTab: 'basic', // basic / upgrade
-    basicPrice: '19.9',
-    upgradePrice: '29.9'
+    currentTab: 0,
+    showNoticeModal: false,
+    showPrivacyModal: false
   },
 
-  onLoad: function (options) {
-    if (options && options.tab === 'upgrade') {
-      this.setData({ currentTab: 'upgrade' })
+  onLoad: function () {
+    // 检查是否已付费
+    if (app.globalData.isPaid) {
+      wx.showToast({ title: '您已是付费用户', icon: 'none' })
     }
   },
 
-  onTabChange: function (e) {
-    this.setData({ currentTab: e.currentTarget.dataset.tab })
+  switchPayTab: function (e) {
+    var tab = parseInt(e.currentTarget.dataset.tab)
+    this.setData({ currentTab: tab })
   },
 
-  onPay: function () {
-    var tab = this.data.currentTab
-    if (tab === 'basic') {
-      this.onPayBasic()
-    } else {
-      this.onPayUpgrade()
-    }
-  },
-
-  onPayBasic: function () {
+  // ===== 基础版支付 =====
+  onBasicPay: function () {
     var self = this
-    var userKey = app.globalData.userKey
-    var loginType = app.globalData.loginType
-
-    if (loginType === 'key' || loginType === 'admin') {
-      wx.showToast({ title: '您已是会员用户', icon: 'success' })
-      return
-    }
-
     wx.showModal({
-      title: '基础版会员',
-      content: '19.9元永久使用云端存储，是否立即开通？',
-      confirmText: '立即开通',
-      confirmColor: '#8b5cf6',
+      title: '确认开通',
+      content: '19.9元开通永久云端存储，确认开通？',
       success: function (res) {
-        if (res.confirm) { self.processBasicPayment() }
+        if (res.confirm) {
+          self.processBasicPayment()
+        }
       }
     })
   },
 
   processBasicPayment: function () {
     var self = this
-    wx.showLoading({ title: '支付中...' })
-    var store = require('../../utils/store.js')
-    var userKey = app.globalData.userKey
-
-    store.loadFromCloud('_wx_users', function (data) {
-      if (!data) data = {}
-      if (!data[userKey]) data[userKey] = {}
-      var now = Date.now()
-      data[userKey].paidUntil = now + 36500 * 24 * 60 * 60 * 1000
-      store.saveToCloud('_wx_users', data, function (success) {
-        wx.hideLoading()
-        if (success) {
-          app.globalData.isPaid = true
-          app.globalData.statusReady = true
-          wx.showToast({ title: '开通成功！', icon: 'success', duration: 2000 })
-          setTimeout(function () { wx.navigateBack() }, 1500)
-        } else {
-          wx.showToast({ title: '支付失败，请重试', icon: 'none' })
+    var phone = app.globalData.userKey || ''
+    // 获取当前用户的手机号
+    store.loadPresetInfo(function(pi) {
+      pi = pi || {}
+      // 查找当前密钥对应的手机号
+      var userPhone = ''
+      var configKeys = store.getPresetKeys()
+      configKeys.forEach(function(k) {
+        var info = pi[k] || {}
+        if (k === app.globalData.userKey && info.phone) {
+          userPhone = info.phone
         }
+      })
+      if (!userPhone) {
+        wx.showToast({ title: '请先绑定手机号', icon: 'none' })
+        return
+      }
+
+      // 模拟支付成功
+      store.loadPayments(function(payments) {
+        payments = payments || {}
+        if (!payments[userPhone]) payments[userPhone] = {}
+        payments[userPhone].storagePaid = true
+        payments[userPhone].storagePaidAt = Date.now()
+        store.savePayments(payments)
+
+        // 更新全局状态
+        app.globalData.isPaid = true
+        app.globalData.statusReady = true
+
+        wx.showToast({ title: '开通成功！永久云端存储已激活', icon: 'success', duration: 2000 })
+        setTimeout(function() {
+          wx.switchTab({ url: '/pages/index/index' })
+        }, 1500)
       })
     })
   },
 
-  onPayUpgrade: function () {
+  // ===== 升级版支付 =====
+  onBeautyPay: function () {
     var self = this
-    var userKey = app.globalData.userKey
-    var loginType = app.globalData.loginType
-
-    // 密钥用户和管理员免费使用
-    if (loginType === 'key' || loginType === 'admin') {
-      wx.showToast({
-        title: '您可免费使用升级版',
-        icon: 'success',
-        duration: 2000
-      })
-      return
-    }
-
     wx.showModal({
-      title: '升级版会员',
-      content: '29.9元永久使用，是否立即开通升级版？',
-      confirmText: '立即开通',
-      confirmColor: '#8b5cf6',
+      title: '确认开通',
+      content: '29.9元开通永久升级版（含云端存储+变美计划），确认开通？',
       success: function (res) {
         if (res.confirm) {
-          // 模拟支付成功（实际应调用微信支付）
-          self.processUpgradePayment()
+          self.processBeautyPayment()
         }
       }
     })
   },
 
-  processUpgradePayment: function () {
+  processBeautyPayment: function () {
     var self = this
-    wx.showLoading({ title: '支付中...' })
-
-    var store = require('../../utils/store.js')
-    var userKey = app.globalData.userKey
-
-    // 读取用户信息
-    store.loadFromCloud('_wx_users', function (data) {
-      if (!data) data = {}
-      if (!data[userKey]) data[userKey] = {}
-
-      var now = Date.now()
-      // 永久使用 - 设置100年后过期
-      data[userKey].upgradePaidUntil = now + 36500 * 24 * 60 * 60 * 1000
-
-      store.saveToCloud('_wx_users', data, function (success) {
-        wx.hideLoading()
-        if (success) {
-          // 更新全局状态
-          app.globalData.canUseUpgrade = true
-          app.globalData.upgradeExpired = false
-          wx.showToast({
-            title: '开通成功！',
-            icon: 'success',
-            duration: 2000
-          })
-          setTimeout(function () {
-            wx.navigateBack()
-          }, 1500)
-        } else {
-          wx.showToast({
-            title: '支付失败，请重试',
-            icon: 'none'
-          })
+    store.loadPresetInfo(function(pi) {
+      pi = pi || {}
+      var userPhone = ''
+      var configKeys = store.getPresetKeys()
+      configKeys.forEach(function(k) {
+        var info = pi[k] || {}
+        if (k === app.globalData.userKey && info.phone) {
+          userPhone = info.phone
         }
+      })
+      if (!userPhone) {
+        wx.showToast({ title: '请先绑定手机号', icon: 'none' })
+        return
+      }
+
+      store.loadPayments(function(payments) {
+        payments = payments || {}
+        if (!payments[userPhone]) payments[userPhone] = {}
+        payments[userPhone].beautyPaid = true
+        payments[userPhone].beautyPaidAt = Date.now()
+        payments[userPhone].storagePaid = true
+        payments[userPhone].storagePaidAt = Date.now()
+        store.savePayments(payments)
+
+        app.globalData.isPaid = true
+        app.globalData.canUseUpgrade = true
+        app.globalData.statusReady = true
+
+        wx.showToast({ title: '开通成功！变美计划已激活', icon: 'success', duration: 2000 })
+        setTimeout(function() {
+          wx.switchTab({ url: '/pages/index/index' })
+        }, 1500)
       })
     })
   },
 
-  onNotice: function () {
-    wx.navigateTo({
-      url: '/pages/notice/notice'
-    })
+  // ===== 购买须知 / 隐私说明 =====
+  showPurchaseNotice: function () {
+    this.setData({ showNoticeModal: true })
   },
 
-  onPrivacy: function () {
-    wx.navigateTo({
-      url: '/pages/privacy/privacy'
-    })
+  closeNoticeModal: function () {
+    this.setData({ showNoticeModal: false })
+  },
+
+  showPrivacyNotice: function () {
+    this.setData({ showPrivacyModal: true })
+  },
+
+  closePrivacyModal: function () {
+    this.setData({ showPrivacyModal: false })
   }
 })

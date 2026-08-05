@@ -1,119 +1,104 @@
 <!-- pages/pay/pay.wxml -->
 <view class="pay-page">
-  <!-- 标题 -->
-  <view class="pay-header">
-    <view class="pay-header-icon">🌙</view>
-    <view class="pay-header-title">MoonMemo 会员</view>
-  </view>
-
-  <!-- Tab切换 -->
+  <!-- Tab 切换 -->
   <view class="pay-tabs">
-    <view
-      class="pay-tab {{currentTab === 'basic' ? 'tab-active' : ''}}"
-      data-tab="basic"
-      bindtap="onTabChange"
-    >基础版 19.9元永久</view>
-    <view
-      class="pay-tab {{currentTab === 'upgrade' ? 'tab-active' : ''}}"
-      data-tab="upgrade"
-      bindtap="onTabChange"
-    >升级版 29.9元永久</view>
+    <view class="pay-tab {{currentTab === 0 ? 'active' : ''}}" bindtap="switchPayTab" data-tab="0">基础版</view>
+    <view class="pay-tab {{currentTab === 1 ? 'active' : ''}}" bindtap="switchPayTab" data-tab="1">升级版</view>
   </view>
 
   <!-- 基础版 -->
-  <block wx:if="{{currentTab === 'basic'}}">
-    <!-- 价格卡片 -->
-    <view class="card price-card price-card-basic">
-      <view class="price-amount">19.9元</view>
-      <view class="price-desc">永久使用 · 云端数据存储</view>
-    </view>
-
-    <!-- 会员权益 -->
-    <view class="card">
-      <view class="card-title">基础版权益</view>
-      <view class="benefit-list">
-        <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">全部功能解锁</text>
-        </view>
-        <view class="benefit-item">
-          <text class="benefit-icon">☁️</text>
-          <text class="benefit-text">云端数据同步</text>
-        </view>
-        <view class="benefit-item">
-          <text class="benefit-icon"></text>
-          <text class="benefit-text">经期日历</text>
-        </view>
-        <view class="benefit-item">
-          <text class="benefit-icon">📷</text>
-          <text class="benefit-text">照片上传</text>
-        </view>
-        <view class="benefit-item">
-          <text class="benefit-icon">📤</text>
-          <text class="benefit-text">数据导出</text>
-        </view>
+  <view class="pay-content" wx:if="{{currentTab === 0}}">
+    <view class="pay-card">
+      <view class="pay-card-header">
+        <text class="pay-card-title">19.9元</text>
+        <text class="pay-card-sub">永久云端存储</text>
       </view>
-    </view>
-  </block>
-
-  <!-- 升级版 -->
-  <block wx:if="{{currentTab === 'upgrade'}}">
-    <!-- 价格卡片 -->
-    <view class="card price-card price-card-upgrade">
-      <view class="upgrade-badge">✨ 升级版</view>
-      <view class="price-amount">29.9元</view>
-      <view class="price-desc">永久使用 · 100天变美日记全功能</view>
-    </view>
-
-    <!-- 升级版权益 -->
-    <view class="card">
-      <view class="card-title">升级版权益</view>
-      <view class="benefit-list">
-        <view class="benefit-section">💄 护肤日记</view>
-        <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">肤质管理 · 敏感度记录</text>
-        </view>
-        <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">晨间/夜间护肤打卡</text>
-        </view>
-        <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">面膜/美容院/do脸记录</text>
-        </view>
-        <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">身体护理 · 口腔护理</text>
-        </view>
-
-        <view class="benefit-section">💖 心情日记</view>
-        <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">心情记录 · 10种表情</text>
-        </view>
-        <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">50首冥想音乐播放</text>
-        </view>
-        <view class="benefit-item">
-          <text class="benefit-icon">✅</text>
-          <text class="benefit-text">自律打卡 · 12项类别</text>
-        </view>
+      <view class="pay-benefits">
+        <view class="pay-benefit-item"> 全部功能解锁</view>
+        <view class="pay-benefit-item"> 云端数据同步</view>
+        <view class="pay-benefit-item"> 经期日历</view>
+        <view class="pay-benefit-item"> 照片上传</view>
+        <view class="pay-benefit-item"> 数据导出</view>
       </view>
+      <button class="btn btn-primary pay-btn" bindtap="onBasicPay">立即开通 19.9元</button>
+      <view class="pay-note">一次购买 · 永久有效 · 云端储存</view>
     </view>
-  </block>
-
-  <!-- 入口按钮 -->
-  <view class="card">
-    <view class="entry-btn" bindtap="onNotice">查看购买须知</view>
-    <view class="entry-btn" bindtap="onPrivacy">查看隐私政策</view>
   </view>
 
-  <!-- 底部支付按钮 -->
-  <view class="pay-footer">
-    <button class="btn btn-primary btn-block pay-btn {{currentTab === 'upgrade' ? 'pay-btn-upgrade' : ''}}" bindtap="onPay">
-      {{currentTab === 'upgrade' ? '立即开通升级版 29.9元永久' : '立即开通 19.9元永久'}}
-    </button>
+  <!-- 升级版 -->
+  <view class="pay-content" wx:if="{{currentTab === 1}}">
+    <view class="pay-card pay-card-upgrade">
+      <view class="pay-card-header">
+        <text class="pay-card-title">29.9元</text>
+        <text class="pay-card-sub">永久升级版</text>
+      </view>
+      <view class="pay-benefits">
+        <view class="pay-benefit-item"> 基础版全部功能</view>
+        <view class="pay-benefit-item"> 护肤日记（肤质管理/打卡/美容院记录）</view>
+        <view class="pay-benefit-item"> 心情日记（35种心情/冥想音乐/自律打卡）</view>
+        <view class="pay-benefit-item"> 感恩日记</view>
+        <view class="pay-benefit-item"> 日历照片</view>
+      </view>
+      <button class="btn btn-primary pay-btn pay-btn-upgrade" bindtap="onBeautyPay">立即开通 29.9元</button>
+      <view class="pay-note">一次购买 · 永久会员权益 · 云端储存</view>
+    </view>
+  </view>
+
+  <!-- 购买须知 / 隐私说明 -->
+  <view class="pay-links">
+    <text class="pay-link" bindtap="showPurchaseNotice">购买须知</text>
+    <text class="pay-link" bindtap="showPrivacyNotice">隐私说明</text>
+  </view>
+</view>
+
+<!-- 购买须知弹窗 -->
+<view class="overlay" wx:if="{{showNoticeModal}}" bindtap="closeNoticeModal">
+  <view class="modal" catchtap>
+    <view class="modal-title">购买须知</view>
+    <scroll-view scroll-y style="max-height:60vh">
+      <view class="notice-content">
+        <view class="notice-section"><text class="notice-bold">1. 会员档位</text></view>
+        <view class="notice-item">• 19.9元 永久云端存储：月亮日记数据的永久云端存储，不含100天变美计划功能。</view>
+        <view class="notice-item">• 29.9元 永久升级版：包含云端存储 + 100天变美计划（护肤日记、心情日记），永久有效。</view>
+        <view class="notice-section"><text class="notice-bold">2. 退款政策</text></view>
+        <view class="notice-item">• 数字商品一经开通，不支持退款。</view>
+        <view class="notice-section"><text class="notice-bold">3. 使用期限</text></view>
+        <view class="notice-item">• 均为永久有效，一次购买终身使用。</view>
+        <view class="notice-item">• 无限期权益仅在本小程序正常运营存续期间内有效。</view>
+        <view class="notice-section"><text class="notice-bold">4. 开通方式</text></view>
+        <view class="notice-item">• 联系管理员手动开通，开通后立即生效。</view>
+        <view class="notice-section"><text class="notice-bold">5. 数据安全</text></view>
+        <view class="notice-item">• 您的数据仅存储在您的个人云端空间，其他用户无法访问。</view>
+      </view>
+    </scroll-view>
+    <view class="modal-actions">
+      <button class="btn btn-outline" bindtap="closeNoticeModal">关闭</button>
+    </view>
+  </view>
+</view>
+
+<!-- 隐私说明弹窗 -->
+<view class="overlay" wx:if="{{showPrivacyModal}}" bindtap="closePrivacyModal">
+  <view class="modal" catchtap>
+    <view class="modal-title">隐私说明</view>
+    <scroll-view scroll-y style="max-height:60vh">
+      <view class="notice-content">
+        <view class="notice-section"><text class="notice-bold">1. 数据收集</text></view>
+        <view class="notice-item">• 我们仅收集您主动输入的身材数据、护肤记录、心情日记及自拍照片。</view>
+        <view class="notice-item">• 手机号仅用于身份识别和数据绑定，不向第三方分享。</view>
+        <view class="notice-section"><text class="notice-bold">2. 数据存储</text></view>
+        <view class="notice-item">• 您的数据存储在加密的云端服务器（腾讯云COS），仅您本人可访问。</view>
+        <view class="notice-item">• 照片数据经压缩处理后存储，不会用于其他用途。</view>
+        <view class="notice-section"><text class="notice-bold">3. 数据隔离</text></view>
+        <view class="notice-item">• 每个用户的数据独立存储，互不可见。一手机号一份数据。</view>
+        <view class="notice-section"><text class="notice-bold">4. 数据删除</text></view>
+        <view class="notice-item">• 您可随时联系管理员删除所有个人数据。</view>
+        <view class="notice-section"><text class="notice-bold">5. 联系方式</text></view>
+        <view class="notice-item">• 如有隐私相关问题，请联系管理员处理。</view>
+      </view>
+    </scroll-view>
+    <view class="modal-actions">
+      <button class="btn btn-primary" bindtap="closePrivacyModal">我知道了</button>
+    </view>
   </view>
 </view>

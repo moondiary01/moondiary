@@ -1,94 +1,59 @@
 <!-- pages/review/review.wxml -->
 <view class="review-page">
+  <view class="review-tip">每周复盘你的变化，记录感受与调整策略</view>
+  
+  <block wx:for="{{weekList}}" wx:key="week">
+    <view class="card review-card" style="background: {{item.bg}};">
+      <view class="review-header">
+        <text class="review-week-num">第{{item.weekNum}}周</text>
+        <text class="review-week-date">{{item.dateRange}}</text>
+      </view>
+      <view class="review-stats">
+        <view class="review-stat">
+          <text class="review-stat-label">周一</text>
+          <text class="review-stat-val">{{item.mondayWeight}}</text>
+        </view>
+        <view class="review-stat">
+          <text class="review-stat-label">周日</text>
+          <text class="review-stat-val">{{item.sundayWeight}}</text>
+        </view>
+        <view class="review-stat">
+          <text class="review-stat-label">本周变化</text>
+          <text class="review-stat-val {{item.weekChangeColor}}">{{item.weekChange}}</text>
+        </view>
+        <view class="review-stat">
+          <text class="review-stat-label">累计变化</text>
+          <text class="review-stat-val {{item.totalChangeColor}}">{{item.totalChange}}</text>
+        </view>
+        <view class="review-stat">
+          <text class="review-stat-label">记录</text>
+          <text class="review-stat-val">{{item.recordDays}}</text>
+        </view>
+        <view class="review-stat" wx:if="{{item.periodDays > 0}}">
+          <text class="review-stat-label">经期</text>
+          <text class="review-stat-val review-stat-period">{{item.periodDays}}天</text>
+        </view>
+        <view class="review-stat">
+          <text class="review-stat-label">日均水</text>
+          <text class="review-stat-val review-stat-water">{{item.waterAvg}}ml</text>
+        </view>
+      </view>
+      <textarea 
+        class="review-textarea" 
+        placeholder="本周感想/调整..." 
+        value="{{item.review}}"
+        data-week="{{index}}"
+        bindinput="onReviewInput"
+      ></textarea>
+      <button class="btn btn-primary review-save-btn" data-week="{{index}}" bindtap="saveReview">保存</button>
+    </view>
+  </block>
 
-  <view class="review-tip">每周记录一次复盘，回顾这周的成果与感受</view>
-
-  <!-- 导出按钮 -->
-  <view class="export-bar" wx:if="{{weekList.length > 0}}">
-    <button class="btn btn-outline export-btn" bindtap="onExport">导出复盘报表</button>
+  <view class="review-export-bar" wx:if="{{weekList.length > 0}}">
+    <button class="btn btn-primary" bindtap="exportReviewImage"> 导出复盘报表图片</button>
   </view>
 
-  <!-- 周度复盘列表 -->
-  <view class="card review-week-card {{item.stageClass}}" wx:for="{{weekList}}" wx:key="week">
-    <view class="week-header">
-      <view class="week-title-row">
-        <text class="week-num">第 {{item.week}} 周</text>
-        <text class="week-date">{{item.dateRange}}</text>
-        <text class="week-stage" wx:if="{{item.stageLabel}}">{{item.stageLabel}}</text>
-      </view>
-    </view>
-
-    <!-- 每周统计 -->
-    <view class="week-stats" wx:if="{{item.hasStats}}">
-      <view class="week-stat-item">
-        <text class="week-stat-lbl">周一晨重</text>
-        <text class="week-stat-val">{{item.monWeight}}</text>
-      </view>
-      <view class="week-stat-item">
-        <text class="week-stat-lbl">周日晨重</text>
-        <text class="week-stat-val">{{item.sunWeight}}</text>
-      </view>
-      <view class="week-stat-item">
-        <text class="week-stat-lbl">本周变化</text>
-        <text class="week-stat-val {{item.weekDiffClass}}">{{item.weekDiff}}</text>
-      </view>
-      <view class="week-stat-item">
-        <text class="week-stat-lbl">累计变化</text>
-        <text class="week-stat-val {{item.cumDiffClass}}">{{item.cumDiff}}</text>
-      </view>
-      <view class="week-stat-item">
-        <text class="week-stat-lbl">记录天数</text>
-        <text class="week-stat-val">{{item.recordDays}}天</text>
-      </view>
-      <view class="week-stat-item">
-        <text class="week-stat-lbl">经期天数</text>
-        <text class="week-stat-val">{{item.periodDays}}天</text>
-      </view>
-      <view class="week-stat-item">
-        <text class="week-stat-lbl">日均饮水</text>
-        <text class="week-stat-val">{{item.avgWater}}ml</text>
-      </view>
-    </view>
-
-    <textarea class="textarea"
-      placeholder="这周的感受、变化、调整..."
-      value="{{item.review}}"
-      data-index="{{index}}"
-      bindinput="onReviewInput"
-      maxlength="500">
-    </textarea>
-  </view>
-
-  <!-- 空状态 -->
-  <view class="empty-state" wx:if="{{weekList.length === 0}}">
-    <text class="empty-icon">📝</text>
-    <text class="empty-text">还没有复盘记录</text>
-    <text class="empty-sub">设置开始日期后，周度复盘会自动生成</text>
-  </view>
-
-  <!-- 保存按钮 -->
-  <view class="save-area" wx:if="{{weekList.length > 0}}">
-    <button class="btn btn-primary btn-block" bindtap="onSave">保存复盘</button>
-  </view>
-
-</view>
-
-<!-- 导出预览弹窗 -->
-<view class="overlay" wx:if="{{showExportModal}}" bindtap="onCloseExport">
-  <view class="modal export-modal" catchtap="">
-    <view class="modal-title">复盘报表预览</view>
-    <view class="export-preview" id="exportPreview">
-      <view class="export-title">Moon Memo 周度复盘</view>
-      <view class="export-subtitle">{{userName}} · {{todayStr}}</view>
-      <view class="export-divider"></view>
-      <view wx:for="{{exportWeeks}}" wx:key="week" class="export-week-item">
-        <view class="export-week-title">第 {{item.week}} 周 ({{item.dateRange}})</view>
-        <view class="export-week-review">{{item.review || '暂无复盘'}}</view>
-      </view>
-    </view>
-    <view class="modal-actions">
-      <button class="btn btn-outline" bindtap="onCloseExport">关闭</button>
-      <button class="btn btn-primary" bindtap="onCopyExport">复制文本</button>
-    </view>
+  <view wx:if="{{weekList.length === 0}}" class="review-empty">
+    <text>暂无复盘数据，请先设置计划开始日期并记录体重</text>
   </view>
 </view>

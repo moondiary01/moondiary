@@ -376,6 +376,47 @@ function formatRemaining(ms) {
   return hours + '小时' + minutes + '分钟';
 }
 
+// ===== 付费管理 =====
+var PAYMENTS_STORE = '_payments';
+
+function loadPayments(callback) {
+  var local = getLocal(PAYMENTS_STORE);
+  if (local) {
+    try { local = JSON.parse(local); } catch(e) { local = {}; }
+    if (callback) callback(local);
+    return;
+  }
+  loadFromCloud(PAYMENTS_STORE, function(cloud) {
+    var data = cloud || {};
+    setLocal(PAYMENTS_STORE, JSON.stringify(data));
+    if (callback) callback(data);
+  });
+}
+
+function savePayments(payments) {
+  setLocal(PAYMENTS_STORE, JSON.stringify(payments));
+  saveToCloud(PAYMENTS_STORE, payments);
+}
+
+// ===== 动态密钥 =====
+var DYNAMIC_KEYS_STORE = '_dynamic_keys';
+
+function addDynamicKey(key) {
+  var keys = getLocal(DYNAMIC_KEYS_STORE);
+  try { keys = keys ? JSON.parse(keys) : {}; } catch(e) { keys = {}; }
+  keys[key] = { createdAt: Date.now(), phone: '', note: '' };
+  setLocal(DYNAMIC_KEYS_STORE, JSON.stringify(keys));
+  saveToCloud(DYNAMIC_KEYS_STORE, keys);
+}
+
+// ===== 获取预设密钥列表 =====
+function getPresetKeys() {
+  return PRESET_KEYS;
+}
+
+// ===== 常量 =====
+var WATER_CUP_ML = 200;
+
 module.exports = {
   getLocal, setLocal, removeLocal,
   saveToCloud, loadFromCloud,
@@ -383,6 +424,11 @@ module.exports = {
   loadPresetInfo, savePresetInfo,
   loadPhoneBindings, savePhoneBindings,
   loadWxUsers, saveWxUsers,
+  loadPayments, savePayments,
+  addDynamicKey, getPresetKeys,
   localDateStr, isPresetKey,
-  checkUserStatus, formatRemaining
+  checkUserStatus, formatRemaining,
+  WATER_CUP_ML,
+  loadPayments, savePayments,
+  addDynamicKey, getPresetKeys
 };

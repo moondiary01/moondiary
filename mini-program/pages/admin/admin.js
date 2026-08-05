@@ -5,409 +5,399 @@ var config = require('../../utils/config.js')
 
 Page({
   data: {
-    totalUsers: 0,
-    trialUsers: 0,
-    vipBasicUsers: 0,
-    vipUpgradeUsers: 0,
-    freeUsers: 0,
-    showUpgradeStat: true,
-    version: '7.1',
+    adminStats: { free: 0, trial: 0, vipBasic: 0, vipUpgrade: 0, total: 0 },
+    appVersion: '7.1',
+    noticeContent: '',
     noticeSent: false,
     keyList: [],
-    filteredKeys: [],
-    filterStatus: 'all',
+    keySearchPhone: '',
     paymentPhone: '',
     paymentStatus: '',
-    searchPhone: '',
     oldPw: '',
     newPw: '',
     newPw2: '',
     newDynamicKey: '',
-    // 用户弹窗
-    showUsersModal: false,
-    usersModalTitle: '',
-    displayUsers: [],
-    // 备注弹窗
-    showNoteModal: false,
-    editNoteKey: '',
-    editNoteValue: '',
-    // 所有用户数据缓存
-    allUsersData: null
+    // 弹窗
+    showAllUsersModal: false,
+    allUsersList: [],
+    showKeyEditModal: false,
+    editingKey: '',
+    editingKeyTitle: '',
+    editingKeyPhone: '',
+    editingKeyGender: '',
+    editingKeyAge: '',
+    editingKeyNickname: '',
+    editingKeyNote: ''
   },
 
   onLoad: function () {
-    if (app.globalData.loginType !== 'admin') {
-      wx.redirectTo({ url: '/pages/login/login' })
-      return
-    }
-    this.loadData()
+    this.loadAll()
   },
 
   onShow: function () {
-    if (app.globalData.loginType !== 'admin') {
-      wx.redirectTo({ url: '/pages/login/login' })
-      return
-    }
+    this.loadAll()
   },
 
-  loadData: function () {
+  loadAll: function () {
+    this.loadAdminStats()
+    this.loadKeyList()
+    this.loadVersionInfo()
+  },
+
+  // ===== 用户统计 =====
+  loadAdminStats: function () {
     var self = this
-    store.loadPresetInfo(function (presetInfo) {
-      presetInfo = presetInfo || {}
-      store.loadPhoneBindings(function (bindings) {
-        bindings = bindings || {}
-        var keyToPhone = {}
-        var phoneToKey = bindings
-        var phones = Object.keys(bindings)
-        for (var p = 0; p < phones.length; p++) {
-          keyToPhone[bindings[phones[p]]] = phones[p]
+    store.loadPresetInfo(function(pi) {
+      pi = pi || {}
+      var stats = { free: 0, trial: 0, vipBasic: 0, vipUpgrade: 0, total: 0 }
+      var configKeys = store.getPresetKeys()
+      var payments = store.loadPayments()
+
+      configKeys.forEach(function(k) {
+        var info = pi[k] || {}
+        if (info.phone) {
+          var p = payments[info.phone] || {}
+          if (p.beautyPaid || p.beautyTrial) stats.vipUpgrade++
+          else if (p.storagePaid) stats.vipBasic++
+          else stats.free++
         }
+      })
+      stats.total = configKeys.length
+      self.setData({ adminStats: stats })
+    })
+  },
 
-        store.loadWxUsers(function (wxUsersData) {
-          var now = Date.now()
-          var trialMs = 24 * 60 * 60 * 1000
-          var trialCount = 0, vipBasicCount = 0, vipUpgradeCount = 0
-          var allUsers = { free: [], trial: [], basic: [], upgrade: [], allPhones: [] }
+  // ===== 版本通知 =====
+  loadVersionInfo: function () {
+    store.loadPresetInfo(function(pi) {
+      pi = pi || {}
+      var noticeInfo = pi._notice || {}
+      var noticeSent = !!(noticeInfo.sentAt && noticeInfo.version === '7.1')
+      this.setData({
+        noticeContent: noticeInfo.content || '',
+        noticeSent: noticeSent
+      })
+    }.bind(this))
+  },
 
-          if (wxUsersData) {
-            var wxKeys = Object.keys(wxUsersData)
-            for (var wi = 0; wi < wxKeys.length; wi++) {
-              var wxUser = wxUsersData[wxKeys[wi]]
-              if (!wxUser) continue
-              var firstLogin = wxUser.firstLoginTime || now
-              var paidUntil = wxUser.paidUntil || null
-              var phone = wxUser.phone || ''
+  onNoticeInput: function (e) {
+    this.setData({ noticeContent: e.detail.value })
+  },
 
-              if (wxUser.upgradePaidUntil && wxUser.upgradePaidUntil > now) {
-                vipUpgradeCount++
-                if (phone) allUsers.upgrade.push(phone)
-              }
-              if (paidUntil && paidUntil > now) {
-                vipBasicCount++
-                if (phone && allUsers.upgrade.indexOf(phone) === -1) allUsers.basic.push(phone)
-              } else if (now - firstLogin < trialMs) {
-                trialCount++
-                if (phone) allUsers.trial.push(phone)
-              } else {
-                if (phone) allUsers.free.push(phone)
-              }
-              if (phone) allUsers.allPhones.push(phone)
-            }
+  sendVersionNotice: function () {
+    var self = this
+    store.loadPresetInfo(function(pi) {
+      pi = pi || {}
+      pi._notice = {
+        version: '7.1',
+        content: self.data.noticeContent,
+        sentAt: Date.now()
+      }
+      store.savePresetInfo(pi)
+      self.setData({ noticeSent: true })
+      wx.showToast({ title: '通知已发送', icon: 'success' })
+    })
+  },
+
+  // ===== 付费管理 =====
+  onPaymentPhoneInput: function (e) {
+    this.setData({ paymentPhone: e.detail.value })
+  },
+
+  adminGrantPayment: function (e) {
+    var type = e.currentTarget.dataset.type
+    var phone = this.data.paymentPhone.trim()
+    if (!phone || !/^1\d{10}$/.test(phone)) {
+      wx.showToast({ title: '请输入正确的11位手机号', icon: 'none' })
+      return
+    }
+
+    var self = this
+    store.loadPayments(function(payments) {
+      payments = payments || {}
+      if (!payments[phone]) payments[phone] = { storagePaid: false, beautyPaid: false, storagePaidAt: null, beautyPaidAt: null }
+      var label = ''
+      if (type === 'storage') {
+        payments[phone].storagePaid = true
+        payments[phone].storagePaidAt = Date.now()
+        label = '19.9元云端存储'
+      } else if (type === 'beauty') {
+        payments[phone].beautyPaid = true
+        payments[phone].beautyPaidAt = Date.now()
+        payments[phone].storagePaid = true
+        payments[phone].storagePaidAt = Date.now()
+        label = '29.9元变美计划'
+      }
+      store.savePayments(payments)
+      self.setData({ paymentStatus: '手机号 ' + phone + ' 已开通 ' + label })
+      self.loadAll()
+      wx.showToast({ title: '已开通 ' + label, icon: 'success' })
+    })
+  },
+
+  // ===== 密钥管理 =====
+  loadKeyList: function () {
+    var self = this
+    store.loadPresetInfo(function(pi) {
+      pi = pi || {}
+      store.loadPayments(function(payments) {
+        payments = payments || {}
+        var configKeys = store.getPresetKeys()
+        var keyList = []
+
+        configKeys.forEach(function(k) {
+          var info = pi[k] || {}
+          var phone = info.phone || ''
+          var activated = !!info.activated
+          var revoked = !!info.revoked
+          var p = payments[phone] || {}
+
+          // 搜索过滤
+          if (self.data.keySearchPhone && phone.indexOf(self.data.keySearchPhone) === -1) return
+
+          // 用户类型
+          var userType = 'free'
+          var userTypeLabel = '免费用户'
+          if (phone && (p.beautyPaid || p.beautyTrial)) {
+            userType = 'vip'
+            userTypeLabel = '升级版'
+          } else if (phone && p.storagePaid) {
+            userType = 'vip'
+            userTypeLabel = '普通版'
           }
 
-          // 构建密钥列表
-          var keyList = [], freeCount = 0
-          var presetKeys = config.PRESET_KEYS
-          for (var i = 0; i < presetKeys.length; i++) {
-            var key = presetKeys[i]
-            var keyInfo = presetInfo[key] || {}
-            var isActivated = keyInfo.activated === true
-            if (isActivated) freeCount++
-
-            var status = '', statusText = '', statusClass = ''
-            if (keyInfo.activated === true) {
-              status = 'active'; statusText = '已启用'; statusClass = 'active'
-            } else if (keyInfo.activated === false && keyInfo.revoked) {
-              status = 'revoked'; statusText = '已作废'; statusClass = 'revoked'
-            } else {
-              status = 'inactive'; statusText = '未启用'; statusClass = 'inactive'
-            }
-
-            var boundPhone = keyInfo.phone || keyToPhone[key] || ''
-            var isUpgrade = keyInfo.isUpgrade === true
-            var hasLogin = !!boundPhone
-            var userInfo = ''
-            if (keyInfo.gender || keyInfo.age) {
-              userInfo = (keyInfo.gender || '') + (keyInfo.age ? ' ' + keyInfo.age + '岁' : '')
-              if (keyInfo.nickname) userInfo += ' ' + keyInfo.nickname
-            }
-
-            keyList.push({
-              key: key,
-              phone: boundPhone,
-              remark: keyInfo.note || '',
-              status: status, statusText: statusText, statusClass: statusClass,
-              isUpgrade: isUpgrade,
-              hasLogin: hasLogin,
-              userInfo: userInfo
-            })
+          // 版本标签
+          var versionLabel = ''
+          var versionBadgeStyle = ''
+          if (phone && (p.beautyPaid || p.beautyTrial)) {
+            versionLabel = '升级版'
+            versionBadgeStyle = 'background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff'
+          } else if (phone && p.storagePaid) {
+            versionLabel = '普通版'
+            versionBadgeStyle = 'background:#10b981;color:#fff'
           }
 
-          var totalUsers = freeCount + trialCount + vipBasicCount
-          self.allUsersData = allUsers
+          // 登录状态
+          var loginLabel = '未登录'
+          var loginBadgeStyle = 'background:#e5e7eb;color:#6b7280'
+          if (activated || info.activated) {
+            loginLabel = '已启用'
+            loginBadgeStyle = 'background:#dcfce7;color:#16a34a'
+          }
 
-          self.setData({
-            keyList: keyList, filteredKeys: keyList,
-            totalUsers: totalUsers, trialUsers: trialCount,
-            vipBasicUsers: vipBasicCount, vipUpgradeUsers: vipUpgradeCount,
-            freeUsers: freeCount, noticeSent: presetInfo.noticeSent || false
+          // 切换按钮
+          var toggleClass = 'key-toggle-off'
+          var toggleLabel = '未启用'
+          if (revoked) {
+            toggleClass = 'key-toggle-revoked'
+            toggleLabel = '已停用'
+          } else if (activated) {
+            toggleClass = 'key-toggle-on'
+            toggleLabel = '已启用 · 点击停用'
+          }
+
+          // 升级版开关
+          var showTrialBtn = !!(phone && !p.beautyPaid)
+          var trialActive = !!(phone && p.beautyTrial)
+          var trialLabel = trialActive ? '升级版·关闭' : '开通升级版'
+
+          // 用户信息文本
+          var infoText = (phone || '未填写') + (info.gender ? ' · ' + info.gender : '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '')
+
+          keyList.push({
+            code: k,
+            phone: phone,
+            userType: userType,
+            userTypeLabel: userTypeLabel,
+            versionLabel: versionLabel,
+            versionBadge: !!versionLabel,
+            versionBadgeStyle: versionBadgeStyle,
+            loginLabel: loginLabel,
+            loginBadgeStyle: loginBadgeStyle,
+            toggleClass: toggleClass,
+            toggleLabel: toggleLabel,
+            showTrialBtn: showTrialBtn,
+            trialActive: trialActive,
+            trialLabel: trialLabel,
+            infoText: infoText
           })
-          self.applyFilter()
         })
+
+        self.setData({ keyList: keyList })
       })
     })
   },
 
-  // ===== 查看用户类型 =====
-  onShowUsersByType: function (e) {
-    var type = e.currentTarget.dataset.type
-    var data = this.allUsersData
-    var users = []
-    var title = ''
-
-    if (type === 'free') { users = data.free; title = '免费用户' }
-    else if (type === 'trial') { users = data.trial; title = '试用未充值' }
-    else if (type === 'basic') { users = data.basic; title = 'VIP基础版' }
-    else if (type === 'upgrade') { users = data.upgrade; title = 'VIP升级版' }
-    else { users = data.allPhones; title = '所有用户' }
-
-    this.setData({
-      showUsersModal: true,
-      usersModalTitle: title + ' (' + users.length + '人)',
-      displayUsers: users
-    })
+  onKeySearchInput: function (e) {
+    this.setData({ keySearchPhone: e.detail.value })
+    this.loadKeyList()
   },
 
-  onCloseUsersModal: function () {
-    this.setData({ showUsersModal: false })
-  },
-
-  // ===== 筛选 =====
-  onFilter: function (e) {
-    this.setData({ filterStatus: e.currentTarget.dataset.status })
-    this.applyFilter()
-  },
-
-  applyFilter: function () {
-    var self = this
-    var status = this.data.filterStatus
-    var keys = this.data.keyList
-    if (this.data.searchPhone) {
-      keys = keys.filter(function (k) { return k.phone && k.phone.indexOf(self.data.searchPhone) !== -1 })
-    }
-    if (status === 'all') {
-      this.setData({ filteredKeys: keys })
-    } else {
-      this.setData({ filteredKeys: keys.filter(function (k) { return k.status === status }) })
-    }
-  },
-
-  // ===== 切换密钥 =====
-  onToggleKey: function (e) {
-    var self = this
+  toggleKey: function (e) {
     var key = e.currentTarget.dataset.key
-    var action = e.currentTarget.dataset.action
-    wx.showModal({
-      title: '确认操作',
-      content: '确定要' + (action === 'activate' ? '启用' : '作废') + '密钥 ' + key + ' 吗？',
-      success: function (res) { if (res.confirm) self.doToggleKey(key, action) }
-    })
-  },
-
-  doToggleKey: function (key, action) {
     var self = this
-    store.loadPresetInfo(function (presetInfo) {
-      presetInfo = presetInfo || {}
-      var keyInfo = presetInfo[key] || {}
-      if (action === 'activate') {
-        keyInfo.activated = true; keyInfo.activatedAt = Date.now(); keyInfo.revoked = false
+    store.loadPresetInfo(function(pi) {
+      pi = pi || {}
+      if (!pi[key]) pi[key] = {}
+      var info = pi[key]
+      if (info.revoked) {
+        info.revoked = false
+        wx.showToast({ title: '密钥 ' + key + ' 已恢复', icon: 'success' })
+      } else if (info.activated) {
+        info.revoked = true
+        wx.showToast({ title: '密钥 ' + key + ' 已停用', icon: 'success' })
       } else {
-        keyInfo.activated = false; keyInfo.revoked = true
+        info.activated = true
+        wx.showToast({ title: '密钥 ' + key + ' 已启用', icon: 'success' })
       }
-      presetInfo[key] = keyInfo
-      store.savePresetInfo(presetInfo)
-      wx.showToast({ title: '操作成功', icon: 'success' })
-      setTimeout(function () { self.loadData() }, 500)
+      store.savePresetInfo(pi)
+      self.loadKeyList()
     })
   },
 
-  // ===== 升级版开关 =====
-  onToggleBeautyTrial: function (e) {
+  // ===== 升级版试用开关 =====
+  toggleBeautyTrial: function (e) {
+    var phone = e.currentTarget.dataset.phone
+    if (!phone) {
+      wx.showToast({ title: '该用户未绑定手机号', icon: 'none' })
+      return
+    }
     var self = this
-    var key = e.currentTarget.dataset.key
-    var action = e.currentTarget.dataset.action
-    var isEnable = action === 'enable'
-    wx.showModal({
-      title: '确认操作',
-      content: '确定要' + (isEnable ? '开通' : '关闭') + '密钥 ' + key + ' 的升级版吗？',
-      success: function (res) {
-        if (res.confirm) {
-          store.loadPresetInfo(function (presetInfo) {
-            presetInfo = presetInfo || {}
-            var keyInfo = presetInfo[key] || {}
-            keyInfo.isUpgrade = isEnable
-            presetInfo[key] = keyInfo
-            store.savePresetInfo(presetInfo)
-            wx.showToast({ title: '操作成功', icon: 'success' })
-            setTimeout(function () { self.loadData() }, 500)
-          })
-        }
+    store.loadPayments(function(payments) {
+      payments = payments || {}
+      if (!payments[phone]) payments[phone] = { storagePaid: false, beautyPaid: false, beautyTrial: false }
+      if (payments[phone].beautyPaid) {
+        wx.showToast({ title: '该用户已付费29.9元升级版', icon: 'none' })
+        return
       }
+      payments[phone].beautyTrial = !payments[phone].beautyTrial
+      store.savePayments(payments)
+      var msg = payments[phone].beautyTrial ? '已为 ' + phone + ' 开通升级版' : '已关闭 ' + phone + ' 的升级版'
+      wx.showToast({ title: msg, icon: 'success' })
+      self.loadKeyList()
+    })
+  },
+
+  // ===== 密钥备注编辑 =====
+  editKeyNote: function (e) {
+    var key = e.currentTarget.dataset.key
+    var self = this
+    store.loadPresetInfo(function(pi) {
+      pi = pi || {}
+      var info = pi[key] || {}
+      self.setData({
+        showKeyEditModal: true,
+        editingKey: key,
+        editingKeyTitle: '用户信息 · ' + key,
+        editingKeyPhone: info.phone || '',
+        editingKeyGender: info.gender || '',
+        editingKeyAge: info.age || '',
+        editingKeyNickname: info.nickname || '',
+        editingKeyNote: info.note || ''
+      })
+    })
+  },
+
+  closeKeyEditModal: function () {
+    this.setData({ showKeyEditModal: false })
+  },
+
+  onEditKeyPhoneInput: function(e) { this.setData({ editingKeyPhone: e.detail.value }) },
+  onEditKeyGenderInput: function(e) { this.setData({ editingKeyGender: e.detail.value }) },
+  onEditKeyAgeInput: function(e) { this.setData({ editingKeyAge: e.detail.value }) },
+  onEditKeyNicknameInput: function(e) { this.setData({ editingKeyNickname: e.detail.value }) },
+  onEditKeyNoteInput: function(e) { this.setData({ editingKeyNote: e.detail.value }) },
+
+  saveKeyNote: function () {
+    var self = this
+    store.loadPresetInfo(function(pi) {
+      pi = pi || {}
+      if (!pi[self.data.editingKey]) pi[self.data.editingKey] = {}
+      pi[self.data.editingKey].phone = self.data.editingKeyPhone
+      pi[self.data.editingKey].gender = self.data.editingKeyGender
+      pi[self.data.editingKey].age = self.data.editingKeyAge
+      pi[self.data.editingKey].nickname = self.data.editingKeyNickname
+      pi[self.data.editingKey].note = self.data.editingKeyNote
+      store.savePresetInfo(pi)
+      self.setData({ showKeyEditModal: false })
+      self.loadKeyList()
+      wx.showToast({ title: '已保存', icon: 'success' })
     })
   },
 
   // ===== 动态密钥 =====
-  onDynamicKeyInput: function (e) {
-    this.setData({ newDynamicKey: e.detail.value })
-  },
-
-  onAddDynamicKey: function () {
-    var self = this
-    var newKey = this.data.newDynamicKey
-    if (!newKey || newKey.length !== 6 || !/^\d{6}$/.test(newKey)) {
-      wx.showToast({ title: '请输入6位数字密钥', icon: 'none' })
-      return
+  generateDynamicKey: function () {
+    var key = ''
+    for (var i = 0; i < 6; i++) {
+      key += Math.floor(Math.random() * 10)
     }
-    // 检查是否已存在
-    var exists = this.data.keyList.some(function (k) { return k.key === newKey })
-    if (exists) {
-      wx.showToast({ title: '该密钥已存在', icon: 'none' })
-      return
-    }
-    store.loadPresetInfo(function (presetInfo) {
-      presetInfo = presetInfo || {}
-      presetInfo[newKey] = { activated: true, activatedAt: Date.now(), isDynamic: true }
-      store.savePresetInfo(presetInfo)
-      wx.showToast({ title: '密钥 ' + newKey + ' 已添加', icon: 'success' })
-      self.setData({ newDynamicKey: '' })
-      self.loadData()
-    })
+    this.setData({ newDynamicKey: key })
+    // 保存到 store
+    store.addDynamicKey(key)
+    this.loadKeyList()
+    wx.showToast({ title: '密钥 ' + key + ' 已生成', icon: 'success' })
   },
 
-  // ===== 备注编辑 =====
-  onEditKeyNote: function (e) {
-    var key = e.currentTarget.dataset.key
-    var keyItem = this.data.keyList.find(function (k) { return k.key === key })
-    this.setData({
-      showNoteModal: true,
-      editNoteKey: key,
-      editNoteValue: keyItem ? keyItem.remark : ''
-    })
-  },
+  // ===== 管理员密码修改 =====
+  onOldPwInput: function(e) { this.setData({ oldPw: e.detail.value }) },
+  onNewPwInput: function(e) { this.setData({ newPw: e.detail.value }) },
+  onNewPw2Input: function(e) { this.setData({ newPw2: e.detail.value }) },
 
-  onNoteInput: function (e) {
-    this.setData({ editNoteValue: e.detail.value })
-  },
+  changeAdminPw: function () {
+    var oldPw = this.data.oldPw
+    var newPw = this.data.newPw
+    var newPw2 = this.data.newPw2
 
-  onCloseNoteModal: function () {
-    this.setData({ showNoteModal: false })
-  },
-
-  onSaveNote: function () {
-    var self = this
-    var key = this.data.editNoteKey
-    var note = this.data.editNoteValue
-    store.loadPresetInfo(function (presetInfo) {
-      presetInfo = presetInfo || {}
-      var keyInfo = presetInfo[key] || {}
-      keyInfo.note = note
-      presetInfo[key] = keyInfo
-      store.savePresetInfo(presetInfo)
-      wx.showToast({ title: '备注已保存', icon: 'success' })
-      self.setData({ showNoteModal: false })
-      self.loadData()
-    })
-  },
-
-  // ===== 通知 =====
-  onSendNotice: function () {
-    var self = this
-    wx.showModal({
-      title: '版本更新通知',
-      content: '确定向所有用户发送版本更新通知吗？',
-      success: function (res) {
-        if (res.confirm) {
-          store.loadPresetInfo(function (presetInfo) {
-            presetInfo = presetInfo || {}
-            presetInfo.noticeSent = true
-            presetInfo.noticeVersion = self.data.version
-            presetInfo.noticeTime = Date.now()
-            store.savePresetInfo(presetInfo)
-            self.setData({ noticeSent: true })
-            wx.showToast({ title: '通知已发送', icon: 'success' })
-          })
-        }
-      }
-    })
-  },
-
-  // ===== 付费 =====
-  onPaymentPhoneInput: function (e) { this.setData({ paymentPhone: e.detail.value }) },
-
-  onGrantStorage: function () {
-    var phone = this.data.paymentPhone
-    if (!phone || !/^1\d{10}$/.test(phone)) {
-      wx.showToast({ title: '请输入正确的手机号', icon: 'none' }); return
-    }
-    var self = this
-    store.loadWxUsers(function (wxUsers) {
-      wxUsers = wxUsers || {}
-      var found = false
-      var keys = Object.keys(wxUsers)
-      for (var i = 0; i < keys.length; i++) {
-        var u = wxUsers[keys[i]]
-        if (u && u.phone === phone) {
-          u.paidUntil = Date.now() + 36500 * 24 * 60 * 60 * 1000; found = true; break
-        }
-      }
-      if (!found) {
-        wxUsers['wx_' + phone] = { phone: phone, paidUntil: Date.now() + 36500 * 24 * 60 * 60 * 1000, firstLoginTime: Date.now() }
-      }
-      store.saveWxUsers(wxUsers)
-      self.setData({ paymentStatus: '已为 ' + phone + ' 开通云端存储（永久）' })
-      wx.showToast({ title: '开通成功', icon: 'success' })
-    })
-  },
-
-  onGrantBeauty: function () {
-    var phone = this.data.paymentPhone
-    if (!phone || !/^1\d{10}$/.test(phone)) {
-      wx.showToast({ title: '请输入正确的手机号', icon: 'none' }); return
-    }
-    var self = this
-    store.loadWxUsers(function (wxUsers) {
-      wxUsers = wxUsers || {}
-      var found = false
-      var keys = Object.keys(wxUsers)
-      for (var i = 0; i < keys.length; i++) {
-        var u = wxUsers[keys[i]]
-        if (u && u.phone === phone) {
-          u.paidUntil = Date.now() + 36500 * 24 * 60 * 60 * 1000
-          u.upgradePaidUntil = Date.now() + 36500 * 24 * 60 * 60 * 1000
-          found = true; break
-        }
-      }
-      if (!found) {
-        wxUsers['wx_' + phone] = { phone: phone, paidUntil: Date.now() + 36500 * 24 * 60 * 60 * 1000, upgradePaidUntil: Date.now() + 36500 * 24 * 60 * 60 * 1000, firstLoginTime: Date.now() }
-      }
-      store.saveWxUsers(wxUsers)
-      self.setData({ paymentStatus: '已为 ' + phone + ' 开通变美计划+云存储（永久）' })
-      wx.showToast({ title: '开通成功', icon: 'success' })
-    })
-  },
-
-  // ===== 搜索 =====
-  onSearchPhoneInput: function (e) {
-    this.setData({ searchPhone: e.detail.value }); this.applyFilter()
-  },
-
-  // ===== 密码 =====
-  onOldPwInput: function (e) { this.setData({ oldPw: e.detail.value }) },
-  onNewPwInput: function (e) { this.setData({ newPw: e.detail.value }) },
-  onNewPw2Input: function (e) { this.setData({ newPw2: e.detail.value }) },
-
-  onChangeAdminPw: function () {
-    var oldPw = this.data.oldPw, newPw = this.data.newPw, newPw2 = this.data.newPw2
     if (!oldPw) { wx.showToast({ title: '请输入当前密码', icon: 'none' }); return }
+    if (oldPw !== config.DEFAULT_ADMIN_PW) {
+      wx.showToast({ title: '当前密码不正确', icon: 'none' })
+      return
+    }
     if (!newPw) { wx.showToast({ title: '请输入新密码', icon: 'none' }); return }
     if (newPw.length < 6) { wx.showToast({ title: '新密码至少6位', icon: 'none' }); return }
-    if (newPw !== newPw2) { wx.showToast({ title: '两次密码不一致', icon: 'none' }); return }
-    if (oldPw !== config.DEFAULT_ADMIN_PW && oldPw !== wx.getStorageSync('admin_pw')) {
-      wx.showToast({ title: '当前密码不正确', icon: 'none' }); return
-    }
-    if (oldPw === newPw) { wx.showToast({ title: '新密码不能与当前密码相同', icon: 'none' }); return }
+    if (newPw === oldPw) { wx.showToast({ title: '新密码不能与当前密码相同', icon: 'none' }); return }
+    if (newPw !== newPw2) { wx.showToast({ title: '两次密码输入不一致', icon: 'none' }); return }
+
+    // 更新密码
+    config.DEFAULT_ADMIN_PW = newPw
     wx.setStorageSync('admin_pw', newPw)
-    this.setData({ oldPw: '', newPw: '', newPw2: '' })
     wx.showToast({ title: '密码修改成功', icon: 'success' })
+    this.setData({ oldPw: '', newPw: '', newPw2: '' })
+  },
+
+  // ===== 用户弹窗 =====
+  showAllUsers: function () {
+    var self = this
+    store.loadPresetInfo(function(pi) {
+      pi = pi || {}
+      var configKeys = store.getPresetKeys()
+      var list = []
+      configKeys.forEach(function(k) {
+        var info = pi[k] || {}
+        if (info.phone) {
+          var status = info.activated ? '已启用' : '未启用'
+          list.push({
+            phone: info.phone,
+            meta: (info.gender || '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + ' · 密钥' + k,
+            status: status,
+            statusClass: info.activated ? 'key-badge-on' : 'key-badge-off'
+          })
+        }
+      })
+      self.setData({
+        showAllUsersModal: true,
+        allUsersList: list
+      })
+    })
+  },
+
+  closeAllUsersModal: function () {
+    this.setData({ showAllUsersModal: false })
+  },
+
+  showUsersByType: function (e) {
+    wx.showToast({ title: '点击查看详情', icon: 'none' })
+    // 触发显示所有用户（简化实现）
+    this.showAllUsers()
   }
 })
