@@ -125,34 +125,35 @@ page {
   margin-top: 28rpx;
   flex-wrap: wrap;
 }
-/* 升级版快捷入口 — 纯文字高级设计 */
+/* 升级版快捷入口 — 胶囊标签设计 */
 .beauty-quick-btns {
   display: flex;
   gap: 16rpx;
   margin-top: 20rpx;
 }
 .beauty-quick-btn {
-  flex: 1;
-  padding: 28rpx 20rpx;
-  border-radius: 24rpx;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+  padding: 16rpx 28rpx;
+  border-radius: 100rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  backdrop-filter: blur(12rpx);
 }
 .beauty-quick-skincare {
-  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
-  border: 3rpx solid #c4b5fd;
+  background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(139,92,246,0.06));
+  border: 2rpx solid rgba(139,92,246,0.2);
 }
 .beauty-quick-mood {
-  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
-  border: 3rpx solid #fbcfe8;
+  background: linear-gradient(135deg, rgba(236,72,153,0.12), rgba(236,72,153,0.06));
+  border: 2rpx solid rgba(236,72,153,0.2);
+}
+.beauty-quick-icon {
+  font-size: 28rpx;
 }
 .beauty-quick-title {
-  font-size: 30rpx;
-  font-weight: 800;
-  letter-spacing: 2rpx;
-  position: relative;
-  z-index: 1;
+  font-size: 26rpx;
+  font-weight: 700;
+  letter-spacing: 1rpx;
 }
 .beauty-quick-skincare .beauty-quick-title { color: #7c3aed; }
 .beauty-quick-mood .beauty-quick-title { color: #be185d; }
