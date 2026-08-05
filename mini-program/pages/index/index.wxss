@@ -11,7 +11,7 @@ page {
 .hero {
   background: var(--grad-hero);
   color: #fff;
-  padding: 28rpx 32rpx 24rpx;
+  padding: 22rpx 30rpx 20rpx;
   box-shadow: 0 16rpx 64rpx rgba(124,58,237,0.22);
   overflow: hidden;
 }
@@ -392,7 +392,7 @@ page {
 }
 .weight-input-am {
   flex: 1;
-  font-size: 38rpx;
+  font-size: 52rpx;
   font-weight: 800;
   color: rgba(255,255,255,0.95);
   background: rgba(255,255,255,0.18);
@@ -404,12 +404,12 @@ page {
 }
 .weight-input-am::placeholder {
   color: rgba(255,255,255,0.55);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 500;
 }
 .weight-input-pm {
   flex: 1;
-  font-size: 38rpx;
+  font-size: 52rpx;
   font-weight: 800;
   color: rgba(255,255,255,0.9);
   background: rgba(255,255,255,0.08);
@@ -421,7 +421,7 @@ page {
 }
 .weight-input-pm::placeholder {
   color: rgba(255,255,255,0.4);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 500;
 }
 .fat-inline {
@@ -857,5 +857,5 @@ page {
 
 /* 页面主容器 padding（对齐HTML .main） */
 .main-content {
-  padding: 16rpx 32rpx 0;
+  padding: 16rpx 30rpx 0;
 }
