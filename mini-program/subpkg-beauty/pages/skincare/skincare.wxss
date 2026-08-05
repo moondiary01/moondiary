@@ -727,6 +727,10 @@
 /* 子项目 */
 .detail-sub-item {
   margin-bottom: 12rpx;
+  background: rgba(237,233,254,0.4);
+  border: 3rpx solid #8b5cf6;
+  border-radius: 14rpx;
+  padding: 12rpx 16rpx;
 }
 .detail-sub-item:last-child { margin-bottom: 0; }
 
