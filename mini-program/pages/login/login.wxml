@@ -1,5 +1,20 @@
 <!-- pages/login/login.wxml -->
-<view class="login-page">
+
+<!-- ===== Splash 品牌动画 ===== -->
+<view class="splash" wx:if="{{showSplash}}">
+  <view class="splash-logo">
+    <view class="splash-moon"></view>
+  </view>
+  <view class="splash-title">
+    <text class="splash-brand">Moon Memo</text>
+    <text class="splash-sub">月亮日记</text>
+  </view>
+  <view class="splash-loader">
+    <view class="splash-loader-bar"></view>
+  </view>
+</view>
+
+<view class="login-page" wx:if="{{!showSplash}}">
   <!-- 毛玻璃卡片 -->
   <view class="gate-card">
     <!-- SVG 动画月亮 logo -->

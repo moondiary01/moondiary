@@ -5,6 +5,7 @@ const config = require('../../utils/config.js')
 
 Page({
   data: {
+    showSplash: true,
     mode: 'user',
     keyPhone: '',
     keyCode: '',
@@ -13,6 +14,12 @@ Page({
   },
 
   onLoad: function () {
+    var self = this
+    // Splash 动画 2.8s 后显示登录页
+    setTimeout(function () {
+      self.setData({ showSplash: false })
+    }, 2800)
+
     // 检查是否已登录，如果已登录直接跳转首页
     var loginType = store.getLocal('loginType')
     var userKey = store.getLocal('userKey')

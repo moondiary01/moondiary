@@ -1,5 +1,113 @@
-/* pages/login/login.wxss */
-.login-page {
+/* ===== Splash 品牌动画 ===== */
+.splash {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--grad-hero);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+  animation: splashFade 2.8s ease forwards;
+}
+@keyframes splashFade {
+  0% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+.splash-logo {
+  width: 200rpx;
+  height: 200rpx;
+  margin-top: -120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: splashLogoIn 0.8s cubic-bezier(0.34,1.56,0.64,1), splashLogoSpin 3s ease-in-out, splashFloat 2s ease-in-out 0.8s infinite;
+}
+@keyframes splashLogoIn {
+  from { transform: scale(0) rotate(-180deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
+}
+@keyframes splashLogoSpin {
+  0% { transform: rotate(0); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes splashFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-24rpx); }
+}
+
+/* CSS 月牙 — Splash 用 */
+.splash-moon {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7C3AED 0%, #C026D3 50%, #EC4899 100%);
+  position: relative;
+  box-shadow: 0 8rpx 48rpx rgba(255,255,255,0.25);
+}
+.splash-moon::after {
+  content: '';
+  position: absolute;
+  top: -16rpx;
+  right: -36rpx;
+  width: 144rpx;
+  height: 192rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6D28D9, #9333EA);
+}
+
+.splash-title {
+  color: #fff;
+  font-size: 56rpx;
+  font-weight: 900;
+  letter-spacing: 4rpx;
+  margin-top: 40rpx;
+  animation: splashTextIn 0.6s 0.3s ease both;
+  font-style: italic;
+  text-shadow: 0 8rpx 40rpx rgba(0,0,0,0.2);
+  text-align: center;
+  line-height: 1.3;
+}
+.splash-brand {
+  font-size: 56rpx;
+  font-weight: 900;
+  display: block;
+}
+.splash-sub {
+  color: rgba(255,255,255,0.85);
+  font-size: 28rpx;
+  font-weight: 400;
+  font-style: normal;
+  display: block;
+  animation: splashTextIn 0.6s 0.5s ease both;
+}
+@keyframes splashTextIn {
+  from { opacity: 0; transform: translateY(10rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.splash-loader {
+  width: 400rpx;
+  height: 8rpx;
+  background: rgba(255,255,255,0.2);
+  border-radius: 4rpx;
+  margin-top: 60rpx;
+  overflow: hidden;
+  animation: splashTextIn 0.6s 0.7s ease both;
+}
+.splash-loader-bar {
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  animation: loaderSlide 1.2s ease-in-out infinite;
+}
+@keyframes loaderSlide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ===== 登录页面 ===== */
   min-height: 100vh;
   background: linear-gradient(135deg, #6D28D9 0%, #9333EA 30%, #C026D3 100%);
   display: flex;
@@ -137,7 +245,7 @@
   letter-spacing: -1rpx;
 }
 .gate-title .brand {
-  background: linear-gradient(135deg, #e11d48, #f97316);
+  background: linear-gradient(135deg, var(--rose-600), var(--coral));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
