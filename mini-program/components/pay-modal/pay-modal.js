@@ -10,7 +10,6 @@ Component({
   },
 
   data: {
-    showActivation: false,
     activationCode: '',
     activationMsg: ''
   },
@@ -38,14 +37,6 @@ Component({
       this.triggerEvent('close')
     },
 
-    // 激活码切换
-    onToggleActivation: function () {
-      this.setData({
-        showActivation: !this.data.showActivation,
-        activationMsg: ''
-      })
-    },
-
     onActivationCodeInput: function (e) {
       this.setData({ activationCode: e.detail.value, activationMsg: '' })
     },
@@ -70,7 +61,6 @@ Component({
 
       // 检查是否是预设密钥
       if (!store.isPresetKey(code)) {
-        // 也检查动态密钥
         var dynamicKeys = store.getLocal('_dynamic_keys')
         try { dynamicKeys = dynamicKeys ? JSON.parse(dynamicKeys) : {}; } catch (e) { dynamicKeys = {}; }
         if (!dynamicKeys[code]) {

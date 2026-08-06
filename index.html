@@ -1674,22 +1674,20 @@ _loadCosSdk(0);
           <button onclick="purchaseBasicPlan();playClick()" style="width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-size:0.95rem;font-weight:800;letter-spacing:1.5px;cursor:pointer;box-shadow:0 6px 24px rgba(245,158,11,0.4);transition:all 0.25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(245,158,11,0.4)'">立即购买开通使用</button>
         </div>
       </div>
-      <!-- 购买须知 + 激活码 + 隐私协议 -->
-      <div style="display:flex;justify-content:center;align-items:center;gap:20px">
-        <a href="#" onclick="showPurchaseNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500">购买须知</a>
-        <span style="color:#e5e7eb">|</span>
-        <a href="#" onclick="showActivationCodeInput();return false" style="font-size:0.72rem;color:#f59e0b;text-decoration:none;font-weight:600">激活码</a>
-        <span style="color:#e5e7eb">|</span>
-        <a href="#" onclick="showPrivacyNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500">隐私协议</a>
-      </div>
-      <!-- 激活码输入区 -->
-      <div id="activationCodeArea" style="display:none;margin-top:12px;padding:14px;border-radius:14px;background:var(--rose-50);border:1px solid var(--border)">
-        <div style="font-size:0.8rem;font-weight:700;color:var(--ink);margin-bottom:8px;text-align:center">输入激活码免费开通</div>
+      <!-- 激活码输入区（默认展开） -->
+      <div id="activationCodeArea" style="margin-top:12px;padding:14px;border-radius:14px;background:var(--rose-50);border:1px solid var(--border)">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--ink);margin-bottom:8px;text-align:center">输入激活码免费开通，立即使用</div>
         <div style="display:flex;gap:8px">
           <input type="text" id="activationCodeInput" class="gate-input" placeholder="6位激活码" maxlength="6" inputmode="numeric" style="flex:1;letter-spacing:6px;font-size:1rem;margin-bottom:0">
           <button class="btn" onclick="verifyActivationCode()" style="flex-shrink:0;padding:10px 16px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-weight:700;font-size:0.8rem;border:none;cursor:pointer;white-space:nowrap">开通</button>
         </div>
         <div id="activationCodeMsg" style="font-size:0.7rem;color:var(--rose-500);text-align:center;margin-top:6px;min-height:16px"></div>
+      </div>
+      <!-- 购买须知 + 隐私协议 -->
+      <div style="display:flex;justify-content:center;align-items:center;gap:20px;margin-top:12px">
+        <a href="#" onclick="showPurchaseNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500">购买须知</a>
+        <span style="color:#e5e7eb">|</span>
+        <a href="#" onclick="showPrivacyNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500">隐私协议</a>
       </div>
       <!-- 稍后再说 -->
       <div style="text-align:center;margin-top:14px">
@@ -3339,7 +3337,6 @@ function verifyActivationCode() {
   payments[phone].storagePaidBy = 'activation_code';
   savePayments(payments);
   document.getElementById('trialExpiredModal').classList.remove('show');
-  document.getElementById('activationCodeArea').style.display = 'none';
   showToast('激活码验证成功，普通版已开通');
   refreshBeautyEntryUI();
   renderAll();
@@ -4146,21 +4143,11 @@ function refreshBeautyEntryUI() {
   var heroActEntry = document.getElementById('heroActivationEntry'); /* 激活码入口 */
   
   if (isAdminUser()) {
-    /* 管理员：模拟试用用户流程 */
-    var adminSimulated = sessionStorage.getItem('admin_sim_basic') === '1';
-    if (adminSimulated) {
-      /* 已模拟购买：全显示 */
-      if (quickBtns) quickBtns.style.display = 'flex';
-      if (bottomCard) bottomCard.style.display = '';
-      if (basicEntry) basicEntry.style.display = 'none';
-      if (heroActEntry) heroActEntry.style.display = 'none';
-    } else {
-      /* 未模拟购买：显示19.9入口+快捷入口+底部卡片（模拟试用用户） */
-      if (quickBtns) quickBtns.style.display = 'flex';
-      if (bottomCard) bottomCard.style.display = '';
-      if (basicEntry) basicEntry.style.display = '';
-      if (heroActEntry) heroActEntry.style.display = '';
-    }
+    /* 管理员：直接展示全部功能，无需试用/购买 */
+    if (quickBtns) quickBtns.style.display = 'flex';
+    if (bottomCard) bottomCard.style.display = 'none';
+    if (basicEntry) basicEntry.style.display = 'none';
+    if (heroActEntry) heroActEntry.style.display = 'none';
     return;
   }
   
@@ -4257,13 +4244,6 @@ function openBasicPlanFromHero() {
 function purchaseBasicPlan() {
   document.getElementById('trialExpiredModal').classList.remove('show');
   var phone = getCurrentPhone();
-  /* 管理员模拟购买：不走真实支付，直接标记并刷新UI */
-  if (isAdminUser()) {
-    sessionStorage.setItem('admin_sim_basic', '1');
-    showToast(' 普通版已开通（管理员模拟），永久有效');
-    refreshBeautyEntryUI();
-    return;
-  }
   if (!phone || phone === 'local') {
     showToast('请先登录手机号');
     return;

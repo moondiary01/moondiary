@@ -182,6 +182,13 @@
 .pm-activation-area {
   margin-bottom: 24rpx;
 }
+.pm-activation-title {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 10rpx;
+}
 .pm-activation-row {
   display: flex;
   gap: 12rpx;
