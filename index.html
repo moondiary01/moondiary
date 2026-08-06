@@ -2336,6 +2336,7 @@ const PAYMENT_STORE = 'moondiary_payments'; /* 付费状态本地存储 */
 const CLOUD_PAYMENT_PATH = '_payments'; /* 云端付费数据路径 */
 const CLOUD_KEYS_PATH = '_keys'; /* 云端动态密钥池 */
 const CLOUD_USED_KEYS_PATH = '_used_keys'; /* 云端已用密钥 */
+const CLOUD_PHONE_USERS_PATH = '_phone_users'; /* 云端手机验证码用户信息 */
 /* 预设密钥池：硬编码在代码里，任何设备打开页面都能验证这些密钥 */
 /* 格式：6位纯数字，无规律组合，不绑定具体手机号 */
 const PRESET_KEYS = [
@@ -2673,6 +2674,35 @@ function loadPayments() {
 function savePayments(payments) {
   try { localStorage.setItem(PAYMENT_STORE, JSON.stringify(payments)); } catch(e) {}
   saveToCloudImmediate(CLOUD_PAYMENT_PATH, payments);
+}
+
+/* ---------- 手机验证码用户信息管理 ---------- */
+function loadPhoneUsers() {
+  try { return JSON.parse(localStorage.getItem('moondiary_phone_users')) || {}; }
+  catch(e) { return {}; }
+}
+function savePhoneUsers(users) {
+  try { localStorage.setItem('moondiary_phone_users', JSON.stringify(users)); } catch(e) {}
+  saveToCloudImmediate(CLOUD_PHONE_USERS_PATH, users);
+}
+/* 同步当前用户信息到云端 _phone_users */
+function syncPhoneUserToCloud() {
+  if (isAdminUser()) return;
+  var phone = getCurrentPhone();
+  if (!phone || phone === 'admin' || phone === 'local' || isPresetKey(phone)) return;
+  loadFromCloud(CLOUD_PHONE_USERS_PATH, function(cloudUsers) {
+    var users = cloudUsers || {};
+    if (!users[phone]) users[phone] = {};
+    users[phone].phone = phone;
+    if (state.name) users[phone].nickname = state.name;
+    if (state.gender) users[phone].gender = state.gender;
+    if (state.age !== null && state.age !== undefined) users[phone].age = state.age;
+    users[phone].lastLogin = Date.now();
+    if (!users[phone].firstLogin) users[phone].firstLogin = Date.now();
+    users[phone].loginType = 'phone';
+    users[phone].version = APP_VERSION;
+    savePhoneUsers(users);
+  });
 }
 
 /* 密钥用户免费开通19.9普通版（云端存储），标记 keyFree 区分付费用户 */
@@ -3374,13 +3404,15 @@ function enterApp(isAdmin) {
   loadState();
   renderAll();
   updateClock();
-  /* 非管理员密钥用户：延迟同步信息到管理员后台（等云端数据加载完） */
+  /* 非管理员用户：延迟同步信息到管理员后台（等云端数据加载完） */
   if (!isAdmin) {
     var syncKey = localStorage.getItem(SESSION_KEY);
     var syncPhone = localStorage.getItem(SESSION_PHONE);
     if (syncKey && syncPhone && isPresetKey(syncKey)) {
       setTimeout(function() { syncUserInfoToPreset(syncKey, syncPhone); }, 3000);
     }
+    /* 手机验证码用户同步到 _phone_users */
+    setTimeout(function() { syncPhoneUserToCloud(); }, 4000);
   }
 }
 
@@ -5753,9 +5785,75 @@ function renderKeyList() {
     Object.keys(allPayments).forEach(function(p) {
       if (allPayments[p] && allPayments[p].beautyPaid) payCount++;
     });
-    document.getElementById('adminVipUpgrade').textContent = payCount;
-    document.getElementById('adminKeyUsers').textContent = freeCount;
-    document.getElementById('adminTotal').textContent = freeCount + trialCount + vipBasicCount + payCount;
+    /* 读取手机验证码用户并追加到列表 */
+    loadFromCloud(CLOUD_PHONE_USERS_PATH, function(phoneUsers) {
+      if (phoneUsers) {
+        var puKeys = Object.keys(phoneUsers);
+        puKeys.forEach(function(pk) {
+          var pu = phoneUsers[pk];
+          if (!pu) return;
+          var puPhone = pu.phone || '';
+          var isTrial = false, isVipBasic = false, isVipUpgrade = false;
+          if (puPhone && allPayments[puPhone]) {
+            if (allPayments[puPhone].beautyPaid || allPayments[puPhone].beautyTrial) isVipUpgrade = true;
+            else if (allPayments[puPhone].storagePaid) isVipBasic = true;
+          }
+          if (!isVipBasic && !isVipUpgrade) {
+            var puFirstLogin = pu.firstLogin || now;
+            isTrial = (now - puFirstLogin < trialMs);
+          }
+          /* 统计 */
+          if (isVipUpgrade) payCount++;
+          else if (isVipBasic) vipBasicCount++;
+          else if (isTrial) trialCount++;
+          else freeCount++;
+          /* 搜索过滤 */
+          if (searchTerm) {
+            if (puPhone.indexOf(searchTerm) === -1 && pk.indexOf(searchTerm) === -1) return;
+          } else {
+            return; /* 非搜索模式不追加到列表（只统计），搜索时才展示 */
+          }
+          var puType = isVipUpgrade ? '升级版' : (isVipBasic ? '普通版' : (isTrial ? '试用期' : '已过期'));
+          var puVerBadge = isVipUpgrade
+            ? '<span class="key-badge" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-size:0.65rem">升级版</span>'
+            : (isVipBasic
+              ? '<span class="key-badge" style="background:#10b981;color:#fff;font-size:0.65rem">普通版</span>'
+              : (isTrial
+                ? '<span class="key-badge" style="background:#f59e0b;color:#fff;font-size:0.65rem">试用期</span>'
+                : '<span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">已过期</span>'));
+          var puRemain = '';
+          if (isTrial) {
+            var puRemainH = Math.floor((trialMs - (now - (pu.firstLogin || now))) / (60*60*1000));
+            puRemain = ' · 剩余' + puRemainH + 'h';
+          }
+          var puNick = pu.nickname || '未设置';
+          var puGender = pu.gender || '—';
+          var puAge = pu.age ? pu.age + '岁' : '—';
+          var puReg = new Date(pu.firstLogin || now).toLocaleDateString();
+          var phoneMatchHtml = '<div class="key-row-v2">'
+            + '<div class="key-row-main">'
+              + '<div class="key-code">' + pk + '</div>'
+              + puVerBadge
+              + '<span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">手机用户</span>'
+            + '</div>'
+            + '<div class="key-row-info">'
+              + '<span class="key-info-icon"></span>'
+              + '<span class="key-info-text">手机:' + puPhone + ' · 昵称:' + puNick + ' · ' + puGender + '/' + puAge + ' · 注册' + puReg + puRemain + '</span>'
+            + '</div>'
+          + '</div>';
+          var curHtml2 = document.getElementById('keyList').innerHTML;
+          if (curHtml2.indexOf('手机用户') === -1) {
+            curHtml2 += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:0.75rem;font-weight:700;color:var(--text-l);margin-bottom:8px">手机用户</div>';
+          }
+          curHtml2 += phoneMatchHtml;
+          if (curHtml2.indexOf('</div>', curHtml2.lastIndexOf('手机用户</div>')) === -1) curHtml2 += '</div>';
+          document.getElementById('keyList').innerHTML = curHtml2;
+        });
+      }
+      document.getElementById('adminVipUpgrade').textContent = payCount;
+      document.getElementById('adminKeyUsers').textContent = freeCount;
+      document.getElementById('adminTotal').textContent = freeCount + trialCount + vipBasicCount + payCount;
+    });
   });
 }
 
@@ -5898,9 +5996,33 @@ function showAllUsers() {
       count++;
     }
   });
-  if (count === 0) html = '<p style="color:var(--text-l);font-size:0.82rem;text-align:center;padding:20px">暂无已填写手机号的用户</p>';
-  document.getElementById('allUsersList').innerHTML = html;
-  document.getElementById('allUsersModal').classList.add('show');
+  /* 手机验证码用户 */
+  loadFromCloud(CLOUD_PHONE_USERS_PATH, function(phoneUsers) {
+    if (phoneUsers) {
+      Object.keys(phoneUsers).forEach(function(pk) {
+        var pu = phoneUsers[pk];
+        if (!pu || !pu.phone) return;
+        var regDate = pu.firstLogin ? new Date(pu.firstLogin).toLocaleDateString() : '—';
+        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + pu.phone + '</div><div class="user-info-meta">' + (pu.nickname||'未设置') + (pu.gender ? ' · ' + pu.gender : '') + (pu.age ? ' · ' + pu.age + '岁' : '') + ' · 注册' + regDate + ' · 手机用户</div></div><span class="key-badge active">手机用户</span></div>';
+        count++;
+      });
+    }
+    /* 微信用户 */
+    loadFromCloud('_wx_users', function(wxUsers) {
+      if (wxUsers) {
+        Object.keys(wxUsers).forEach(function(uk) {
+          var u = wxUsers[uk];
+          if (!u) return;
+          var regDate = u.firstLoginTime ? new Date(u.firstLoginTime).toLocaleDateString() : '—';
+          html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + (u.phone||'未绑定手机号') + '</div><div class="user-info-meta">' + (u.nickname||u.name||'未设置') + (u.gender ? ' · ' + u.gender : '') + (u.age ? ' · ' + u.age + '岁' : '') + ' · 注册' + regDate + ' · ' + uk + '</div></div><span class="key-badge active">微信用户</span></div>';
+          count++;
+        });
+      }
+      if (count === 0) html = '<p style="color:var(--text-l);font-size:0.82rem;text-align:center;padding:20px">暂无用户</p>';
+      document.getElementById('allUsersList').innerHTML = html;
+      document.getElementById('allUsersModal').classList.add('show');
+    });
+  });
 }
 
 /* 按类型显示用户手机号 */
@@ -5938,55 +6060,80 @@ function showUsersByType(type) {
       }
     });
   } else {
-    /* 微信/手机用户类型：异步读取 _wx_users */
+    /* 微信/手机用户类型：异步读取 _wx_users 和 _phone_users */
+    var allPayments = loadPayments();
     loadFromCloud('_wx_users', function(wxUsers) {
-      var allPayments = loadPayments();
-      if (!wxUsers) {
-        document.getElementById('allUsersList').innerHTML = '<p style="color:var(--text-l);font-size:0.82rem;text-align:center;padding:20px">暂无' + titleMap[type] + '</p>';
-        document.getElementById('allUsersModal').classList.add('show');
-        return;
-      }
-      Object.keys(wxUsers).forEach(function(uk) {
-        var u = wxUsers[uk];
-        if (!u) return;
-        var firstLogin = u.firstLoginTime || now;
-        var paidUntil = u.paidUntil || null;
-        var userPhone = u.phone || '';
-        var isVipUpgrade = false;
-        if (userPhone && allPayments[userPhone] && (allPayments[userPhone].beautyPaid || allPayments[userPhone].beautyTrial)) {
-          isVipUpgrade = true;
-        }
-        var isVipBasic = paidUntil && paidUntil > now;
-        if (!isVipUpgrade && !isVipBasic && userPhone && allPayments[userPhone] && allPayments[userPhone].storagePaid) {
-          isVipBasic = true;
-        }
-        var isTrial = (now - firstLogin < trialMs) && !isVipBasic && !isVipUpgrade;
+      if (!wxUsers) wxUsers = {};
+      loadFromCloud(CLOUD_PHONE_USERS_PATH, function(phoneUsers) {
+        if (!phoneUsers) phoneUsers = {};
+        /* 合并微信用户和手机用户 */
+        var allUsers = [];
+        Object.keys(wxUsers).forEach(function(uk) {
+          var u = wxUsers[uk];
+          if (!u) return;
+          allUsers.push({
+            phone: u.phone || '',
+            nickname: u.nickname || u.name || '未设置',
+            gender: u.gender || '—',
+            age: u.age,
+            firstLogin: u.firstLoginTime || now,
+            paidUntil: u.paidUntil || null,
+            source: '微信用户',
+            id: uk
+          });
+        });
+        Object.keys(phoneUsers).forEach(function(pk) {
+          var pu = phoneUsers[pk];
+          if (!pu) return;
+          allUsers.push({
+            phone: pu.phone || '',
+            nickname: pu.nickname || '未设置',
+            gender: pu.gender || '—',
+            age: pu.age,
+            firstLogin: pu.firstLogin || now,
+            paidUntil: null,
+            source: '手机用户',
+            id: pk
+          });
+        });
 
-        var match = false;
-        if (type === 'trial' && isTrial) match = true;
-        if (type === 'vipBasic' && isVipBasic && !isVipUpgrade) match = true;
-        if (type === 'vipUpgrade' && isVipUpgrade) match = true;
-
-        if (match) {
-          var phone = userPhone || '未绑定手机号';
-          var remainText = '';
-          if (isTrial) {
-            var remainMs = trialMs - (now - firstLogin);
-            var remainH = Math.floor(remainMs / (60*60*1000));
-            remainText = ' · 剩余' + remainH + 'h';
+        allUsers.forEach(function(u) {
+          var userPhone = u.phone;
+          var isVipUpgrade = false;
+          if (userPhone && allPayments[userPhone] && (allPayments[userPhone].beautyPaid || allPayments[userPhone].beautyTrial)) {
+            isVipUpgrade = true;
           }
-          var nickname = u.nickname || u.name || '未设置';
-          var gender = u.gender || '—';
-          var age = u.age ? u.age + '岁' : '—';
-          var regDate = new Date(firstLogin).toLocaleDateString();
-          var versionTag = isVipUpgrade ? '升级版' : (isVipBasic ? '普通版' : '试用期');
-          html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + nickname + ' · ' + gender + '/' + age + ' · 注册' + regDate + remainText + ' · ' + uk + '</div></div><span class="key-badge active">' + versionTag + '</span></div>';
-          count++;
-        }
+          var isVipBasic = u.paidUntil && u.paidUntil > now;
+          if (!isVipUpgrade && !isVipBasic && userPhone && allPayments[userPhone] && allPayments[userPhone].storagePaid) {
+            isVipBasic = true;
+          }
+          var isTrial = (now - u.firstLogin < trialMs) && !isVipBasic && !isVipUpgrade;
+
+          var match = false;
+          if (type === 'trial' && isTrial) match = true;
+          if (type === 'vipBasic' && isVipBasic && !isVipUpgrade) match = true;
+          if (type === 'vipUpgrade' && isVipUpgrade) match = true;
+
+          if (match) {
+            var phone = userPhone || '未绑定手机号';
+            var remainText = '';
+            if (isTrial) {
+              var remainMs = trialMs - (now - u.firstLogin);
+              var remainH = Math.floor(remainMs / (60*60*1000));
+              remainText = ' · 剩余' + remainH + 'h';
+            }
+            var regDate = new Date(u.firstLogin).toLocaleDateString();
+            var versionTag = isVipUpgrade ? '升级版' : (isVipBasic ? '普通版' : '试用期');
+            var ageText = u.age ? u.age + '岁' : '—';
+            html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + u.nickname + ' · ' + u.gender + '/' + ageText + ' · 注册' + regDate + remainText + ' · ' + u.source + '</div></div><span class="key-badge active">' + versionTag + '</span></div>';
+            count++;
+          }
+        });
+
+        if (count === 0) html = '<p style="color:var(--text-l);font-size:0.82rem;text-align:center;padding:20px">暂无' + titleMap[type] + '</p>';
+        document.getElementById('allUsersList').innerHTML = html;
+        document.getElementById('allUsersModal').classList.add('show');
       });
-      if (count === 0) html = '<p style="color:var(--text-l);font-size:0.82rem;text-align:center;padding:20px">暂无' + titleMap[type] + '</p>';
-      document.getElementById('allUsersList').innerHTML = html;
-      document.getElementById('allUsersModal').classList.add('show');
     });
     return;
   }

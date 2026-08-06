@@ -48,6 +48,8 @@ Page({
   // ===== 用户统计（试用期/普通版/升级版/密钥用户） =====
   loadAdminStats: function () {
     var self = this
+    var now = Date.now()
+    var trialMs = 24 * 60 * 60 * 1000
     store.loadPresetInfo(function (pi) {
       pi = pi || {}
       store.loadPayments(function (payments) {
@@ -65,12 +67,10 @@ Page({
           } else if (p.storagePaid) {
             basicCount++
           } else if (phone && p.trialStart) {
-            var now = Date.now()
             var trialExpires = p.trialExpires || 0
             if (now < trialExpires) {
               trialCount++
             } else {
-              // 试用过期但未付费
               keyUserCount++
             }
           } else {
@@ -78,14 +78,38 @@ Page({
           }
         })
 
-        self.setData({
-          adminStats: {
-            trial: trialCount,
-            basic: basicCount,
-            upgrade: upgradeCount,
-            keyUser: keyUserCount,
-            total: configKeys.length
-          }
+        /* 加上微信用户和手机用户统计 */
+        store.loadFromCloud('_wx_users', function(wxUsers) {
+          wxUsers = wxUsers || {}
+          store.loadFromCloud('_phone_users', function(phoneUsers) {
+            phoneUsers = phoneUsers || {}
+            var allUsers = []
+            Object.keys(wxUsers).forEach(function(uk) {
+              var u = wxUsers[uk]
+              if (u) allUsers.push({ phone: u.phone || '', firstLogin: u.firstLoginTime || now, source: 'wx' })
+            })
+            Object.keys(phoneUsers).forEach(function(pk) {
+              var pu = phoneUsers[pk]
+              if (pu) allUsers.push({ phone: pu.phone || '', firstLogin: pu.firstLogin || now, source: 'phone' })
+            })
+            allUsers.forEach(function(u) {
+              var p = payments[u.phone] || {}
+              if (p.beautyPaid || p.beautyTrial) upgradeCount++
+              else if (p.storagePaid) basicCount++
+              else if (now - u.firstLogin < trialMs) trialCount++
+              else keyUserCount++
+            })
+
+            self.setData({
+              adminStats: {
+                trial: trialCount,
+                basic: basicCount,
+                upgrade: upgradeCount,
+                keyUser: keyUserCount,
+                total: configKeys.length + allUsers.length
+              }
+            })
+          })
         })
       })
     })
@@ -433,10 +457,46 @@ Page({
           }
         })
 
-        self.setData({
-          showUsersModal: true,
-          usersModalTitle: '所有用户',
-          usersModalList: list
+        /* 读取微信用户和手机用户 */
+        store.loadFromCloud('_wx_users', function(wxUsers) {
+          wxUsers = wxUsers || {}
+          store.loadFromCloud('_phone_users', function(phoneUsers) {
+            phoneUsers = phoneUsers || {}
+            Object.keys(wxUsers).forEach(function(uk) {
+              var u = wxUsers[uk]
+              if (!u) return
+              var p = payments[u.phone] || {}
+              var status = '微信用户', statusClass = 'key-badge-free'
+              if (p.beautyPaid || p.beautyTrial) { status = '升级版'; statusClass = 'key-badge-on' }
+              else if (p.storagePaid) { status = '普通版'; statusClass = 'key-badge-on' }
+              list.push({
+                phone: u.phone || '未绑定',
+                meta: (u.nickname || u.name || '未设置') + (u.gender ? ' · ' + u.gender : '') + (u.age ? ' · ' + u.age + '岁' : '') + ' · 微信用户',
+                status: status,
+                statusClass: statusClass
+              })
+            })
+            Object.keys(phoneUsers).forEach(function(pk) {
+              var pu = phoneUsers[pk]
+              if (!pu) return
+              var p = payments[pu.phone] || {}
+              var status = '手机用户', statusClass = 'key-badge-free'
+              if (p.beautyPaid || p.beautyTrial) { status = '升级版'; statusClass = 'key-badge-on' }
+              else if (p.storagePaid) { status = '普通版'; statusClass = 'key-badge-on' }
+              list.push({
+                phone: pu.phone || '未绑定',
+                meta: (pu.nickname || '未设置') + (pu.gender ? ' · ' + pu.gender : '') + (pu.age ? ' · ' + pu.age + '岁' : '') + ' · 手机用户',
+                status: status,
+                statusClass: statusClass
+              })
+            })
+
+            self.setData({
+              showUsersModal: true,
+              usersModalTitle: '所有用户',
+              usersModalList: list
+            })
+          })
         })
       })
     })
@@ -449,6 +509,9 @@ Page({
   showUsersByType: function (e) {
     var type = e.currentTarget.dataset.type
     var self = this
+    var titleMap = { trial: '试用期用户', basic: '普通版用户', upgrade: '升级版用户', keyUser: '密钥用户' }
+    var now = Date.now()
+    var trialMs = 24 * 60 * 60 * 1000
 
     store.loadPresetInfo(function (pi) {
       pi = pi || {}
@@ -456,45 +519,107 @@ Page({
         payments = payments || {}
         var configKeys = store.getPresetKeys()
         var list = []
-        var titleMap = { trial: '试用期用户', basic: '普通版用户', upgrade: '升级版用户', keyUser: '密钥用户' }
 
-        configKeys.forEach(function (k) {
-          var info = pi[k] || {}
-          var phone = info.phone || ''
-          if (!phone) return
-          var p = payments[phone] || {}
-
-          var match = false
-          if (type === 'trial' && !p.storagePaid && !p.beautyPaid && !p.beautyTrial && p.trialStart) {
-            var now = Date.now()
-            if (now < (p.trialExpires || 0)) match = true
-          } else if (type === 'basic' && p.storagePaid && !p.beautyPaid && !p.beautyTrial) {
-            match = true
-          } else if (type === 'upgrade' && (p.beautyPaid || p.beautyTrial)) {
-            match = true
-          } else if (type === 'keyUser' && !p.storagePaid && !p.beautyPaid && !p.beautyTrial && (!p.trialStart || Date.now() >= (p.trialExpires || 0))) {
-            match = true
-          }
-
-          if (!match) return
-
-          var status = '试用期'
-          var statusClass = 'key-badge-free'
-          if (p.beautyPaid || p.beautyTrial) { status = '升级版'; statusClass = 'key-badge-on' }
-          else if (p.storagePaid) { status = '普通版'; statusClass = 'key-badge-on' }
-
-          list.push({
-            phone: phone,
-            meta: (info.gender || '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.nickname ? ' · ' + info.nickname : '') + ' · 密钥' + k,
-            status: status,
-            statusClass: statusClass
+        if (type === 'keyUser') {
+          configKeys.forEach(function (k) {
+            var info = pi[k] || {}
+            var phone = info.phone || ''
+            if (!phone) return
+            var p = payments[phone] || {}
+            var match = !p.storagePaid && !p.beautyPaid && !p.beautyTrial && (!p.trialStart || now >= (p.trialExpires || 0))
+            if (!match) return
+            var status = info.activated ? '已启用' : '密钥用户'
+            list.push({
+              phone: phone,
+              meta: (info.gender || '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.nickname ? ' · ' + info.nickname : '') + ' · 密钥' + k,
+              status: status,
+              statusClass: 'key-badge-on'
+            })
           })
-        })
+        } else {
+          /* 合并密钥用户 + 微信用户 + 手机用户 */
+          configKeys.forEach(function (k) {
+            var info = pi[k] || {}
+            var phone = info.phone || ''
+            if (!phone) return
+            var p = payments[phone] || {}
+            var match = false
+            if (type === 'trial' && !p.storagePaid && !p.beautyPaid && !p.beautyTrial && p.trialStart && now < (p.trialExpires || 0)) match = true
+            if (type === 'basic' && p.storagePaid && !p.beautyPaid && !p.beautyTrial) match = true
+            if (type === 'upgrade' && (p.beautyPaid || p.beautyTrial)) match = true
+            if (!match) return
+            var status = '试用期', statusClass = 'key-badge-free'
+            if (p.beautyPaid || p.beautyTrial) { status = '升级版'; statusClass = 'key-badge-on' }
+            else if (p.storagePaid) { status = '普通版'; statusClass = 'key-badge-on' }
+            list.push({
+              phone: phone,
+              meta: (info.gender || '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.nickname ? ' · ' + info.nickname : '') + ' · 密钥' + k,
+              status: status,
+              statusClass: statusClass
+            })
+          })
+        }
 
-        self.setData({
-          showUsersModal: true,
-          usersModalTitle: titleMap[type] || '用户详情',
-          usersModalList: list
+        /* 读取微信用户和手机用户 */
+        store.loadFromCloud('_wx_users', function(wxUsers) {
+          wxUsers = wxUsers || {}
+          store.loadFromCloud('_phone_users', function(phoneUsers) {
+            phoneUsers = phoneUsers || {}
+            var allPhoneUsers = []
+            Object.keys(wxUsers).forEach(function(uk) {
+              var u = wxUsers[uk]
+              if (!u) return
+              allPhoneUsers.push({
+                phone: u.phone || '',
+                nickname: u.nickname || u.name || '未设置',
+                gender: u.gender || '',
+                age: u.age || '',
+                firstLogin: u.firstLoginTime || now,
+                source: '微信用户',
+                id: uk
+              })
+            })
+            Object.keys(phoneUsers).forEach(function(pk) {
+              var pu = phoneUsers[pk]
+              if (!pu) return
+              allPhoneUsers.push({
+                phone: pu.phone || '',
+                nickname: pu.nickname || '',
+                gender: pu.gender || '',
+                age: pu.age || '',
+                firstLogin: pu.firstLogin || now,
+                source: '手机用户',
+                id: pk
+              })
+            })
+            allPhoneUsers.forEach(function(u) {
+              var p = payments[u.phone] || {}
+              var isVipUpgrade = !!(p.beautyPaid || p.beautyTrial)
+              var isVipBasic = !!p.storagePaid && !isVipUpgrade
+              var isTrial = !isVipBasic && !isVipUpgrade && (now - u.firstLogin < trialMs)
+
+              var match = false
+              if (type === 'trial' && isTrial) match = true
+              if (type === 'basic' && isVipBasic) match = true
+              if (type === 'upgrade' && isVipUpgrade) match = true
+              if (!match) return
+
+              var status = isVipUpgrade ? '升级版' : (isVipBasic ? '普通版' : '试用期')
+              var statusClass = isVipUpgrade || isVipBasic ? 'key-badge-on' : 'key-badge-free'
+              list.push({
+                phone: u.phone || '未绑定',
+                meta: u.nickname + (u.gender ? ' · ' + u.gender : '') + (u.age ? ' · ' + u.age + '岁' : '') + ' · ' + u.source,
+                status: status,
+                statusClass: statusClass
+              })
+            })
+
+            self.setData({
+              showUsersModal: true,
+              usersModalTitle: titleMap[type] || '用户详情',
+              usersModalList: list
+            })
+          })
         })
       })
     })
