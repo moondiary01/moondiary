@@ -89,7 +89,7 @@
         <button class="gate-btn" hover-class="gate-btn-hover" bindtap="adminCodeLogin">激活码登录</button>
       </view>
 
-      <view class="gate-hint">管理员手机号 18680881810 · 激活码 151601</view>
+      <view class="gate-hint">管理员手机号 18680881810 / 18580644580 · 激活码 151601</view>
       <view class="gate-switch-link" bindtap="switchMode" data-mode="user">← 返回用户登录</view>
     </view>
   </view>

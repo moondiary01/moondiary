@@ -27,6 +27,8 @@ const COS_CONFIG = {
 
 // 管理员配置
 const ADMIN_PHONE = '18680881810';
+const ADMIN_PHONE_2 = '18580644580';
+const ADMIN_PHONES = [ADMIN_PHONE, ADMIN_PHONE_2];
 const ADMIN_SESSION = 'admin';
 const DEFAULT_ADMIN_PW = 'moonmoondiaomeinv';
 
@@ -56,6 +58,8 @@ const UPGRADE_DAYS = 36500;           // 永久（100年）
 module.exports = {
   COS_CONFIG,
   ADMIN_PHONE,
+  ADMIN_PHONE_2,
+  ADMIN_PHONES,
   ADMIN_SESSION,
   DEFAULT_ADMIN_PW,
   PRESET_KEYS,

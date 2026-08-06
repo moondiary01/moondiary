@@ -94,8 +94,8 @@ Page({
     if (!phone) { this.setData({ gateError: '请输入手机号' }); return }
     if (!/^1\d{10}$/.test(phone)) { this.setData({ gateError: '手机号格式不正确' }); return }
 
-    this._smsCodes[phone] = '888888'
-    wx.showToast({ title: '验证码已发送（演示：888888）', icon: 'none', duration: 2000 })
+    this._smsCodes[phone] = '1'
+    wx.showToast({ title: '验证码已发送（任意6位数字）', icon: 'none', duration: 2000 })
 
     var self = this
     var cooldown = 60
@@ -119,8 +119,8 @@ Page({
 
     if (!phone) { this.setData({ gateError: '请输入手机号' }); return }
     if (!/^1\d{10}$/.test(phone)) { this.setData({ gateError: '手机号格式不正确' }); return }
-    if (!code) { this.setData({ gateError: '请输入验证码' }); return }
-    if (this._smsCodes[phone] !== code) { this.setData({ gateError: '验证码不正确' }); return }
+    if (!code || code.length < 6) { this.setData({ gateError: '请输入6位验证码' }); return }
+    /* 任意6位数字即可通过（模拟验证） */
 
     this.setData({ gateError: '' })
     this.doPhoneLogin(phone, 'sms')
@@ -232,10 +232,10 @@ Page({
   sendAdminSmsCode: function () {
     var phone = this.data.adminPhone.trim()
     if (!phone) { this.setData({ adminError: '请输入手机号' }); return }
-    if (phone !== config.ADMIN_PHONE) { this.setData({ adminError: '该手机号无管理员权限' }); return }
+    if (config.ADMIN_PHONES.indexOf(phone) === -1) { this.setData({ adminError: '该手机号无管理员权限' }); return }
 
-    this._smsCodes['admin_' + phone] = '888888'
-    wx.showToast({ title: '验证码已发送（演示：888888）', icon: 'none', duration: 2000 })
+    this._smsCodes['admin_' + phone] = '1'
+    wx.showToast({ title: '验证码已发送（任意6位数字）', icon: 'none', duration: 2000 })
 
     var self = this
     var cooldown = 60
@@ -258,9 +258,9 @@ Page({
     var code = this.data.adminSmsCode.trim()
 
     if (!phone) { this.setData({ adminError: '请输入手机号' }); return }
-    if (phone !== config.ADMIN_PHONE) { this.setData({ adminError: '该手机号无管理员权限' }); return }
-    if (!code) { this.setData({ adminError: '请输入验证码' }); return }
-    if (this._smsCodes['admin_' + phone] !== code) { this.setData({ adminError: '验证码不正确' }); return }
+    if (config.ADMIN_PHONES.indexOf(phone) === -1) { this.setData({ adminError: '该手机号无管理员权限' }); return }
+    if (!code || code.length < 6) { this.setData({ adminError: '请输入6位验证码' }); return }
+    /* 任意6位数字即可通过（模拟验证） */
 
     this.setData({ adminError: '' })
     this.doAdminLogin()
@@ -272,7 +272,7 @@ Page({
     var code = this.data.adminActivationCode.trim()
 
     if (!phone) { this.setData({ adminCodeError: '请输入手机号' }); return }
-    if (phone !== config.ADMIN_PHONE) { this.setData({ adminCodeError: '该手机号无管理员权限' }); return }
+    if (config.ADMIN_PHONES.indexOf(phone) === -1) { this.setData({ adminCodeError: '该手机号无管理员权限' }); return }
     if (!code) { this.setData({ adminCodeError: '请输入激活码' }); return }
     if (code !== ADMIN_ACTIVATION_CODE) { this.setData({ adminCodeError: '激活码不正确' }); return }
 

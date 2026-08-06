@@ -1015,12 +1015,12 @@ _loadCosSdk(0);
         <button class="gate-btn" onclick="smsLogin()">登 录</button>
         <div class="gate-hint">首次登录自动注册，所有用户均可免费试用7天</div>
       </div>
-      <!-- 微信登录 -->
+      <!-- 微信登录（HTML版仅展示，真实授权请前往小程序） -->
       <div id="wxLoginBox" style="display:none">
         <div style="text-align:center;padding:12px 0">
-          <div style="width:56px;height:56px;border-radius:50%;background:#07c160;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;cursor:pointer;transition:transform 0.2s" onclick="wxLogin()" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''">W</div>
-          <div style="font-size:0.78rem;color:var(--text-l);margin-bottom:8px">点击微信图标授权登录</div>
-          <div class="gate-hint">授权后自动获取微信绑定手机号<br>首次登录自动注册，免费试用7天</div>
+          <div style="width:56px;height:56px;border-radius:50%;background:#a0a0a0;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;cursor:not-allowed;opacity:0.5" title="请使用手机验证码登录，或前往小程序使用微信登录">W</div>
+          <div style="font-size:0.78rem;color:var(--text-l);margin-bottom:8px">微信登录请前往小程序</div>
+          <div class="gate-hint">HTML版暂不支持微信授权<br>请使用手机验证码登录，或前往小程序使用微信登录</div>
         </div>
         <div class="gate-error" id="wxError"></div>
       </div>
@@ -1049,7 +1049,7 @@ _loadCosSdk(0);
         <div class="gate-error" id="adminCodeError"></div>
         <button class="gate-btn" onclick="adminCodeLogin()">激活码登录</button>
       </div>
-      <div class="gate-hint">管理员手机号 18680881810 · 激活码 151601</div>
+      <div class="gate-hint">管理员手机号 18680881810 / 18580644580 · 激活码 151601</div>
       <div style="margin-top:14px;text-align:center"><a href="#" onclick="switchGate('user');playClick();return false" style="font-size:0.7rem;color:var(--text-l);opacity:0.6">← 返回用户登录</a></div>
     </div>
   </div>
@@ -2326,6 +2326,8 @@ const USED_KEYS_STORE = 'moondiary_used_keys'; /* 已使用的密钥（用过即
 const ADMIN_PW_STORE = 'moondiary_admin_pw';
 const DEFAULT_ADMIN_PW = 'moonmoondiaomeinv';
 const ADMIN_PHONE = '18680881810';
+const ADMIN_PHONE_2 = '18580644580';
+const ADMIN_PHONES = [ADMIN_PHONE, ADMIN_PHONE_2];
 const ADMIN_ACTIVATION_CODE = '151601';
 const VERSION_STORE = 'moondiary_version';
 const APP_VERSION = '7.1';
@@ -2648,7 +2650,10 @@ function userStorageKey(key) { return 'bodydiary_user_' + key; }
 
 /* ---------- 数据存储主键：手机号 ---------- */
 function isAdminUser() {
-  return currentKey === ADMIN_SESSION || sessionStorage.getItem(ADMIN_SESSION) === '1';
+  if (currentKey === ADMIN_SESSION || sessionStorage.getItem(ADMIN_SESSION) === '1') return true;
+  var cp = currentPhone || sessionStorage.getItem(SESSION_PHONE) || localStorage.getItem(SESSION_PHONE);
+  if (cp && ADMIN_PHONES.indexOf(cp) !== -1) return true;
+  return false;
 }
 
 function getCurrentPhone() {
@@ -3134,8 +3139,8 @@ function sendSmsCode() {
   var phone = document.getElementById('loginPhone').value.trim();
   if (!phone) { document.getElementById('gateError').textContent = '请输入手机号'; return; }
   if (!/^1\d{10}$/.test(phone)) { document.getElementById('gateError').textContent = '手机号格式不正确'; return; }
-  _smsCodes[phone] = '888888';
-  showToast('验证码已发送（演示：888888）');
+  _smsCodes[phone] = '1'; /* 任意6位数字即可 */
+  showToast('验证码已发送（任意6位数字）');
   _smsCooldown = 60;
   var btn = document.getElementById('sendSmsBtn');
   btn.disabled = true;
@@ -3158,8 +3163,8 @@ function smsLogin() {
   var err = document.getElementById('gateError');
   if (!phone) { err.textContent = '请输入手机号'; return; }
   if (!/^1\d{10}$/.test(phone)) { err.textContent = '手机号格式不正确'; return; }
-  if (!code) { err.textContent = '请输入验证码'; return; }
-  if (_smsCodes[phone] !== code) { err.textContent = '验证码不正确'; return; }
+  if (!code || code.length < 6) { err.textContent = '请输入6位验证码'; return; }
+  /* 任意6位数字即可通过（模拟验证） */
   err.textContent = '';
   currentKey = phone;
   currentPhone = phone;
@@ -3188,30 +3193,16 @@ function ensureTrialAccess(userId) {
 }
 
 function wxLogin() {
-  var err = document.getElementById('wxError');
-  err.textContent = '';
-  var phone = 'wx_' + String(Math.floor(100000 + Math.random() * 900000));
-  currentKey = phone;
-  currentPhone = phone;
-  localStorage.setItem(SESSION_KEY, phone);
-  localStorage.setItem(SESSION_PHONE, phone);
-  sessionStorage.setItem(SESSION_KEY, phone);
-  sessionStorage.setItem(SESSION_PHONE, phone);
-  var bindings = loadPhoneBindings();
-  if (!bindings[phone]) { bindings[phone] = phone; savePhoneBindings(bindings); }
-  ensureTrialAccess(phone);
-  syncUserInfoToPreset(phone, phone);
-  playLoginSound();
-  showSplash();
-  setTimeout(function() { enterApp(false); }, 2800);
+  /* HTML版暂不支持微信授权，请使用手机验证码登录或前往小程序 */
+  document.getElementById('wxError').textContent = '请使用手机验证码登录，或前往小程序使用微信登录';
 }
 
 function sendAdminSmsCode() {
   var phone = document.getElementById('adminPhone').value.trim();
   if (!phone) { document.getElementById('adminError').textContent = '请输入手机号'; return; }
-  if (phone !== ADMIN_PHONE) { document.getElementById('adminError').textContent = '该手机号无管理员权限'; return; }
-  _smsCodes['admin_' + phone] = '888888';
-  showToast('验证码已发送（演示：888888）');
+  if (ADMIN_PHONES.indexOf(phone) === -1) { document.getElementById('adminError').textContent = '该手机号无管理员权限'; return; }
+  _smsCodes['admin_' + phone] = '1'; /* 任意6位数字即可 */
+  showToast('验证码已发送（任意6位数字）');
   _adminSmsCooldown = 60;
   var btn = document.getElementById('adminSendSmsBtn');
   btn.disabled = true;
@@ -3233,9 +3224,9 @@ function adminSmsLogin() {
   var code = document.getElementById('adminSmsCode').value.trim();
   var err = document.getElementById('adminError');
   if (!phone) { err.textContent = '请输入手机号'; return; }
-  if (phone !== ADMIN_PHONE) { err.textContent = '该手机号无管理员权限'; return; }
-  if (!code) { err.textContent = '请输入验证码'; return; }
-  if (_smsCodes['admin_' + phone] !== code) { err.textContent = '验证码不正确'; return; }
+  if (ADMIN_PHONES.indexOf(phone) === -1) { err.textContent = '该手机号无管理员权限'; return; }
+  if (!code || code.length < 6) { err.textContent = '请输入6位验证码'; return; }
+  /* 任意6位数字即可通过（模拟验证） */
   err.textContent = '';
   currentKey = ADMIN_SESSION;
   currentPhone = 'admin';
@@ -3254,7 +3245,7 @@ function adminCodeLogin() {
   var code = document.getElementById('adminActivationCode').value.trim();
   var err = document.getElementById('adminCodeError');
   if (!phone) { err.textContent = '请输入手机号'; return; }
-  if (phone !== ADMIN_PHONE) { err.textContent = '该手机号无管理员权限'; return; }
+  if (ADMIN_PHONES.indexOf(phone) === -1) { err.textContent = '该手机号无管理员权限'; return; }
   if (!code) { err.textContent = '请输入激活码'; return; }
   if (code !== ADMIN_ACTIVATION_CODE) { err.textContent = '激活码不正确'; return; }
   err.textContent = '';
@@ -6084,7 +6075,7 @@ function exportKeys() {
     const ud = getUserData(k);
     return '密钥：' + k + ' | 备注：' + (info.note||'无') + ' | 用户：' + (ud.name||'未登录') + ' | 状态：' + (info.revoked?'已停用':'使用中') + ' | 创建：' + (info.createdAt?new Date(info.createdAt).toLocaleDateString('zh-CN'):'—');
   });
-  const txt = 'MoonMemo 月亮日记 - 密钥清单\n管理员手机：' + ADMIN_PHONE + '\n════════════════════════\n' + arr.join('\n') + '\n════════════════════════\n导出于 ' + new Date().toLocaleString('zh-CN');
+  const txt = 'MoonMemo 月亮日记 - 密钥清单\n管理员手机：' + ADMIN_PHONE + ' / ' + ADMIN_PHONE_2 + '\n════════════════════════\n' + arr.join('\n') + '\n════════════════════════\n导出于 ' + new Date().toLocaleString('zh-CN');
   const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
