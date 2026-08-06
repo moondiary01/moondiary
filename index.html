@@ -5641,13 +5641,14 @@ function renderKeyList() {
     if (phone && payments[phone]) {
       if (payments[phone].beautyPaid || payments[phone].beautyTrial) {
         userType = '升级版';
-      } else if (payments[phone].storagePaid) {
+      } else if (payments[phone].storagePaid && payments[phone].storagePaidBy !== 'activation_code') {
         userType = '普通版';
       } else if (payments[phone].trialStart && Date.now() < (payments[phone].trialExpires || 0)) {
         userType = '试用期';
       }
+      /* 激活码用户保持"免费用户"标签 */
     }
-    var userTypeClass = (userType === '升级版' || userType === '普通版') ? 'key-badge-on' : (userType === '试用期' ? 'key-badge-trial' : 'key-badge-free');
+    var userTypeClass = (userType === '升级版') ? 'key-badge-on' : (userType === '普通版' ? 'key-badge-on' : (userType === '试用期' ? 'key-badge-trial' : 'key-badge-free'));
     let toggleBtn;
     if (revoked) {
       toggleBtn = '<button class="key-toggle key-toggle-revoked" onclick="togglePresetKey(\'' + k + '\')">已停用</button>';
@@ -5731,13 +5732,13 @@ function renderKeyList() {
       if (dynPhone && payments[dynPhone]) {
         if (payments[dynPhone].beautyPaid || payments[dynPhone].beautyTrial) {
           dynUserType = '升级版';
-        } else if (payments[dynPhone].storagePaid) {
+        } else if (payments[dynPhone].storagePaid && payments[dynPhone].storagePaidBy !== 'activation_code') {
           dynUserType = '普通版';
         } else if (payments[dynPhone].trialStart && Date.now() < (payments[dynPhone].trialExpires || 0)) {
           dynUserType = '试用期';
         }
       }
-      var dynUserTypeClass = (dynUserType === '升级版' || dynUserType === '普通版') ? 'key-badge-on' : (dynUserType === '试用期' ? 'key-badge-trial' : 'key-badge-free');
+      var dynUserTypeClass = (dynUserType === '升级版') ? 'key-badge-on' : (dynUserType === '普通版' ? 'key-badge-on' : (dynUserType === '试用期' ? 'key-badge-trial' : 'key-badge-free'));
       html += '<div class="key-row-v2">'
         + '<div class="key-row-main">'
           + '<div class="key-code">' + k + '</div>'
@@ -6054,7 +6055,7 @@ function showAllUsers() {
       var phone = info.phone;
       if (phone && payments[phone]) {
         if (payments[phone].beautyPaid || payments[phone].beautyTrial) { status = '升级版'; statusClass = 'key-badge-on'; }
-        else if (payments[phone].storagePaid) { status = '普通版'; statusClass = 'key-badge-on'; }
+        else if (payments[phone].storagePaid && payments[phone].storagePaidBy !== 'activation_code') { status = '普通版'; statusClass = 'key-badge-on'; }
         else if (payments[phone].trialStart && Date.now() < (payments[phone].trialExpires || 0)) { status = '试用期'; statusClass = 'key-badge-trial'; }
       }
       html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span></div>';
@@ -6070,7 +6071,7 @@ function showAllUsers() {
       var phone = info.phone;
       if (phone && payments[phone]) {
         if (payments[phone].beautyPaid || payments[phone].beautyTrial) { status = '升级版'; statusClass = 'key-badge-on'; }
-        else if (payments[phone].storagePaid) { status = '普通版'; statusClass = 'key-badge-on'; }
+        else if (payments[phone].storagePaid && payments[phone].storagePaidBy !== 'activation_code') { status = '普通版'; statusClass = 'key-badge-on'; }
         else if (payments[phone].trialStart && Date.now() < (payments[phone].trialExpires || 0)) { status = '试用期'; statusClass = 'key-badge-trial'; }
       }
       html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span></div>';
@@ -6123,12 +6124,20 @@ function showUsersByType(type) {
 
   if (type === 'keyUser') {
     /* 密钥用户：有手机号的预设密钥 + 动态密钥 */
+    var payments = loadPayments();
     PRESET_KEYS.forEach(function(k) {
       var info = pi[k];
       if (info && info.phone) {
         var ud = getUserData(k);
         var status = info.activated ? '已启用' : (isUsedKey(k) ? '已使用' : '未启用');
-        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (ud.name||'未设置') + (ud.gender ? ' · ' + ud.gender : '') + (ud.age ? ' · ' + ud.age + '岁' : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + (info.activated?'revoked':'active') + '">' + status + '</span></div>';
+        var statusClass = info.activated ? 'key-badge-on' : 'key-badge-free';
+        var ph = info.phone;
+        if (ph && payments[ph]) {
+          if (payments[ph].beautyPaid || payments[ph].beautyTrial) { status = '升级版'; statusClass = 'key-badge-on'; }
+          else if (payments[ph].storagePaid && payments[ph].storagePaidBy !== 'activation_code') { status = '普通版'; statusClass = 'key-badge-on'; }
+          else if (payments[ph].trialStart && Date.now() < (payments[ph].trialExpires || 0)) { status = '试用期'; statusClass = 'key-badge-trial'; }
+        }
+        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (ud.name||'未设置') + (ud.gender ? ' · ' + ud.gender : '') + (ud.age ? ' · ' + ud.age + '岁' : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span></div>';
         count++;
       }
     });
@@ -6136,7 +6145,15 @@ function showUsersByType(type) {
       var k = entry[0], info = entry[1];
       if (info.phone) {
         var ud = getUserData(k);
-        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (ud.name||'未设置') + (ud.gender ? ' · ' + ud.gender : '') + (ud.age ? ' · ' + ud.age + '岁' : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + (info.revoked?'revoked':'active') + '">' + (info.revoked?'已停用':'使用中') + '</span></div>';
+        var status = info.revoked ? '已停用' : '使用中';
+        var statusClass = info.revoked ? 'key-badge-revoked' : 'key-badge-on';
+        var ph = info.phone;
+        if (ph && payments[ph]) {
+          if (payments[ph].beautyPaid || payments[ph].beautyTrial) { status = '升级版'; statusClass = 'key-badge-on'; }
+          else if (payments[ph].storagePaid && payments[ph].storagePaidBy !== 'activation_code') { status = '普通版'; statusClass = 'key-badge-on'; }
+          else if (payments[ph].trialStart && Date.now() < (payments[ph].trialExpires || 0)) { status = '试用期'; statusClass = 'key-badge-trial'; }
+        }
+        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (ud.name||'未设置') + (ud.gender ? ' · ' + ud.gender : '') + (ud.age ? ' · ' + ud.age + '岁' : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span></div>';
         count++;
       }
     });
