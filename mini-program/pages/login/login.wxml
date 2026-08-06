@@ -57,7 +57,6 @@
         <view class="gate-error" wx:if="{{wxError}}">{{wxError}}</view>
       </view>
 
-      <view class="gate-switch-link" bindtap="switchMode" data-mode="admin">管理员入口</view>
     </view>
 
     <!-- ===== 管理员登录区域 ===== -->

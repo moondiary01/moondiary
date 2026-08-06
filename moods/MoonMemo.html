@@ -1024,7 +1024,6 @@ _loadCosSdk(0);
         </div>
         <div class="gate-error" id="wxError"></div>
       </div>
-      <div style="margin-top:16px;text-align:center"><a href="#" onclick="switchGate('admin');playClick();return false" style="font-size:0.7rem;color:var(--text-l);opacity:0.6">管理员入口</a></div>
     </div>
     <!-- 管理员登录 -->
     <div id="gateAdmin" style="display:none">
@@ -1131,6 +1130,18 @@ _loadCosSdk(0);
           <span style="font-size:0.52rem;font-weight:700;color:#5c3d0a">永久</span>
         </div>
       </div>
+    </div>
+    <!-- 激活码入口 -->
+    <div id="heroActivationEntry" style="display:none;margin-top:8px;text-align:center">
+      <a href="#" onclick="event.stopPropagation();showActivationCodeInline();return false" style="font-size:0.68rem;color:rgba(255,255,255,0.55);text-decoration:none">已有激活码？点此开通</a>
+    </div>
+    <!-- 激活码输入区 -->
+    <div id="heroActivationArea" style="display:none;margin-top:8px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2)">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="heroActivationInput" class="gate-input" placeholder="6位激活码" maxlength="6" inputmode="numeric" style="flex:1;letter-spacing:6px;font-size:0.85rem;margin-bottom:0;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;text-align:center" autocomplete="off">
+        <button class="btn" onclick="event.stopPropagation();verifyHeroActivation();" style="flex-shrink:0;padding:8px 16px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-weight:700;font-size:0.78rem;border:none;cursor:pointer;white-space:nowrap">开通</button>
+      </div>
+      <div id="heroActivationMsg" style="font-size:0.65rem;color:#fbbf24;text-align:center;margin-top:5px;min-height:16px"></div>
     </div>
   </div>
 </header>
@@ -3334,6 +3345,51 @@ function verifyActivationCode() {
   renderAll();
 }
 
+/* Hero 区域激活码入口 */
+function showActivationCodeInline() {
+  var area = document.getElementById('heroActivationArea');
+  area.style.display = area.style.display === 'none' ? 'block' : 'none';
+  if (area.style.display === 'block') {
+    document.getElementById('heroActivationInput').focus();
+  }
+}
+function verifyHeroActivation() {
+  var code = document.getElementById('heroActivationInput').value.trim();
+  var msg = document.getElementById('heroActivationMsg');
+  if (!code) { msg.textContent = '请输入激活码'; return; }
+  if (code.length !== 6) { msg.textContent = '激活码为6位数字'; return; }
+  if (code === ADMIN_ACTIVATION_CODE) {
+    var cp = getCurrentPhone();
+    if (ADMIN_PHONES.indexOf(cp) === -1) { msg.textContent = '该激活码仅管理员可用'; return; }
+  }
+  if (!isPresetKey(code)) { msg.textContent = '激活码无效，请联系管理员'; return; }
+  var pi = loadPresetInfo();
+  if (pi[code] && pi[code].revoked) { msg.textContent = '该激活码已被停用'; return; }
+  if (pi[code] && pi[code].activated && pi[code].phone && pi[code].phone !== getCurrentPhone()) {
+    msg.textContent = '该激活码已被其他用户使用'; return;
+  }
+  var phone = getCurrentPhone();
+  if (!pi[code]) pi[code] = {};
+  pi[code].activated = true;
+  pi[code].phone = phone;
+  pi[code].activatedAt = new Date().toISOString();
+  savePresetInfo(pi);
+  var bindings = loadPhoneBindings();
+  bindings[phone] = code;
+  savePhoneBindings(bindings);
+  var payments = loadPayments();
+  if (!payments[phone]) payments[phone] = {};
+  payments[phone].storagePaid = true;
+  payments[phone].storagePaidAt = Date.now();
+  payments[phone].storagePaidBy = 'activation_code';
+  savePayments(payments);
+  document.getElementById('heroActivationArea').style.display = 'none';
+  msg.textContent = '';
+  showToast('激活码验证成功，普通版已开通');
+  refreshBeautyEntryUI();
+  renderAll();
+}
+
 /* Splash 动画 */
 function showSplash(callback) {
   const splash = document.getElementById('splash');
@@ -4087,6 +4143,7 @@ function refreshBeautyEntryUI() {
   var quickBtns = document.getElementById('beautyQuickBtns');
   var bottomCard = document.querySelector('.beauty-entry-card');
   var basicEntry = document.getElementById('basicPlanEntry'); /* 19.9元购买入口 */
+  var heroActEntry = document.getElementById('heroActivationEntry'); /* 激活码入口 */
   
   if (isAdminUser()) {
     /* 管理员：模拟试用用户流程 */
@@ -4096,11 +4153,13 @@ function refreshBeautyEntryUI() {
       if (quickBtns) quickBtns.style.display = 'flex';
       if (bottomCard) bottomCard.style.display = '';
       if (basicEntry) basicEntry.style.display = 'none';
+      if (heroActEntry) heroActEntry.style.display = 'none';
     } else {
       /* 未模拟购买：显示19.9入口+快捷入口+底部卡片（模拟试用用户） */
       if (quickBtns) quickBtns.style.display = 'flex';
       if (bottomCard) bottomCard.style.display = '';
       if (basicEntry) basicEntry.style.display = '';
+      if (heroActEntry) heroActEntry.style.display = '';
     }
     return;
   }
@@ -4110,16 +4169,19 @@ function refreshBeautyEntryUI() {
     if (quickBtns) quickBtns.style.display = 'flex';
     if (bottomCard) bottomCard.style.display = 'none';
     if (basicEntry) basicEntry.style.display = 'none';
+    if (heroActEntry) heroActEntry.style.display = 'none';
   } else if (canSeeUpgradeEntry()) {
     /* 已购19.9普通版但未购升级版：隐藏快捷入口，显示底部升级卡片 */
     if (quickBtns) quickBtns.style.display = 'none';
     if (bottomCard) bottomCard.style.display = '';
     if (basicEntry) basicEntry.style.display = 'none';
+    if (heroActEntry) heroActEntry.style.display = 'none';
   } else {
     /* 试用用户/未购用户：隐藏快捷入口和升级卡片，显示19.9购买入口 */
     if (quickBtns) quickBtns.style.display = 'none';
     if (bottomCard) bottomCard.style.display = 'none';
     if (basicEntry) basicEntry.style.display = '';
+    if (heroActEntry) heroActEntry.style.display = '';
   }
   /* 试用过期检测 */
   checkTrialExpiredPopup();
@@ -5690,8 +5752,7 @@ function renderKeyList() {
   }
   document.getElementById('keyList').innerHTML = html;
   /* 更新统计：分别统计免费用户、试用未充值、VIP基础版 */
-  const freeCount = PRESET_KEYS.filter(k => pi[k] && pi[k].phone).length + arr.filter(([k,i]) => i.phone).length;
-  document.getElementById('adminKeyUsers').textContent = freeCount;
+  var freeCount = PRESET_KEYS.filter(k => pi[k] && pi[k].phone).length + arr.filter(([k,i]) => i.phone).length;
   /* 异步读取微信用户数据并统计试用/VIP */
   loadFromCloud('_wx_users', function(wxUsers) {
     var trialCount = 0, vipBasicCount = 0, vipUpgradeCount = 0;
@@ -5777,79 +5838,75 @@ function renderKeyList() {
     } else if (searchTerm && document.getElementById('keyList').innerHTML.indexOf('正在搜索微信用户') !== -1) {
       document.getElementById('keyList').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-l);font-size:0.85rem">未找到匹配的用户</div>';
     }
-    document.getElementById('adminTrial').textContent = trialCount;
-    document.getElementById('adminVipBasic').textContent = vipBasicCount;
-    /* 统计29.9元变美计划付费用户 */
+    /* 统计29.9元变美计划付费用户（密钥用户中） */
     var payCount = vipUpgradeCount;
     var allPayments = loadPayments();
     Object.keys(allPayments).forEach(function(p) {
       if (allPayments[p] && allPayments[p].beautyPaid) payCount++;
     });
-    /* 读取手机验证码用户并追加到列表 */
+    /* 读取手机验证码用户并追加统计 */
     loadFromCloud(CLOUD_PHONE_USERS_PATH, function(phoneUsers) {
       if (phoneUsers) {
-        var puKeys = Object.keys(phoneUsers);
-        puKeys.forEach(function(pk) {
+        Object.keys(phoneUsers).forEach(function(pk) {
           var pu = phoneUsers[pk];
           if (!pu) return;
           var puPhone = pu.phone || '';
-          var isTrial = false, isVipBasic = false, isVipUpgrade = false;
+          var puTrial = false, puVipBasic = false, puVipUpgrade = false;
           if (puPhone && allPayments[puPhone]) {
-            if (allPayments[puPhone].beautyPaid || allPayments[puPhone].beautyTrial) isVipUpgrade = true;
-            else if (allPayments[puPhone].storagePaid) isVipBasic = true;
+            if (allPayments[puPhone].beautyPaid || allPayments[puPhone].beautyTrial) puVipUpgrade = true;
+            else if (allPayments[puPhone].storagePaid) puVipBasic = true;
           }
-          if (!isVipBasic && !isVipUpgrade) {
+          if (!puVipBasic && !puVipUpgrade) {
             var puFirstLogin = pu.firstLogin || now;
-            isTrial = (now - puFirstLogin < trialMs);
+            puTrial = (now - puFirstLogin < trialMs);
           }
           /* 统计 */
-          if (isVipUpgrade) payCount++;
-          else if (isVipBasic) vipBasicCount++;
-          else if (isTrial) trialCount++;
+          if (puVipUpgrade) payCount++;
+          else if (puVipBasic) vipBasicCount++;
+          else if (puTrial) trialCount++;
           else freeCount++;
           /* 搜索过滤 */
           if (searchTerm) {
             if (puPhone.indexOf(searchTerm) === -1 && pk.indexOf(searchTerm) === -1) return;
-          } else {
-            return; /* 非搜索模式不追加到列表（只统计），搜索时才展示 */
+            var puVerBadge = puVipUpgrade
+              ? '<span class="key-badge" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-size:0.65rem">升级版</span>'
+              : (puVipBasic
+                ? '<span class="key-badge" style="background:#10b981;color:#fff;font-size:0.65rem">普通版</span>'
+                : (puTrial
+                  ? '<span class="key-badge" style="background:#f59e0b;color:#fff;font-size:0.65rem">试用期</span>'
+                  : '<span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">已过期</span>'));
+            var puRemain = '';
+            if (puTrial) {
+              var puRemainH = Math.floor((trialMs - (now - (pu.firstLogin || now))) / (60*60*1000));
+              puRemain = ' · 剩余' + puRemainH + 'h';
+            }
+            var puNick = pu.nickname || '未设置';
+            var puGender = pu.gender || '—';
+            var puAge = pu.age ? pu.age + '岁' : '—';
+            var puReg = new Date(pu.firstLogin || now).toLocaleDateString();
+            var phoneMatchHtml = '<div class="key-row-v2">'
+              + '<div class="key-row-main">'
+                + '<div class="key-code">' + pk + '</div>'
+                + puVerBadge
+                + '<span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">手机用户</span>'
+              + '</div>'
+              + '<div class="key-row-info">'
+                + '<span class="key-info-icon"></span>'
+                + '<span class="key-info-text">手机:' + puPhone + ' · 昵称:' + puNick + ' · ' + puGender + '/' + puAge + ' · 注册' + puReg + puRemain + '</span>'
+              + '</div>'
+            + '</div>';
+            var curHtml2 = document.getElementById('keyList').innerHTML;
+            if (curHtml2.indexOf('手机用户') === -1) {
+              curHtml2 += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:0.75rem;font-weight:700;color:var(--text-l);margin-bottom:8px">手机用户</div>';
+            }
+            curHtml2 += phoneMatchHtml;
+            document.getElementById('keyList').innerHTML = curHtml2;
           }
-          var puType = isVipUpgrade ? '升级版' : (isVipBasic ? '普通版' : (isTrial ? '试用期' : '已过期'));
-          var puVerBadge = isVipUpgrade
-            ? '<span class="key-badge" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-size:0.65rem">升级版</span>'
-            : (isVipBasic
-              ? '<span class="key-badge" style="background:#10b981;color:#fff;font-size:0.65rem">普通版</span>'
-              : (isTrial
-                ? '<span class="key-badge" style="background:#f59e0b;color:#fff;font-size:0.65rem">试用期</span>'
-                : '<span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">已过期</span>'));
-          var puRemain = '';
-          if (isTrial) {
-            var puRemainH = Math.floor((trialMs - (now - (pu.firstLogin || now))) / (60*60*1000));
-            puRemain = ' · 剩余' + puRemainH + 'h';
-          }
-          var puNick = pu.nickname || '未设置';
-          var puGender = pu.gender || '—';
-          var puAge = pu.age ? pu.age + '岁' : '—';
-          var puReg = new Date(pu.firstLogin || now).toLocaleDateString();
-          var phoneMatchHtml = '<div class="key-row-v2">'
-            + '<div class="key-row-main">'
-              + '<div class="key-code">' + pk + '</div>'
-              + puVerBadge
-              + '<span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">手机用户</span>'
-            + '</div>'
-            + '<div class="key-row-info">'
-              + '<span class="key-info-icon"></span>'
-              + '<span class="key-info-text">手机:' + puPhone + ' · 昵称:' + puNick + ' · ' + puGender + '/' + puAge + ' · 注册' + puReg + puRemain + '</span>'
-            + '</div>'
-          + '</div>';
-          var curHtml2 = document.getElementById('keyList').innerHTML;
-          if (curHtml2.indexOf('手机用户') === -1) {
-            curHtml2 += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:0.75rem;font-weight:700;color:var(--text-l);margin-bottom:8px">手机用户</div>';
-          }
-          curHtml2 += phoneMatchHtml;
-          if (curHtml2.indexOf('</div>', curHtml2.lastIndexOf('手机用户</div>')) === -1) curHtml2 += '</div>';
-          document.getElementById('keyList').innerHTML = curHtml2;
         });
       }
+      /* 统一更新所有统计数据 */
+      document.getElementById('adminTrial').textContent = trialCount;
+      document.getElementById('adminVipBasic').textContent = vipBasicCount;
       document.getElementById('adminVipUpgrade').textContent = payCount;
       document.getElementById('adminKeyUsers').textContent = freeCount;
       document.getElementById('adminTotal').textContent = freeCount + trialCount + vipBasicCount + payCount;
