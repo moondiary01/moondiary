@@ -1417,6 +1417,17 @@ _loadCosSdk(0);
     <div id="paymentStatus" style="font-size:0.8rem;text-align:center;min-height:20px;color:var(--text-l)"></div>
   </div>
   <div class="card">
+    <div class="card-title">预览调试 <span class="sub">查看用户端弹窗效果</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" style="flex:1;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-weight:700;min-width:140px" onclick="previewTrialExpiredPopup();playClick()">预览 19.9 试用弹窗</button>
+      <button class="btn btn-primary" style="flex:1;background:linear-gradient(135deg,#7c3aed,#ec4899);min-width:140px" onclick="previewBeautyUpgradeModal();playClick()">预览 29.9 升级弹窗</button>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button class="btn" style="flex:1;background:var(--bg);border:1px solid var(--border);font-size:0.78rem;color:var(--text-l)" onclick="resetAdminSimulation();playClick()">重置模拟状态</button>
+    </div>
+    <div id="simStatus" style="font-size:0.72rem;text-align:center;margin-top:8px;color:var(--text-l)"></div>
+  </div>
+  <div class="card">
     <div class="card-title">管理员密码 <span class="sub">登录后可修改</span></div>
     <p style="font-size:0.8rem;color:var(--text-l);margin-bottom:12px;line-height:1.6">修改后将替换当前登录密码，下次登录请使用新密码。密码仅保存在本设备。</p>
     <div class="input-group" style="margin-bottom:10px"><label>当前密码</label><input type="password" id="oldPw" placeholder="输入当前管理员密码" autocomplete="off"></div>
@@ -3939,16 +3950,8 @@ function refreshBeautyEntryUI() {
 var _trialExpiredShown = false;
 function checkTrialExpiredPopup() {
   if (_trialExpiredShown) return;
-  /* 管理员模拟：未模拟购买过普通版则弹窗，方便调试（须在 hasBeautyPermission 之前，因为管理员也返回 true） */
-  if (isAdminUser()) {
-    if (sessionStorage.getItem('admin_sim_basic') === '1') return;
-    /* 延迟弹窗，确保数据加载和渲染完成后再弹出，避免遮住界面让管理员以为数据丢失 */
-    _trialExpiredShown = true;
-    setTimeout(function() {
-      document.getElementById('trialExpiredModal').classList.add('show');
-    }, 2000);
-    return;
-  }
+  /* 管理员模拟：已改为后台手动按钮触发，此处不再自动弹窗 */
+  if (isAdminUser()) return;
   if (hasBeautyPermission()) return;
   var phone = getCurrentPhone();
   if (phone === 'local' || !phone) return;
@@ -3980,10 +3983,27 @@ function showPrivacyNoticeFromTrial() {
 /* 关闭试用弹窗（稍后再说） */
 function dismissTrialModal() {
   document.getElementById('trialExpiredModal').classList.remove('show');
-  /* 管理员关闭弹窗时标记已模拟，避免重复弹窗遮住界面 */
-  if (isAdminUser()) {
-    sessionStorage.setItem('admin_sim_basic', '1');
-  }
+}
+
+/* 管理员后台预览试用弹窗 */
+function previewTrialExpiredPopup() {
+  document.getElementById('trialExpiredModal').classList.add('show');
+}
+
+/* 管理员后台预览29.9升级弹窗 */
+function previewBeautyUpgradeModal() {
+  document.getElementById('beautyHomeModal').classList.add('show');
+}
+
+/* 重置管理员模拟状态 */
+function resetAdminSimulation() {
+  sessionStorage.removeItem('admin_sim_basic');
+  refreshBeautyEntryUI();
+  var statusEl = document.getElementById('simStatus');
+  if (statusEl) statusEl.textContent = '已重置 — 下次刷新页面将恢复未模拟状态';
+  setTimeout(function() {
+    if (statusEl) statusEl.textContent = '';
+  }, 3000);
 }
 
 /* 从 Hero 区 19.9 入口点击 — 直接弹出购买须知确认 */
