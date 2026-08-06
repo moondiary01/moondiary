@@ -3942,8 +3942,11 @@ function checkTrialExpiredPopup() {
   /* 管理员模拟：未模拟购买过普通版则弹窗，方便调试（须在 hasBeautyPermission 之前，因为管理员也返回 true） */
   if (isAdminUser()) {
     if (sessionStorage.getItem('admin_sim_basic') === '1') return;
+    /* 延迟弹窗，确保数据加载和渲染完成后再弹出，避免遮住界面让管理员以为数据丢失 */
     _trialExpiredShown = true;
-    document.getElementById('trialExpiredModal').classList.add('show');
+    setTimeout(function() {
+      document.getElementById('trialExpiredModal').classList.add('show');
+    }, 2000);
     return;
   }
   if (hasBeautyPermission()) return;
@@ -3977,6 +3980,10 @@ function showPrivacyNoticeFromTrial() {
 /* 关闭试用弹窗（稍后再说） */
 function dismissTrialModal() {
   document.getElementById('trialExpiredModal').classList.remove('show');
+  /* 管理员关闭弹窗时标记已模拟，避免重复弹窗遮住界面 */
+  if (isAdminUser()) {
+    sessionStorage.setItem('admin_sim_basic', '1');
+  }
 }
 
 /* 从 Hero 区 19.9 入口点击 — 直接弹出购买须知确认 */
