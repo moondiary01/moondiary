@@ -875,7 +875,161 @@ Page({
   },
 
   onSavePoster: function() {
-    wx.showToast({ title: '请截图保存', icon: 'none', duration: 2000 });
+    var self = this;
+    wx.showLoading({ title: '生成海报...' });
+    var ctx = wx.createCanvasContext('posterCanvas');
+    var w = 375, h = 667, y = 0;
+    var pd = this.data;
+
+    /* 背景 */
+    ctx.setFillStyle('#faf5f9');
+    ctx.fillRect(0, 0, w, h);
+
+    /* 标题 */
+    y = 40;
+    ctx.setFillStyle('#9ca3af');
+    ctx.setFontSize(11); ctx.setTextAlign('center');
+    ctx.fillText('Moon Memo', w/2, y); y += 22;
+    ctx.setFillStyle('#78716c');
+    ctx.setFontSize(15);
+    ctx.fillText('今日海报', w/2, y); y += 20;
+    ctx.setFillStyle('#a8a29e');
+    ctx.setFontSize(11);
+    ctx.fillText(pd.posterDate || '', w/2, y); y += 28;
+
+    /* 分隔线 */
+    ctx.setStrokeStyle('#e5e0eb'); ctx.setLineWidth(0.5);
+    ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(w-40, y); ctx.stroke(); y += 22;
+
+    /* 已减重圆形 */
+    var cx = w/2, cy = y + 60, r = 60;
+    var grad = ctx.createLinearGradient(cx-r, cy-r, cx+r, cy+r);
+    grad.addColorStop(0, '#9d6b8b'); grad.addColorStop(0.3, '#7a5276'); grad.addColorStop(0.7, '#5b3a5e'); grad.addColorStop(1, '#3d2b4f');
+    ctx.setFillStyle(grad);
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+    ctx.setFillStyle('#fce7f3');
+    ctx.setFontSize(48); ctx.setTextAlign('center');
+    ctx.fillText(String(pd.posterLost || '—'), cx, cy-6);
+    ctx.setFontSize(13);
+    ctx.fillText('kg', cx, cy+14);
+    ctx.setFillStyle('rgba(252,231,243,0.5)');
+    ctx.setFontSize(10);
+    ctx.fillText('已减重', cx, cy+28);
+    y = cy + r + 22;
+
+    /* 体重数据 */
+    ctx.setFillStyle('#44403c');
+    ctx.setFontSize(17);
+    ctx.fillText(pd.posterTodayWeight || '', w/2, y); y += 20;
+    ctx.setFillStyle('#a8a29e');
+    ctx.setFontSize(12);
+    ctx.fillText(pd.posterFat || '', w/2, y); y += 18;
+    ctx.setFontSize(10);
+    ctx.setFillStyle('#a8a29e');
+    ctx.fillText('起始体重', w/2-60, y); ctx.fillText('目标体重', w/2+60, y); y += 14;
+    ctx.setFillStyle('#78716c');
+    ctx.setFontSize(15);
+    ctx.fillText(pd.posterStartWeight || '—', w/2-60, y); ctx.fillText(pd.posterTargetWeight || '—', w/2+60, y); y += 26;
+
+    /* 健康记录 */
+    y += 4;
+    ctx.setStrokeStyle('#e5e0eb'); ctx.setLineWidth(0.5);
+    ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(w-40, y); ctx.stroke(); y += 18;
+    ctx.setFillStyle('#9ca3af'); ctx.setFontSize(10); ctx.setTextAlign('center');
+    ctx.fillText('健康记录', w/2, y); y += 16;
+    var health = pd.posterHealth || [];
+    var hx = 50;
+    health.forEach(function(item, i) {
+      if (i === 2) { hx = 50; y += 18; }
+      ctx.setFillStyle(item.done ? '#a7c957' : '#e5e7eb');
+      ctx.beginPath(); ctx.arc(hx+3, y-3, 3, 0, Math.PI*2); ctx.fill();
+      ctx.setFillStyle('#57534e'); ctx.setFontSize(12); ctx.setTextAlign('left');
+      ctx.fillText(item.label, hx+12, y+1);
+      ctx.setFillStyle('#9ca3af'); ctx.setFontSize(11);
+      ctx.fillText(item.val || '', hx+50, y+1);
+      hx += 140;
+    });
+    y += 20;
+
+    /* 护肤日记 */
+    ctx.setStrokeStyle('#e5e0eb'); ctx.setLineWidth(0.5);
+    ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(w-40, y); ctx.stroke(); y += 18;
+    ctx.setFillStyle('#9ca3af'); ctx.setFontSize(10); ctx.setTextAlign('center');
+    ctx.fillText('护肤日记', w/2, y); y += 16;
+    var sc = pd.posterSkincare || [];
+    sc.forEach(function(item) {
+      ctx.setFillStyle(item.done ? '#a7c957' : '#e5e7eb');
+      ctx.beginPath(); ctx.arc(48, y-3, 3, 0, Math.PI*2); ctx.fill();
+      ctx.setFillStyle('#57534e'); ctx.setFontSize(12); ctx.setTextAlign('left');
+      ctx.fillText(item.label, 58, y+1);
+      ctx.setFillStyle('#9ca3af'); ctx.setFontSize(11);
+      ctx.fillText(item.val || '', 150, y+1);
+      y += 17;
+    });
+    if (pd.posterSkincareNote) {
+      ctx.setFillStyle('#a8a29e'); ctx.setFontSize(11); ctx.setTextAlign('center');
+      ctx.fillText(pd.posterSkincareNote, w/2, y); y += 16;
+    }
+    y += 2;
+
+    /* 心情日记 */
+    ctx.setStrokeStyle('#e5e0eb'); ctx.setLineWidth(0.5);
+    ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(w-40, y); ctx.stroke(); y += 18;
+    ctx.setFillStyle('#9ca3af'); ctx.setFontSize(10); ctx.setTextAlign('center');
+    ctx.fillText('心情日记', w/2, y); y += 16;
+    var mood = pd.posterMood || [];
+    mood.forEach(function(item) {
+      ctx.setFillStyle('#a7c957');
+      ctx.beginPath(); ctx.arc(48, y-3, 3, 0, Math.PI*2); ctx.fill();
+      ctx.setFillStyle('#57534e'); ctx.setFontSize(12); ctx.setTextAlign('left');
+      ctx.fillText(item.label, 58, y+1);
+      ctx.setFillStyle('#9ca3af'); ctx.setFontSize(11);
+      ctx.fillText(item.val || '', 130, y+1);
+      y += 17;
+    });
+    if (pd.posterMoodDiary) {
+      ctx.setFillStyle('#78716c'); ctx.setFontSize(11); ctx.setTextAlign('center');
+      ctx.fillText(pd.posterMoodDiary, w/2, y); y += 16;
+    }
+    if (pd.posterMoodGratitude) {
+      ctx.setFillStyle('#a8a29e'); ctx.setFontSize(11); ctx.setTextAlign('center');
+      ctx.fillText(pd.posterMoodGratitude, w/2, y); y += 16;
+    }
+
+    ctx.draw(false, function() {
+      setTimeout(function() {
+        wx.canvasToTempFilePath({
+          canvasId: 'posterCanvas',
+          success: function(res) {
+            wx.hideLoading();
+            wx.saveImageToPhotosAlbum({
+              filePath: res.tempFilePath,
+              success: function() {
+                wx.showToast({ title: '已保存到相册', icon: 'success' });
+              },
+              fail: function(e) {
+                if (e.errMsg.indexOf('auth deny') !== -1 || e.errMsg.indexOf('authorize') !== -1) {
+                  wx.showModal({
+                    title: '需要相册权限',
+                    content: '请在设置中允许小程序保存到相册',
+                    confirmText: '去设置',
+                    success: function(m) {
+                      if (m.confirm) wx.openSetting();
+                    }
+                  });
+                } else {
+                  wx.showToast({ title: '保存失败', icon: 'none' });
+                }
+              }
+            });
+          },
+          fail: function() {
+            wx.hideLoading();
+            wx.showToast({ title: '生成失败', icon: 'none' });
+          }
+        });
+      }, 500);
+    });
   },
 
   // =========================================

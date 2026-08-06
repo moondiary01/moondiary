@@ -981,6 +981,9 @@
     </scroll-view>
   </view>
 
+  <!-- 海报生成 Canvas（隐藏） -->
+  <canvas canvas-id="posterCanvas" class="poster-canvas" wx:if="{{showPosterPage}}"></canvas>
+
   <!-- === BOTTOM NAV === -->
   <view class="bottom-nav">
     <view class="bn-item {{bottomActive==='home'?'active':''}}" bindtap="onBottomHome">

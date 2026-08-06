@@ -944,3 +944,4 @@ page {
 .poster-diary { text-align: center; font-size: 26rpx; color: #78716c; line-height: 1.6; max-width: 600rpx; margin: 8rpx auto 0; }
 .poster-gratitude { text-align: center; font-size: 24rpx; color: #a8a29e; line-height: 1.6; margin-top: 8rpx; }
 .poster-save-btn { display: block; width: 100%; max-width: 520rpx; margin: 0 auto; padding: 24rpx 48rpx; border: none; border-radius: 100rpx; background: linear-gradient(135deg, #3d2b4f, #7a5276); color: #fce7f3; font-size: 30rpx; font-weight: 600; letter-spacing: 2rpx; box-shadow: 0 8rpx 32rpx rgba(61,43,79,0.2); }
+.poster-canvas { position: fixed; left: -9999rpx; top: 0; width: 750rpx; height: 1334rpx; }
