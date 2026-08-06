@@ -189,7 +189,6 @@ body::-webkit-scrollbar{display:none}
 .gate-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(147,51,234,0.35)}
 .gate-btn:active{transform:scale(0.98)}
 .gate-hint{font-size:0.72rem;color:var(--text-l);margin-top:16px;line-height:1.6}
-.gate-tabs{display:flex;gap:4px;background:var(--rose-50);border-radius:10px;padding:3px;margin-bottom:16px}
 /* ===== Splash 动画 ===== */
 .splash{position:fixed;inset:0;background:var(--grad-hero);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:600;animation:splashFade 2.8s ease forwards}
 @keyframes splashFade{0%{opacity:1}85%{opacity:1}100%{opacity:0;visibility:hidden}}
@@ -207,8 +206,6 @@ body::-webkit-scrollbar{display:none}
 .splash-loader{width:120px;height:3px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:30px;overflow:hidden;animation:splashTextIn 0.6s 0.7s ease both}
 .splash-loader-bar{height:100%;background:#fff;border-radius:2px;animation:loaderFill 1.5s 0.8s ease forwards;width:0}
 @keyframes loaderFill{from{width:0}to{width:100%}}
-.gate-tab{flex:1;text-align:center;padding:8px;border-radius:8px;font-size:0.82rem;font-weight:600;color:var(--text-l);cursor:pointer;transition:all 0.2s}
-.gate-tab.active{background:#fff;color:var(--rose-600);box-shadow:0 2px 6px rgba(124,58,237,0.1)}
 .gate-error{color:var(--rose-500);font-size:0.78rem;margin-top:8px;min-height:18px;font-weight:600}
 .gate-tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid var(--border)}
 .gate-tab{flex:1;text-align:center;padding:10px 0;font-size:0.85rem;font-weight:700;color:var(--text-l);cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;margin-bottom:-2px}
@@ -2329,6 +2326,7 @@ const USED_KEYS_STORE = 'moondiary_used_keys'; /* 已使用的密钥（用过即
 const ADMIN_PW_STORE = 'moondiary_admin_pw';
 const DEFAULT_ADMIN_PW = 'moonmoondiaomeinv';
 const ADMIN_PHONE = '18680881810';
+const ADMIN_ACTIVATION_CODE = '151601';
 const VERSION_STORE = 'moondiary_version';
 const APP_VERSION = '7.1';
 const SESSION_PHONE = 'moondiary_session_phone'; /* localStorage 中保存手机号用于自动登录 */
@@ -3108,6 +3106,7 @@ function switchGate(mode) {
   var ae = document.getElementById('adminError'); if (ae) ae.textContent = '';
   var ace = document.getElementById('adminCodeError'); if (ace) ace.textContent = '';
   var we = document.getElementById('wxError'); if (we) we.textContent = '';
+  if (mode === 'admin') { switchAdminLoginTab('sms'); }
 }
 
 /* ===== 新登录系统：手机验证码 + 微信 + 管理员激活码 ===== */
@@ -3135,10 +3134,8 @@ function sendSmsCode() {
   var phone = document.getElementById('loginPhone').value.trim();
   if (!phone) { document.getElementById('gateError').textContent = '请输入手机号'; return; }
   if (!/^1\d{10}$/.test(phone)) { document.getElementById('gateError').textContent = '手机号格式不正确'; return; }
-  var code = String(Math.floor(100000 + Math.random() * 900000));
-  _smsCodes[phone] = code;
-  console.log('验证码: ' + code);
-  showToast('验证码已发送（模拟）：' + code);
+  _smsCodes[phone] = '888888';
+  showToast('验证码已发送（演示：888888）');
   _smsCooldown = 60;
   var btn = document.getElementById('sendSmsBtn');
   btn.disabled = true;
@@ -3172,10 +3169,22 @@ function smsLogin() {
   sessionStorage.setItem(SESSION_PHONE, phone);
   var bindings = loadPhoneBindings();
   if (!bindings[phone]) { bindings[phone] = phone; savePhoneBindings(bindings); }
+  ensureTrialAccess(phone);
   syncUserInfoToPreset(phone, phone);
   playLoginSound();
   showSplash();
   setTimeout(function() { enterApp(false); }, 2800);
+}
+
+/* 确保用户有7天试用权限 */
+function ensureTrialAccess(userId) {
+  var payments = loadPayments();
+  if (!payments[userId]) payments[userId] = {};
+  if (!payments[userId].storagePaid && !payments[userId].beautyPaid && !payments[userId].trialStart) {
+    payments[userId].trialStart = Date.now();
+    payments[userId].trialExpires = Date.now() + 7 * 24 * 3600 * 1000;
+    savePayments(payments);
+  }
 }
 
 function wxLogin() {
@@ -3190,6 +3199,7 @@ function wxLogin() {
   sessionStorage.setItem(SESSION_PHONE, phone);
   var bindings = loadPhoneBindings();
   if (!bindings[phone]) { bindings[phone] = phone; savePhoneBindings(bindings); }
+  ensureTrialAccess(phone);
   syncUserInfoToPreset(phone, phone);
   playLoginSound();
   showSplash();
@@ -3200,10 +3210,8 @@ function sendAdminSmsCode() {
   var phone = document.getElementById('adminPhone').value.trim();
   if (!phone) { document.getElementById('adminError').textContent = '请输入手机号'; return; }
   if (phone !== ADMIN_PHONE) { document.getElementById('adminError').textContent = '该手机号无管理员权限'; return; }
-  var code = String(Math.floor(100000 + Math.random() * 900000));
-  _smsCodes['admin_' + phone] = code;
-  console.log('管理员验证码: ' + code);
-  showToast('验证码已发送（模拟）：' + code);
+  _smsCodes['admin_' + phone] = '888888';
+  showToast('验证码已发送（演示：888888）');
   _adminSmsCooldown = 60;
   var btn = document.getElementById('adminSendSmsBtn');
   btn.disabled = true;
@@ -3248,7 +3256,7 @@ function adminCodeLogin() {
   if (!phone) { err.textContent = '请输入手机号'; return; }
   if (phone !== ADMIN_PHONE) { err.textContent = '该手机号无管理员权限'; return; }
   if (!code) { err.textContent = '请输入激活码'; return; }
-  if (code !== '151601') { err.textContent = '激活码不正确'; return; }
+  if (code !== ADMIN_ACTIVATION_CODE) { err.textContent = '激活码不正确'; return; }
   err.textContent = '';
   currentKey = ADMIN_SESSION;
   currentPhone = 'admin';
@@ -3300,121 +3308,6 @@ function verifyActivationCode() {
   renderAll();
 }
 
-function adminLogin() {
-  const phone = document.getElementById('adminPhone').value.trim();
-  const pw = document.getElementById('adminPw').value;
-  const err = document.getElementById('adminError');
-  if (!phone) { err.textContent = '请输入手机号'; return; }
-  if (!/^1\d{10}$/.test(phone)) { err.textContent = '手机号格式不正确'; return; }
-  if (phone !== ADMIN_PHONE) { err.textContent = '该手机号无管理员权限'; return; }
-  if (!pw) { err.textContent = '请输入密码'; return; }
-  if (pw !== getAdminPw()) { err.textContent = '密码不正确'; return; }
-  currentKey = ADMIN_SESSION;
-  currentPhone = 'admin';
-  localStorage.setItem(SESSION_KEY, ADMIN_SESSION);
-  localStorage.setItem(SESSION_PHONE, 'admin');
-  sessionStorage.setItem(SESSION_PHONE, 'admin');
-  /* 管理员登录时强制从云端同步所有管理数据 */
-  forceSyncAdminData(function() {
-    playLoginSound();
-    showSplash(() => { enterApp(true); });
-  });
-}
-
-function tryLogin() {
-  const phone = document.getElementById('userPhone').value.trim();
-  const k = document.getElementById('keyInput').value.trim();
-  const err = document.getElementById('gateError');
-  if (!phone) { err.textContent = '请输入手机号'; return; }
-  if (!/^1\d{10}$/.test(phone)) { err.textContent = '手���号格式不正确'; return; }
-  if (!/^\d{6}$/.test(k)) { err.textContent = '请输入6位数字密钥'; return; }
-  /* 检查该手机号是否已绑定其他密钥 */
-  const existingBindings = loadPhoneBindings();
-  if (existingBindings[phone] && existingBindings[phone] !== k) {
-    err.textContent = '该手机号已绑定其他密钥，请使用已绑定的密钥登录'; return;
-  }
-  /* 预设密钥 */
-  if (isPresetKey(k)) {
-    const pi = loadPresetInfo();
-    const info = pi[k];
-    /* 检查是否已被停用/作废 */
-    if (info && info.revoked) { err.textContent = '该密钥已被停用，请联系管理员'; return; }
-    if (info && info.activated) {
-      /* 已启用：仅绑定手机号可登录 */
-      if (info.phone !== phone) { err.textContent = '该密钥已绑定其他手机号，登录失败'; return; }
-      currentKey = k;
-      currentPhone = phone;
-      localStorage.setItem(SESSION_KEY, k);
-      localStorage.setItem(SESSION_PHONE, phone);
-      sessionStorage.setItem(SESSION_PHONE, phone);
-      migrateDataIfNeeded(phone, k, function() {
-        syncUserInfoToPreset(k, phone);
-        ensureKeyUserFreeStorage(phone);
-        playLoginSound(); showSplash(() => { enterApp(false); });
-      });
-      return;
-    }
-    /* 未启用：检查是否已被他人用过 */
-    if (isUsedKey(k)) {
-      const used = loadUsedKeys();
-      if (used[k] && used[k].phone !== phone) {
-        err.textContent = '该密钥已绑定其他手机号，登录失败'; return;
-      }
-    }
-    markKeyUsed(k, phone);
-    /* 激活密钥并绑定手机号——先从云端读取最新数据，避免本地旧数据覆盖云端 */
-    loadFromCloud('_preset_info', function(cloudPi) {
-      var pi2 = cloudPi || loadPresetInfo();
-      if (!pi2) pi2 = {};
-      if (!pi2[k]) pi2[k] = {};
-      pi2[k].activated = true;
-      pi2[k].phone = phone;
-      pi2[k].activatedAt = new Date().toISOString();
-      localStorage.setItem(PRESET_INFO_STORE, JSON.stringify(pi2));
-      savePresetInfo(pi2);
-      var b1 = loadPhoneBindings(); b1[phone] = k; savePhoneBindings(b1);
-      currentKey = k;
-      currentPhone = phone;
-      localStorage.setItem(SESSION_KEY, k);
-      localStorage.setItem(SESSION_PHONE, phone);
-      sessionStorage.setItem(SESSION_PHONE, phone);
-      migrateDataIfNeeded(phone, k, function() {
-        syncUserInfoToPreset(k, phone);
-        ensureKeyUserFreeStorage(phone);
-        playLoginSound(); showSplash(() => { enterApp(false); });
-      });
-    });
-    return;
-  }
-  /* 动态密钥：从本地密钥池验证 */
-  const keys = loadKeys();
-  if (!keys[k]) { err.textContent = '密钥无效，请联系 Moon 获取'; return; }
-  if (keys[k].revoked) { err.textContent = '该密钥已被停用，请联系管理员'; return; }
-  if (isUsedKey(k) && keys[k].phone && keys[k].phone !== phone) {
-    err.textContent = '该密钥已绑定其他手机号，登录失败'; return;
-  }
-  if (keys[k].phone) {
-    if (keys[k].phone !== phone) { err.textContent = '手机号与密钥不匹配'; return; }
-  }
-  markKeyUsed(k, phone);
-  /* 绑定手机号，之后可用手机号快速登录 */
-  keys[k].phone = phone;
-  const b2 = loadPhoneBindings(); b2[phone] = k; savePhoneBindings(b2);
-  currentKey = k;
-  localStorage.setItem(SESSION_KEY, k);
-  keys[k].lastLogin = new Date().toISOString();
-  saveKeys(keys);
-  currentKey = k;
-  currentPhone = phone;
-  localStorage.setItem(SESSION_KEY, k);
-  localStorage.setItem(SESSION_PHONE, phone);
-  sessionStorage.setItem(SESSION_PHONE, phone);
-  migrateDataIfNeeded(phone, k, function() {
-    ensureKeyUserFreeStorage(phone);
-    playLoginSound(); showSplash(() => { enterApp(false); });
-  });
-}
-
 /* Splash 动画 */
 function showSplash(callback) {
   const splash = document.getElementById('splash');
@@ -3446,12 +3339,20 @@ function logout() {
   currentPhone = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('gate').style.display = 'flex';
-  document.getElementById('userPhone').value = '';
-  document.getElementById('keyInput').value = '';
-  document.getElementById('adminPhone').value = '';
-  document.getElementById('adminPw').value = '';
-  document.getElementById('gateError').textContent = '';
-  document.getElementById('adminError').textContent = '';
+  var el;
+  if (el = document.getElementById('loginPhone')) el.value = '';
+  if (el = document.getElementById('smsCode')) el.value = '';
+  if (el = document.getElementById('adminPhone')) el.value = '';
+  if (el = document.getElementById('adminSmsCode')) el.value = '';
+  if (el = document.getElementById('adminCodePhone')) el.value = '';
+  if (el = document.getElementById('adminActivationCode')) el.value = '';
+  if (el = document.getElementById('adminPw')) el.value = '';
+  if (el = document.getElementById('userPhone')) el.value = '';
+  if (el = document.getElementById('keyInput')) el.value = '';
+  if (el = document.getElementById('gateError')) el.textContent = '';
+  if (el = document.getElementById('adminError')) el.textContent = '';
+  if (el = document.getElementById('adminCodeError')) el.textContent = '';
+  if (el = document.getElementById('wxError')) el.textContent = '';
   switchGate('user');
 }
 
@@ -3486,8 +3387,6 @@ function enterApp(isAdmin) {
     }
   }
 }
-
-document.getElementById('keyInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 
 /* ---------- 日期/天数 ---------- */
 function calcTotalDays() {
