@@ -4450,35 +4450,112 @@ function renderPosterPage() {
 function savePosterImage() {
   showToast('正在生成海报...');
   var el = document.getElementById('posterContent');
-  /* 使用 html2canvas 动态加载 */
+  var rect = el.getBoundingClientRect();
+  var scale = 2;
+  var canvas = document.createElement('canvas');
+  canvas.width = rect.width * scale;
+  canvas.height = rect.height * scale;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(scale, scale);
+  
+  /* 使用 html2canvas 动态加载，带超时回退 */
+  var done = false;
+  var fallbackTimer = setTimeout(function() {
+    if (!done) { done = true; fallbackSave(el, canvas, ctx, rect); }
+  }, 8000);
+  
   var script = document.createElement('script');
   script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
   script.onload = function() {
-    html2canvas(el, {
-      backgroundColor: '#faf5f9',
-      scale: 2,
-      useCORS: true,
-      allowTaint: true
-    }).then(function(canvas) {
-      canvas.toBlob(function(blob) {
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'MoonMemo_' + localDateStr(new Date()) + '.png';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('海报已保存');
-      }, 'image/png');
-    }).catch(function() {
-      showToast('生成失败，请重试');
-    });
+    if (done) return;
+    clearTimeout(fallbackTimer);
+    html2canvas(el, { backgroundColor: '#faf5f9', scale: 2, useCORS: true, allowTaint: true, logging: false })
+      .then(function(c) {
+        done = true;
+        downloadCanvas(c);
+      }).catch(function() {
+        if (!done) { done = true; fallbackSave(el, canvas, ctx, rect); }
+      });
   };
   script.onerror = function() {
-    showToast('加载组件失败，请检查网络');
+    if (!done) { done = true; clearTimeout(fallbackTimer); fallbackSave(el, canvas, ctx, rect); }
   };
   document.head.appendChild(script);
+  
+  function downloadCanvas(c) {
+    c.toBlob(function(blob) {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'MoonMemo_' + localDateStr(new Date()) + '.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('海报已保存');
+    }, 'image/png');
+  }
+  
+  function fallbackSave(el, canvas, ctx, rect) {
+    /* 纯 Canvas 绑制回退方案 */
+    ctx.fillStyle = '#faf5f9';
+    ctx.fillRect(0, 0, rect.width, rect.height);
+    
+    var y = 32;
+    /* 标题 */
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '400 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Moon Memo', rect.width/2, y); y += 20;
+    ctx.fillStyle = '#78716c';
+    ctx.font = '400 14px sans-serif';
+    ctx.fillText('今日海报', rect.width/2, y); y += 18;
+    ctx.fillStyle = '#a8a29e';
+    ctx.font = '400 11px sans-serif';
+    var now = new Date();
+    ctx.fillText(now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日', rect.width/2, y); y += 30;
+    
+    /* 分隔线 */
+    ctx.strokeStyle = '#e5e0eb';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(rect.width-40, y); ctx.stroke(); y += 20;
+    
+    /* 已减重圆形 */
+    var cx = rect.width/2, cy = y + 65, r = 65;
+    var grad = ctx.createRadialGradient(cx-20, cy-20, 5, cx, cy, r);
+    grad.addColorStop(0, '#9d6b8b'); grad.addColorStop(0.5, '#5b3a5e'); grad.addColorStop(1, '#3d2b4f');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fce7f3';
+    ctx.font = '800 50px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(document.getElementById('posterLost').textContent, cx, cy-8);
+    ctx.font = '400 14px sans-serif';
+    ctx.fillText('kg', cx, cy+16);
+    ctx.fillStyle = 'rgba(252,231,243,0.5)';
+    ctx.font = '400 10px sans-serif';
+    ctx.fillText('已减重', cx, cy+32);
+    y = cy + r + 24;
+    
+    /* 体重数据 */
+    ctx.fillStyle = '#44403c';
+    ctx.font = '600 18px sans-serif';
+    ctx.fillText(document.getElementById('posterTodayWeight').textContent, rect.width/2, y); y += 22;
+    ctx.fillStyle = '#a8a29e';
+    ctx.font = '400 13px sans-serif';
+    ctx.fillText(document.getElementById('posterFat').textContent, rect.width/2, y); y += 20;
+    
+    ctx.fillStyle = '#a8a29e';
+    ctx.font = '400 11px sans-serif';
+    ctx.fillText('起始体重', rect.width/2-60, y);
+    ctx.fillText('目标体重', rect.width/2+60, y); y += 16;
+    ctx.fillStyle = '#78716c';
+    ctx.font = '600 16px sans-serif';
+    ctx.fillText(document.getElementById('posterStartWeight').textContent, rect.width/2-60, y);
+    ctx.fillText(document.getElementById('posterTargetWeight').textContent, rect.width/2+60, y); y += 28;
+    
+    downloadCanvas(canvas);
+  }
 }
 
 /* 初始化底部导航 */
@@ -4602,11 +4679,11 @@ function refreshBeautyEntryUI() {
   var heroActEntry = document.getElementById('heroActivationEntry'); /* 激活码入口 */
   
   if (isAdminUser()) {
-    /* 管理员：直接展示全部功能，无需试用/购买 */
+    /* 管理员：显示全部功能 + 购买入口（用于模拟体验） */
     if (quickBtns) quickBtns.style.display = 'flex';
-    if (bottomCard) bottomCard.style.display = 'none';
-    if (basicEntry) basicEntry.style.display = 'none';
-    if (heroActEntry) heroActEntry.style.display = 'none';
+    if (bottomCard) bottomCard.style.display = '';
+    if (basicEntry) basicEntry.style.display = '';
+    if (heroActEntry) heroActEntry.style.display = '';
     return;
   }
   
