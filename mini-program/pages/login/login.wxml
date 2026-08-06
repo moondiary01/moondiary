@@ -27,23 +27,69 @@
     </view>
     <view class="gate-title"><text class="brand">MoonMemo</text></view>
 
-    <!-- 用户手机号+密钥登录（默认显示） -->
+    <!-- ===== 用户登录区域 ===== -->
     <view class="gate-content" wx:if="{{mode === 'user'}}">
-      <view class="gate-sub">请输入专属6位密钥进入</view>
-      <input class="gate-input gate-input-key" type="number" maxlength="6" placeholder="6位数字密钥" placeholder-class="gate-input-placeholder" value="{{keyCode}}" bindinput="onKeyCodeInput" />
-      <input class="gate-input gate-input-phone" type="number" maxlength="11" placeholder="手机号（11位）" placeholder-class="gate-input-placeholder" value="{{keyPhone}}" bindinput="onKeyPhoneInput" />
-      <button class="gate-btn" hover-class="gate-btn-hover" bindtap="onKeyLogin">进 入</button>
-      <view class="gate-hint">绑定微信可直接登陆，若需密钥登陆请联系管理员\n一个手机号只能绑定一个密钥</view>
+      <!-- Tabs -->
+      <view class="gate-tabs">
+        <view class="gate-tab {{loginTab === 'sms' ? 'active' : ''}}" bindtap="switchLoginTab" data-tab="sms">手机验证码</view>
+        <view class="gate-tab {{loginTab === 'wx' ? 'active' : ''}}" bindtap="switchLoginTab" data-tab="wx">微信登录</view>
+      </view>
+
+      <!-- 手机验证码登录 -->
+      <view wx:if="{{loginTab === 'sms'}}">
+        <input class="gate-input" type="number" maxlength="11" placeholder="手机号" placeholder-class="gate-input-placeholder" value="{{loginPhone}}" bindinput="onLoginPhoneInput" />
+        <view class="sms-row">
+          <input class="gate-input gate-input-code" type="number" maxlength="6" placeholder="验证码" placeholder-class="gate-input-placeholder" value="{{smsCode}}" bindinput="onSmsCodeInput" />
+          <button class="sms-btn" bindtap="sendSmsCode" disabled="{{smsCooldown > 0}}">{{smsBtnText}}</button>
+        </view>
+        <view class="gate-error" wx:if="{{gateError}}">{{gateError}}</view>
+        <button class="gate-btn" hover-class="gate-btn-hover" bindtap="smsLogin">登 录</button>
+        <view class="gate-hint">首次登录自动注册，所有用户均可免费试用7天</view>
+      </view>
+
+      <!-- 微信登录 -->
+      <view wx:if="{{loginTab === 'wx'}}">
+        <view class="wx-login-box">
+          <view class="wx-icon-btn" bindtap="wxLogin" hover-class="wx-icon-btn-hover">W</view>
+          <view class="wx-login-hint">点击微信图标授权登录</view>
+          <view class="wx-login-desc">授权后自动获取微信绑定手机号\n首次登录自动注册，免费试用7天</view>
+        </view>
+        <view class="gate-error" wx:if="{{wxError}}">{{wxError}}</view>
+      </view>
+
       <view class="gate-switch-link" bindtap="switchMode" data-mode="admin">管理员入口</view>
     </view>
 
-    <!-- 管理员手机号+密码登录（隐藏） -->
+    <!-- ===== 管理员登录区域 ===== -->
     <view class="gate-content" wx:if="{{mode === 'admin'}}">
       <view class="gate-sub">管理员登录</view>
-      <input class="gate-input gate-input-phone" type="number" maxlength="11" placeholder="管理员手机号" placeholder-class="gate-input-placeholder" value="{{adminPhone}}" bindinput="onAdminPhoneInput" />
-      <input class="gate-input" type="text" password="{{true}}" placeholder="管理员密码" placeholder-class="gate-input-placeholder" value="{{adminPassword}}" bindinput="onAdminPasswordInput" />
-      <button class="gate-btn" hover-class="gate-btn-hover" bindtap="onAdminLogin">管理员进入</button>
-      <view class="gate-hint">请输入管理员手机号与密码</view>
+
+      <!-- Tabs -->
+      <view class="gate-tabs">
+        <view class="gate-tab {{adminLoginTab === 'sms' ? 'active' : ''}}" bindtap="switchAdminLoginTab" data-tab="sms">验证码登录</view>
+        <view class="gate-tab {{adminLoginTab === 'code' ? 'active' : ''}}" bindtap="switchAdminLoginTab" data-tab="code">激活码登录</view>
+      </view>
+
+      <!-- 验证码登录 -->
+      <view wx:if="{{adminLoginTab === 'sms'}}">
+        <input class="gate-input" type="number" maxlength="11" placeholder="管理员手机号" placeholder-class="gate-input-placeholder" value="{{adminPhone}}" bindinput="onAdminPhoneInput" />
+        <view class="sms-row">
+          <input class="gate-input gate-input-code" type="number" maxlength="6" placeholder="验证码" placeholder-class="gate-input-placeholder" value="{{adminSmsCode}}" bindinput="onAdminSmsCodeInput" />
+          <button class="sms-btn" bindtap="sendAdminSmsCode" disabled="{{adminSmsCooldown > 0}}">{{adminSmsBtnText}}</button>
+        </view>
+        <view class="gate-error" wx:if="{{adminError}}">{{adminError}}</view>
+        <button class="gate-btn" hover-class="gate-btn-hover" bindtap="adminSmsLogin">管理员登录</button>
+      </view>
+
+      <!-- 激活码登录 -->
+      <view wx:if="{{adminLoginTab === 'code'}}">
+        <input class="gate-input" type="number" maxlength="11" placeholder="管理员手机号" placeholder-class="gate-input-placeholder" value="{{adminCodePhone}}" bindinput="onAdminCodePhoneInput" />
+        <input class="gate-input gate-input-key" type="number" maxlength="6" placeholder="管理员激活码" placeholder-class="gate-input-placeholder" value="{{adminActivationCode}}" bindinput="onAdminActivationCodeInput" />
+        <view class="gate-error" wx:if="{{adminCodeError}}">{{adminCodeError}}</view>
+        <button class="gate-btn" hover-class="gate-btn-hover" bindtap="adminCodeLogin">激活码登录</button>
+      </view>
+
+      <view class="gate-hint">管理员手机号 18680881810 · 激活码 151601</view>
       <view class="gate-switch-link" bindtap="switchMode" data-mode="user">← 返回用户登录</view>
     </view>
   </view>

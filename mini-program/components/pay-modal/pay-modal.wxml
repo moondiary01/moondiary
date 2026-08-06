@@ -45,9 +45,19 @@
           <button class="pm-buy-btn" bindtap="onPay">立即购买开通使用</button>
         </view>
       </view>
-      <!-- 购买须知 + 隐私协议 -->
+      <!-- 激活码区域 -->
+      <view class="pm-activation-area" wx:if="{{showActivation}}">
+        <view class="pm-activation-row">
+          <input class="pm-activation-input" type="number" maxlength="6" placeholder="输入6位激活码" value="{{activationCode}}" bindinput="onActivationCodeInput" />
+          <button class="pm-activation-btn" bindtap="onVerifyActivation">验证</button>
+        </view>
+        <view class="pm-activation-msg" wx:if="{{activationMsg}}">{{activationMsg}}</view>
+      </view>
+      <!-- 购买须知 + 激活码 + 隐私协议 -->
       <view class="pm-links">
         <text class="pm-link" bindtap="onNotice">购买须知</text>
+        <text class="pm-link-divider">|</text>
+        <text class="pm-link" bindtap="onToggleActivation">{{showActivation ? '收起激活码' : '激活码'}}</text>
         <text class="pm-link-divider">|</text>
         <text class="pm-link" bindtap="onPrivacy">隐私协议</text>
       </view>

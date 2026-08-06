@@ -269,14 +269,38 @@
 .gate-sub {
   font-size: 26rpx;
   color: var(--text-l);
-  margin-bottom: 36rpx;
+  margin-bottom: 28rpx;
+  font-weight: 600;
 }
 
-/* 输入框 */
+/* ===== Tabs 切换 ===== */
+.gate-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28rpx;
+  border-bottom: 4rpx solid var(--border);
+}
+.gate-tab {
+  flex: 1;
+  text-align: center;
+  padding: 14rpx 0;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-l);
+  border-bottom: 4rpx solid transparent;
+  margin-bottom: -4rpx;
+  transition: all 0.2s;
+}
+.gate-tab.active {
+  color: var(--rose-600);
+  border-bottom-color: var(--rose-600);
+}
+
+/* ===== 输入框 ===== */
 .gate-input {
   width: 100%;
   text-align: center;
-  font-size: 36rpx;
+  font-size: 34rpx;
   font-weight: 800;
   padding: 28rpx;
   border: 4rpx solid var(--border);
@@ -294,15 +318,78 @@
   letter-spacing: 6rpx;
   font-size: 32rpx;
 }
+/* 验证码输入行 */
+.sms-row {
+  display: flex;
+  gap: 12rpx;
+  align-items: center;
+  margin-bottom: 0;
+}
+.gate-input-code {
+  flex: 1;
+  letter-spacing: 10rpx;
+  font-size: 36rpx;
+  margin-bottom: 0;
+}
+.sms-btn {
+  flex-shrink: 0;
+  padding: 26rpx 20rpx;
+  border-radius: 24rpx;
+  background: var(--rose-100);
+  color: var(--rose-600);
+  font-weight: 700;
+  font-size: 24rpx;
+  border: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+.sms-btn[disabled] {
+  opacity: 0.5;
+}
 /* placeholder 颜色 */
 .gate-input-placeholder {
   color: var(--rose-200);
 }
 
-/* 按钮 */
+/* ===== 微信登录区域 ===== */
+.wx-login-box {
+  text-align: center;
+  padding: 16rpx 0 8rpx;
+}
+.wx-icon-btn {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: #07c160;
+  margin: 0 auto 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  color: #fff;
+  font-weight: 900;
+  transition: transform 0.2s;
+}
+.wx-icon-btn-hover {
+  transform: scale(1.08);
+}
+.wx-login-hint {
+  font-size: 26rpx;
+  color: var(--text-l);
+  margin-bottom: 12rpx;
+}
+.wx-login-desc {
+  font-size: 22rpx;
+  color: var(--text-l);
+  line-height: 1.6;
+  white-space: pre-line;
+  opacity: 0.7;
+}
+
+/* ===== 按钮 ===== */
 .gate-btn {
   width: 100%;
-  margin-top: 20rpx;
+  margin-top: 24rpx;
   padding: 28rpx;
   border: none;
   border-radius: 24rpx;
@@ -318,7 +405,7 @@
   opacity: 0.9;
 }
 
-/* 提示文字 */
+/* ===== 提示文字 ===== */
 .gate-hint {
   font-size: 22rpx;
   color: var(--text-l);

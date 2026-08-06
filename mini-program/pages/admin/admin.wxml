@@ -1,30 +1,36 @@
 <!-- pages/admin/admin.wxml -->
 <view class="admin-page">
-  <!-- 用户统计（可点击查看详情） -->
+  <!-- 用户统计（按分类：试用期/普通版/升级版/密钥用户） -->
   <view class="card">
     <view class="card-title">管理后台 <text class="sub">Moon 专属</text></view>
     <view class="admin-stat-grid">
-      <view class="admin-stat-item" bindtap="showUsersByType" data-type="free">
-        <text class="admin-stat-num">{{adminStats.free}}</text>
-        <text class="admin-stat-lbl">免费用户 · 点击查看</text>
-      </view>
-      <view class="admin-stat-item" bindtap="showUsersByType" data-type="trial">
+      <view class="admin-stat-item admin-stat-clickable" bindtap="showUsersByType" data-type="trial">
         <text class="admin-stat-num">{{adminStats.trial}}</text>
-        <text class="admin-stat-lbl">试用未充值 · 点击查看</text>
+        <text class="admin-stat-lbl">试用期用户 · 点击查看</text>
       </view>
-      <view class="admin-stat-item" bindtap="showUsersByType" data-type="vipBasic">
-        <text class="admin-stat-num">{{adminStats.vipBasic}}</text>
-        <text class="admin-stat-lbl">VIP基础版 · 点击查看</text>
+      <view class="admin-stat-item admin-stat-clickable" bindtap="showUsersByType" data-type="basic">
+        <text class="admin-stat-num">{{adminStats.basic}}</text>
+        <text class="admin-stat-lbl">普通版用户 · 点击查看</text>
       </view>
-      <view class="admin-stat-item" bindtap="showUsersByType" data-type="vipUpgrade">
-        <text class="admin-stat-num">{{adminStats.vipUpgrade}}</text>
-        <text class="admin-stat-lbl">VIP升级版 · 点击查看</text>
+      <view class="admin-stat-item admin-stat-clickable" bindtap="showUsersByType" data-type="upgrade">
+        <text class="admin-stat-num">{{adminStats.upgrade}}</text>
+        <text class="admin-stat-lbl">升级版用户 · 点击查看</text>
+      </view>
+      <view class="admin-stat-item admin-stat-clickable" bindtap="showUsersByType" data-type="keyUser">
+        <text class="admin-stat-num">{{adminStats.keyUser}}</text>
+        <text class="admin-stat-lbl">密钥用户 · 点击查看</text>
       </view>
       <view class="admin-stat-item admin-stat-total" bindtap="showAllUsers">
         <text class="admin-stat-num">{{adminStats.total}}</text>
         <text class="admin-stat-lbl">总人数 · 点击查看</text>
       </view>
     </view>
+  </view>
+
+  <!-- 预览试用弹窗 -->
+  <view class="card">
+    <view class="card-title">预览与调试</view>
+    <button class="btn btn-outline" bindtap="previewTrialPopup">预览 19.9 试用弹窗</button>
   </view>
 
   <!-- 版本更新通知 -->
@@ -54,7 +60,7 @@
   <view class="card">
     <view class="card-title">密钥管理</view>
     <view class="input-group">
-      <input class="input" type="number" maxlength="11" placeholder="输入手机号搜索用户" value="{{keySearchPhone}}" bindinput="onKeySearchInput" />
+      <input class="input" type="number" maxlength="11" placeholder="搜索用户手机号/微信号" value="{{keySearchPhone}}" bindinput="onKeySearchInput" />
     </view>
     <view class="key-list">
       <block wx:for="{{keyList}}" wx:key="code">
@@ -108,12 +114,12 @@
   </view>
 </view>
 
-<!-- 所有用户手机号弹窗 -->
-<view class="overlay" wx:if="{{showAllUsersModal}}" bindtap="closeAllUsersModal">
+<!-- 用户详情弹窗 -->
+<view class="overlay" wx:if="{{showUsersModal}}" bindtap="closeUsersModal">
   <view class="modal" catchtap>
-    <view class="modal-title">所有用户信息</view>
+    <view class="modal-title">{{usersModalTitle}}</view>
     <scroll-view scroll-y style="max-height:60vh">
-      <block wx:for="{{allUsersList}}" wx:key="phone">
+      <block wx:for="{{usersModalList}}" wx:key="phone">
         <view class="user-info-row">
           <view class="user-info-main">
             <text class="user-info-phone">{{item.phone}}</text>
@@ -122,10 +128,10 @@
           <text class="key-badge {{item.statusClass}}">{{item.status}}</text>
         </view>
       </block>
-      <view wx:if="{{allUsersList.length === 0}}" class="user-info-empty">暂无已填写手机号的用户</view>
+      <view wx:if="{{usersModalList.length === 0}}" class="user-info-empty">暂无此类用户</view>
     </scroll-view>
     <view class="modal-actions">
-      <button class="btn btn-primary" bindtap="closeAllUsersModal">关闭</button>
+      <button class="btn btn-primary" bindtap="closeUsersModal">关闭</button>
     </view>
   </view>
 </view>

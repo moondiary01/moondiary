@@ -5,8 +5,8 @@ var config = require('../../utils/config.js')
 
 Page({
   data: {
-    adminStats: { free: 0, trial: 0, vipBasic: 0, vipUpgrade: 0, total: 0 },
-    appVersion: '7.1',
+    adminStats: { trial: 0, basic: 0, upgrade: 0, keyUser: 0, total: 0 },
+    appVersion: '8.0',
     noticeContent: '',
     noticeSent: false,
     keyList: [],
@@ -18,8 +18,9 @@ Page({
     newPw2: '',
     newDynamicKey: '',
     // 弹窗
-    showAllUsersModal: false,
-    allUsersList: [],
+    showUsersModal: false,
+    usersModalTitle: '',
+    usersModalList: [],
     showKeyEditModal: false,
     editingKey: '',
     editingKeyTitle: '',
@@ -44,40 +45,64 @@ Page({
     this.loadVersionInfo()
   },
 
-  // ===== 用户统计 =====
+  // ===== 用户统计（试用期/普通版/升级版/密钥用户） =====
   loadAdminStats: function () {
     var self = this
-    store.loadPresetInfo(function(pi) {
+    store.loadPresetInfo(function (pi) {
       pi = pi || {}
-      var stats = { free: 0, trial: 0, vipBasic: 0, vipUpgrade: 0, total: 0 }
-      var configKeys = store.getPresetKeys()
-      var payments = store.loadPayments()
+      store.loadPayments(function (payments) {
+        payments = payments || {}
+        var configKeys = store.getPresetKeys()
+        var trialCount = 0, basicCount = 0, upgradeCount = 0, keyUserCount = 0
 
-      configKeys.forEach(function(k) {
-        var info = pi[k] || {}
-        if (info.phone) {
-          var p = payments[info.phone] || {}
-          if (p.beautyPaid || p.beautyTrial) stats.vipUpgrade++
-          else if (p.storagePaid) stats.vipBasic++
-          else stats.free++
-        }
+        configKeys.forEach(function (k) {
+          var info = pi[k] || {}
+          var phone = info.phone || ''
+          var p = payments[phone] || {}
+
+          if (p.beautyPaid || p.beautyTrial) {
+            upgradeCount++
+          } else if (p.storagePaid) {
+            basicCount++
+          } else if (phone && p.trialStart) {
+            var now = Date.now()
+            var trialExpires = p.trialExpires || 0
+            if (now < trialExpires) {
+              trialCount++
+            } else {
+              // 试用过期但未付费
+              keyUserCount++
+            }
+          } else {
+            keyUserCount++
+          }
+        })
+
+        self.setData({
+          adminStats: {
+            trial: trialCount,
+            basic: basicCount,
+            upgrade: upgradeCount,
+            keyUser: keyUserCount,
+            total: configKeys.length
+          }
+        })
       })
-      stats.total = configKeys.length
-      self.setData({ adminStats: stats })
     })
   },
 
   // ===== 版本通知 =====
   loadVersionInfo: function () {
-    store.loadPresetInfo(function(pi) {
+    var self = this
+    store.loadPresetInfo(function (pi) {
       pi = pi || {}
       var noticeInfo = pi._notice || {}
-      var noticeSent = !!(noticeInfo.sentAt && noticeInfo.version === '7.1')
-      this.setData({
+      var noticeSent = !!(noticeInfo.sentAt && noticeInfo.version === '8.0')
+      self.setData({
         noticeContent: noticeInfo.content || '',
         noticeSent: noticeSent
       })
-    }.bind(this))
+    })
   },
 
   onNoticeInput: function (e) {
@@ -86,10 +111,10 @@ Page({
 
   sendVersionNotice: function () {
     var self = this
-    store.loadPresetInfo(function(pi) {
+    store.loadPresetInfo(function (pi) {
       pi = pi || {}
       pi._notice = {
-        version: '7.1',
+        version: '8.0',
         content: self.data.noticeContent,
         sentAt: Date.now()
       }
@@ -97,6 +122,13 @@ Page({
       self.setData({ noticeSent: true })
       wx.showToast({ title: '通知已发送', icon: 'success' })
     })
+  },
+
+  // ===== 预览试用弹窗 =====
+  previewTrialPopup: function () {
+    wx.showToast({ title: '请在主页查看试用弹窗', icon: 'none' })
+    // 设置标记让主页显示弹窗
+    wx.setStorageSync('preview_trial_popup', true)
   },
 
   // ===== 付费管理 =====
@@ -113,7 +145,7 @@ Page({
     }
 
     var self = this
-    store.loadPayments(function(payments) {
+    store.loadPayments(function (payments) {
       payments = payments || {}
       if (!payments[phone]) payments[phone] = { storagePaid: false, beautyPaid: false, storagePaidAt: null, beautyPaidAt: null }
       var label = ''
@@ -138,14 +170,14 @@ Page({
   // ===== 密钥管理 =====
   loadKeyList: function () {
     var self = this
-    store.loadPresetInfo(function(pi) {
+    store.loadPresetInfo(function (pi) {
       pi = pi || {}
-      store.loadPayments(function(payments) {
+      store.loadPayments(function (payments) {
         payments = payments || {}
         var configKeys = store.getPresetKeys()
         var keyList = []
 
-        configKeys.forEach(function(k) {
+        configKeys.forEach(function (k) {
           var info = pi[k] || {}
           var phone = info.phone || ''
           var activated = !!info.activated
@@ -157,7 +189,7 @@ Page({
 
           // 用户类型
           var userType = 'free'
-          var userTypeLabel = '免费用户'
+          var userTypeLabel = '试用期'
           if (phone && (p.beautyPaid || p.beautyTrial)) {
             userType = 'vip'
             userTypeLabel = '升级版'
@@ -236,7 +268,7 @@ Page({
   toggleKey: function (e) {
     var key = e.currentTarget.dataset.key
     var self = this
-    store.loadPresetInfo(function(pi) {
+    store.loadPresetInfo(function (pi) {
       pi = pi || {}
       if (!pi[key]) pi[key] = {}
       var info = pi[key]
@@ -263,7 +295,7 @@ Page({
       return
     }
     var self = this
-    store.loadPayments(function(payments) {
+    store.loadPayments(function (payments) {
       payments = payments || {}
       if (!payments[phone]) payments[phone] = { storagePaid: false, beautyPaid: false, beautyTrial: false }
       if (payments[phone].beautyPaid) {
@@ -282,7 +314,7 @@ Page({
   editKeyNote: function (e) {
     var key = e.currentTarget.dataset.key
     var self = this
-    store.loadPresetInfo(function(pi) {
+    store.loadPresetInfo(function (pi) {
       pi = pi || {}
       var info = pi[key] || {}
       self.setData({
@@ -302,15 +334,15 @@ Page({
     this.setData({ showKeyEditModal: false })
   },
 
-  onEditKeyPhoneInput: function(e) { this.setData({ editingKeyPhone: e.detail.value }) },
-  onEditKeyGenderInput: function(e) { this.setData({ editingKeyGender: e.detail.value }) },
-  onEditKeyAgeInput: function(e) { this.setData({ editingKeyAge: e.detail.value }) },
-  onEditKeyNicknameInput: function(e) { this.setData({ editingKeyNickname: e.detail.value }) },
-  onEditKeyNoteInput: function(e) { this.setData({ editingKeyNote: e.detail.value }) },
+  onEditKeyPhoneInput: function (e) { this.setData({ editingKeyPhone: e.detail.value }) },
+  onEditKeyGenderInput: function (e) { this.setData({ editingKeyGender: e.detail.value }) },
+  onEditKeyAgeInput: function (e) { this.setData({ editingKeyAge: e.detail.value }) },
+  onEditKeyNicknameInput: function (e) { this.setData({ editingKeyNickname: e.detail.value }) },
+  onEditKeyNoteInput: function (e) { this.setData({ editingKeyNote: e.detail.value }) },
 
   saveKeyNote: function () {
     var self = this
-    store.loadPresetInfo(function(pi) {
+    store.loadPresetInfo(function (pi) {
       pi = pi || {}
       if (!pi[self.data.editingKey]) pi[self.data.editingKey] = {}
       pi[self.data.editingKey].phone = self.data.editingKeyPhone
@@ -332,16 +364,15 @@ Page({
       key += Math.floor(Math.random() * 10)
     }
     this.setData({ newDynamicKey: key })
-    // 保存到 store
     store.addDynamicKey(key)
     this.loadKeyList()
     wx.showToast({ title: '密钥 ' + key + ' 已生成', icon: 'success' })
   },
 
   // ===== 管理员密码修改 =====
-  onOldPwInput: function(e) { this.setData({ oldPw: e.detail.value }) },
-  onNewPwInput: function(e) { this.setData({ newPw: e.detail.value }) },
-  onNewPw2Input: function(e) { this.setData({ newPw2: e.detail.value }) },
+  onOldPwInput: function (e) { this.setData({ oldPw: e.detail.value }) },
+  onNewPwInput: function (e) { this.setData({ newPw: e.detail.value }) },
+  onNewPw2Input: function (e) { this.setData({ newPw2: e.detail.value }) },
 
   changeAdminPw: function () {
     var oldPw = this.data.oldPw
@@ -359,48 +390,113 @@ Page({
     if (newPw === oldPw) { wx.showToast({ title: '新密码不能与当前密码相同', icon: 'none' }); return }
     if (newPw !== newPw2) { wx.showToast({ title: '两次密码输入不一致', icon: 'none' }); return }
 
-    // 更新密码（本地存储 + 云端同步）
     config.DEFAULT_ADMIN_PW = newPw
     wx.setStorageSync('admin_pw', newPw)
-    var store = require('../../utils/store.js')
     store.saveToCloud('_admin_pw', { password: newPw, updatedAt: Date.now() })
     wx.showToast({ title: '密码修改成功，已同步云端', icon: 'success' })
     this.setData({ oldPw: '', newPw: '', newPw2: '' })
   },
 
-  // ===== 用户弹窗 =====
+  // ===== 用户分类弹窗 =====
   showAllUsers: function () {
     var self = this
-    store.loadPresetInfo(function(pi) {
+    store.loadPresetInfo(function (pi) {
       pi = pi || {}
-      var configKeys = store.getPresetKeys()
-      var list = []
-      configKeys.forEach(function(k) {
-        var info = pi[k] || {}
-        if (info.phone) {
-          var status = info.activated ? '已启用' : '未启用'
-          list.push({
-            phone: info.phone,
-            meta: (info.gender || '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + ' · 密钥' + k,
-            status: status,
-            statusClass: info.activated ? 'key-badge-on' : 'key-badge-off'
-          })
-        }
-      })
-      self.setData({
-        showAllUsersModal: true,
-        allUsersList: list
+      store.loadPayments(function (payments) {
+        payments = payments || {}
+        var configKeys = store.getPresetKeys()
+        var list = []
+
+        configKeys.forEach(function (k) {
+          var info = pi[k] || {}
+          if (info.phone) {
+            var p = payments[info.phone] || {}
+            var status = '试用期'
+            var statusClass = 'key-badge-free'
+            if (p.beautyPaid || p.beautyTrial) {
+              status = '升级版'
+              statusClass = 'key-badge-on'
+            } else if (p.storagePaid) {
+              status = '普通版'
+              statusClass = 'key-badge-on'
+            } else if (info.activated) {
+              status = '已启用'
+              statusClass = 'key-badge-on'
+            }
+
+            list.push({
+              phone: info.phone,
+              meta: (info.gender || '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.nickname ? ' · ' + info.nickname : '') + ' · 密钥' + k,
+              status: status,
+              statusClass: statusClass
+            })
+          }
+        })
+
+        self.setData({
+          showUsersModal: true,
+          usersModalTitle: '所有用户',
+          usersModalList: list
+        })
       })
     })
   },
 
-  closeAllUsersModal: function () {
-    this.setData({ showAllUsersModal: false })
+  closeUsersModal: function () {
+    this.setData({ showUsersModal: false })
   },
 
   showUsersByType: function (e) {
-    wx.showToast({ title: '点击查看详情', icon: 'none' })
-    // 触发显示所有用户（简化实现）
-    this.showAllUsers()
+    var type = e.currentTarget.dataset.type
+    var self = this
+
+    store.loadPresetInfo(function (pi) {
+      pi = pi || {}
+      store.loadPayments(function (payments) {
+        payments = payments || {}
+        var configKeys = store.getPresetKeys()
+        var list = []
+        var titleMap = { trial: '试用期用户', basic: '普通版用户', upgrade: '升级版用户', keyUser: '密钥用户' }
+
+        configKeys.forEach(function (k) {
+          var info = pi[k] || {}
+          var phone = info.phone || ''
+          if (!phone) return
+          var p = payments[phone] || {}
+
+          var match = false
+          if (type === 'trial' && !p.storagePaid && !p.beautyPaid && !p.beautyTrial && p.trialStart) {
+            var now = Date.now()
+            if (now < (p.trialExpires || 0)) match = true
+          } else if (type === 'basic' && p.storagePaid && !p.beautyPaid && !p.beautyTrial) {
+            match = true
+          } else if (type === 'upgrade' && (p.beautyPaid || p.beautyTrial)) {
+            match = true
+          } else if (type === 'keyUser' && !p.storagePaid && !p.beautyPaid && !p.beautyTrial && (!p.trialStart || Date.now() >= (p.trialExpires || 0))) {
+            match = true
+          }
+
+          if (!match) return
+
+          var status = '试用期'
+          var statusClass = 'key-badge-free'
+          if (p.beautyPaid || p.beautyTrial) { status = '升级版'; statusClass = 'key-badge-on' }
+          else if (p.storagePaid) { status = '普通版'; statusClass = 'key-badge-on' }
+
+          list.push({
+            phone: phone,
+            meta: (info.gender || '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.nickname ? ' · ' + info.nickname : '') + ' · 密钥' + k,
+            status: status,
+            statusClass: statusClass
+          })
+        })
+
+        self.setData({
+          showUsersModal: true,
+          usersModalTitle: titleMap[type] || '用户详情',
+          usersModalList: list
+        })
+      })
+    })
   }
 })

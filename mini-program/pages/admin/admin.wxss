@@ -17,6 +17,12 @@
   padding: 24rpx 16rpx;
   text-align: center;
 }
+.admin-stat-clickable {
+  transition: transform 0.15s;
+}
+.admin-stat-clickable:active {
+  transform: scale(0.96);
+}
 .admin-stat-total {
   grid-column: span 2;
   background: var(--grad-soft);
@@ -101,6 +107,10 @@
 .key-badge-free {
   background: #e5e7eb;
   color: #6b7280;
+}
+.key-badge-on {
+  background: var(--mint-l);
+  color: var(--mint);
 }
 .key-badge-trial {
   background: var(--amber-l);
