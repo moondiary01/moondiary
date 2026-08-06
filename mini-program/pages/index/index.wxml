@@ -895,15 +895,15 @@
   <!-- === BOTTOM NAV === -->
   <view class="bottom-nav">
     <view class="bn-item {{bottomActive==='home'?'active':''}}" bindtap="onBottomHome">
-      <text class="bn-icon">🏠</text>
+      <view class="bn-icon bn-icon-home"></view>
       <text class="bn-label">主页</text>
     </view>
     <view class="bn-item {{bottomActive==='poster'?'active':''}}" bindtap="onBottomPoster">
-      <text class="bn-icon">🖼️</text>
+      <view class="bn-icon bn-icon-poster"></view>
       <text class="bn-label">今日海报</text>
     </view>
     <view class="bn-item {{bottomActive==='my'?'active':''}}" bindtap="onBottomMy">
-      <text class="bn-icon">👤</text>
+      <view class="bn-icon bn-icon-my"></view>
       <text class="bn-label">我的</text>
     </view>
   </view>
