@@ -931,7 +931,6 @@
         <!-- 照片 -->
         <block wx:if="{{posterPhotos.length > 0}}">
           <view class="poster-divider"></view>
-          <view class="poster-section-title">今日影像</view>
           <view class="poster-photos">
             <image wx:for="{{posterPhotos}}" wx:key="index" class="poster-photo" src="{{item}}" mode="aspectFill"></image>
           </view>
