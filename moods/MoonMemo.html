@@ -2529,6 +2529,30 @@ function isLoggedToday(k) {
   var d = getKeyLastLoginDate(k);
   return d === localDateStr(new Date());
 }
+/* 通过手机号判断是否当日登录（用于非密钥用户） */
+function isLoggedTodayByPhone(phone) {
+  if (!phone) return false;
+  var today = localDateStr(new Date());
+  /* 遍历所有密钥，查找绑定该手机号的密钥是否今日登录 */
+  var pi = loadPresetInfo();
+  for (var k in pi) {
+    if (pi[k] && pi[k].phone === phone && pi[k].lastLoginDate === today) return true;
+  }
+  var keys = loadKeys();
+  for (var k2 in keys) {
+    if (keys[k2] && keys[k2].phone === phone && keys[k2].lastLoginDate === today) return true;
+  }
+  /* 也检查 usedKeys */
+  var used = loadUsedKeys();
+  for (var k3 in used) {
+    if (used[k3] && used[k3].lastLoginDate === today) {
+      /* 需要确认该 usedKey 属于这个 phone */
+      if (pi[k3] && pi[k3].phone === phone) return true;
+      if (keys[k3] && keys[k3].phone === phone) return true;
+    }
+  }
+  return false;
+}
 
 /* ---------- 预设密钥绑定信息（管理员编辑） ---------- */
 var PRESET_INFO_STORE = 'moondiary_preset_info';
@@ -6043,6 +6067,7 @@ function showAllUsers() {
   const pi = loadPresetInfo();
   const keys = loadKeys();
   var payments = loadPayments();
+  var now = Date.now();
   let html = '';
   let count = 0;
   /* 预设密钥中有手机号的 */
@@ -6050,15 +6075,21 @@ function showAllUsers() {
     const info = pi[k];
     if (info && info.phone) {
       const ud = getUserData(k);
-      var status = info.activated ? '已启用' : (isUsedKey(k) ? '已使用' : '未启用');
-      var statusClass = info.activated ? 'key-badge-on' : 'key-badge-free';
       var phone = info.phone;
+      /* 用户类型 */
+      var userType = '免费用户';
       if (phone && payments[phone]) {
-        if (payments[phone].beautyPaid || payments[phone].beautyTrial) { status = '升级版'; statusClass = 'key-badge-on'; }
-        else if (payments[phone].storagePaid && payments[phone].storagePaidBy !== 'activation_code') { status = '普通版'; statusClass = 'key-badge-on'; }
-        else if (payments[phone].trialStart && Date.now() < (payments[phone].trialExpires || 0)) { status = '试用期'; statusClass = 'key-badge-trial'; }
+        if (payments[phone].beautyPaid || payments[phone].beautyTrial) { userType = '升级版'; }
+        else if (payments[phone].storagePaid && payments[phone].storagePaidBy !== 'activation_code') { userType = '普通版'; }
+        else if (payments[phone].trialStart && now < (payments[phone].trialExpires || 0)) { userType = '试用期'; }
       }
-      html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span></div>';
+      var userTypeClass = (userType === '升级版' || userType === '普通版') ? 'key-badge-on' : (userType === '试用期' ? 'key-badge-trial' : 'key-badge-free');
+      /* 当日登录 */
+      var loginToday = isLoggedToday(k);
+      var loginBadge = loginToday
+        ? ' <span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">登录中</span>'
+        : ' <span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">未登录</span>';
+      html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + userTypeClass + '">' + userType + '</span>' + loginBadge + '</div>';
       count++;
     }
   });
@@ -6066,15 +6097,21 @@ function showAllUsers() {
   Object.entries(keys).forEach(([k, info]) => {
     if (info.phone) {
       const ud = getUserData(k);
-      var status = info.revoked ? '已停用' : '使用中';
-      var statusClass = info.revoked ? 'key-badge-revoked' : 'key-badge-on';
       var phone = info.phone;
+      /* 用户类型 */
+      var userType = '免费用户';
       if (phone && payments[phone]) {
-        if (payments[phone].beautyPaid || payments[phone].beautyTrial) { status = '升级版'; statusClass = 'key-badge-on'; }
-        else if (payments[phone].storagePaid && payments[phone].storagePaidBy !== 'activation_code') { status = '普通版'; statusClass = 'key-badge-on'; }
-        else if (payments[phone].trialStart && Date.now() < (payments[phone].trialExpires || 0)) { status = '试用期'; statusClass = 'key-badge-trial'; }
+        if (payments[phone].beautyPaid || payments[phone].beautyTrial) { userType = '升级版'; }
+        else if (payments[phone].storagePaid && payments[phone].storagePaidBy !== 'activation_code') { userType = '普通版'; }
+        else if (payments[phone].trialStart && now < (payments[phone].trialExpires || 0)) { userType = '试用期'; }
       }
-      html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span></div>';
+      var userTypeClass = (userType === '升级版' || userType === '普通版') ? 'key-badge-on' : (userType === '试用期' ? 'key-badge-trial' : 'key-badge-free');
+      /* 当日登录 */
+      var loginToday = isLoggedToday(k);
+      var loginBadge = loginToday
+        ? ' <span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">登录中</span>'
+        : ' <span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">未登录</span>';
+      html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + userTypeClass + '">' + userType + '</span>' + loginBadge + '</div>';
       count++;
     }
   });
@@ -6084,8 +6121,22 @@ function showAllUsers() {
       Object.keys(phoneUsers).forEach(function(pk) {
         var pu = phoneUsers[pk];
         if (!pu || !pu.phone) return;
+        var puPhone = pu.phone;
         var regDate = pu.firstLogin ? new Date(pu.firstLogin).toLocaleDateString() : '—';
-        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + pu.phone + '</div><div class="user-info-meta">' + (pu.nickname||'未设置') + (pu.gender ? ' · ' + pu.gender : '') + (pu.age ? ' · ' + pu.age + '岁' : '') + ' · 注册' + regDate + ' · 手机用户</div></div><span class="key-badge active">手机用户</span></div>';
+        /* 用户类型 */
+        var puUserType = '免费用户';
+        if (puPhone && payments[puPhone]) {
+          if (payments[puPhone].beautyPaid || payments[puPhone].beautyTrial) { puUserType = '升级版'; }
+          else if (payments[puPhone].storagePaid && payments[puPhone].storagePaidBy !== 'activation_code') { puUserType = '普通版'; }
+          else if (payments[puPhone].trialStart && now < (payments[puPhone].trialExpires || 0)) { puUserType = '试用期'; }
+        }
+        var puTypeClass = (puUserType === '升级版' || puUserType === '普通版') ? 'key-badge-on' : (puUserType === '试用期' ? 'key-badge-trial' : 'key-badge-free');
+        /* 当日登录：手机用户通过 phone 查找登录状态 */
+        var puLoginToday = isLoggedTodayByPhone(puPhone);
+        var puLoginBadge = puLoginToday
+          ? ' <span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">登录中</span>'
+          : ' <span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">未登录</span>';
+        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + puPhone + '</div><div class="user-info-meta">' + (pu.nickname||'未设置') + (pu.gender ? ' · ' + pu.gender : '') + (pu.age ? ' · ' + pu.age + '岁' : '') + ' · 注册' + regDate + ' · 手机用户</div></div><span class="key-badge ' + puTypeClass + '">' + puUserType + '</span>' + puLoginBadge + '</div>';
         count++;
       });
     }
@@ -6095,8 +6146,23 @@ function showAllUsers() {
         Object.keys(wxUsers).forEach(function(uk) {
           var u = wxUsers[uk];
           if (!u) return;
+          var wxPhone = u.phone || '';
           var regDate = u.firstLoginTime ? new Date(u.firstLoginTime).toLocaleDateString() : '—';
-          html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + (u.phone||'未绑定手机号') + '</div><div class="user-info-meta">' + (u.nickname||u.name||'未设置') + (u.gender ? ' · ' + u.gender : '') + (u.age ? ' · ' + u.age + '岁' : '') + ' · 注册' + regDate + ' · ' + uk + '</div></div><span class="key-badge active">微信用户</span></div>';
+          var isDisabled = u.disabled === true;
+          /* 用户类型 */
+          var wxUserType = '免费用户';
+          if (wxPhone && payments[wxPhone]) {
+            if (payments[wxPhone].beautyPaid || payments[wxPhone].beautyTrial) { wxUserType = '升级版'; }
+            else if (payments[wxPhone].storagePaid && payments[wxPhone].storagePaidBy !== 'activation_code') { wxUserType = '普通版'; }
+            else if (payments[wxPhone].trialStart && now < (payments[wxPhone].trialExpires || 0)) { wxUserType = '试用期'; }
+          }
+          var wxTypeClass = (wxUserType === '升级版' || wxUserType === '普通版') ? 'key-badge-on' : (wxUserType === '试用期' ? 'key-badge-trial' : 'key-badge-free');
+          /* 当日登录：微信用户用 uk 查找 */
+          var wxLoginToday = isLoggedTodayByPhone(wxPhone) || !isDisabled;
+          var wxLoginBadge = (wxLoginToday && !isDisabled)
+            ? ' <span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">登录中</span>'
+            : ' <span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">未登录</span>';
+          html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + (wxPhone||'未绑定手机号') + '</div><div class="user-info-meta">' + (u.nickname||u.name||'未设置') + (u.gender ? ' · ' + u.gender : '') + (u.age ? ' · ' + u.age + '岁' : '') + ' · 注册' + regDate + ' · ' + uk + '</div></div><span class="key-badge ' + wxTypeClass + '">' + wxUserType + '</span>' + wxLoginBadge + '</div>';
           count++;
         });
       }
@@ -6137,7 +6203,12 @@ function showUsersByType(type) {
           else if (payments[ph].storagePaid && payments[ph].storagePaidBy !== 'activation_code') { status = '普通版'; statusClass = 'key-badge-on'; }
           else if (payments[ph].trialStart && Date.now() < (payments[ph].trialExpires || 0)) { status = '试用期'; statusClass = 'key-badge-trial'; }
         }
-        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (ud.name||'未设置') + (ud.gender ? ' · ' + ud.gender : '') + (ud.age ? ' · ' + ud.age + '岁' : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span></div>';
+        /* 当日登录 */
+        var loginToday = isLoggedToday(k);
+        var loginBadge = loginToday
+          ? ' <span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">登录中</span>'
+          : ' <span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">未登录</span>';
+        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (ud.name||'未设置') + (ud.gender ? ' · ' + ud.gender : '') + (ud.age ? ' · ' + ud.age + '岁' : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span>' + loginBadge + '</div>';
         count++;
       }
     });
@@ -6153,7 +6224,12 @@ function showUsersByType(type) {
           else if (payments[ph].storagePaid && payments[ph].storagePaidBy !== 'activation_code') { status = '普通版'; statusClass = 'key-badge-on'; }
           else if (payments[ph].trialStart && Date.now() < (payments[ph].trialExpires || 0)) { status = '试用期'; statusClass = 'key-badge-trial'; }
         }
-        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (ud.name||'未设置') + (ud.gender ? ' · ' + ud.gender : '') + (ud.age ? ' · ' + ud.age + '岁' : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span></div>';
+        /* 当日登录 */
+        var loginToday = isLoggedToday(k);
+        var loginBadge = loginToday
+          ? ' <span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">登录中</span>'
+          : ' <span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">未登录</span>';
+        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (ud.name||'未设置') + (ud.gender ? ' · ' + ud.gender : '') + (ud.age ? ' · ' + ud.age + '岁' : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span>' + loginBadge + '</div>';
         count++;
       }
     });
@@ -6223,7 +6299,12 @@ function showUsersByType(type) {
             var regDate = new Date(u.firstLogin).toLocaleDateString();
             var versionTag = isVipUpgrade ? '升级版' : (isVipBasic ? '普通版' : '试用期');
             var ageText = u.age ? u.age + '岁' : '—';
-            html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + u.nickname + ' · ' + u.gender + '/' + ageText + ' · 注册' + regDate + remainText + ' · ' + u.source + '</div></div><span class="key-badge active">' + versionTag + '</span></div>';
+            /* 当日登录 */
+            var loginToday = isLoggedTodayByPhone(userPhone);
+            var loginBadge = loginToday
+              ? ' <span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">登录中</span>'
+              : ' <span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">未登录</span>';
+            html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + u.nickname + ' · ' + u.gender + '/' + ageText + ' · 注册' + regDate + remainText + ' · ' + u.source + '</div></div><span class="key-badge active">' + versionTag + '</span>' + loginBadge + '</div>';
             count++;
           }
         });
