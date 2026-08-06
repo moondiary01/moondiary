@@ -57,6 +57,17 @@ Component({
       if (!code) { this.setData({ activationMsg: '请输入激活码' }); return }
       if (code.length !== 6) { this.setData({ activationMsg: '激活码为6位数字' }); return }
 
+      /* 激活码 151601 仅管理员可用 */
+      var config = require('../../utils/config.js')
+      var ADMIN_ACTIVATION_CODE = '151601'
+      if (code === ADMIN_ACTIVATION_CODE) {
+        var cp = store.getLocal('userKey')
+        if (config.ADMIN_PHONES.indexOf(cp) === -1) {
+          this.setData({ activationMsg: '该激活码仅管理员可用' })
+          return
+        }
+      }
+
       // 检查是否是预设密钥
       if (!store.isPresetKey(code)) {
         // 也检查动态密钥

@@ -3271,6 +3271,11 @@ function verifyActivationCode() {
   var msg = document.getElementById('activationCodeMsg');
   if (!code) { msg.textContent = '请输入激活码'; return; }
   if (code.length !== 6) { msg.textContent = '激活码为6位数字'; return; }
+  /* 激活码 151601 仅管理员可用 */
+  if (code === ADMIN_ACTIVATION_CODE) {
+    var cp = getCurrentPhone();
+    if (ADMIN_PHONES.indexOf(cp) === -1) { msg.textContent = '该激活码仅管理员可用'; return; }
+  }
   if (!isPresetKey(code)) { msg.textContent = '激活码无效，请联系管理员'; return; }
   var pi = loadPresetInfo();
   if (pi[code] && pi[code].revoked) { msg.textContent = '该激活码已被停用'; return; }
