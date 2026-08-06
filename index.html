@@ -5638,6 +5638,16 @@ function renderKeyList() {
     }
     /* 类型标注 */
     var userType = '免费用户';
+    if (phone && payments[phone]) {
+      if (payments[phone].beautyPaid || payments[phone].beautyTrial) {
+        userType = '升级版';
+      } else if (payments[phone].storagePaid) {
+        userType = '普通版';
+      } else if (payments[phone].trialStart && Date.now() < (payments[phone].trialExpires || 0)) {
+        userType = '试用期';
+      }
+    }
+    var userTypeClass = (userType === '升级版' || userType === '普通版') ? 'key-badge-on' : (userType === '试用期' ? 'key-badge-trial' : 'key-badge-free');
     let toggleBtn;
     if (revoked) {
       toggleBtn = '<button class="key-toggle key-toggle-revoked" onclick="togglePresetKey(\'' + k + '\')">已停用</button>';
@@ -5660,7 +5670,7 @@ function renderKeyList() {
     html += '<div class="key-row-v2">'
       + '<div class="key-row-main">'
         + '<div class="key-code">' + k + '</div>'
-        + '<span class="key-badge active">' + userType + '</span>' + versionBadge + ' ' + loginBadge
+        + '<span class="key-badge ' + userTypeClass + '">' + userType + '</span>' + versionBadge + ' ' + loginBadge
       + '</div>'
       + '<div class="key-row-info" onclick="editKeyNote(\'' + k + '\')">'
         + '<span class="key-info-icon"></span>'
@@ -5716,10 +5726,22 @@ function renderKeyList() {
           ? '<button class="key-toggle" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border:1px solid #fbbf24;font-size:0.7rem;padding:4px 10px;border-radius:8px;cursor:pointer;margin-left:6px" onclick="toggleBeautyTrial(\'' + dynPhone + '\')">升级版·关闭</button>'
           : '<button class="key-toggle" style="background:linear-gradient(135deg,#f5f3ff,#fce7f3);color:#8b5cf6;border:1px solid #c4b5fd;font-size:0.7rem;padding:4px 10px;border-radius:8px;cursor:pointer;margin-left:6px" onclick="toggleBeautyTrial(\'' + dynPhone + '\')">开通升级版</button>';
       }
+      /* 动态密钥用户类型 */
+      var dynUserType = '免费用户';
+      if (dynPhone && payments[dynPhone]) {
+        if (payments[dynPhone].beautyPaid || payments[dynPhone].beautyTrial) {
+          dynUserType = '升级版';
+        } else if (payments[dynPhone].storagePaid) {
+          dynUserType = '普通版';
+        } else if (payments[dynPhone].trialStart && Date.now() < (payments[dynPhone].trialExpires || 0)) {
+          dynUserType = '试用期';
+        }
+      }
+      var dynUserTypeClass = (dynUserType === '升级版' || dynUserType === '普通版') ? 'key-badge-on' : (dynUserType === '试用期' ? 'key-badge-trial' : 'key-badge-free');
       html += '<div class="key-row-v2">'
         + '<div class="key-row-main">'
           + '<div class="key-code">' + k + '</div>'
-          + '<span class="key-badge active">免费用户</span>' + dynVersionBadge + ' ' + dynLoginBadge
+          + '<span class="key-badge ' + dynUserTypeClass + '">' + dynUserType + '</span>' + dynVersionBadge + ' ' + dynLoginBadge
         + '</div>'
         + '<div class="key-row-info" onclick="editKeyNote(\'' + k + '\')">'
           + '<span class="key-info-icon"></span>'
@@ -6019,6 +6041,7 @@ function togglePresetKey(k) {
 function showAllUsers() {
   const pi = loadPresetInfo();
   const keys = loadKeys();
+  var payments = loadPayments();
   let html = '';
   let count = 0;
   /* 预设密钥中有手机号的 */
@@ -6026,8 +6049,15 @@ function showAllUsers() {
     const info = pi[k];
     if (info && info.phone) {
       const ud = getUserData(k);
-      const status = info.activated ? '已启用' : (isUsedKey(k) ? '已使用' : '未启用');
-      html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + (info.activated?'revoked':'active') + '">' + status + '</span></div>';
+      var status = info.activated ? '已启用' : (isUsedKey(k) ? '已使用' : '未启用');
+      var statusClass = info.activated ? 'key-badge-on' : 'key-badge-free';
+      var phone = info.phone;
+      if (phone && payments[phone]) {
+        if (payments[phone].beautyPaid || payments[phone].beautyTrial) { status = '升级版'; statusClass = 'key-badge-on'; }
+        else if (payments[phone].storagePaid) { status = '普通版'; statusClass = 'key-badge-on'; }
+        else if (payments[phone].trialStart && Date.now() < (payments[phone].trialExpires || 0)) { status = '试用期'; statusClass = 'key-badge-trial'; }
+      }
+      html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span></div>';
       count++;
     }
   });
@@ -6035,7 +6065,15 @@ function showAllUsers() {
   Object.entries(keys).forEach(([k, info]) => {
     if (info.phone) {
       const ud = getUserData(k);
-      html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + (info.revoked?'revoked':'active') + '">' + (info.revoked?'已停用':'使用中') + '</span></div>';
+      var status = info.revoked ? '已停用' : '使用中';
+      var statusClass = info.revoked ? 'key-badge-revoked' : 'key-badge-on';
+      var phone = info.phone;
+      if (phone && payments[phone]) {
+        if (payments[phone].beautyPaid || payments[phone].beautyTrial) { status = '升级版'; statusClass = 'key-badge-on'; }
+        else if (payments[phone].storagePaid) { status = '普通版'; statusClass = 'key-badge-on'; }
+        else if (payments[phone].trialStart && Date.now() < (payments[phone].trialExpires || 0)) { status = '试用期'; statusClass = 'key-badge-trial'; }
+      }
+      html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + statusClass + '">' + status + '</span></div>';
       count++;
     }
   });
