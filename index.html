@@ -210,6 +210,10 @@ body::-webkit-scrollbar{display:none}
 .gate-tab{flex:1;text-align:center;padding:8px;border-radius:8px;font-size:0.82rem;font-weight:600;color:var(--text-l);cursor:pointer;transition:all 0.2s}
 .gate-tab.active{background:#fff;color:var(--rose-600);box-shadow:0 2px 6px rgba(124,58,237,0.1)}
 .gate-error{color:var(--rose-500);font-size:0.78rem;margin-top:8px;min-height:18px;font-weight:600}
+.gate-tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid var(--border)}
+.gate-tab{flex:1;text-align:center;padding:10px 0;font-size:0.85rem;font-weight:700;color:var(--text-l);cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;margin-bottom:-2px}
+.gate-tab.active{color:var(--rose-600);border-bottom-color:var(--rose-600)}
+.gate-tab:hover{color:var(--rose-400)}
 
 /* ===== Hero 顶部 ===== */
 .hero{
@@ -997,26 +1001,58 @@ _loadCosSdk(0);
     </div>
     <div class="gate-title"><span class="brand">MoonMemo</span></div>
     <!-- 用户手机号+密钥登录（默认显示） -->
+    <!-- 统一登录区域 -->
     <div id="gateUser">
-      <!-- 密钥+手机号登录 -->
-      <div id="keyLoginBox">
-        <div class="gate-sub">请输入专属6位密钥进入</div>
-        <input type="text" class="gate-input" id="keyInput" maxlength="6" inputmode="numeric" placeholder="6位数字密钥" style="letter-spacing:4px;font-size:1.15rem" autocomplete="off">
-        <input type="tel" class="gate-input" id="userPhone" placeholder="手机号（11位）" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
-        <div class="gate-error" id="gateError"></div>
-        <button class="gate-btn" onclick="tryLogin()">进 入</button>
-        <div class="gate-hint">绑定微信可直接登陆，若需密钥登陆请联系管理员<br>一个手机号只能绑定一个密钥</div>
-        <div style="margin-top:14px;text-align:center"><a href="#" onclick="switchGate('admin');playClick();return false" style="font-size:0.7rem;color:var(--text-l);opacity:0.6">管理员入口</a></div>
+      <div class="gate-tabs">
+        <div class="gate-tab active" id="tabSms" onclick="switchLoginTab('sms')">手机验证码</div>
+        <div class="gate-tab" id="tabWx" onclick="switchLoginTab('wx')">微信登录</div>
       </div>
+      <!-- 手机验证码登录 -->
+      <div id="smsLoginBox">
+        <input type="tel" class="gate-input" id="loginPhone" placeholder="手机号" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
+        <div style="display:flex;gap:8px">
+          <input type="text" class="gate-input" id="smsCode" placeholder="验证码" maxlength="6" inputmode="numeric" style="letter-spacing:6px;font-size:1.1rem;flex:1" autocomplete="off">
+          <button class="btn" id="sendSmsBtn" onclick="sendSmsCode()" style="flex-shrink:0;padding:14px 16px;border-radius:12px;background:var(--rose-100);color:var(--rose-600);font-weight:700;font-size:0.78rem;border:none;cursor:pointer;white-space:nowrap">获取验证码</button>
+        </div>
+        <div class="gate-error" id="gateError"></div>
+        <button class="gate-btn" onclick="smsLogin()">登 录</button>
+        <div class="gate-hint">首次登录自动注册，所有用户均可免费试用7天</div>
+      </div>
+      <!-- 微信登录 -->
+      <div id="wxLoginBox" style="display:none">
+        <div style="text-align:center;padding:12px 0">
+          <div style="width:56px;height:56px;border-radius:50%;background:#07c160;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;cursor:pointer;transition:transform 0.2s" onclick="wxLogin()" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''">W</div>
+          <div style="font-size:0.78rem;color:var(--text-l);margin-bottom:8px">点击微信图标授权登录</div>
+          <div class="gate-hint">授权后自动获取微信绑定手机号<br>首次登录自动注册，免费试用7天</div>
+        </div>
+        <div class="gate-error" id="wxError"></div>
+      </div>
+      <div style="margin-top:16px;text-align:center"><a href="#" onclick="switchGate('admin');playClick();return false" style="font-size:0.7rem;color:var(--text-l);opacity:0.6">管理员入口</a></div>
     </div>
-    <!-- 管理员手机号+密码登录（隐藏，点击小字触发） -->
+    <!-- 管理员登录 -->
     <div id="gateAdmin" style="display:none">
-      <div class="gate-sub">管理员登录</div>
-      <input type="tel" class="gate-input" id="adminPhone" placeholder="管理员手机号" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
-      <input type="password" class="gate-input" id="adminPw" placeholder="管理员密码" style="letter-spacing:2px;font-size:1.1rem" autocomplete="off">
-      <div class="gate-error" id="adminError"></div>
-      <button class="gate-btn" onclick="adminLogin()">管理员进入</button>
-      <div class="gate-hint" id="adminPwHint">请输入管理员手机号与密码</div>
+      <div class="gate-tabs">
+        <div class="gate-tab active" id="adminTabSms" onclick="switchAdminLoginTab('sms')">验证码登录</div>
+        <div class="gate-tab" id="adminTabCode" onclick="switchAdminLoginTab('code')">激活码登录</div>
+      </div>
+      <!-- 验证码登录 -->
+      <div id="adminSmsBox">
+        <input type="tel" class="gate-input" id="adminPhone" placeholder="管理员手机号" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
+        <div style="display:flex;gap:8px">
+          <input type="text" class="gate-input" id="adminSmsCode" placeholder="验证码" maxlength="6" inputmode="numeric" style="letter-spacing:6px;font-size:1.1rem;flex:1" autocomplete="off">
+          <button class="btn" id="adminSendSmsBtn" onclick="sendAdminSmsCode()" style="flex-shrink:0;padding:14px 16px;border-radius:12px;background:var(--rose-100);color:var(--rose-600);font-weight:700;font-size:0.78rem;border:none;cursor:pointer;white-space:nowrap">获取验证码</button>
+        </div>
+        <div class="gate-error" id="adminError"></div>
+        <button class="gate-btn" onclick="adminSmsLogin()">管理员登录</button>
+      </div>
+      <!-- 激活码登录 -->
+      <div id="adminCodeBox" style="display:none">
+        <input type="tel" class="gate-input" id="adminCodePhone" placeholder="管理员手机号" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:1.05rem" autocomplete="off">
+        <input type="text" class="gate-input" id="adminActivationCode" placeholder="管理员激活码" maxlength="6" inputmode="numeric" style="letter-spacing:6px;font-size:1.1rem" autocomplete="off">
+        <div class="gate-error" id="adminCodeError"></div>
+        <button class="gate-btn" onclick="adminCodeLogin()">激活码登录</button>
+      </div>
+      <div class="gate-hint">管理员手机号 18680881810 · 激活码 151601</div>
       <div style="margin-top:14px;text-align:center"><a href="#" onclick="switchGate('user');playClick();return false" style="font-size:0.7rem;color:var(--text-l);opacity:0.6">← 返回用户登录</a></div>
     </div>
   </div>
@@ -1630,11 +1666,22 @@ _loadCosSdk(0);
           <button onclick="purchaseBasicPlan();playClick()" style="width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-size:0.95rem;font-weight:800;letter-spacing:1.5px;cursor:pointer;box-shadow:0 6px 24px rgba(245,158,11,0.4);transition:all 0.25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(245,158,11,0.4)'">立即购买开通使用</button>
         </div>
       </div>
-      <!-- 购买须知 + 隐私协议 -->
+      <!-- 购买须知 + 激活码 + 隐私协议 -->
       <div style="display:flex;justify-content:center;align-items:center;gap:20px">
         <a href="#" onclick="showPurchaseNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500">购买须知</a>
         <span style="color:#e5e7eb">|</span>
+        <a href="#" onclick="showActivationCodeInput();return false" style="font-size:0.72rem;color:#f59e0b;text-decoration:none;font-weight:600">激活码</a>
+        <span style="color:#e5e7eb">|</span>
         <a href="#" onclick="showPrivacyNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500">隐私协议</a>
+      </div>
+      <!-- 激活码输入区 -->
+      <div id="activationCodeArea" style="display:none;margin-top:12px;padding:14px;border-radius:14px;background:var(--rose-50);border:1px solid var(--border)">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--ink);margin-bottom:8px;text-align:center">输入激活码免费开通</div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="activationCodeInput" class="gate-input" placeholder="6位激活码" maxlength="6" inputmode="numeric" style="flex:1;letter-spacing:6px;font-size:1rem;margin-bottom:0">
+          <button class="btn" onclick="verifyActivationCode()" style="flex-shrink:0;padding:10px 16px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-weight:700;font-size:0.8rem;border:none;cursor:pointer;white-space:nowrap">开通</button>
+        </div>
+        <div id="activationCodeMsg" style="font-size:0.7rem;color:var(--rose-500);text-align:center;margin-top:6px;min-height:16px"></div>
       </div>
       <!-- 稍后再说 -->
       <div style="text-align:center;margin-top:14px">
@@ -3057,9 +3104,202 @@ function playSwipe(dir) {
 function switchGate(mode) {
   document.getElementById('gateUser').style.display = mode === 'user' ? 'block' : 'none';
   document.getElementById('gateAdmin').style.display = mode === 'admin' ? 'block' : 'none';
-  document.getElementById('gateError').textContent = '';
-  document.getElementById('adminError').textContent = '';
+  var ge = document.getElementById('gateError'); if (ge) ge.textContent = '';
+  var ae = document.getElementById('adminError'); if (ae) ae.textContent = '';
+  var ace = document.getElementById('adminCodeError'); if (ace) ace.textContent = '';
+  var we = document.getElementById('wxError'); if (we) we.textContent = '';
 }
+
+/* ===== 新登录系统：手机验证码 + 微信 + 管理员激活码 ===== */
+var _smsCooldown = 0;
+var _smsTimer = null;
+var _adminSmsCooldown = 0;
+var _adminSmsTimer = null;
+var _smsCodes = {};
+
+function switchLoginTab(tab) {
+  document.getElementById('smsLoginBox').style.display = tab === 'sms' ? 'block' : 'none';
+  document.getElementById('wxLoginBox').style.display = tab === 'wx' ? 'block' : 'none';
+  document.getElementById('tabSms').classList.toggle('active', tab === 'sms');
+  document.getElementById('tabWx').classList.toggle('active', tab === 'wx');
+}
+
+function switchAdminLoginTab(tab) {
+  document.getElementById('adminSmsBox').style.display = tab === 'sms' ? 'block' : 'none';
+  document.getElementById('adminCodeBox').style.display = tab === 'code' ? 'block' : 'none';
+  document.getElementById('adminTabSms').classList.toggle('active', tab === 'sms');
+  document.getElementById('adminTabCode').classList.toggle('active', tab === 'code');
+}
+
+function sendSmsCode() {
+  var phone = document.getElementById('loginPhone').value.trim();
+  if (!phone) { document.getElementById('gateError').textContent = '请输入手机号'; return; }
+  if (!/^1\d{10}$/.test(phone)) { document.getElementById('gateError').textContent = '手机号格式不正确'; return; }
+  var code = String(Math.floor(100000 + Math.random() * 900000));
+  _smsCodes[phone] = code;
+  console.log('验证码: ' + code);
+  showToast('验证码已发送（模拟）：' + code);
+  _smsCooldown = 60;
+  var btn = document.getElementById('sendSmsBtn');
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
+  _smsTimer = setInterval(function() {
+    _smsCooldown--;
+    btn.textContent = _smsCooldown + 's';
+    if (_smsCooldown <= 0) {
+      clearInterval(_smsTimer);
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.textContent = '获取验证码';
+    }
+  }, 1000);
+}
+
+function smsLogin() {
+  var phone = document.getElementById('loginPhone').value.trim();
+  var code = document.getElementById('smsCode').value.trim();
+  var err = document.getElementById('gateError');
+  if (!phone) { err.textContent = '请输入手机号'; return; }
+  if (!/^1\d{10}$/.test(phone)) { err.textContent = '手机号格式不正确'; return; }
+  if (!code) { err.textContent = '请输入验证码'; return; }
+  if (_smsCodes[phone] !== code) { err.textContent = '验证码不正确'; return; }
+  err.textContent = '';
+  currentKey = phone;
+  currentPhone = phone;
+  localStorage.setItem(SESSION_KEY, phone);
+  localStorage.setItem(SESSION_PHONE, phone);
+  sessionStorage.setItem(SESSION_KEY, phone);
+  sessionStorage.setItem(SESSION_PHONE, phone);
+  var bindings = loadPhoneBindings();
+  if (!bindings[phone]) { bindings[phone] = phone; savePhoneBindings(bindings); }
+  syncUserInfoToPreset(phone, phone);
+  playLoginSound();
+  showSplash();
+  setTimeout(function() { enterApp(false); }, 2800);
+}
+
+function wxLogin() {
+  var err = document.getElementById('wxError');
+  err.textContent = '';
+  var phone = 'wx_' + String(Math.floor(100000 + Math.random() * 900000));
+  currentKey = phone;
+  currentPhone = phone;
+  localStorage.setItem(SESSION_KEY, phone);
+  localStorage.setItem(SESSION_PHONE, phone);
+  sessionStorage.setItem(SESSION_KEY, phone);
+  sessionStorage.setItem(SESSION_PHONE, phone);
+  var bindings = loadPhoneBindings();
+  if (!bindings[phone]) { bindings[phone] = phone; savePhoneBindings(bindings); }
+  syncUserInfoToPreset(phone, phone);
+  playLoginSound();
+  showSplash();
+  setTimeout(function() { enterApp(false); }, 2800);
+}
+
+function sendAdminSmsCode() {
+  var phone = document.getElementById('adminPhone').value.trim();
+  if (!phone) { document.getElementById('adminError').textContent = '请输入手机号'; return; }
+  if (phone !== ADMIN_PHONE) { document.getElementById('adminError').textContent = '该手机号无管理员权限'; return; }
+  var code = String(Math.floor(100000 + Math.random() * 900000));
+  _smsCodes['admin_' + phone] = code;
+  console.log('管理员验证码: ' + code);
+  showToast('验证码已发送（模拟）：' + code);
+  _adminSmsCooldown = 60;
+  var btn = document.getElementById('adminSendSmsBtn');
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
+  _adminSmsTimer = setInterval(function() {
+    _adminSmsCooldown--;
+    btn.textContent = _adminSmsCooldown + 's';
+    if (_adminSmsCooldown <= 0) {
+      clearInterval(_adminSmsTimer);
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.textContent = '获取验证码';
+    }
+  }, 1000);
+}
+
+function adminSmsLogin() {
+  var phone = document.getElementById('adminPhone').value.trim();
+  var code = document.getElementById('adminSmsCode').value.trim();
+  var err = document.getElementById('adminError');
+  if (!phone) { err.textContent = '请输入手机号'; return; }
+  if (phone !== ADMIN_PHONE) { err.textContent = '该手机号无管理员权限'; return; }
+  if (!code) { err.textContent = '请输入验证码'; return; }
+  if (_smsCodes['admin_' + phone] !== code) { err.textContent = '验证码不正确'; return; }
+  err.textContent = '';
+  currentKey = ADMIN_SESSION;
+  currentPhone = 'admin';
+  localStorage.setItem(SESSION_KEY, ADMIN_SESSION);
+  localStorage.setItem(SESSION_PHONE, 'admin');
+  sessionStorage.setItem(SESSION_PHONE, 'admin');
+  forceSyncAdminData(function() {
+    playLoginSound();
+    showSplash();
+    setTimeout(function() { enterApp(true); }, 2800);
+  });
+}
+
+function adminCodeLogin() {
+  var phone = document.getElementById('adminCodePhone').value.trim();
+  var code = document.getElementById('adminActivationCode').value.trim();
+  var err = document.getElementById('adminCodeError');
+  if (!phone) { err.textContent = '请输入手机号'; return; }
+  if (phone !== ADMIN_PHONE) { err.textContent = '该手机号无管理员权限'; return; }
+  if (!code) { err.textContent = '请输入激活码'; return; }
+  if (code !== '151601') { err.textContent = '激活码不正确'; return; }
+  err.textContent = '';
+  currentKey = ADMIN_SESSION;
+  currentPhone = 'admin';
+  localStorage.setItem(SESSION_KEY, ADMIN_SESSION);
+  localStorage.setItem(SESSION_PHONE, 'admin');
+  sessionStorage.setItem(SESSION_PHONE, 'admin');
+  forceSyncAdminData(function() {
+    playLoginSound();
+    showSplash();
+    setTimeout(function() { enterApp(true); }, 2800);
+  });
+}
+
+function showActivationCodeInput() {
+  var area = document.getElementById('activationCodeArea');
+  area.style.display = area.style.display === 'none' ? 'block' : 'none';
+}
+
+function verifyActivationCode() {
+  var code = document.getElementById('activationCodeInput').value.trim();
+  var msg = document.getElementById('activationCodeMsg');
+  if (!code) { msg.textContent = '请输入激活码'; return; }
+  if (code.length !== 6) { msg.textContent = '激活码为6位数字'; return; }
+  if (!isPresetKey(code)) { msg.textContent = '激活码无效，请联系管理员'; return; }
+  var pi = loadPresetInfo();
+  if (pi[code] && pi[code].revoked) { msg.textContent = '该激活码已被停用'; return; }
+  var bindings = loadPhoneBindings();
+  if (pi[code] && pi[code].activated && pi[code].phone && pi[code].phone !== getCurrentPhone()) {
+    msg.textContent = '该激活码已被其他用户使用'; return;
+  }
+  var phone = getCurrentPhone();
+  if (!pi[code]) pi[code] = {};
+  pi[code].activated = true;
+  pi[code].phone = phone;
+  pi[code].activatedAt = new Date().toISOString();
+  savePresetInfo(pi);
+  bindings[phone] = code;
+  savePhoneBindings(bindings);
+  var payments = loadPayments();
+  if (!payments[phone]) payments[phone] = {};
+  payments[phone].storagePaid = true;
+  payments[phone].storagePaidAt = Date.now();
+  payments[phone].storagePaidBy = 'activation_code';
+  savePayments(payments);
+  document.getElementById('trialExpiredModal').classList.remove('show');
+  document.getElementById('activationCodeArea').style.display = 'none';
+  showToast('激活码验证成功，普通版已开通');
+  refreshBeautyEntryUI();
+  renderAll();
+}
+
 function adminLogin() {
   const phone = document.getElementById('adminPhone').value.trim();
   const pw = document.getElementById('adminPw').value;
