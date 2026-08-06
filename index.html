@@ -963,6 +963,58 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .placeholder-icon{width:64px;height:64px;border-radius:16px;margin-bottom:16px}
 .poster-placeholder-icon{background:linear-gradient(135deg,#fce7f3,#f5f3ff);border:2px solid #e9d5ff}
 .my-placeholder-icon{background:linear-gradient(135deg,#f5f3ff,#e0e7ff);border:2px solid #c7d2fe}
+
+/* ===== 今日海报 ===== */
+.poster-scroll{width:100%;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:20px}
+.poster-container{max-width:420px;margin:0 auto;padding:32px 24px 24px}
+.poster-header{text-align:center;margin-bottom:6px}
+.poster-brand{font-size:0.7rem;font-weight:400;letter-spacing:3px;color:#9ca3af;text-transform:uppercase}
+.poster-subtitle{font-size:0.85rem;font-weight:400;color:#78716c;margin-top:2px}
+.poster-date{font-size:0.72rem;color:#a8a29e;margin-top:4px}
+.poster-divider{height:1px;background:linear-gradient(90deg,transparent,#e5e0eb,transparent);margin:18px 0}
+
+/* 圆形已减重 */
+.poster-circle-wrap{display:flex;justify-content:center;margin:8px 0 16px}
+.poster-circle{width:130px;height:130px;border-radius:50%;background:linear-gradient(135deg,#3d2b4f 0%,#5b3a5e 30%,#7a5276 55%,#9d6b8b 80%,#c084a8 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 1px 0 rgba(255,255,255,0.08) inset,0 8px 24px rgba(61,43,79,0.2)}
+.poster-circle-num{font-size:2.2rem;font-weight:800;color:#fce7f3;line-height:1;letter-spacing:-1px}
+.poster-circle-unit{font-size:0.75rem;color:rgba(252,231,243,0.7);margin-top:2px}
+.poster-circle-label{font-size:0.65rem;color:rgba(252,231,243,0.5);margin-top:1px;letter-spacing:1px}
+
+/* 体重行 */
+.poster-weight-row{text-align:center;margin-bottom:10px}
+.poster-weight-main{font-size:1.05rem;font-weight:600;color:#44403c}
+.poster-weight-fat{font-size:0.78rem;color:#a8a29e;margin-top:2px}
+.poster-weight-dual{display:flex;justify-content:center;gap:40px}
+.poster-weight-side{text-align:center}
+.poster-weight-side-label{font-size:0.65rem;color:#a8a29e;text-transform:uppercase;letter-spacing:1px}
+.poster-weight-side-val{font-size:0.9rem;font-weight:600;color:#78716c;margin-top:2px}
+
+/* 区块 */
+.poster-section{margin-top:2px}
+.poster-section-title{font-size:0.72rem;font-weight:600;color:#9ca3af;text-align:center;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.poster-check-grid{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center}
+.poster-check-item{display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#57534e;padding:4px 0}
+.poster-check-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.poster-check-dot.done{background:#a7c957}
+.poster-check-dot.skip{background:#e5e7eb}
+.poster-check-val{color:#9ca3af;font-size:0.72rem;margin-left:2px}
+.poster-check-note{width:100%;font-size:0.72rem;color:#a8a29e;padding:4px 0;line-height:1.5;text-align:center}
+.poster-check-skin{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:2px 0}
+.poster-check-skin-item{font-size:0.75rem;color:#78716c}
+
+/* 照片区 */
+.poster-photos{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.poster-photo{width:100px;height:100px;border-radius:8px;object-fit:cover;background:#f5f0fa;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+
+/* 心情标签 */
+.poster-mood-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.poster-mood-tag{font-size:0.72rem;padding:2px 10px;border-radius:100px;background:#f5f3ff;color:#7c3aed}
+.poster-gratitude{text-align:center;font-size:0.72rem;color:#a8a29e;line-height:1.6;margin-top:4px}
+.poster-diary{text-align:center;font-size:0.75rem;color:#78716c;line-height:1.6;max-width:300px;margin:0 auto;padding:4px 0}
+
+/* 保存按钮 */
+.poster-save-btn{display:block;width:100%;max-width:260px;margin:0 auto;padding:12px 24px;border:none;border-radius:100px;background:linear-gradient(135deg,#3d2b4f,#7a5276);color:#fce7f3;font-size:0.85rem;font-weight:600;cursor:pointer;letter-spacing:1px;box-shadow:0 4px 16px rgba(61,43,79,0.2);transition:all 0.2s}
+.poster-save-btn:active{transform:scale(0.96);box-shadow:0 2px 8px rgba(61,43,79,0.15)}
 .bottom-nav-label{font-size:0.68rem;font-weight:500;color:#9ca3af;transition:color 0.2s}
 .bottom-nav-item.active .bottom-nav-icon{color:#ec4899}
 .bottom-nav-item.active .bottom-nav-label{color:#ec4899;font-weight:700}
@@ -2090,12 +2142,75 @@ _loadCosSdk(0);
   </button>
 </nav>
 
-<!-- ===== 今日海报页面（占位） ===== -->
+<!-- ===== 今日海报页面 ===== -->
 <div class="page-overlay" id="posterPage" style="display:none">
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:20px">
-    <div class="placeholder-icon poster-placeholder-icon"></div>
-    <div style="font-size:1.2rem;font-weight:700;color:#44403c;margin-bottom:8px">今日海报</div>
-    <div style="font-size:0.85rem;color:#a8a29e">即将上线，敬请期待</div>
+  <div class="poster-scroll">
+    <div class="poster-container" id="posterContent">
+      <!-- 标题 -->
+      <div class="poster-header">
+        <div class="poster-brand">Moon Memo</div>
+        <div class="poster-subtitle">今日海报</div>
+        <div class="poster-date" id="posterDate"></div>
+      </div>
+      <div class="poster-divider"></div>
+
+      <!-- 已减重圆形 -->
+      <div class="poster-circle-wrap">
+        <div class="poster-circle" id="posterCircle">
+          <div class="poster-circle-num" id="posterLost">—</div>
+          <div class="poster-circle-unit">kg</div>
+          <div class="poster-circle-label">已减重</div>
+        </div>
+      </div>
+
+      <!-- 体重数据 -->
+      <div class="poster-weight-row">
+        <div class="poster-weight-main" id="posterTodayWeight">今日体重 — kg</div>
+        <div class="poster-weight-fat" id="posterFat">体脂率 —</div>
+      </div>
+      <div class="poster-weight-dual">
+        <div class="poster-weight-side">
+          <div class="poster-weight-side-label">起始体重</div>
+          <div class="poster-weight-side-val" id="posterStartWeight">—</div>
+        </div>
+        <div class="poster-weight-side">
+          <div class="poster-weight-side-label">目标体重</div>
+          <div class="poster-weight-side-val" id="posterTargetWeight">—</div>
+        </div>
+      </div>
+
+      <!-- 照片区 -->
+      <div class="poster-section" id="posterPhotoSection" style="display:none">
+        <div class="poster-divider"></div>
+        <div class="poster-section-title">今日影像</div>
+        <div class="poster-photos" id="posterPhotos"></div>
+      </div>
+
+      <!-- 健康记录 -->
+      <div class="poster-section">
+        <div class="poster-divider"></div>
+        <div class="poster-section-title">健康记录</div>
+        <div class="poster-check-grid" id="posterHealth"></div>
+      </div>
+
+      <!-- 护肤日记 -->
+      <div class="poster-section">
+        <div class="poster-divider"></div>
+        <div class="poster-section-title">护肤日记</div>
+        <div class="poster-check-grid" id="posterSkincare"></div>
+      </div>
+
+      <!-- 心情日记 -->
+      <div class="poster-section">
+        <div class="poster-divider"></div>
+        <div class="poster-section-title">心情日记</div>
+        <div class="poster-check-grid" id="posterMood"></div>
+      </div>
+
+      <!-- 保存按钮 -->
+      <div class="poster-divider"></div>
+      <button class="poster-save-btn" onclick="savePosterImage();playClick()">保存到相册</button>
+    </div>
   </div>
 </div>
 
@@ -4159,6 +4274,7 @@ function showPosterPage() {
   document.getElementById('posterPage').style.display = 'block';
   updateBottomNavActive('poster');
   window.scrollTo({top: 0, behavior: 'instant'});
+  renderPosterPage();
 }
 
 /* 我的占位 */
@@ -4170,6 +4286,200 @@ function showMyPage() {
   document.getElementById('myPage').style.display = 'block';
   updateBottomNavActive('my');
   window.scrollTo({top: 0, behavior: 'instant'});
+}
+
+/* ===== 今日海报渲染 ===== */
+function renderPosterPage() {
+  var today = new Date();
+  var todayStr = localDateStr(today);
+  var weekDays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  document.getElementById('posterDate').textContent = today.getFullYear() + '年' + (today.getMonth()+1) + '月' + today.getDate() + '日 ' + weekDays[today.getDay()];
+
+  /* 找到今日记录 */
+  var dayIdx = -1;
+  if (state.days) {
+    for (var i = 0; i < state.days.length; i++) {
+      if (state.days[i].date === todayStr) { dayIdx = i; break; }
+    }
+  }
+  var day = dayIdx >= 0 ? state.days[dayIdx] : {};
+
+  /* 体重 */
+  var todayW = null;
+  if (day.weightAM !== null && day.weightAM !== undefined) todayW = day.weightAM;
+  else if (day.weightPM !== null && day.weightPM !== undefined) todayW = day.weightPM;
+  var unitLabel = state.unit || 'kg';
+  var startW = state.startWeight;
+  var targetW = state.targetWeight;
+
+  var lostVal = (startW && todayW) ? (startW - todayW).toFixed(1) : null;
+  document.getElementById('posterLost').textContent = lostVal !== null ? lostVal : '—';
+  document.getElementById('posterTodayWeight').textContent = '今日体重 ' + (todayW !== null ? todayW.toFixed(1) + ' ' + unitLabel : '—');
+  document.getElementById('posterFat').textContent = '体脂率 ' + (day.fat !== null && day.fat !== undefined ? day.fat + '%' : '—');
+  document.getElementById('posterStartWeight').textContent = startW ? startW.toFixed(1) + ' ' + unitLabel : '—';
+  document.getElementById('posterTargetWeight').textContent = targetW ? targetW.toFixed(1) + ' ' + unitLabel : '—';
+
+  /* 照片 */
+  var allPhotos = [];
+  if (day.photo) allPhotos.push(day.photo);
+  /* 护肤照片 */
+  if (beautySkinData && beautySkinData.dailyRecords) {
+    for (var si = 0; si < beautySkinData.dailyRecords.length; si++) {
+      if (beautySkinData.dailyRecords[si].date === todayStr && beautySkinData.dailyRecords[si].photos) {
+        allPhotos = allPhotos.concat(beautySkinData.dailyRecords[si].photos);
+        break;
+      }
+    }
+  }
+  /* 心情照片 */
+  if (beautyMoodData && beautyMoodData.dailyRecords) {
+    for (var mi = 0; mi < beautyMoodData.dailyRecords.length; mi++) {
+      if (beautyMoodData.dailyRecords[mi].date === todayStr && beautyMoodData.dailyRecords[mi].photos) {
+        allPhotos = allPhotos.concat(beautyMoodData.dailyRecords[mi].photos);
+        break;
+      }
+    }
+  }
+  var photoSection = document.getElementById('posterPhotoSection');
+  var photoContainer = document.getElementById('posterPhotos');
+  if (allPhotos.length > 0) {
+    photoSection.style.display = '';
+    var photoHtml = '';
+    allPhotos.forEach(function(p) {
+      photoHtml += '<img class="poster-photo" src="' + p + '" onerror="this.style.display=\'none\'">';
+    });
+    photoContainer.innerHTML = photoHtml;
+  } else {
+    photoSection.style.display = 'none';
+    photoContainer.innerHTML = '';
+  }
+
+  /* 健康记录 */
+  var waterCups = day.water || 0;
+  var waterGoal = state.waterGoal || 2000;
+  var waterMl = waterCups * (waterGoal / (state.waterCupsMax || 8));
+  var bmLabels = {'有':'有','无':'无','便秘':'便秘'};
+  var exLabels = {'有':'有','无':'无'};
+  var healthItems = [];
+  healthItems.push({label:'喝水', val:waterCups + '杯 (' + Math.round(waterMl) + 'ml)', done:waterCups>0});
+  healthItems.push({label:'排便', val:bmLabels[day.bm] || '—', done:day.bm==='有'||day.bm==='便秘'});
+  healthItems.push({label:'运动', val:exLabels[day.exercise] || '—', done:day.exercise==='有'});
+  healthItems.push({label:'饮食', val:day.diet || '—', done:!!day.diet});
+  document.getElementById('posterHealth').innerHTML = healthItems.map(function(h) {
+    return '<div class="poster-check-item"><span class="poster-check-dot ' + (h.done?'done':'skip') + '"></span>' + h.label + ' <span class="poster-check-val">' + h.val + '</span></div>';
+  }).join('');
+
+  /* 护肤日记 */
+  var scItems = [];
+  var scNote = '';
+  if (beautySkinData && beautySkinData.dailyRecords) {
+    for (var sci = 0; sci < beautySkinData.dailyRecords.length; sci++) {
+      var rec = beautySkinData.dailyRecords[sci];
+      if (rec.date === todayStr) {
+        /* 皮肤状态 */
+        var skinType = (beautySkinData.skinProfile && beautySkinData.skinProfile.type) ? beautySkinData.skinProfile.type : '';
+        var skinTone = (beautySkinData.skinProfile && beautySkinData.skinProfile.tone) ? beautySkinData.skinProfile.tone : '';
+        if (skinType || skinTone) {
+          scItems.push({label:'皮肤状态', val:(skinType||'') + (skinTone?' · '+skinTone:''), done:true});
+        }
+        if (rec.skinStatus && rec.skinStatus.length > 0) {
+          scItems.push({label:'皮肤状况', val:rec.skinStatus.join('、'), done:true});
+        }
+        if (rec.skinStatusCustom) {
+          scItems.push({label:'状况备注', val:rec.skinStatusCustom, done:true});
+        }
+        scItems.push({label:'晨间护肤', val:rec.morningSkincare ? '已完成' : '未打卡', done:!!rec.morningSkincare});
+        scItems.push({label:'夜间护肤', val:rec.nightSkincare ? '已完成' : '未打卡', done:!!rec.nightSkincare});
+        if (rec.bodyCare && rec.bodyCare.length > 0) {
+          scItems.push({label:'身体护理', val:rec.bodyCare.join('、'), done:true});
+        }
+        if (rec.salon) scItems.push({label:'美容院', val:rec.salonNote||'已打卡', done:true});
+        if (rec.cosmetic) scItems.push({label:'do脸', val:rec.cosmeticNote||'已打卡', done:true});
+        scNote = rec.note || '';
+        break;
+      }
+    }
+  }
+  var scHtml = scItems.map(function(h) {
+    return '<div class="poster-check-item"><span class="poster-check-dot ' + (h.done?'done':'skip') + '"></span>' + h.label + ' <span class="poster-check-val">' + h.val + '</span></div>';
+  }).join('');
+  if (scNote) scHtml += '<div class="poster-check-note">' + scNote + '</div>';
+  if (scHtml === '') scHtml = '<div class="poster-check-note">今日暂无记录</div>';
+  document.getElementById('posterSkincare').innerHTML = scHtml;
+
+  /* 心情日记 */
+  var moodItems = [];
+  var moodDiary = '';
+  var moodGratitude = '';
+  if (beautyMoodData && beautyMoodData.dailyRecords) {
+    for (var mdi = 0; mdi < beautyMoodData.dailyRecords.length; mdi++) {
+      var mrec = beautyMoodData.dailyRecords[mdi];
+      if (mrec.date === todayStr) {
+        var moodLabelMap = {happy:'开心',satisfied:'满足',surprised:'惊喜',heartbeat:'心动',moved:'感动',shy:'害羞',calm:'平静',excited:'激动',confident:'自信',proud:'骄傲',loose:'松弛',relieved:'释然',healed:'治愈',hopeful:'憧憬',lost:'迷茫',nostalgic:'怀念',bored:'无聊',dazed:'恍惚',relaxed:'无助',tired:'疲惫',nervous:'紧张',lonely:'孤独',pitiful:'可怜',down:'低落',aloof:'压抑',bitter:'心酸',wronged:'委屈',cold:'冷漠',sad:'难过',anxious:'焦虑',scared:'恐惧',angry:'生气',irritated:'烦躁',jealous:'妒忌',confused:'疑惑'};
+        var moods = mrec.moods || (mrec.mood ? [mrec.mood] : []);
+        if (moods.length > 0) {
+          var moodNames = moods.map(function(m) { return moodLabelMap[m] || m; });
+          moodItems.push({label:'心情', val:moodNames.join(' · '), done:true});
+        }
+        if (mrec.status) moodItems.push({label:'状态', val:mrec.status, done:true});
+        if (mrec.diary) moodDiary = mrec.diary;
+        var gratitude = mrec.gratitude || ['','',''];
+        var gTexts = gratitude.filter(function(g) { return !!g; });
+        if (gTexts.length > 0) moodGratitude = gTexts.map(function(g,i) { return (i+1) + '. ' + g; }).join('  ');
+        if (mrec.discipline) {
+          var discItems = [];
+          for (var dk in mrec.discipline) {
+            if (mrec.discipline[dk]) discItems.push(dk);
+          }
+          if (discItems.length > 0) moodItems.push({label:'自律', val:discItems.join(' · '), done:true});
+        }
+        if (mrec.customCheck) moodItems.push({label:'备注', val:mrec.customCheck, done:true});
+        break;
+      }
+    }
+  }
+  var moodHtml = moodItems.map(function(h) {
+    return '<div class="poster-check-item"><span class="poster-check-dot done"></span>' + h.label + ' <span class="poster-check-val">' + h.val + '</span></div>';
+  }).join('');
+  if (moodDiary) moodHtml += '<div class="poster-diary">' + moodDiary + '</div>';
+  if (moodGratitude) moodHtml += '<div class="poster-gratitude">' + moodGratitude + '</div>';
+  if (moodHtml === '') moodHtml = '<div class="poster-check-note">今日暂无记录</div>';
+  document.getElementById('posterMood').innerHTML = moodHtml;
+}
+
+/* 保存海报到相册 */
+function savePosterImage() {
+  showToast('正在生成海报...');
+  var el = document.getElementById('posterContent');
+  /* 使用 html2canvas 动态加载 */
+  var script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+  script.onload = function() {
+    html2canvas(el, {
+      backgroundColor: '#faf5f9',
+      scale: 2,
+      useCORS: true,
+      allowTaint: true
+    }).then(function(canvas) {
+      canvas.toBlob(function(blob) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'MoonMemo_' + localDateStr(new Date()) + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('海报已保存');
+      }, 'image/png');
+    }).catch(function() {
+      showToast('生成失败，请重试');
+    });
+  };
+  script.onerror = function() {
+    showToast('加载组件失败，请检查网络');
+  };
+  document.head.appendChild(script);
 }
 
 /* 初始化底部导航 */

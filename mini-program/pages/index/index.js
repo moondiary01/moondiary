@@ -730,10 +730,152 @@ Page({
 
   onBottomPoster: function() {
     this.setData({ bottomActive: 'poster', showPosterPage: true, showMyPage: false });
+    this.renderPosterData();
   },
 
   onBottomMy: function() {
     this.setData({ bottomActive: 'my', showPosterPage: false, showMyPage: true });
+  },
+
+  // ===== 今日海报数据渲染 =====
+  renderPosterData: function() {
+    var self = this;
+    var state = app.globalData.state || {};
+    var today = new Date();
+    var todayStr = store.formatDateStr(today);
+    var weekDays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+    var posterDate = today.getFullYear() + '年' + (today.getMonth()+1) + '月' + today.getDate() + '日 ' + weekDays[today.getDay()];
+
+    var day = null;
+    if (state.days) {
+      for (var i = 0; i < state.days.length; i++) {
+        if (state.days[i].date === todayStr) { day = state.days[i]; break; }
+      }
+    }
+    day = day || {};
+
+    var todayW = null;
+    if (day.weightAM !== null && day.weightAM !== undefined) todayW = day.weightAM;
+    else if (day.weightPM !== null && day.weightPM !== undefined) todayW = day.weightPM;
+    var unitLabel = state.unit || '斤';
+    var startW = state.startWeight;
+    var targetW = state.targetWeight;
+    var lostVal = (startW && todayW) ? (startW - todayW).toFixed(1) : '—';
+
+    /* 照片 */
+    var allPhotos = [];
+    if (day.photo) allPhotos.push(day.photo);
+    try {
+      var skinData = wx.getStorageSync('beauty_skincare_data');
+      if (skinData && skinData.dailyRecords) {
+        for (var si = 0; si < skinData.dailyRecords.length; si++) {
+          if (skinData.dailyRecords[si].date === todayStr && skinData.dailyRecords[si].photos) {
+            allPhotos = allPhotos.concat(skinData.dailyRecords[si].photos);
+            break;
+          }
+        }
+      }
+    } catch(e) {}
+    try {
+      var moodData = wx.getStorageSync('beauty_mood_data');
+      if (moodData && moodData.dailyRecords) {
+        for (var mi = 0; mi < moodData.dailyRecords.length; mi++) {
+          if (moodData.dailyRecords[mi].date === todayStr && moodData.dailyRecords[mi].photos) {
+            allPhotos = allPhotos.concat(moodData.dailyRecords[mi].photos);
+            break;
+          }
+        }
+      }
+    } catch(e) {}
+
+    /* 健康记录 */
+    var waterCups = day.water || 0;
+    var bmLabels = {'有':'有','无':'无','便秘':'便秘'};
+    var posterHealth = [
+      {label:'喝水', val:waterCups + '杯', done:waterCups>0},
+      {label:'排便', val:bmLabels[day.bm] || '—', done:day.bm==='有'||day.bm==='便秘'},
+      {label:'运动', val:day.exercise==='有'?'有':'—', done:day.exercise==='有'},
+      {label:'饮食', val:day.diet || '—', done:!!day.diet}
+    ];
+
+    /* 护肤日记 */
+    var posterSkincare = [];
+    var posterSkincareNote = '';
+    try {
+      var scData = wx.getStorageSync('beauty_skincare_data');
+      if (scData && scData.dailyRecords) {
+        for (var sci = 0; sci < scData.dailyRecords.length; sci++) {
+          var rec = scData.dailyRecords[sci];
+          if (rec.date === todayStr) {
+            var skinType = (scData.skinProfile && scData.skinProfile.type) ? scData.skinProfile.type : '';
+            var skinTone = (scData.skinProfile && scData.skinProfile.tone) ? scData.skinProfile.tone : '';
+            if (skinType || skinTone) posterSkincare.push({label:'皮肤状态', val:(skinType||'')+(skinTone?' · '+skinTone:''), done:true});
+            if (rec.skinStatus && rec.skinStatus.length > 0) posterSkincare.push({label:'皮肤状况', val:rec.skinStatus.join('、'), done:true});
+            if (rec.skinStatusCustom) posterSkincare.push({label:'状况备注', val:rec.skinStatusCustom, done:true});
+            posterSkincare.push({label:'晨间护肤', val:rec.morningSkincare?'已完成':'未打卡', done:!!rec.morningSkincare});
+            posterSkincare.push({label:'夜间护肤', val:rec.nightSkincare?'已完成':'未打卡', done:!!rec.nightSkincare});
+            if (rec.bodyCare && rec.bodyCare.length > 0) posterSkincare.push({label:'身体护理', val:rec.bodyCare.join('、'), done:true});
+            if (rec.salon) posterSkincare.push({label:'美容院', val:rec.salonNote||'已打卡', done:true});
+            if (rec.cosmetic) posterSkincare.push({label:'do脸', val:rec.cosmeticNote||'已打卡', done:true});
+            posterSkincareNote = rec.note || '';
+            break;
+          }
+        }
+      }
+    } catch(e) {}
+
+    /* 心情日记 */
+    var posterMood = [];
+    var posterMoodDiary = '';
+    var posterMoodGratitude = '';
+    try {
+      var mdData = wx.getStorageSync('beauty_mood_data');
+      if (mdData && mdData.dailyRecords) {
+        for (var mdi = 0; mdi < mdData.dailyRecords.length; mdi++) {
+          var mrec = mdData.dailyRecords[mdi];
+          if (mrec.date === todayStr) {
+            var moodLabelMap = {happy:'开心',satisfied:'满足',surprised:'惊喜',heartbeat:'心动',moved:'感动',shy:'害羞',calm:'平静',excited:'激动',confident:'自信',proud:'骄傲',loose:'松弛',relieved:'释然',healed:'治愈',hopeful:'憧憬',lost:'迷茫',nostalgic:'怀念',bored:'无聊',dazed:'恍惚',tired:'疲惫',nervous:'紧张',lonely:'孤独',pitiful:'可怜',down:'低落',aloof:'压抑',bitter:'心酸',wronged:'委屈',cold:'冷漠',sad:'难过',anxious:'焦虑',scared:'恐惧',angry:'生气',irritated:'烦躁',jealous:'妒忌',confused:'疑惑'};
+            var moods = mrec.moods || (mrec.mood ? [mrec.mood] : []);
+            if (moods.length > 0) {
+              var moodNames = moods.map(function(m) { return moodLabelMap[m] || m; });
+              posterMood.push({label:'心情', val:moodNames.join(' · '), done:true});
+            }
+            if (mrec.status) posterMood.push({label:'状态', val:mrec.status, done:true});
+            if (mrec.diary) posterMoodDiary = mrec.diary;
+            var gratitude = mrec.gratitude || ['','',''];
+            var gTexts = gratitude.filter(function(g) { return !!g; });
+            if (gTexts.length > 0) posterMoodGratitude = gTexts.map(function(g,i) { return (i+1)+'. '+g; }).join('  ');
+            if (mrec.discipline) {
+              var discItems = [];
+              for (var dk in mrec.discipline) { if (mrec.discipline[dk]) discItems.push(dk); }
+              if (discItems.length > 0) posterMood.push({label:'自律', val:discItems.join(' · '), done:true});
+            }
+            if (mrec.customCheck) posterMood.push({label:'备注', val:mrec.customCheck, done:true});
+            break;
+          }
+        }
+      }
+    } catch(e) {}
+
+    self.setData({
+      posterDate: posterDate,
+      posterLost: lostVal,
+      posterTodayWeight: '今日体重 ' + (todayW !== null ? todayW.toFixed(1) + ' ' + unitLabel : '—'),
+      posterFat: '体脂率 ' + (day.fat !== null && day.fat !== undefined ? day.fat + '%' : '—'),
+      posterStartWeight: startW ? startW.toFixed(1) + ' ' + unitLabel : '—',
+      posterTargetWeight: targetW ? targetW.toFixed(1) + ' ' + unitLabel : '—',
+      posterPhotos: allPhotos,
+      posterHealth: posterHealth,
+      posterSkincare: posterSkincare,
+      posterSkincareNote: posterSkincareNote,
+      posterMood: posterMood,
+      posterMoodDiary: posterMoodDiary,
+      posterMoodGratitude: posterMoodGratitude
+    });
+  },
+
+  onSavePoster: function() {
+    wx.showToast({ title: '请截图保存', icon: 'none', duration: 2000 });
   },
 
   // =========================================

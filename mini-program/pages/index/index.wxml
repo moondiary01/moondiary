@@ -892,6 +892,96 @@
     </view>
   </view>
 
+  <!-- ===== 今日海报 ===== -->
+  <view class="poster-overlay" wx:if="{{showPosterPage}}">
+    <scroll-view scroll-y="true" class="poster-scroll">
+      <view class="poster-container">
+        <view class="poster-header">
+          <text class="poster-brand">Moon Memo</text>
+          <text class="poster-subtitle">今日海报</text>
+          <text class="poster-date">{{posterDate}}</text>
+        </view>
+        <view class="poster-divider"></view>
+
+        <!-- 已减重圆形 -->
+        <view class="poster-circle-wrap">
+          <view class="poster-circle">
+            <text class="poster-circle-num">{{posterLost}}</text>
+            <text class="poster-circle-unit">kg</text>
+            <text class="poster-circle-label">已减重</text>
+          </view>
+        </view>
+
+        <!-- 体重数据 -->
+        <view class="poster-weight-row">
+          <text class="poster-weight-main">{{posterTodayWeight}}</text>
+          <text class="poster-weight-fat">{{posterFat}}</text>
+        </view>
+        <view class="poster-weight-dual">
+          <view class="poster-weight-side">
+            <text class="poster-weight-side-label">起始体重</text>
+            <text class="poster-weight-side-val">{{posterStartWeight}}</text>
+          </view>
+          <view class="poster-weight-side">
+            <text class="poster-weight-side-label">目标体重</text>
+            <text class="poster-weight-side-val">{{posterTargetWeight}}</text>
+          </view>
+        </view>
+
+        <!-- 照片 -->
+        <block wx:if="{{posterPhotos.length > 0}}">
+          <view class="poster-divider"></view>
+          <view class="poster-section-title">今日影像</view>
+          <view class="poster-photos">
+            <image wx:for="{{posterPhotos}}" wx:key="index" class="poster-photo" src="{{item}}" mode="aspectFill"></image>
+          </view>
+        </block>
+
+        <!-- 健康记录 -->
+        <view class="poster-divider"></view>
+        <view class="poster-section-title">健康记录</view>
+        <view class="poster-check-grid">
+          <view wx:for="{{posterHealth}}" wx:key="label" class="poster-check-item">
+            <view class="poster-check-dot {{item.done ? 'done' : 'skip'}}"></view>
+            <text>{{item.label}}</text>
+            <text class="poster-check-val">{{item.val}}</text>
+          </view>
+        </view>
+
+        <!-- 护肤日记 -->
+        <view class="poster-divider"></view>
+        <view class="poster-section-title">护肤日记</view>
+        <view class="poster-check-grid">
+          <view wx:for="{{posterSkincare}}" wx:key="label" class="poster-check-item">
+            <view class="poster-check-dot {{item.done ? 'done' : 'skip'}}"></view>
+            <text>{{item.label}}</text>
+            <text class="poster-check-val">{{item.val}}</text>
+          </view>
+        </view>
+        <view wx:if="{{posterSkincareNote}}" class="poster-check-note">{{posterSkincareNote}}</view>
+        <view wx:if="{{posterSkincare.length === 0 && !posterSkincareNote}}" class="poster-check-note">今日暂无记录</view>
+
+        <!-- 心情日记 -->
+        <view class="poster-divider"></view>
+        <view class="poster-section-title">心情日记</view>
+        <view class="poster-check-grid">
+          <view wx:for="{{posterMood}}" wx:key="label" class="poster-check-item">
+            <view class="poster-check-dot done"></view>
+            <text>{{item.label}}</text>
+            <text class="poster-check-val">{{item.val}}</text>
+          </view>
+        </view>
+        <view wx:if="{{posterMoodDiary}}" class="poster-diary">{{posterMoodDiary}}</view>
+        <view wx:if="{{posterMoodGratitude}}" class="poster-gratitude">{{posterMoodGratitude}}</view>
+        <view wx:if="{{posterMood.length === 0 && !posterMoodDiary && !posterMoodGratitude}}" class="poster-check-note">今日暂无记录</view>
+
+        <!-- 保存 -->
+        <view class="poster-divider"></view>
+        <button class="poster-save-btn" bindtap="onSavePoster">保存到相册</button>
+      </view>
+    </scroll-view>
+  </view>
+
   <!-- === BOTTOM NAV === -->
   <view class="bottom-nav">
     <view class="bn-item {{bottomActive==='home'?'active':''}}" bindtap="onBottomHome">
