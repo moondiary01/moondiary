@@ -430,29 +430,38 @@ Page({
         payments = payments || {}
         var configKeys = store.getPresetKeys()
         var list = []
+        var now = Date.now()
+        var todayStr = new Date().toISOString().slice(0, 10)
 
         configKeys.forEach(function (k) {
           var info = pi[k] || {}
           if (info.phone) {
             var p = payments[info.phone] || {}
-            var status = '试用期'
-            var statusClass = 'key-badge-free'
+            /* 用户类型标签 */
+            var userType = '免费用户'
+            var userTypeClass = 'key-badge-free'
             if (p.beautyPaid || p.beautyTrial) {
-              status = '升级版'
-              statusClass = 'key-badge-on'
-            } else if (p.storagePaid) {
-              status = '普通版'
-              statusClass = 'key-badge-on'
-            } else if (info.activated) {
-              status = '已启用'
-              statusClass = 'key-badge-on'
+              userType = '升级版'
+              userTypeClass = 'key-badge-on'
+            } else if (p.storagePaid && p.storagePaidBy !== 'activation_code') {
+              userType = '普通版'
+              userTypeClass = 'key-badge-on'
+            } else if (p.trialStart && now < (p.trialExpires || 0)) {
+              userType = '试用期'
+              userTypeClass = 'key-badge-trial'
             }
+            /* 当日登录 */
+            var loginToday = !!(info.lastLoginDate && info.lastLoginDate === todayStr)
+            var loginBadge = loginToday ? '登录中' : '未登录'
+            var loginBadgeClass = loginToday ? 'login-badge-on' : 'login-badge-off'
 
             list.push({
               phone: info.phone,
               meta: (info.gender || '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.nickname ? ' · ' + info.nickname : '') + ' · 密钥' + k,
-              status: status,
-              statusClass: statusClass
+              userType: userType,
+              userTypeClass: userTypeClass,
+              loginBadge: loginBadge,
+              loginBadgeClass: loginBadgeClass
             })
           }
         })
@@ -466,28 +475,58 @@ Page({
               var u = wxUsers[uk]
               if (!u) return
               var p = payments[u.phone] || {}
-              var status = '微信用户', statusClass = 'key-badge-free'
-              if (p.beautyPaid || p.beautyTrial) { status = '升级版'; statusClass = 'key-badge-on' }
-              else if (p.storagePaid) { status = '普通版'; statusClass = 'key-badge-on' }
+              var userType = '免费用户'
+              var userTypeClass = 'key-badge-free'
+              if (p.beautyPaid || p.beautyTrial) {
+                userType = '升级版'
+                userTypeClass = 'key-badge-on'
+              } else if (p.storagePaid && p.storagePaidBy !== 'activation_code') {
+                userType = '普通版'
+                userTypeClass = 'key-badge-on'
+              } else if (p.trialStart && now < (p.trialExpires || 0)) {
+                userType = '试用期'
+                userTypeClass = 'key-badge-trial'
+              }
+              /* 微信用户登录状态：通过 _wx_users 中的 lastLoginDate 判断 */
+              var wxLoginToday = !!(u.lastLoginDate && u.lastLoginDate === todayStr)
+              var loginBadge = wxLoginToday ? '登录中' : '未登录'
+              var loginBadgeClass = wxLoginToday ? 'login-badge-on' : 'login-badge-off'
               list.push({
                 phone: u.phone || '未绑定',
                 meta: (u.nickname || u.name || '未设置') + (u.gender ? ' · ' + u.gender : '') + (u.age ? ' · ' + u.age + '岁' : '') + ' · 微信用户',
-                status: status,
-                statusClass: statusClass
+                userType: userType,
+                userTypeClass: userTypeClass,
+                loginBadge: loginBadge,
+                loginBadgeClass: loginBadgeClass
               })
             })
             Object.keys(phoneUsers).forEach(function(pk) {
               var pu = phoneUsers[pk]
               if (!pu) return
               var p = payments[pu.phone] || {}
-              var status = '手机用户', statusClass = 'key-badge-free'
-              if (p.beautyPaid || p.beautyTrial) { status = '升级版'; statusClass = 'key-badge-on' }
-              else if (p.storagePaid) { status = '普通版'; statusClass = 'key-badge-on' }
+              var userType = '免费用户'
+              var userTypeClass = 'key-badge-free'
+              if (p.beautyPaid || p.beautyTrial) {
+                userType = '升级版'
+                userTypeClass = 'key-badge-on'
+              } else if (p.storagePaid && p.storagePaidBy !== 'activation_code') {
+                userType = '普通版'
+                userTypeClass = 'key-badge-on'
+              } else if (p.trialStart && now < (p.trialExpires || 0)) {
+                userType = '试用期'
+                userTypeClass = 'key-badge-trial'
+              }
+              /* 手机用户登录状态：通过 _phone_users 中的 lastLoginDate 判断 */
+              var puLoginToday = !!(pu.lastLoginDate && pu.lastLoginDate === todayStr)
+              var loginBadge = puLoginToday ? '登录中' : '未登录'
+              var loginBadgeClass = puLoginToday ? 'login-badge-on' : 'login-badge-off'
               list.push({
                 phone: pu.phone || '未绑定',
                 meta: (pu.nickname || '未设置') + (pu.gender ? ' · ' + pu.gender : '') + (pu.age ? ' · ' + pu.age + '岁' : '') + ' · 手机用户',
-                status: status,
-                statusClass: statusClass
+                userType: userType,
+                userTypeClass: userTypeClass,
+                loginBadge: loginBadge,
+                loginBadgeClass: loginBadgeClass
               })
             })
 
@@ -512,6 +551,7 @@ Page({
     var titleMap = { trial: '试用期用户', basic: '普通版用户', upgrade: '升级版用户', keyUser: '密钥用户' }
     var now = Date.now()
     var trialMs = 24 * 60 * 60 * 1000
+    var todayStr = new Date().toISOString().slice(0, 10)
 
     store.loadPresetInfo(function (pi) {
       pi = pi || {}
@@ -528,12 +568,27 @@ Page({
             var p = payments[phone] || {}
             var match = !p.storagePaid && !p.beautyPaid && !p.beautyTrial && (!p.trialStart || now >= (p.trialExpires || 0))
             if (!match) return
-            var status = info.activated ? '已启用' : '密钥用户'
+            /* 用户类型 */
+            var userType = '免费用户'
+            var userTypeClass = 'key-badge-free'
+            if (p.storagePaid && p.storagePaidBy !== 'activation_code') {
+              userType = '普通版'
+              userTypeClass = 'key-badge-on'
+            } else if (p.trialStart && now < (p.trialExpires || 0)) {
+              userType = '试用期'
+              userTypeClass = 'key-badge-trial'
+            }
+            /* 当日登录 */
+            var loginToday = !!(info.lastLoginDate && info.lastLoginDate === todayStr)
+            var loginBadge = loginToday ? '登录中' : '未登录'
+            var loginBadgeClass = loginToday ? 'login-badge-on' : 'login-badge-off'
             list.push({
               phone: phone,
               meta: (info.gender || '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.nickname ? ' · ' + info.nickname : '') + ' · 密钥' + k,
-              status: status,
-              statusClass: 'key-badge-on'
+              userType: userType,
+              userTypeClass: userTypeClass,
+              loginBadge: loginBadge,
+              loginBadgeClass: loginBadgeClass
             })
           })
         } else {
@@ -548,14 +603,20 @@ Page({
             if (type === 'basic' && p.storagePaid && !p.beautyPaid && !p.beautyTrial) match = true
             if (type === 'upgrade' && (p.beautyPaid || p.beautyTrial)) match = true
             if (!match) return
-            var status = '试用期', statusClass = 'key-badge-free'
-            if (p.beautyPaid || p.beautyTrial) { status = '升级版'; statusClass = 'key-badge-on' }
-            else if (p.storagePaid) { status = '普通版'; statusClass = 'key-badge-on' }
+            var userType = '试用期', userTypeClass = 'key-badge-free'
+            if (p.beautyPaid || p.beautyTrial) { userType = '升级版'; userTypeClass = 'key-badge-on' }
+            else if (p.storagePaid) { userType = '普通版'; userTypeClass = 'key-badge-on' }
+            /* 当日登录 */
+            var loginToday = !!(info.lastLoginDate && info.lastLoginDate === todayStr)
+            var loginBadge = loginToday ? '登录中' : '未登录'
+            var loginBadgeClass = loginToday ? 'login-badge-on' : 'login-badge-off'
             list.push({
               phone: phone,
               meta: (info.gender || '') + (info.age ? ' · ' + info.age + '岁' : '') + (info.nickname ? ' · ' + info.nickname : '') + ' · 密钥' + k,
-              status: status,
-              statusClass: statusClass
+              userType: userType,
+              userTypeClass: userTypeClass,
+              loginBadge: loginBadge,
+              loginBadgeClass: loginBadgeClass
             })
           })
         }
@@ -575,6 +636,7 @@ Page({
                 gender: u.gender || '',
                 age: u.age || '',
                 firstLogin: u.firstLoginTime || now,
+                lastLoginDate: u.lastLoginDate || '',
                 source: '微信用户',
                 id: uk
               })
@@ -588,6 +650,7 @@ Page({
                 gender: pu.gender || '',
                 age: pu.age || '',
                 firstLogin: pu.firstLogin || now,
+                lastLoginDate: pu.lastLoginDate || '',
                 source: '手机用户',
                 id: pk
               })
@@ -604,13 +667,19 @@ Page({
               if (type === 'upgrade' && isVipUpgrade) match = true
               if (!match) return
 
-              var status = isVipUpgrade ? '升级版' : (isVipBasic ? '普通版' : '试用期')
-              var statusClass = isVipUpgrade || isVipBasic ? 'key-badge-on' : 'key-badge-free'
+              var userType = isVipUpgrade ? '升级版' : (isVipBasic ? '普通版' : '试用期')
+              var userTypeClass = isVipUpgrade || isVipBasic ? 'key-badge-on' : 'key-badge-free'
+              /* 当日登录 */
+              var loginToday = !!(u.lastLoginDate && u.lastLoginDate === todayStr)
+              var loginBadge = loginToday ? '登录中' : '未登录'
+              var loginBadgeClass = loginToday ? 'login-badge-on' : 'login-badge-off'
               list.push({
                 phone: u.phone || '未绑定',
                 meta: u.nickname + (u.gender ? ' · ' + u.gender : '') + (u.age ? ' · ' + u.age + '岁' : '') + ' · ' + u.source,
-                status: status,
-                statusClass: statusClass
+                userType: userType,
+                userTypeClass: userTypeClass,
+                loginBadge: loginBadge,
+                loginBadgeClass: loginBadgeClass
               })
             })
 

@@ -2735,6 +2735,7 @@ function syncPhoneUserToCloud() {
     if (state.gender) users[phone].gender = state.gender;
     if (state.age !== null && state.age !== undefined) users[phone].age = state.age;
     users[phone].lastLogin = Date.now();
+    users[phone].lastLoginDate = localDateStr(new Date());
     if (!users[phone].firstLogin) users[phone].firstLogin = Date.now();
     users[phone].loginType = 'phone';
     users[phone].version = APP_VERSION;

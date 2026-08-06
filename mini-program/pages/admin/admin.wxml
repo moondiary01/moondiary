@@ -125,7 +125,8 @@
             <text class="user-info-phone">{{item.phone}}</text>
             <text class="user-info-meta">{{item.meta}}</text>
           </view>
-          <text class="key-badge {{item.statusClass}}">{{item.status}}</text>
+          <text class="key-badge {{item.userTypeClass}}">{{item.userType}}</text>
+          <text class="login-badge {{item.loginBadgeClass}}">{{item.loginBadge}}</text>
         </view>
       </block>
       <view wx:if="{{usersModalList.length === 0}}" class="user-info-empty">暂无此类用户</view>
