@@ -220,16 +220,16 @@ body::-webkit-scrollbar{display:none}
   box-shadow:0 8px 32px rgba(225,29,72,0.2);
 }
 .hero-inner{max-width:1100px;margin:0 auto}
-.hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:nowrap}
 .hero-left{display:flex;flex-direction:column;gap:6px}
 .hero-title{font-size:1.3rem;font-weight:800;letter-spacing:-0.5px;display:flex;align-items:baseline;justify-content:center;gap:8px}
 .hero-title .brand{font-style:italic;font-size:1.6rem;font-weight:900;letter-spacing:-1px;color:#fff}
 .hero-title .hero-sub{font-size:1.05rem;font-weight:800;color:#fff;white-space:nowrap}
 .hero-clock{font-size:0.72rem;opacity:0.85;font-variant-numeric:tabular-nums}
 .hero-actions{display:flex;gap:6px;align-items:center;margin-top:4px}
-.hero-avatar-box{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.hero-avatar-box{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:72px}
 .avatar-lg{width:68px;height:68px;font-size:2.2rem;border:3px solid rgba(255,255,255,0.6);box-shadow:0 4px 16px rgba(0,0,0,0.15)}
-.hero-nickname{font-size:0.8rem;font-weight:700;color:#fff;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;opacity:0.95;margin-top:4px}
+.hero-nickname{font-size:0.78rem;font-weight:700;color:#fff;text-align:center;max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;opacity:0.95;margin-top:4px;line-height:1.2}
 .pf-weight{cursor:pointer}
 .pf-weight-val{font-size:1.6rem;font-weight:900;color:#FFD700 !important;text-shadow:0 2px 8px rgba(0,0,0,0.2);letter-spacing:-0.5px;line-height:1.1}
 .pf-weight .pf-label{margin-top:2px}
@@ -604,8 +604,10 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
   .bmi-ring{width:72px;height:72px}
   .bmi-ring .num{font-size:1.25rem}
   .avatar-lg{width:56px;height:56px;font-size:1.8rem}
-  .hero-nickname{font-size:0.72rem;max-width:64px}
+  .hero-nickname{font-size:0.68rem;max-width:56px}
+  .hero-avatar-box{width:60px}
   .hero-actions{flex-wrap:wrap}
+  .hero-top{flex-wrap:nowrap !important}
 }
 
 /* ===== 升级版样式 ===== */
@@ -1985,7 +1987,7 @@ _loadCosSdk(0);
 <div class="modal-overlay" id="settingsModal">
   <div class="modal">
     <h2>个人设置</h2>
-    <div class="input-group"><label>昵称（最多6个字）</label><input type="text" id="setName" maxlength="6" placeholder="你的名字"></div>
+    <div class="input-group"><label>昵称（最多5个字）</label><input type="text" id="setName" maxlength="5" placeholder="你的名字"></div>
     <div class="input-group"><label>性别</label><select id="setGender"><option value="">请选择</option><option value="男">男</option><option value="女">女</option></select></div>
     <div class="input-group"><label>年龄</label><input type="number" id="setAge" placeholder="如 25"></div>
     <div class="input-group"><label>身高 (cm)</label><input type="number" id="setHeight" step="0.1" placeholder="如 165"></div>
@@ -5018,7 +5020,13 @@ function openSettings() {
 }
 function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
 function saveSettings() {
-  state.name = document.getElementById('setName').value;
+  var nameVal = document.getElementById('setName').value.trim();
+  /* 昵称限制最多5个字 */
+  if (nameVal.length > 5) {
+    showToast('昵称最多5个字');
+    return;
+  }
+  state.name = nameVal;
   state.gender = document.getElementById('setGender').value;
   state.age = parseInt(document.getElementById('setAge').value) || null;
   state.height = parseFloat(document.getElementById('setHeight').value) || null;
