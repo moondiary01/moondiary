@@ -1411,23 +1411,23 @@ _loadCosSdk(0);
 <!-- ===== Page 5: 管理员 ===== -->
 <div class="page" id="page5">
   <div class="card">
-    <div class="card-title">管理后台 <span class="sub">Moon 专属</span></div>
-    <div class="admin-stat">
-      <div class="admin-stat-item admin-stat-clickable" onclick="showUsersByType('free')">
-        <div class="admin-stat-num" id="adminFree">0</div>
-        <div class="admin-stat-lbl">免费用户 · 点击查看</div>
-      </div>
+    <div class="card-title">管理后台 <span class="sub">用户数据</span></div>
+    <div class="admin-stat" style="grid-template-columns:repeat(2,1fr)">
       <div class="admin-stat-item admin-stat-clickable" onclick="showUsersByType('trial')">
         <div class="admin-stat-num" id="adminTrial">0</div>
-        <div class="admin-stat-lbl">试用未充值 · 点击查看</div>
+        <div class="admin-stat-lbl">试用期用户 · 点击查看</div>
       </div>
       <div class="admin-stat-item admin-stat-clickable" onclick="showUsersByType('vipBasic')">
         <div class="admin-stat-num" id="adminVipBasic">0</div>
-        <div class="admin-stat-lbl">VIP基础版 · 点击查看</div>
+        <div class="admin-stat-lbl">普通版用户 · 点击查看</div>
       </div>
-      <div class="admin-stat-item admin-stat-clickable" id="adminUpgradeStat" onclick="showUsersByType('vipUpgrade')">
+      <div class="admin-stat-item admin-stat-clickable" onclick="showUsersByType('vipUpgrade')">
         <div class="admin-stat-num" id="adminVipUpgrade">0</div>
-        <div class="admin-stat-lbl">VIP升级版 · 点击查看</div>
+        <div class="admin-stat-lbl">升级版用户 · 点击查看</div>
+      </div>
+      <div class="admin-stat-item admin-stat-clickable" onclick="showUsersByType('keyUser')">
+        <div class="admin-stat-num" id="adminKeyUsers">0</div>
+        <div class="admin-stat-lbl">密钥用户 · 点击查看</div>
       </div>
       <div class="admin-stat-item admin-stat-clickable admin-stat-wide admin-stat-total" onclick="showAllUsers()">
         <div class="admin-stat-num" id="adminTotal">0</div>
@@ -1435,7 +1435,7 @@ _loadCosSdk(0);
       </div>
     </div>
     <div id="keyListSearch" style="margin-bottom:12px">
-      <input type="tel" id="keySearchPhone" placeholder="输入手机号搜索用户" maxlength="11" inputmode="numeric" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:1rem;outline:none;background:var(--bg-card)" oninput="renderKeyList()">
+      <input type="tel" id="keySearchPhone" placeholder="搜索用户手机号/微信号" maxlength="11" inputmode="numeric" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:1rem;outline:none;background:var(--bg-card)" oninput="renderKeyList()">
     </div>
     <div id="keyList"></div>
   </div>
@@ -5764,7 +5764,7 @@ function renderKeyList() {
   document.getElementById('keyList').innerHTML = html;
   /* 更新统计：分别统计免费用户、试用未充值、VIP基础版 */
   const freeCount = PRESET_KEYS.filter(k => pi[k] && pi[k].phone).length + arr.filter(([k,i]) => i.phone).length;
-  document.getElementById('adminFree').textContent = freeCount;
+  document.getElementById('adminKeyUsers').textContent = freeCount;
   /* 异步读取微信用户数据并统计试用/VIP */
   loadFromCloud('_wx_users', function(wxUsers) {
     var trialCount = 0, vipBasicCount = 0, vipUpgradeCount = 0;
@@ -5780,36 +5780,56 @@ function renderKeyList() {
         var isVipBasic = paidUntil && paidUntil > now;
         var isTrial = (now - firstLogin < trialMs) && !isVipBasic;
 
-        if (isVipBasic) vipBasicCount++;
+        /* 检查升级版状态 */
+        var userPhone = u.phone || '';
+        var isVipUpgrade = false;
+        if (userPhone) {
+          var allPays = loadPayments();
+          if (allPays[userPhone] && (allPays[userPhone].beautyPaid || allPays[userPhone].beautyTrial)) {
+            isVipUpgrade = true;
+          }
+        }
+
+        if (isVipUpgrade) vipUpgradeCount++;
+        else if (isVipBasic) vipBasicCount++;
         else if (isTrial) trialCount++;
 
         /* 搜索过滤微信用户 */
         if (searchTerm) {
           var phone = u.phone || '';
-          if (phone.indexOf(searchTerm) !== -1) {
-            var userType = isVipBasic ? 'VIP基础版' : (isTrial ? '试用未充值' : '已过期');
+          if (phone.indexOf(searchTerm) !== -1 || uk.indexOf(searchTerm) !== -1) {
+            var userType = isVipUpgrade ? '升级版' : (isVipBasic ? '普通版' : (isTrial ? '试用期' : '已过期'));
+            var versionBadge = isVipUpgrade
+              ? '<span class="key-badge" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-size:0.65rem">升级版</span>'
+              : (isVipBasic
+                ? '<span class="key-badge" style="background:#10b981;color:#fff;font-size:0.65rem">普通版</span>'
+                : (isTrial
+                  ? '<span class="key-badge" style="background:#f59e0b;color:#fff;font-size:0.65rem">试用期</span>'
+                  : '<span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">已过期</span>'));
             var remainText = '';
             if (isTrial) {
               var remainH = Math.floor((trialMs - (now - firstLogin)) / (60*60*1000));
               remainText = ' · 剩余' + remainH + 'h';
             }
-            if (isVipBasic) {
-              var daysLeft = Math.ceil((paidUntil - now) / (24*60*60*1000));
-              remainText = ' · 剩余' + daysLeft + '天';
-            }
+            var nickname = u.nickname || u.name || '未设置';
+            var gender = u.gender || '—';
+            var age = u.age ? u.age + '岁' : '—';
             var regDate = new Date(firstLogin).toLocaleDateString();
             var isDisabled = u.disabled === true;
+            var loginBadge = isDisabled
+              ? '<span class="key-badge" style="background:#e5e7eb;color:#6b7280;font-size:0.65rem">已停用</span>'
+              : '<span class="key-badge" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">登录中</span>';
             var toggleBtn = isDisabled
               ? '<button class="key-toggle key-toggle-revoked" onclick="toggleWxUserDisabled(\'' + uk + '\')">已停用 · 点击恢复</button>'
               : '<button class="key-toggle key-toggle-on" onclick="toggleWxUserDisabled(\'' + uk + '\')">已启用 · 点击停用</button>';
             wxMatchHtml += '<div class="key-row-v2">'
               + '<div class="key-row-main">'
                 + '<div class="key-code">' + uk + '</div>'
-                + '<span class="key-badge active">' + userType + '</span>'
+                + versionBadge + loginBadge
               + '</div>'
               + '<div class="key-row-info">'
                 + '<span class="key-info-icon"></span>'
-                + '<span class="key-info-text">' + (phone || '未绑定') + ' · ' + userType + ' · 注册' + regDate + remainText + '</span>'
+                + '<span class="key-info-text">手机:' + (phone || '未绑定') + ' · 昵称:' + nickname + ' · ' + gender + '/' + age + ' · 注册' + regDate + remainText + '</span>'
               + '</div>'
               + '<div class="key-row-action">'
                 + toggleBtn
@@ -5833,13 +5853,14 @@ function renderKeyList() {
     document.getElementById('adminTrial').textContent = trialCount;
     document.getElementById('adminVipBasic').textContent = vipBasicCount;
     /* 统计29.9元变美计划付费用户 */
-    var payCount = 0;
+    var payCount = vipUpgradeCount;
     var allPayments = loadPayments();
     Object.keys(allPayments).forEach(function(p) {
       if (allPayments[p] && allPayments[p].beautyPaid) payCount++;
     });
     document.getElementById('adminVipUpgrade').textContent = payCount;
-    document.getElementById('adminTotal').textContent = freeCount + trialCount + vipBasicCount;
+    document.getElementById('adminKeyUsers').textContent = freeCount;
+    document.getElementById('adminTotal').textContent = freeCount + trialCount + vipBasicCount + payCount;
   });
 }
 
@@ -5990,10 +6011,10 @@ function showAllUsers() {
 /* 按类型显示用户手机号 */
 function showUsersByType(type) {
   var titleMap = {
-    'free': '免费用户',
-    'trial': '试用未充值用户',
-    'vipBasic': 'VIP基础版用户',
-    'vipUpgrade': 'VIP升级版用户'
+    'keyUser': '密钥用户',
+    'trial': '试用期用户',
+    'vipBasic': '普通版用户',
+    'vipUpgrade': '升级版用户'
   };
   var pi = loadPresetInfo();
   var keys = loadKeys();
@@ -6002,14 +6023,14 @@ function showUsersByType(type) {
   var html = '';
   var count = 0;
 
-  if (type === 'free') {
-    /* 免费用户：有手机号的预设密钥 + 动态密钥 */
+  if (type === 'keyUser') {
+    /* 密钥用户：有手机号的预设密钥 + 动态密钥 */
     PRESET_KEYS.forEach(function(k) {
       var info = pi[k];
       if (info && info.phone) {
         var ud = getUserData(k);
         var status = info.activated ? '已启用' : (isUsedKey(k) ? '已使用' : '未启用');
-        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + (info.activated?'revoked':'active') + '">' + status + '</span></div>';
+        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (ud.name||'未设置') + (ud.gender ? ' · ' + ud.gender : '') + (ud.age ? ' · ' + ud.age + '岁' : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + (info.activated?'revoked':'active') + '">' + status + '</span></div>';
         count++;
       }
     });
@@ -6017,13 +6038,14 @@ function showUsersByType(type) {
       var k = entry[0], info = entry[1];
       if (info.phone) {
         var ud = getUserData(k);
-        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (info.gender||'') + (info.age ? ' · ' + info.age + '岁' : '') + (info.note ? ' · ' + info.note : '') + (ud.name ? ' · ' + ud.name : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + (info.revoked?'revoked':'active') + '">' + (info.revoked?'已停用':'使用中') + '</span></div>';
+        html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + info.phone + '</div><div class="user-info-meta">' + (ud.name||'未设置') + (ud.gender ? ' · ' + ud.gender : '') + (ud.age ? ' · ' + ud.age + '岁' : '') + ' · 密钥' + k + '</div></div><span class="key-badge ' + (info.revoked?'revoked':'active') + '">' + (info.revoked?'已停用':'使用中') + '</span></div>';
         count++;
       }
     });
   } else {
-    /* 微信用户类型：需要异步读取 _wx_users */
+    /* 微信/手机用户类型：异步读取 _wx_users */
     loadFromCloud('_wx_users', function(wxUsers) {
+      var allPayments = loadPayments();
       if (!wxUsers) {
         document.getElementById('allUsersList').innerHTML = '<p style="color:var(--text-l);font-size:0.82rem;text-align:center;padding:20px">暂无' + titleMap[type] + '</p>';
         document.getElementById('allUsersModal').classList.add('show');
@@ -6034,30 +6056,36 @@ function showUsersByType(type) {
         if (!u) return;
         var firstLogin = u.firstLoginTime || now;
         var paidUntil = u.paidUntil || null;
-        var isTrial = (now - firstLogin < trialMs) && !(paidUntil && paidUntil > now);
+        var userPhone = u.phone || '';
+        var isVipUpgrade = false;
+        if (userPhone && allPayments[userPhone] && (allPayments[userPhone].beautyPaid || allPayments[userPhone].beautyTrial)) {
+          isVipUpgrade = true;
+        }
         var isVipBasic = paidUntil && paidUntil > now;
-        var isVipUpgrade = false; /* 暂无升级版 */
-        /* if (u.upgradePaid && u.upgradePaidUntil > now) isVipUpgrade = true; */
+        if (!isVipUpgrade && !isVipBasic && userPhone && allPayments[userPhone] && allPayments[userPhone].storagePaid) {
+          isVipBasic = true;
+        }
+        var isTrial = (now - firstLogin < trialMs) && !isVipBasic && !isVipUpgrade;
 
         var match = false;
         if (type === 'trial' && isTrial) match = true;
-        if (type === 'vipBasic' && isVipBasic) match = true;
+        if (type === 'vipBasic' && isVipBasic && !isVipUpgrade) match = true;
         if (type === 'vipUpgrade' && isVipUpgrade) match = true;
 
         if (match) {
-          var phone = u.phone || '未绑定手机号';
+          var phone = userPhone || '未绑定手机号';
           var remainText = '';
           if (isTrial) {
             var remainMs = trialMs - (now - firstLogin);
             var remainH = Math.floor(remainMs / (60*60*1000));
             remainText = ' · 剩余' + remainH + 'h';
           }
-          if (isVipBasic) {
-            var daysLeft = Math.ceil((paidUntil - now) / (24*60*60*1000));
-            remainText = ' · 剩余' + daysLeft + '天';
-          }
+          var nickname = u.nickname || u.name || '未设置';
+          var gender = u.gender || '—';
+          var age = u.age ? u.age + '岁' : '—';
           var regDate = new Date(firstLogin).toLocaleDateString();
-          html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">注册: ' + regDate + remainText + ' · ' + uk + '</div></div><span class="key-badge active">' + titleMap[type].replace('用户','') + '</span></div>';
+          var versionTag = isVipUpgrade ? '升级版' : (isVipBasic ? '普通版' : '试用期');
+          html += '<div class="user-info-row"><div><div class="user-info-phone"> ' + phone + '</div><div class="user-info-meta">' + nickname + ' · ' + gender + '/' + age + ' · 注册' + regDate + remainText + ' · ' + uk + '</div></div><span class="key-badge active">' + versionTag + '</span></div>';
           count++;
         }
       });
