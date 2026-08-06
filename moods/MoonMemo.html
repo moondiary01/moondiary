@@ -941,6 +941,23 @@ td .tag.period{background:#FFE4E6;color:#9F1239}
 .skincare-photo-upload-mini-icon{font-size:18px}
 .skincare-photo-upload-mini-text{font-size:0.78rem;color:#78716c;font-weight:500}
 
+/* ===== 底部导航栏 ===== */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-around;background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,0.06);padding:6px 0 calc(6px + env(safe-area-inset-bottom, 0px));height:calc(56px + env(safe-area-inset-bottom, 0px));box-shadow:0 -1px 8px rgba(0,0,0,0.04)}
+.bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 12px;border:none;background:transparent;transition:transform 0.15s;-webkit-tap-highlight-color:transparent;min-width:64px}
+.bottom-nav-item:active{transform:scale(0.9)}
+.bottom-nav-icon{font-size:1.35rem;line-height:1;transition:color 0.2s}
+.bottom-nav-label{font-size:0.68rem;font-weight:500;color:#9ca3af;transition:color 0.2s}
+.bottom-nav-item.active .bottom-nav-icon{color:#ec4899}
+.bottom-nav-item.active .bottom-nav-label{color:#ec4899;font-weight:700}
+/* 主内容底部留白，避免被导航遮挡 */
+body.has-bottom-nav .main{padding-bottom:calc(72px + env(safe-area-inset-bottom, 0px))}
+/* toast 位置避让底部导航 */
+body.has-bottom-nav .toast{bottom:calc(76px + env(safe-area-inset-bottom, 0px))}
+/* 浮窗按钮避让 */
+body.has-bottom-nav .float-back-fab{bottom:calc(80px + env(safe-area-inset-bottom, 0px))}
+/* 占位全屏页面 */
+.page-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:400;background:#faf5f9;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(72px + env(safe-area-inset-bottom, 0px))}
+
 
 </style>
 <!-- COS SDK 多源加载：jsdelivr主源失败时自动切换备用源 -->
@@ -2038,6 +2055,40 @@ _loadCosSdk(0);
 </div>
 
 </main>
+</div>
+
+<!-- ===== 底部导航栏 ===== -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bottom-nav-item active" id="bnHome" onclick="goHome();playClick()">
+    <span class="bottom-nav-icon">🏠</span>
+    <span class="bottom-nav-label">主页</span>
+  </button>
+  <button class="bottom-nav-item" id="bnPoster" onclick="showPosterPage();playClick()">
+    <span class="bottom-nav-icon">🖼️</span>
+    <span class="bottom-nav-label">今日海报</span>
+  </button>
+  <button class="bottom-nav-item" id="bnMy" onclick="showMyPage();playClick()">
+    <span class="bottom-nav-icon">👤</span>
+    <span class="bottom-nav-label">我的</span>
+  </button>
+</nav>
+
+<!-- ===== 今日海报页面（占位） ===== -->
+<div class="page-overlay" id="posterPage" style="display:none">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:20px">
+    <div style="font-size:4rem;margin-bottom:16px">🖼️</div>
+    <div style="font-size:1.2rem;font-weight:700;color:#44403c;margin-bottom:8px">今日海报</div>
+    <div style="font-size:0.85rem;color:#a8a29e">即将上线，敬请期待</div>
+  </div>
+</div>
+
+<!-- ===== 我的页面（占位） ===== -->
+<div class="page-overlay" id="myPage" style="display:none">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:20px">
+    <div style="font-size:4rem;margin-bottom:16px">👤</div>
+    <div style="font-size:1.2rem;font-weight:700;color:#44403c;margin-bottom:8px">我的</div>
+    <div style="font-size:0.85rem;color:#a8a29e">即将上线，敬请期待</div>
+  </div>
 </div>
 
 <!-- 设置弹窗 -->
@@ -4056,7 +4107,58 @@ function switchTab(idx) {
   if (idx === 5) { renderKeyList(); renderVersionPanel(); }
   /* 平滑滚动到顶部，避免瞬间跳闪 */
   window.scrollTo({top: 0, behavior: 'instant'});
+  /* 更新底部导航：在主页 tab 时高亮"主页" */
+  updateBottomNavActive('home');
 }
+
+/* ---------- 底部导航 ---------- */
+function updateBottomNavActive(active) {
+  var items = document.querySelectorAll('.bottom-nav-item');
+  items.forEach(function(item) { item.classList.remove('active'); });
+  if (active === 'home') document.getElementById('bnHome').classList.add('active');
+  else if (active === 'poster') document.getElementById('bnPoster').classList.add('active');
+  else if (active === 'my') document.getElementById('bnMy').classList.add('active');
+}
+
+/* 点击底部"主页" — 切到每日记录并置顶 */
+function goHome() {
+  /* 隐藏占位页面 */
+  document.getElementById('posterPage').style.display = 'none';
+  document.getElementById('myPage').style.display = 'none';
+  /* 恢复主页可见 */
+  document.querySelector('header.hero').style.display = '';
+  document.querySelector('nav.tabs').style.display = '';
+  document.querySelector('main.main').style.display = '';
+  switchTab(0);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+/* 今日海报占位 */
+function showPosterPage() {
+  document.querySelector('header.hero').style.display = 'none';
+  document.querySelector('nav.tabs').style.display = 'none';
+  document.querySelector('main.main').style.display = 'none';
+  document.getElementById('myPage').style.display = 'none';
+  document.getElementById('posterPage').style.display = 'block';
+  updateBottomNavActive('poster');
+  window.scrollTo({top: 0, behavior: 'instant'});
+}
+
+/* 我的占位 */
+function showMyPage() {
+  document.querySelector('header.hero').style.display = 'none';
+  document.querySelector('nav.tabs').style.display = 'none';
+  document.querySelector('main.main').style.display = 'none';
+  document.getElementById('posterPage').style.display = 'none';
+  document.getElementById('myPage').style.display = 'block';
+  updateBottomNavActive('my');
+  window.scrollTo({top: 0, behavior: 'instant'});
+}
+
+/* 初始化底部导航 */
+(function initBottomNav() {
+  document.body.classList.add('has-bottom-nav');
+})();
 
 /* ---------- 左右滑动切换页面 ---------- */
 var touchStartX = 0, touchEndX = 0, touchStartY = 0, touchEndY = 0, currentTabIdx = 0;

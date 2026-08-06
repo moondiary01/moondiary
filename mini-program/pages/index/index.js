@@ -49,10 +49,73 @@ Page({
     userAge: '',
     userHeight: '',
     // 完整记录 — 按月分组
-    monthGroups: []
+    monthGroups: [],
+    // === 单页应用新增 ===
+    currentTab: 0,
+    bottomActive: 'home',
+    showPosterPage: false,
+    showMyPage: false,
+    // === Tab 1: 趋势统计 ===
+    chartHasData: false,
+    bmiValue: '',
+    bmiStatus: '',
+    bmiClass: '',
+    bust: null,
+    waist: null,
+    hip: null,
+    hasMeasure: false,
+    showEditModal: false,
+    editBust: '',
+    editWaist: '',
+    editHip: '',
+    statStartWeight: '',
+    statTargetWeight: '',
+    statLatestWeight: '',
+    statLostWeight: '',
+    statStartFat: '',
+    statLatestFat: '',
+    statFatDiff: '',
+    statRecordDays: 0,
+    // === Tab 2: 计划详情 ===
+    planState: {},
+    startWeightDisplay: '--',
+    targetWeightDisplay: '--',
+    currentDay: 0,
+    remainingDays: 0,
+    lostWeight: 0,
+    lostWeightStr: '--',
+    totalDays: 0,
+    showPlanEditModal: false,
+    editCard: '',
+    editName: '',
+    editGender: '',
+    editAge: '',
+    editHeight: '',
+    editStartDate: '',
+    editTargetDate: '',
+    editStartWeight: '',
+    editTargetWeight: '',
+    editStartFat: '',
+    // === Tab 3: 周度复盘 ===
+    weekList: [],
+    // === Tab 4: 经期日历 ===
+    calYear: 0,
+    calMonth: 0,
+    calDays: [],
+    showDetail: false,
+    detailDate: '',
+    detailData: {},
+    isPeriodDay: false,
+    isExerciseDay: false,
+    selectedDate: ''
   },
 
   onLoad: function () {
+    var now = new Date()
+    this.setData({
+      calYear: now.getFullYear(),
+      calMonth: now.getMonth()
+    })
     this.loadUserData()
   },
 
@@ -647,5 +710,1164 @@ Page({
         break;
       }
     }
+  },
+
+  // ===== 单页应用：顶部 Tab 切换 =====
+  onSwitchTab: function(e) {
+    var idx = parseInt(e.currentTarget.dataset.idx);
+    this.setData({ currentTab: idx, bottomActive: 'home' });
+    if (idx === 1) this.renderChart();
+    if (idx === 2) this.renderPlan();
+    if (idx === 3) this.renderReview();
+    if (idx === 4) this.renderCalendar();
+  },
+
+  // ===== 底部导航 =====
+  onBottomHome: function() {
+    this.setData({ currentTab: 0, bottomActive: 'home', showPosterPage: false, showMyPage: false });
+    wx.pageScrollTo({ scrollTop: 0, duration: 300 });
+  },
+
+  onBottomPoster: function() {
+    this.setData({ bottomActive: 'poster', showPosterPage: true, showMyPage: false });
+  },
+
+  onBottomMy: function() {
+    this.setData({ bottomActive: 'my', showPosterPage: false, showMyPage: true });
+  },
+
+  // =========================================
+  // Tab 1: 趋势统计 (from chart.js)
+  // =========================================
+
+  renderChart: function () {
+    var self = this
+    var state = app.globalData.state
+
+    if (!state) {
+      store.loadState(app.globalData.userKey, function (data) {
+        if (data) {
+          app.globalData.state = data
+          self._doRenderChart(data)
+        }
+      })
+    } else {
+      self._doRenderChart(state)
+    }
+  },
+
+  _doRenderChart: function (state) {
+    var days = state.days || []
+    var unit = state.unit || '斤'
+
+    var recentDays = days.slice(-30)
+    var morningData = [], eveningData = [], fatData = [], dates = []
+    var hasData = false
+
+    for (var i = 0; i < recentDays.length; i++) {
+      var d = recentDays[i]
+      var mw = d.weightAM ? Number(d.weightAM) : null
+      var ew = d.weightPM ? Number(d.weightPM) : null
+      var fr = d.fat ? Number(d.fat) : null
+      if (mw || ew || fr) hasData = true
+      morningData.push(mw)
+      eveningData.push(ew)
+      fatData.push(fr)
+      dates.push(d.date)
+    }
+
+    // 三围
+    this.setData({
+      chartHasData: hasData,
+      bust: state.bust,
+      waist: state.waist,
+      hip: state.hip,
+      hasMeasure: !!(state.bust || state.waist || state.hip)
+    })
+
+    // BMI
+    this.calcBMI(state)
+
+    // 画趋势图
+    if (hasData) {
+      this.drawWeightChart(morningData, eveningData, fatData, dates, unit, state)
+      this.drawWeekBar(days, unit)
+    }
+
+    // 数据统计 — 对齐 HTML 版 10 项
+    this.calcStats(state, days)
+  },
+
+  calcBMI: function (state) {
+    var height = state.height
+    var weight = null
+    var days = state.days || []
+    for (var i = days.length - 1; i >= 0; i--) {
+      if (days[i].weightAM) { weight = Number(days[i].weightAM); break }
+    }
+    if (!height || !weight) {
+      this.setData({ bmiValue: '', bmiStatus: '数据不足', bmiClass: '' })
+      return
+    }
+    var weightKg = weight
+    var heightM = height / 100
+    var bmi = weightKg / (heightM * heightM)
+    var bmiStr = bmi.toFixed(1)
+    var status = '', cls = ''
+    if (bmi < 18.5) { status = '偏瘦'; cls = 'bmi-thin' }
+    else if (bmi < 24) { status = '标准'; cls = 'bmi-normal' }
+    else if (bmi < 28) { status = '偏胖'; cls = 'bmi-over' }
+    else { status = '肥胖'; cls = 'bmi-obese' }
+    this.setData({ bmiValue: bmiStr, bmiStatus: status, bmiClass: cls })
+  },
+
+  calcStats: function (state, days) {
+    var unit = state.unit || '斤'
+    var toDisplay = function (v) {
+      if (v === null || v === undefined) return '—'
+      var n = Number(v)
+      return unit === '斤' ? (n * 2).toFixed(1) : n.toFixed(1)
+    }
+
+    // 起始/目标/最新体重
+    var startW = state.startWeight ? toDisplay(state.startWeight) : '—'
+    var targetW = state.targetWeight ? toDisplay(state.targetWeight) : '—'
+    var latestW = '—'
+    for (var j = days.length - 1; j >= 0; j--) {
+      if (days[j].weightAM) { latestW = toDisplay(days[j].weightAM); break }
+    }
+
+    // 已减重
+    var lostW = '—'
+    if (state.startWeight) {
+      var lw = null
+      for (var k = days.length - 1; k >= 0; k--) {
+        if (days[k].weightAM) { lw = Number(days[k].weightAM); break }
+      }
+      if (lw !== null) {
+        var diff = Number(state.startWeight) - lw
+        lostW = (unit === '斤' ? (diff * 2).toFixed(1) : diff.toFixed(1))
+      }
+    }
+
+    // 体脂统计
+    var startFatStr = state.startFat !== null && state.startFat !== undefined ? state.startFat + '%' : '—'
+    var latestFat = null
+    for (var m = days.length - 1; m >= 0; m--) {
+      if (days[m].fat) { latestFat = Number(days[m].fat); break }
+    }
+    var latestFatStr = latestFat !== null ? latestFat + '%' : '—'
+    var fatDiffStr = '—'
+    if (state.startFat !== null && state.startFat !== undefined && latestFat !== null) {
+      var fd = latestFat - Number(state.startFat)
+      fatDiffStr = (fd > 0 ? '+' : '') + fd.toFixed(1) + '%'
+    }
+
+    // 记录天数
+    var recordDays = 0
+    for (var n = 0; n < days.length; n++) {
+      if (days[n].weightAM || days[n].weightPM) recordDays++
+    }
+
+    this.setData({
+      statStartWeight: startW,
+      statTargetWeight: targetW,
+      statLatestWeight: latestW,
+      statLostWeight: lostW,
+      statStartFat: startFatStr,
+      statLatestFat: latestFatStr,
+      statFatDiff: fatDiffStr,
+      statRecordDays: recordDays
+    })
+  },
+
+  drawWeightChart: function (morningData, eveningData, fatData, dates, unit, state) {
+    var ctx = wx.createCanvasContext('weightChart')
+    var W = 320, H = 210
+    var padLeft = 44, padRight = 12, padTop = 20, padBottom = 32
+    var chartW = W - padLeft - padRight
+    var chartH = H - padTop - padBottom
+
+    var allVals = []
+    for (var i = 0; i < morningData.length; i++) {
+      if (morningData[i]) allVals.push(morningData[i])
+      if (eveningData[i]) allVals.push(eveningData[i])
+    }
+    if (allVals.length === 0) return
+    var minVal = Math.min.apply(null, allVals)
+    var maxVal = Math.max.apply(null, allVals)
+    var range = maxVal - minVal || 1
+    var yMin = minVal - range * 0.2
+    var yMax = maxVal + range * 0.2
+    var yRange = yMax - yMin
+    var n = morningData.length
+    var stepX = n > 1 ? chartW / (n - 1) : 0
+
+    // 背景
+    ctx.setFillStyle('#FAF5FF')
+    ctx.fillRect(padLeft, padTop, chartW, chartH)
+
+    // 经期区间背景
+    var periods = state.periods || []
+    for (var pi = 0; pi < periods.length; pi++) {
+      var pStart = periods[pi].start
+      var pEnd = periods[pi].end || pStart
+      for (var dj = 0; dj < dates.length; dj++) {
+        if (dates[dj] >= pStart && dates[dj] <= pEnd) {
+          var px = padLeft + stepX * dj
+          ctx.setFillStyle('rgba(236,72,153,0.08)')
+          ctx.fillRect(px - stepX/2, padTop, stepX, chartH)
+        }
+      }
+    }
+
+    // 网格线
+    ctx.setStrokeStyle('#ECE6F5')
+    ctx.setLineWidth(0.5)
+    for (var j = 0; j <= 4; j++) {
+      var y = padTop + (chartH / 4) * j
+      ctx.beginPath(); ctx.moveTo(padLeft, y); ctx.lineTo(padLeft + chartW, y); ctx.stroke()
+    }
+
+    // Y轴标签
+    ctx.setFillStyle('#918CA8')
+    ctx.setFontSize(9)
+    ctx.setTextAlign('right')
+    for (var k = 0; k <= 4; k++) {
+      var yv = yMax - (yRange / 4) * k
+      var yl = padTop + (chartH / 4) * k
+      var label = unit === '斤' ? (yv * 2).toFixed(0) : yv.toFixed(1)
+      ctx.fillText(label, padLeft - 4, yl + 3)
+    }
+
+    // 画线函数
+    function drawLine(data, color, dotR) {
+      ctx.setStrokeStyle(color)
+      ctx.setLineWidth(2)
+      ctx.beginPath()
+      var started = false
+      for (var i = 0; i < data.length; i++) {
+        if (data[i] === null || data[i] === undefined) continue
+        var x = padLeft + stepX * i
+        var y = padTop + chartH - ((data[i] - yMin) / yRange) * chartH
+        if (!started) { ctx.moveTo(x, y); started = true }
+        else { ctx.lineTo(x, y) }
+      }
+      ctx.stroke()
+      ctx.setFillStyle(color)
+      for (var i = 0; i < data.length; i++) {
+        if (data[i] === null || data[i] === undefined) continue
+        var x = padLeft + stepX * i
+        var y = padTop + chartH - ((data[i] - yMin) / yRange) * chartH
+        ctx.beginPath(); ctx.arc(x, y, dotR || 2.5, 0, 2 * Math.PI); ctx.fill()
+      }
+    }
+
+    drawLine(morningData, '#C026D3', 2.5)  // 晨起体重
+    drawLine(eveningData, '#ec4899', 2)    // 晚间体重
+
+    // 体脂率独立缩放
+    var fatVals = fatData.filter(function (v) { return v !== null })
+    if (fatVals.length > 0) {
+      var fatMin = Math.min.apply(null, fatVals), fatMax = Math.max.apply(null, fatVals)
+      var fatScaled = fatData.map(function (v) {
+        if (v === null) return null
+        return yMin + ((v - fatMin) / (fatMax - fatMin || 1)) * yRange
+      })
+      drawLine(fatScaled, '#F59E0B', 2)
+    }
+
+    // 经期点标记
+    for (var di = 0; di < dates.length; di++) {
+      for (var pj = 0; pj < periods.length; pj++) {
+        if (dates[di] >= periods[pj].start && dates[di] <= (periods[pj].end || periods[pj].start)) {
+          var mx = padLeft + stepX * di
+          ctx.setFillStyle('#D4A574')
+          ctx.setFontSize(10)
+          ctx.setTextAlign('center')
+          ctx.fillText('·', mx, padTop - 4)
+        }
+      }
+    }
+
+    // X轴标签
+    ctx.setFillStyle('#918CA8')
+    ctx.setFontSize(8)
+    ctx.setTextAlign('center')
+    var labelStep = Math.ceil(n / 5)
+    for (var m = 0; m < n; m += labelStep) {
+      var xl = padLeft + stepX * m
+      ctx.fillText(dates[m].substring(5), xl, H - 10)
+    }
+
+    ctx.draw()
+  },
+
+  drawWeekBar: function (days, unit) {
+    // 按周分组计算净变化
+    var weeks = []
+    var currentWeek = null
+    for (var i = 0; i < days.length; i++) {
+      var d = days[i]
+      var weekStart = d.date
+      if (d.weightAM) {
+        if (!currentWeek || d.date > currentWeek.end) {
+          if (currentWeek) weeks.push(currentWeek)
+          currentWeek = { start: d.date, end: d.date, firstW: Number(d.weightAM), lastW: Number(d.weightAM) }
+        } else {
+          currentWeek.end = d.date
+          currentWeek.lastW = Number(d.weightAM)
+        }
+      }
+    }
+    if (currentWeek) weeks.push(currentWeek)
+    weeks = weeks.slice(-12)
+
+    if (weeks.length === 0) return
+
+    var ctx = wx.createCanvasContext('chartWeekBar')
+    var W = 320, H = 120
+    var padLeft = 40, padRight = 10, padTop = 16, padBottom = 24
+    var chartW = W - padLeft - padRight
+    var chartH = H - padTop - padBottom
+
+    var diffs = weeks.map(function (w) { return w.lastW - w.firstW })
+    var absMax = Math.max.apply(null, diffs.map(Math.abs)) || 1
+    var barW = Math.min(16, chartW / weeks.length - 4)
+
+    ctx.setStrokeStyle('#ECE6F5')
+    ctx.setLineWidth(0.5)
+    var zeroY = padTop + chartH / 2
+    ctx.beginPath(); ctx.moveTo(padLeft, zeroY); ctx.lineTo(padLeft + chartW, zeroY); ctx.stroke()
+
+    for (var j = 0; j < weeks.length; j++) {
+      var x = padLeft + (chartW / weeks.length) * j + (chartW / weeks.length - barW) / 2
+      var h = (Math.abs(diffs[j]) / absMax) * (chartH / 2 - 4)
+      if (h < 2) h = 2
+      if (diffs[j] >= 0) {
+        ctx.setFillStyle('#10B981')
+        ctx.fillRect(x, zeroY - h, barW, h)
+      } else {
+        ctx.setFillStyle('#EF4444')
+        ctx.fillRect(x, zeroY, barW, h)
+      }
+    }
+
+    ctx.draw()
+  },
+
+  // ===== 三围编辑（chart tab） =====
+  onEditMeasure: function () {
+    var state = app.globalData.state || {}
+    this.setData({
+      showEditModal: true,
+      editBust: state.bust ? String(state.bust) : '',
+      editWaist: state.waist ? String(state.waist) : '',
+      editHip: state.hip ? String(state.hip) : ''
+    })
+  },
+
+  onEditInput: function (e) {
+    var field = e.currentTarget.dataset.field
+    var obj = {}
+    obj[field] = e.detail.value
+    this.setData(obj)
+  },
+
+  onCloseModal: function () {
+    this.setData({ showEditModal: false })
+  },
+
+  onConfirmEdit: function () {
+    var self = this
+    var state = app.globalData.state
+    var bust = this.data.editBust ? Number(this.data.editBust) : null
+    var waist = this.data.editWaist ? Number(this.data.editWaist) : null
+    var hip = this.data.editHip ? Number(this.data.editHip) : null
+
+    state.bust = bust
+    state.waist = waist
+    state.hip = hip
+    app.globalData.state = state
+    store.saveState(app.globalData.userKey, state)
+
+    this.setData({
+      showEditModal: false,
+      bust: bust,
+      waist: waist,
+      hip: hip,
+      hasMeasure: !!(bust || waist || hip)
+    })
+    wx.showToast({ title: '已更新', icon: 'success' })
+  },
+
+  // =========================================
+  // Tab 2: 计划详情 (from plan.js)
+  // =========================================
+
+  renderPlan: function () {
+    var self = this
+    var state = app.globalData.state
+
+    if (!state) {
+      store.loadState(app.globalData.userKey, function (data) {
+        if (data) {
+          app.globalData.state = data
+          self._doRenderPlan(data)
+        }
+      })
+    } else {
+      self._doRenderPlan(state)
+    }
+  },
+
+  _doRenderPlan: function (state) {
+    var unitLabel = state.unit || '斤'
+
+    // 体重显示
+    var sw = state.startWeight
+    var tw = state.targetWeight
+    var swDisplay = '--'
+    var twDisplay = '--'
+    if (sw) {
+      swDisplay = unitLabel === '斤' ? (sw * 2).toFixed(1) : Number(sw).toFixed(1)
+      swDisplay += ' ' + unitLabel
+    }
+    if (tw) {
+      twDisplay = unitLabel === '斤' ? (tw * 2).toFixed(1) : Number(tw).toFixed(1)
+      twDisplay += ' ' + unitLabel
+    }
+
+    // 天数计算
+    var today = store.localDateStr(new Date())
+    var todayTime = new Date(today).getTime()
+    var currentDay = 0
+    var remainingDays = 0
+    var totalDays = 0
+    var progressPercent = 0
+
+    if (state.startDate) {
+      var startTime = new Date(state.startDate).getTime()
+      currentDay = Math.floor((todayTime - startTime) / (24 * 60 * 60 * 1000)) + 1
+      if (currentDay < 0) currentDay = 0
+    }
+    if (state.targetDate) {
+      var targetTime = new Date(state.targetDate).getTime()
+      remainingDays = Math.ceil((targetTime - todayTime) / (24 * 60 * 60 * 1000))
+      if (remainingDays < 0) remainingDays = 0
+    }
+    if (state.startDate && state.targetDate) {
+      var startTime2 = new Date(state.startDate).getTime()
+      var targetTime2 = new Date(state.targetDate).getTime()
+      totalDays = Math.floor((targetTime2 - startTime2) / (24 * 60 * 60 * 1000))
+      if (totalDays > 0) {
+        progressPercent = Math.min(100, Math.round((currentDay / totalDays) * 100))
+      }
+    }
+
+    // 已减重
+    var lostWeight = 0
+    var lostWeightStr = '--'
+    if (state.startWeight) {
+      var days = state.days || []
+      var latestWeight = null
+      for (var i = days.length - 1; i >= 0; i--) {
+        if (days[i].weightAM) {
+          latestWeight = Number(days[i].weightAM)
+          break
+        }
+      }
+      if (latestWeight !== null) {
+        lostWeight = Number(state.startWeight) - latestWeight
+        var displayLost = unitLabel === '斤' ? (lostWeight * 2).toFixed(1) : lostWeight.toFixed(1)
+        var sign = lostWeight > 0 ? '-' : lostWeight < 0 ? '+' : ''
+        lostWeightStr = sign + Math.abs(parseFloat(displayLost)) + ' ' + unitLabel
+      }
+    }
+
+    this.setData({
+      planState: state,
+      unitLabel: unitLabel,
+      startWeightDisplay: swDisplay,
+      targetWeightDisplay: twDisplay,
+      currentDay: currentDay,
+      remainingDays: remainingDays,
+      lostWeight: lostWeight,
+      lostWeightStr: lostWeightStr,
+      totalDays: totalDays,
+      progressPercent: progressPercent
+    })
+  },
+
+  // ===== Plan 编辑 (namespaced to avoid clash with chart modal) =====
+  onPlanEditCard: function (e) {
+    var card = e.currentTarget.dataset.card
+    var s = this.data.planState
+    this.setData({
+      showPlanEditModal: true,
+      editCard: card,
+      editName: s.name || '',
+      editGender: s.gender || '',
+      editAge: s.age ? String(s.age) : '',
+      editHeight: s.height ? String(s.height) : '',
+      editStartDate: s.startDate || '',
+      editTargetDate: s.targetDate || '',
+      editStartWeight: s.startWeight ? String(s.startWeight) : '',
+      editTargetWeight: s.targetWeight ? String(s.targetWeight) : '',
+      editStartFat: s.startFat ? String(s.startFat) : '',
+      editBust: s.bust ? String(s.bust) : '',
+      editWaist: s.waist ? String(s.waist) : '',
+      editHip: s.hip ? String(s.hip) : ''
+    })
+  },
+
+  onPlanInput: function (e) {
+    var field = e.currentTarget.dataset.field
+    var obj = {}
+    obj[field] = e.detail.value
+    this.setData(obj)
+  },
+
+  onDateChange: function (e) {
+    var field = e.currentTarget.dataset.field
+    var obj = {}
+    obj[field] = e.detail.value
+    this.setData(obj)
+  },
+
+  onGenderSelect: function (e) {
+    this.setData({ editGender: e.currentTarget.dataset.val })
+  },
+
+  onPlanCloseModal: function () {
+    this.setData({ showPlanEditModal: false })
+  },
+
+  onPlanConfirmEdit: function () {
+    var state = app.globalData.state
+    var card = this.data.editCard
+
+    if (card === 'basic') {
+      state.name = this.data.editName
+      state.gender = this.data.editGender
+      state.age = this.data.editAge ? Number(this.data.editAge) : null
+      state.height = this.data.editHeight ? Number(this.data.editHeight) : null
+    } else if (card === 'plan') {
+      state.startDate = this.data.editStartDate
+      state.targetDate = this.data.editTargetDate
+      state.startWeight = this.data.editStartWeight ? Number(this.data.editStartWeight) : null
+      state.targetWeight = this.data.editTargetWeight ? Number(this.data.editTargetWeight) : null
+      state.startFat = this.data.editStartFat ? Number(this.data.editStartFat) : null
+    } else if (card === 'measure') {
+      state.bust = this.data.editBust ? Number(this.data.editBust) : null
+      state.waist = this.data.editWaist ? Number(this.data.editWaist) : null
+      state.hip = this.data.editHip ? Number(this.data.editHip) : null
+    }
+
+    app.globalData.state = state
+    store.saveState(app.globalData.userKey, state)
+
+    this.setData({ showPlanEditModal: false })
+    this._doRenderPlan(state)
+    wx.showToast({ title: '保存成功', icon: 'success' })
+  },
+
+  // =========================================
+  // Tab 3: 周度复盘 (from review.js)
+  // =========================================
+
+  renderReview: function () {
+    var state = store.loadState(app.globalData.userKey)
+    if (!state || !state.startDate) {
+      this.setData({ weekList: [] })
+      return
+    }
+    var self = this
+    var unit = state.unit || '斤'
+    var totalDays = this._calcTotalDays(state)
+    var weeks = Math.ceil(totalDays / 7)
+    var weekList = []
+
+    for (var w = 0; w < weeks; w++) {
+      var si = w * 7
+      var ei = Math.min(si + 6, (state.days || []).length - 1)
+      if (ei < si) continue
+      var mon = state.days[si]
+      var sun = state.days[ei]
+      if (!mon || !sun) continue
+
+      var mW = this._getEffectiveWeight(mon)
+      var sW = this._getEffectiveWeight(sun)
+      var weekDays = state.days.slice(si, ei + 1)
+      var wd = weekDays.filter(function(d) { return self._getEffectiveWeight(d) !== null })
+
+      // 周一/周日体重
+      var mondayWeight = mW !== null ? this._fmtW(mW, unit) : '—'
+      var sundayWeight = sW !== null ? this._fmtW(sW, unit) : '—'
+
+      // 本周变化
+      var weekChange = '—'
+      var weekChangeColor = ''
+      if (mW !== null && sW !== null) {
+        var wdVal = unit === '斤' ? (sW - mW) * 2 : sW - mW
+        weekChange = (wdVal > 0 ? '+' : '') + wdVal.toFixed(1) + ' ' + unit
+        weekChangeColor = wdVal > 0 ? 'red' : 'mint'
+      }
+
+      // 累计变化
+      var totalChange = '—'
+      var totalChangeColor = ''
+      if (sW !== null && state.startWeight !== null) {
+        var tdVal = unit === '斤' ? (sW - state.startWeight) * 2 : sW - state.startWeight
+        totalChange = (tdVal > 0 ? '+' : '') + tdVal.toFixed(1) + ' ' + unit
+        totalChangeColor = tdVal > 0 ? 'red' : 'mint'
+      }
+
+      // 记录天数
+      var recordDays = wd.length + '/' + (ei - si + 1)
+
+      // 经期天数
+      var periodDays = 0
+      weekDays.forEach(function(d) {
+        if (d.date && self._isPeriodDay(state, d.date)) periodDays++
+      })
+
+      // 日均饮水
+      var waterSum = weekDays.reduce(function(a, d) { return a + (d.water || 0) }, 0)
+      var waterAvg = wd.length ? Math.round(waterSum / (ei - si + 1) * (store.WATER_CUP_ML || 200)) : 0
+
+      // 阶段着色
+      var stage = this._getStage(w + 1, totalDays)
+      var bg = stage === 1 ? '#FAF5FF' : stage === 2 ? '#D1FAE5' : '#FCE7F3'
+
+      // 日期范围
+      var dateRange = this._formatDate(mon.date) + ' - ' + this._formatDate(sun.date)
+
+      weekList.push({
+        week: w,
+        weekNum: w + 1,
+        dateRange: dateRange,
+        mondayWeight: mondayWeight,
+        sundayWeight: sundayWeight,
+        weekChange: weekChange,
+        weekChangeColor: weekChangeColor,
+        totalChange: totalChange,
+        totalChangeColor: totalChangeColor,
+        recordDays: recordDays,
+        periodDays: periodDays,
+        waterAvg: waterAvg,
+        bg: bg,
+        review: (state.weeklyReview && state.weeklyReview[w]) ? state.weeklyReview[w].review || '' : ''
+      })
+    }
+
+    this.setData({ weekList: weekList })
+  },
+
+  _calcTotalDays: function(state) {
+    if (!state.startDate) return 0
+    var start = new Date(state.startDate)
+    var target = state.targetDate ? new Date(state.targetDate) : null
+    if (!target || target <= start) return 100
+    return Math.ceil((target - start) / 86400000)
+  },
+
+  _getEffectiveWeight: function(day) {
+    if (!day) return null
+    if (day.weightAM !== null && day.weightAM !== undefined) return day.weightAM
+    if (day.weightPM !== null && day.weightPM !== undefined) return day.weightPM
+    return null
+  },
+
+  _fmtW: function(w, unit) {
+    if (w === null || w === undefined) return '—'
+    return unit === '斤' ? (w * 2).toFixed(1) : w.toFixed(1)
+  },
+
+  _formatDate: function(dateStr) {
+    if (!dateStr) return '—'
+    var d = new Date(dateStr)
+    return (d.getMonth() + 1) + '/' + d.getDate()
+  },
+
+  _isPeriodDay: function(state, dateStr) {
+    if (!state.periods || !state.periods.length) return false
+    for (var i = 0; i < state.periods.length; i++) {
+      var p = state.periods[i]
+      var start = new Date(p.start)
+      var end = p.end ? new Date(p.end) : new Date(p.start)
+      var d = new Date(dateStr)
+      d.setHours(0, 0, 0, 0)
+      start.setHours(0, 0, 0, 0)
+      end.setHours(0, 0, 0, 0)
+      if (d >= start && d <= end) return true
+    }
+    return false
+  },
+
+  _getStage: function(week, totalDays) {
+    var tw = Math.ceil(totalDays / 7)
+    if (tw <= 3) return week <= 1 ? 1 : (week <= 2 ? 2 : 3)
+    if (week <= Math.ceil(tw * 0.25)) return 1
+    if (week <= Math.ceil(tw * 0.75)) return 2
+    return 3
+  },
+
+  onReviewInput: function(e) {
+    var weekIdx = parseInt(e.currentTarget.dataset.week)
+    var value = e.detail.value
+    var list = this.data.weekList
+    if (list[weekIdx]) list[weekIdx].review = value
+    this.setData({ weekList: list })
+    this._autoSaveReview(weekIdx, value)
+  },
+
+  saveReview: function(e) {
+    var weekIdx = parseInt(e.currentTarget.dataset.week)
+    var value = this.data.weekList[weekIdx].review
+    this._autoSaveReview(weekIdx, value)
+    wx.showToast({ title: '已保存', icon: 'success', duration: 1000 })
+  },
+
+  _autoSaveReview: function(weekIdx, value) {
+    if (this._reviewSaveTimer) clearTimeout(this._reviewSaveTimer)
+    var self = this
+    this._reviewSaveTimer = setTimeout(function() {
+      var state = store.loadState(app.globalData.userKey)
+      if (!state) return
+      if (!state.weeklyReview) state.weeklyReview = []
+      if (!state.weeklyReview[weekIdx]) state.weeklyReview[weekIdx] = { week: weekIdx + 1, review: '' }
+      state.weeklyReview[weekIdx].review = value
+      store.saveState(app.globalData.userKey, state)
+    }, 400)
+  },
+
+  exportReviewImage: function () {
+    var self = this
+    var list = this.data.weekList
+    if (!list.length) {
+      wx.showToast({ title: '暂无复盘数据', icon: 'none' })
+      return
+    }
+
+    var curWeekIdx = 0
+    var state = store.loadState(app.globalData.userKey)
+    if (state && state.startDate) {
+      var start = new Date(state.startDate)
+      var today = new Date()
+      today.setHours(0, 0, 0, 0)
+      curWeekIdx = Math.min(list.length - 1, Math.max(0, Math.floor((today - start) / 86400000 / 7)))
+    }
+    var weekData = list[curWeekIdx]
+
+    var cw = 760, ch = 720
+    var dpr = 2
+    var ctx = wx.createCanvasContext('reviewExportCanvas', this)
+
+    if (!ctx) {
+      wx.showToast({ title: '当前环境不支持导出', icon: 'none' })
+      return
+    }
+
+    ctx.scale(dpr, dpr)
+
+    // 渐变背景
+    var g = ctx.createLinearGradient(0, 0, cw, 0)
+    g.addColorStop(0, '#7C3AED')
+    g.addColorStop(0.4, '#C026D3')
+    g.addColorStop(0.8, '#EC4899')
+    g.addColorStop(1, '#FECDD3')
+    ctx.setFillStyle(g)
+    ctx.fillRect(0, 0, cw, ch)
+
+    // 标题
+    ctx.setFillStyle('#fff')
+    ctx.setFontSize(30)
+    ctx.setTextAlign('left')
+    ctx.fillText((state && state.name ? state.name : 'MoonMemo') + '的月亮日记', 30, 50)
+    ctx.setFontSize(15)
+    ctx.setGlobalAlpha(0.85)
+    ctx.fillText('第' + weekData.weekNum + '周复盘报表 · ' + weekData.dateRange, 30, 76)
+    ctx.setGlobalAlpha(1)
+
+    // 白色内容区
+    ctx.setFillStyle('#fff')
+    ctx.fillRect(20, 100, cw - 40, ch - 130)
+    ctx.setFillStyle('#1C1917')
+    var y = 140
+    ctx.setFontSize(18)
+    ctx.fillText('本周数据总览', 40, y)
+    y += 28
+    ctx.setFontSize(14)
+    ctx.setFillStyle('#57534E')
+
+    var rows = [
+      ['周一体重', weekData.mondayWeight],
+      ['周日体重', weekData.sundayWeight],
+      ['本周变化', weekData.weekChange],
+      ['累计变化', weekData.totalChange],
+      ['记录天数', weekData.recordDays],
+      ['日均饮水', weekData.waterAvg + 'ml']
+    ]
+    rows.forEach(function(r) {
+      ctx.setFillStyle('#A8A29E')
+      ctx.fillText(r[0], 50, y)
+      ctx.setFillStyle('#1C1917')
+      ctx.fillText(r[1], 200, y)
+      y += 24
+    })
+
+    y += 10
+    ctx.setFillStyle('#1C1917')
+    ctx.setFontSize(16)
+    ctx.fillText('本周感想', 40, y)
+    y += 18
+    ctx.setFillStyle('#57534E')
+    ctx.setFontSize(13)
+    var review = weekData.review || '（未填写）'
+    ctx.fillText(review, 50, y)
+
+    ctx.setFillStyle('#A8A29E')
+    ctx.setFontSize(11)
+    ctx.fillText('MoonMemo 月亮日记 · ' + new Date().toLocaleDateString('zh-CN'), 40, ch - 25)
+
+    ctx.draw(false, function() {
+      wx.canvasToTempFilePath({
+        canvasId: 'reviewExportCanvas',
+        destWidth: cw * dpr,
+        destHeight: ch * dpr,
+        success: function(res) {
+          wx.saveImageToPhotosAlbum({
+            filePath: res.tempFilePath,
+            success: function() {
+              wx.showToast({ title: '图片已保存到相册', icon: 'success' })
+            },
+            fail: function() {
+              wx.showToast({ title: '保存失败，请授权相册权限', icon: 'none' })
+            }
+          })
+        },
+        fail: function() {
+          wx.showToast({ title: '导出失败', icon: 'none' })
+        }
+      })
+    })
+  },
+
+  // =========================================
+  // Tab 4: 经期日历 (from calendar.js)
+  // =========================================
+
+  renderCalendar: function () {
+    var self = this
+    var state = app.globalData.state
+
+    if (!state) {
+      store.loadState(app.globalData.userKey, function (data) {
+        if (data) {
+          app.globalData.state = data
+          self._doRenderCalendar(data)
+        }
+      })
+    } else {
+      self._doRenderCalendar(state)
+    }
+  },
+
+  _doRenderCalendar: function (state) {
+    if (!state) return
+
+    var year = this.data.calYear || new Date().getFullYear()
+    var month = this.data.calMonth !== undefined ? this.data.calMonth : new Date().getMonth()
+    var isFemale = state.gender === '女'
+    var unitLabel = state.unit || '斤'
+
+    var days = state.days || []
+    var periods = state.periods || []
+
+    // 构建日期数据索引
+    var dayMap = {}
+    for (var i = 0; i < days.length; i++) {
+      dayMap[days[i].date] = days[i]
+    }
+
+    // 经期日期集合（从对象数组展开）
+    var periodSet = this._buildPeriodDateSet(periods)
+
+    // 经期开始日期集合（用于预测）
+    var periodStartDates = []
+    for (var j = 0; j < periods.length; j++) {
+      periodStartDates.push(periods[j].start)
+    }
+    periodStartDates.sort()
+
+    // 经期预测：根据历史经期周期预测下个月
+    var predictSet = this._predictPeriods(periodStartDates, year, month)
+
+    // 排卵日预测：经期开始后第14天
+    var ovulationSet = this._predictOvulation(periodStartDates)
+
+    // 当月天数
+    var firstDay = new Date(year, month, 1)
+    var firstWeekday = firstDay.getDay()
+    var daysInMonth = new Date(year, month + 1, 0).getDate()
+
+    var todayStr = store.localDateStr(new Date())
+
+    var calDays = []
+
+    // 空白填充
+    for (var w = 0; w < firstWeekday; w++) {
+      calDays.push({ key: 'e' + w, empty: true })
+    }
+
+    // 生成每日数据
+    var prevWeight = null
+    for (var d = 1; d <= daysInMonth; d++) {
+      var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0')
+      var dayData = dayMap[dateStr] || {}
+      var isToday = dateStr === todayStr
+      var isPeriod = !!periodSet[dateStr]
+      var isPredict = !!predictSet[dateStr]
+      var isOvulation = !!ovulationSet[dateStr]
+      var hasExercise = !!(dayData.exercise && dayData.exercise !== '无运动')
+
+      // 体重波动
+      var weightChange = ''
+      var weightUp = false
+      var currentWeight = dayData.weightAM ? Number(dayData.weightAM) : null
+      if (currentWeight !== null && prevWeight !== null) {
+        var diff = currentWeight - prevWeight
+        if (Math.abs(diff) > 0.01) {
+          var displayDiff = unitLabel === '斤' ? (Math.abs(diff) * 2).toFixed(1) : Math.abs(diff).toFixed(1)
+          weightChange = displayDiff
+          weightUp = diff > 0
+        }
+      }
+      if (currentWeight !== null) {
+        prevWeight = currentWeight
+      }
+
+      calDays.push({
+        key: 'd' + d,
+        empty: false,
+        day: d,
+        dateStr: dateStr,
+        today: isToday,
+        period: isPeriod,
+        periodPredict: isPredict && !isPeriod,
+        ovulation: isOvulation,
+        exercise: hasExercise,
+        hasPhoto: !!(dayData.photos && dayData.photos.length > 0),
+        weightChange: weightChange,
+        weightUp: weightUp
+      })
+    }
+
+    this.setData({
+      calYear: year,
+      calMonth: month,
+      calDays: calDays,
+      isFemale: isFemale,
+      unitLabel: unitLabel
+    })
+  },
+
+  onPrevMonth: function () {
+    var y = this.data.calYear
+    var m = this.data.calMonth - 1
+    if (m < 0) { m = 11; y-- }
+    this.setData({ calYear: y, calMonth: m })
+    this._doRenderCalendar(app.globalData.state)
+  },
+
+  onNextMonth: function () {
+    var y = this.data.calYear
+    var m = this.data.calMonth + 1
+    if (m > 11) { m = 0; y++ }
+    this.setData({ calYear: y, calMonth: m })
+    this._doRenderCalendar(app.globalData.state)
+  },
+
+  _isDateInPeriods: function (dateStr, periods) {
+    for (var i = 0; i < periods.length; i++) {
+      var p = periods[i]
+      if (!p.start) continue
+      var end = (p.end === null || p.end === undefined) ? p.start : p.end
+      if (dateStr >= p.start && dateStr <= end) {
+        return true
+      }
+    }
+    return false
+  },
+
+  _buildPeriodDateSet: function (periods) {
+    var set = {}
+    for (var i = 0; i < periods.length; i++) {
+      var p = periods[i]
+      if (!p.start) continue
+      var end = (p.end === null || p.end === undefined) ? p.start : p.end
+      var start = new Date(p.start)
+      var endD = new Date(end)
+      var cur = new Date(start)
+      while (cur <= endD) {
+        var ds = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0') + '-' + String(cur.getDate()).padStart(2, '0')
+        set[ds] = true
+        cur.setDate(cur.getDate() + 1)
+      }
+    }
+    return set
+  },
+
+  _predictPeriods: function (periodStartDates, year, month) {
+    var predictSet = {}
+    if (periodStartDates.length < 2) return predictSet
+
+    // 计算平均周期
+    var gaps = []
+    for (var i = 1; i < periodStartDates.length; i++) {
+      var gap = (new Date(periodStartDates[i]) - new Date(periodStartDates[i - 1])) / (24 * 60 * 60 * 1000)
+      gaps.push(gap)
+    }
+    var avgCycle = Math.round(gaps.reduce(function (a, b) { return a + b }, 0) / gaps.length)
+    if (avgCycle < 21 || avgCycle > 35) avgCycle = 28
+
+    // 最后一次经期开始日
+    var lastPeriod = periodStartDates[periodStartDates.length - 1]
+    var lastDate = new Date(lastPeriod)
+
+    // 预测未来经期
+    var nextPeriod = new Date(lastDate.getTime() + avgCycle * 24 * 60 * 60 * 1000)
+    while (nextPeriod.getFullYear() < year || (nextPeriod.getFullYear() === year && nextPeriod.getMonth() < month)) {
+      nextPeriod = new Date(nextPeriod.getTime() + avgCycle * 24 * 60 * 60 * 1000)
+    }
+
+    // 如果预测日在当前月或下月
+    if (nextPeriod.getFullYear() === year && nextPeriod.getMonth() === month) {
+      for (var p = 0; p < 5; p++) {
+        var pd = new Date(nextPeriod.getTime() + p * 24 * 60 * 60 * 1000)
+        if (pd.getMonth() === month && pd.getFullYear() === year) {
+          var ds = pd.getFullYear() + '-' + String(pd.getMonth() + 1).padStart(2, '0') + '-' + String(pd.getDate()).padStart(2, '0')
+          predictSet[ds] = true
+        }
+      }
+    }
+
+    return predictSet
+  },
+
+  _predictOvulation: function (periodStartDates) {
+    var ovulationSet = {}
+    for (var i = 0; i < periodStartDates.length; i++) {
+      var periodStart = new Date(periodStartDates[i])
+      var ovulationDate = new Date(periodStart.getTime() + 14 * 24 * 60 * 60 * 1000)
+      var ds = ovulationDate.getFullYear() + '-' + String(ovulationDate.getMonth() + 1).padStart(2, '0') + '-' + String(ovulationDate.getDate()).padStart(2, '0')
+      ovulationSet[ds] = true
+    }
+    return ovulationSet
+  },
+
+  onCalDayClick: function (e) {
+    var dateStr = e.currentTarget.dataset.date
+    var state = app.globalData.state
+    var days = state.days || []
+    var dayData = null
+    for (var i = 0; i < days.length; i++) {
+      if (days[i].date === dateStr) {
+        dayData = days[i]
+        break
+      }
+    }
+    if (!dayData) {
+      dayData = { date: dateStr, weightAM: null, weightPM: null, fat: null, bm: '', diet: '', exercise: '', period: false, periodNote: '', note: '' }
+    }
+
+    var periods = state.periods || []
+    var isPeriodDay = this._isDateInPeriods(dateStr, periods)
+    var isExerciseDay = !!(dayData.exercise && dayData.exercise !== '无运动')
+
+    this.setData({
+      showDetail: true,
+      detailDate: dateStr,
+      detailData: dayData,
+      isPeriodDay: isPeriodDay,
+      isExerciseDay: isExerciseDay,
+      selectedDate: dateStr
+    })
+  },
+
+  onCloseDetail: function () {
+    this.setData({ showDetail: false })
+  },
+
+  onTogglePeriod: function () {
+    var dateStr = this.data.selectedDate
+    var state = app.globalData.state
+    var periods = state.periods || []
+
+    var foundIdx = -1
+    for (var i = 0; i < periods.length; i++) {
+      var p = periods[i]
+      if (!p.start) continue
+      var end = (p.end === null || p.end === undefined) ? p.start : p.end
+      if (dateStr >= p.start && dateStr <= end) {
+        foundIdx = i
+        break
+      }
+    }
+
+    if (foundIdx !== -1) {
+      periods.splice(foundIdx, 1)
+      this.setData({ isPeriodDay: false })
+    } else {
+      periods.push({ start: dateStr, end: dateStr })
+      periods.sort(function (a, b) {
+        return a.start < b.start ? -1 : a.start > b.start ? 1 : 0
+      })
+      this.setData({ isPeriodDay: true })
+    }
+
+    state.periods = periods
+    app.globalData.state = state
+    store.saveState(app.globalData.userKey, state)
+    this._doRenderCalendar(state)
+
+    wx.showToast({ title: '已更新', icon: 'success' })
+  },
+
+  onToggleExercise: function () {
+    var dateStr = this.data.selectedDate
+    var state = app.globalData.state
+    var days = state.days || []
+    var dayData = null
+    var dayIndex = -1
+    for (var i = 0; i < days.length; i++) {
+      if (days[i].date === dateStr) {
+        dayData = days[i]
+        dayIndex = i
+        break
+      }
+    }
+    if (!dayData) {
+      dayData = { date: dateStr, weightAM: null, weightPM: null, fat: null, bm: '', diet: '', exercise: '', period: false, periodNote: '', note: '' }
+      days.push(dayData)
+      dayIndex = days.length - 1
+    }
+
+    if (dayData.exercise && dayData.exercise !== '无运动') {
+      dayData.exercise = ''
+      this.setData({ isExerciseDay: false })
+    } else {
+      dayData.exercise = '有运动'
+      this.setData({ isExerciseDay: true })
+    }
+
+    days[dayIndex] = dayData
+    state.days = days
+    app.globalData.state = state
+    store.saveState(app.globalData.userKey, state)
+    this._doRenderCalendar(state)
+
+    wx.showToast({ title: '已更新', icon: 'success' })
   },
 })

@@ -2,10 +2,6 @@
   "pages": [
     "pages/login/login",
     "pages/index/index",
-    "pages/chart/chart",
-    "pages/plan/plan",
-    "pages/review/review",
-    "pages/calendar/calendar",
     "pages/admin/admin",
     "pages/pay/pay",
     "pages/notice/notice",
@@ -35,44 +31,6 @@
     "navigationBarTextStyle": "white",
     "backgroundColor": "#faf5f9",
     "backgroundTextStyle": "dark"
-  },
-  "tabBar": {
-    "color": "#9ca3af",
-    "selectedColor": "#ec4899",
-    "backgroundColor": "#ffffff",
-    "borderStyle": "white",
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "每日记录",
-        "iconPath": "assets/tabbar/index.png",
-        "selectedIconPath": "assets/tabbar/index_active.png"
-      },
-      {
-        "pagePath": "pages/chart/chart",
-        "text": "趋势统计",
-        "iconPath": "assets/tabbar/chart.png",
-        "selectedIconPath": "assets/tabbar/chart_active.png"
-      },
-      {
-        "pagePath": "pages/plan/plan",
-        "text": "计划详情",
-        "iconPath": "assets/tabbar/plan.png",
-        "selectedIconPath": "assets/tabbar/plan_active.png"
-      },
-      {
-        "pagePath": "pages/review/review",
-        "text": "周度复盘",
-        "iconPath": "assets/tabbar/review.png",
-        "selectedIconPath": "assets/tabbar/review_active.png"
-      },
-      {
-        "pagePath": "pages/calendar/calendar",
-        "text": "经期日历",
-        "iconPath": "assets/tabbar/calendar.png",
-        "selectedIconPath": "assets/tabbar/calendar_active.png"
-      }
-    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",
