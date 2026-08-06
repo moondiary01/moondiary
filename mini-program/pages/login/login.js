@@ -15,6 +15,13 @@ Page({
 
   onLoad: function () {
     var self = this
+    // 从云端同步管理员密码
+    store.loadFromCloud('_admin_pw', function(cloudData) {
+      if (cloudData && cloudData.password) {
+        wx.setStorageSync('admin_pw', cloudData.password)
+        config.DEFAULT_ADMIN_PW = cloudData.password
+      }
+    })
     // Splash 动画 2.8s 后显示登录页
     setTimeout(function () {
       self.setData({ showSplash: false })
@@ -173,8 +180,9 @@ Page({
       return
     }
 
-    // 验证密码
-    if (password !== config.DEFAULT_ADMIN_PW) {
+    // 验证密码 — 优先从本地存储读取修改后的密码
+    var storedPw = wx.getStorageSync('admin_pw') || config.DEFAULT_ADMIN_PW
+    if (password !== storedPw) {
       wx.showToast({ title: '密码错误', icon: 'none' })
       return
     }

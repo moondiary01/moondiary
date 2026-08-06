@@ -348,8 +348,9 @@ Page({
     var newPw = this.data.newPw
     var newPw2 = this.data.newPw2
 
+    var storedPw = wx.getStorageSync('admin_pw') || config.DEFAULT_ADMIN_PW
     if (!oldPw) { wx.showToast({ title: '请输入当前密码', icon: 'none' }); return }
-    if (oldPw !== config.DEFAULT_ADMIN_PW) {
+    if (oldPw !== storedPw) {
       wx.showToast({ title: '当前密码不正确', icon: 'none' })
       return
     }
@@ -358,10 +359,12 @@ Page({
     if (newPw === oldPw) { wx.showToast({ title: '新密码不能与当前密码相同', icon: 'none' }); return }
     if (newPw !== newPw2) { wx.showToast({ title: '两次密码输入不一致', icon: 'none' }); return }
 
-    // 更新密码
+    // 更新密码（本地存储 + 云端同步）
     config.DEFAULT_ADMIN_PW = newPw
     wx.setStorageSync('admin_pw', newPw)
-    wx.showToast({ title: '密码修改成功', icon: 'success' })
+    var store = require('../../utils/store.js')
+    store.saveToCloud('_admin_pw', { password: newPw, updatedAt: Date.now() })
+    wx.showToast({ title: '密码修改成功，已同步云端', icon: 'success' })
     this.setData({ oldPw: '', newPw: '', newPw2: '' })
   },
 

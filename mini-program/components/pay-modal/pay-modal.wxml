@@ -6,7 +6,7 @@
       <view class="pm-glow pm-glow-pink"></view>
       <view class="pm-glow pm-glow-gold"></view>
       <view class="pm-glow pm-glow-center"></view>
-      <text class="pm-icon">🌙</text>
+      <text class="pm-icon">◑</text>
       <text class="pm-title">试用已到期</text>
       <text class="pm-sub">7天免费试用结束，购买后继续使用</text>
     </view>
@@ -15,24 +15,21 @@
       <!-- 权益清单 -->
       <view class="pm-benefits">
         <view class="pm-benefit">
-          <text class="pm-bf-icon">☁️</text>
           <view class="pm-bf-text">
             <text class="pm-bf-title">云端数据永久储存</text>
             <text class="pm-bf-desc">体重/经期/运动数据安全同步，换手机不丢失</text>
           </view>
         </view>
         <view class="pm-benefit">
-          <text class="pm-bf-icon">📈</text>
           <view class="pm-bf-text">
             <text class="pm-bf-title">趋势图表 & 周度复盘</text>
             <text class="pm-bf-desc">体重趋势分析、饮食运动复盘，数据驱动变美</text>
           </view>
         </view>
         <view class="pm-benefit">
-          <text class="pm-bf-icon">✨</text>
           <view class="pm-bf-text">
-            <text class="pm-bf-title">一次购买 · 永久有效</text>
-            <text class="pm-bf-desc">无月费无年费，一次付费终身使用</text>
+            <text class="pm-bf-title">一次购买 · 永久会员权益</text>
+            <text class="pm-bf-desc">一次付费，永久使用会员权益</text>
           </view>
         </view>
       </view>
@@ -45,14 +42,14 @@
             <text class="pm-price-num">19.9</text>
           </view>
           <text class="pm-price-tag">一次购买 · 永久会员权益 · 云端储存</text>
-          <button class="pm-buy-btn" bindtap="onPay">✨ 立即购买 · 永久开通</button>
+          <button class="pm-buy-btn" bindtap="onPay">立即购买开通使用</button>
         </view>
       </view>
       <!-- 购买须知 + 隐私协议 -->
       <view class="pm-links">
-        <text class="pm-link" bindtap="onNotice">📋 购买须知</text>
+        <text class="pm-link" bindtap="onNotice">购买须知</text>
         <text class="pm-link-divider">|</text>
-        <text class="pm-link" bindtap="onPrivacy">🔒 隐私协议</text>
+        <text class="pm-link" bindtap="onPrivacy">隐私协议</text>
       </view>
       <!-- 稍后再说 -->
       <view class="pm-later" bindtap="onClose">

@@ -91,10 +91,6 @@
   border-radius: 20rpx;
   background: linear-gradient(135deg, rgba(139,92,246,0.05), rgba(139,92,246,0.02));
 }
-.pm-bf-icon {
-  font-size: 36rpx;
-  flex-shrink: 0;
-}
 .pm-bf-text {
   flex: 1;
   display: flex; flex-direction: column;

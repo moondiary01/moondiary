@@ -1602,24 +1602,21 @@ _loadCosSdk(0);
       <!-- 权益清单 -->
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px">
         <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(139,92,246,0.05),rgba(139,92,246,0.02))">
-          <span style="font-size:1.2rem"></span>
           <div>
             <div style="font-size:0.85rem;font-weight:700;color:#1c1917">云端数据永久储存</div>
             <div style="font-size:0.68rem;color:#a8a29e">体重/经期/运动数据安全同步，换手机不丢失</div>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(236,72,153,0.05),rgba(236,72,153,0.02))">
-          <span style="font-size:1.2rem"></span>
           <div>
             <div style="font-size:0.85rem;font-weight:700;color:#1c1917">趋势图表 & 周度复盘</div>
             <div style="font-size:0.68rem;color:#a8a29e">体重趋势分析、饮食运动复盘，数据驱动变美</div>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(245,158,11,0.05),rgba(245,158,11,0.02))">
-          <span style="font-size:1.2rem"></span>
           <div>
-            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">一次购买 · 永久有效</div>
-            <div style="font-size:0.68rem;color:#a8a29e">无月费无年费，一次付费终身使用</div>
+            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">一次购买 · 永久会员权益</div>
+            <div style="font-size:0.68rem;color:#a8a29e">一次付费，永久使用会员权益</div>
           </div>
         </div>
       </div>
@@ -1632,14 +1629,14 @@ _loadCosSdk(0);
             <span style="font-size:2.4rem;font-weight:900;color:#fbbf24;line-height:1;letter-spacing:-1px">19.9</span>
           </div>
           <div style="font-size:0.72rem;color:rgba(255,255,255,0.55);margin-bottom:12px">一次购买 · 永久会员权益 · 云端储存</div>
-          <button onclick="purchaseBasicPlan();playClick()" style="width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-size:0.95rem;font-weight:800;letter-spacing:1.5px;cursor:pointer;box-shadow:0 6px 24px rgba(245,158,11,0.4);transition:all 0.25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(245,158,11,0.4)'"> 立即购买 · 永久开通</button>
+          <button onclick="purchaseBasicPlan();playClick()" style="width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-size:0.95rem;font-weight:800;letter-spacing:1.5px;cursor:pointer;box-shadow:0 6px 24px rgba(245,158,11,0.4);transition:all 0.25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(245,158,11,0.4)'">立即购买开通使用</button>
         </div>
       </div>
       <!-- 购买须知 + 隐私协议 -->
       <div style="display:flex;justify-content:center;align-items:center;gap:20px">
-        <a href="#" onclick="showPurchaseNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:3px"><span style="font-size:0.85rem">📋</span> 购买须知</a>
+        <a href="#" onclick="showPurchaseNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500">购买须知</a>
         <span style="color:#e5e7eb">|</span>
-        <a href="#" onclick="showPrivacyNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:3px"><span style="font-size:0.85rem">🔒</span> 隐私协议</a>
+        <a href="#" onclick="showPrivacyNoticeFromTrial();return false" style="font-size:0.72rem;color:#8b5cf6;text-decoration:none;font-weight:500">隐私协议</a>
       </div>
       <!-- 稍后再说 -->
       <div style="text-align:center;margin-top:14px">
@@ -2329,11 +2326,24 @@ function savePhoneBindings(bindings) {
 function isPresetKey(k) { return PRESET_KEYS.indexOf(k) !== -1; }
 
 /* ---------- 管理员密码 ---------- */
+const CLOUD_ADMIN_PW_PATH = '_admin_pw'; /* 云端管理员密码路径 */
 function getAdminPw() {
   return localStorage.getItem(ADMIN_PW_STORE) || DEFAULT_ADMIN_PW;
 }
 function setAdminPw(pw) {
   localStorage.setItem(ADMIN_PW_STORE, pw);
+  /* 同步到云端 */
+  saveToCloudImmediate(CLOUD_ADMIN_PW_PATH, { password: pw, updatedAt: Date.now() });
+}
+/* 从云端同步管理员密码（登录初始化时调用） */
+function syncAdminPwFromCloud(callback) {
+  loadFromCloud(CLOUD_ADMIN_PW_PATH, function(cloudData) {
+    if (cloudData && cloudData.password) {
+      localStorage.setItem(ADMIN_PW_STORE, cloudData.password);
+      console.log('管理员密码已从云端同步');
+    }
+    if (callback) callback();
+  });
 }
 function changeAdminPw() {
   const oldPw = document.getElementById('oldPw').value;
@@ -6407,6 +6417,8 @@ function renderAll() {
   _purgeLegacyDrawer();
   /* 初始化云端存储 */
   initCos();
+  /* 从云端同步管理员密码 */
+  syncAdminPwFromCloud();
   /* 从云端同步管理员后台的绑定信息 */
   loadFromCloud('_preset_info', function(cloudPi) {
     if (cloudPi) {
