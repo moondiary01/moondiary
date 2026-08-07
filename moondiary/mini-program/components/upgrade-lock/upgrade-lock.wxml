@@ -23,25 +23,36 @@
           <view class="ul-section-title">护肤日记</view>
           <view class="ul-section-desc">每日护肤打卡 · 日历照片 · do脸记录</view>
         </view>
-        <view class="ul-section-arrow ul-section-arrow-purple">→</view>
+        <view class="ul-section-arrow ul-section-arrow-purple">VIP</view>
       </view>
       <view class="ul-section-card ul-section-mood">
         <view class="ul-section-info">
           <view class="ul-section-title">心情日记</view>
           <view class="ul-section-desc">心情记录 · 日历照片 · 感恩日记 · 自律打卡</view>
         </view>
-        <view class="ul-section-arrow ul-section-arrow-pink">→</view>
+        <view class="ul-section-arrow ul-section-arrow-pink">ON</view>
       </view>
 
       <!-- 锁定信息区 -->
       <view class="ul-lock-msg">
-        <view class="ul-lock-icon">🔒</view>
+        <view class="ul-lock-icon">VIP</view>
         <view class="ul-lock-title">升级版会员专享</view>
         <view class="ul-lock-desc">29.9元永久解锁护肤日记 · 心情日记</view>
 
         <!-- 价格 + 购买按钮 -->
         <button class="ul-buy-btn" catchtap="onPay"> 29.9元 永久开通</button>
         <view class="ul-buy-note">一次购买 · 永久会员权益 · 云端储存</view>
+
+        <!-- 勾选协议 -->
+        <view class="ul-agree-row" catchtap="toggleAgree">
+          <view class="ul-agree-circle {{agreeChecked ? 'checked' : ''}}">
+            <text wx:if="{{agreeChecked}}" class="ul-agree-tick">✓</text>
+          </view>
+          <text class="ul-agree-text">我已阅读并同意</text>
+          <text class="ul-agree-link" catchtap="showPurchaseNotice">购买须知</text>
+          <text class="ul-agree-text">和</text>
+          <text class="ul-agree-link" catchtap="showPrivacyNotice">隐私协议</text>
+        </view>
 
         <!-- 激活码 + 用户协议 + 隐私政策 -->
         <view class="ul-links">
@@ -54,7 +65,7 @@
 
         <!-- 激活码输入区（点击展开） -->
         <view class="ul-activation-area" wx:if="{{showActivation}}">
-          <view class="ul-activation-title">输入激活码免费开通升级版</view>
+          <view class="ul-activation-title">输入激活码 + 手机号开通</view>
           <!-- 微信用户需填写手机号 -->
           <view class="ul-activation-row" wx:if="{{isWxUser}}" style="margin-bottom:16rpx">
             <input class="ul-activation-input" type="number" maxlength="11" placeholder="请输入手机号" value="{{wxPhone}}" bindinput="onWxPhoneInput" style="letter-spacing:2rpx;font-size:28rpx" />

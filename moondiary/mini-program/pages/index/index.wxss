@@ -987,3 +987,24 @@ page {
 .my-list-item:active { background: #faf5f9; }
 .my-list-num { font-size: 26rpx; font-weight: 600; color: #d6d3d1; width: 48rpx; flex-shrink: 0; }
 .my-list-name { font-size: 32rpx; font-weight: 500; color: #44403c; flex: 1; }
+
+/* 头像选择弹窗 */
+.avatar-modal {
+  width: 600rpx;
+  text-align: center;
+  padding: 48rpx 40rpx;
+}
+.avatar-preview {
+  display: flex;
+  justify-content: center;
+  margin: 32rpx 0;
+}
+.avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+.avatar-actions .btn {
+  margin: 0;
+}

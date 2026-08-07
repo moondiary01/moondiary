@@ -174,6 +174,46 @@
   display: flex; justify-content: center; align-items: center;
   gap: 28rpx;
 }
+
+/* 勾选协议 */
+.pm-agree-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6rpx;
+  margin-bottom: 20rpx;
+}
+.pm-agree-circle {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  border: 3rpx solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  flex-shrink: 0;
+}
+.pm-agree-circle.checked {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border-color: transparent;
+}
+.pm-agree-tick {
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+.pm-agree-text {
+  font-size: 24rpx;
+  color: #78716c;
+}
+.pm-agree-link {
+  font-size: 24rpx;
+  color: #8b5cf6;
+  font-weight: 500;
+}
 .pm-link {
   font-size: 24rpx;
   color: #8b5cf6;

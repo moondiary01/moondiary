@@ -68,8 +68,10 @@
 
   <!-- ===== 预览与调试 ===== -->
   <view class="card">
-    <view class="card-title">预览与调试</view>
+    <view class="card-title">预览调试 查看用户端弹窗效果</view>
     <button class="btn btn-outline" bindtap="previewTrialPopup">预览 19.9 试用弹窗</button>
+    <button class="btn btn-outline" style="margin-top:16rpx" bindtap="previewBeautyPopup">预览 29.9 升级弹窗</button>
+    <button class="btn btn-outline" style="margin-top:16rpx" bindtap="resetAdminSimulation">重置模拟状态</button>
   </view>
 
   <!-- ===== 版本更新通知 ===== -->

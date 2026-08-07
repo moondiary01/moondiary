@@ -1,80 +1,9 @@
 var app = getApp()
 var beautyStore = require('../../../utils/beauty-store.js')
 var audio = require('../../../utils/audio.js')
+var moodEmojiData = require('../../data/mood-emojis.js')
 
-// 冥想音乐数据（8大类共50首）
-var meditationMusic = [
-  // 自然之声 (6首)
-  { id: 'n1', category: 'nature', title: '晨曦微露', duration: '15:00' },
-  { id: 'n2', category: 'nature', title: '林间漫步', duration: '20:00' },
-  { id: 'n3', category: 'nature', title: '草原之风', duration: '18:00' },
-  { id: 'n4', category: 'nature', title: '山间清泉', duration: '15:00' },
-  { id: 'n5', category: 'nature', title: '夏日虫鸣', duration: '22:00' },
-  { id: 'n6', category: 'nature', title: '冬日寂静', duration: '20:00' },
-  // 雨声 (6首)
-  { id: 'r1', category: 'rain', title: '轻柔细雨', duration: '30:00' },
-  { id: 'r2', category: 'rain', title: '雨打芭蕉', duration: '25:00' },
-  { id: 'r3', category: 'rain', title: '暴雨雷鸣', duration: '20:00' },
-  { id: 'r4', category: 'rain', title: '雨后初晴', duration: '18:00' },
-  { id: 'r5', category: 'rain', title: '窗台雨滴', duration: '30:00' },
-  { id: 'r6', category: 'rain', title: '夜雨绵绵', duration: '25:00' },
-  // 海洋之声 (6首)
-  { id: 'o1', category: 'ocean', title: '海浪轻拍', duration: '30:00' },
-  { id: 'o2', category: 'ocean', title: '潮起潮落', duration: '25:00' },
-  { id: 'o3', category: 'ocean', title: '深海低吟', duration: '20:00' },
-  { id: 'o4', category: 'ocean', title: '海滩日出', duration: '18:00' },
-  { id: 'o5', category: 'ocean', title: '鲸鱼之歌', duration: '22:00' },
-  { id: 'o6', category: 'ocean', title: '海风拂面', duration: '20:00' },
-  // 森林之声 (6首)
-  { id: 'f1', category: 'forest', title: '竹林深处', duration: '20:00' },
-  { id: 'f2', category: 'forest', title: '松涛阵阵', duration: '18:00' },
-  { id: 'f3', category: 'forest', title: '鸟语花香', duration: '15:00' },
-  { id: 'f4', category: 'forest', title: '溪流潺潺', duration: '25:00' },
-  { id: 'f5', category: 'forest', title: '雨林秘境', duration: '22:00' },
-  { id: 'f6', category: 'forest', title: '森林晨雾', duration: '20:00' },
-  // 宇宙冥想 (6首)
-  { id: 's1', category: 'space', title: '星际之旅', duration: '30:00' },
-  { id: 's2', category: 'space', title: '宇宙回响', duration: '25:00' },
-  { id: 's3', category: 'space', title: '星云漫步', duration: '20:00' },
-  { id: 's4', category: 'space', title: '银河冥想', duration: '30:00' },
-  { id: 's5', category: 'space', title: '太空漂浮', duration: '25:00' },
-  { id: 's6', category: 'space', title: '星辰大海', duration: '22:00' },
-  // 禅修冥想 (6首)
-  { id: 'z1', category: 'zen', title: '禅茶一味', duration: '20:00' },
-  { id: 'z2', category: 'zen', title: '空山新雨', duration: '25:00' },
-  { id: 'z3', category: 'zen', title: '心若止水', duration: '30:00' },
-  { id: 'z4', category: 'zen', title: '一花一世界', duration: '20:00' },
-  { id: 'z5', category: 'zen', title: '无为而治', duration: '25:00' },
-  { id: 'z6', category: 'zen', title: '静坐观心', duration: '30:00' },
-  // 钢琴轻音 (7首)
-  { id: 'p1', category: 'piano', title: '月光奏鸣曲', duration: '15:00' },
-  { id: 'p2', category: 'piano', title: '梦中的婚礼', duration: '12:00' },
-  { id: 'p3', category: 'piano', title: '初雪', duration: '15:00' },
-  { id: 'p4', category: 'piano', title: '雨中漫步', duration: '18:00' },
-  { id: 'p5', category: 'piano', title: '星空', duration: '20:00' },
-  { id: 'p6', category: 'piano', title: '秋日私语', duration: '15:00' },
-  { id: 'p7', category: 'piano', title: '安静的白', duration: '18:00' },
-  // 颂钵音疗 (7首)
-  { id: 'b1', category: 'bowl', title: '喜马拉雅颂钵', duration: '30:00' },
-  { id: 'b2', category: 'bowl', title: '水晶钵共鸣', duration: '25:00' },
-  { id: 'b3', category: 'bowl', title: '七脉轮调和', duration: '35:00' },
-  { id: 'b4', category: 'bowl', title: '深沉疗愈', duration: '30:00' },
-  { id: 'b5', category: 'bowl', title: '净化之声', duration: '25:00' },
-  { id: 'b6', category: 'bowl', title: '宇宙频率', duration: '30:00' },
-  { id: 'b7', category: 'bowl', title: '回归本心', duration: '28:00' }
-]
-
-var musicCategories = [
-  { value: 'nature', label: '自然之声', icon: '🌿' },
-  { value: 'rain', label: '雨声', icon: '🌧️' },
-  { value: 'ocean', label: '海洋之声', icon: '🌊' },
-  { value: 'forest', label: '森林之声', icon: '🌳' },
-  { value: 'space', label: '宇宙冥想', icon: '🌌' },
-  { value: 'zen', label: '禅修冥想', icon: '🧘' },
-  { value: 'piano', label: '钢琴轻音', icon: '🎹' },
-  { value: 'bowl', label: '颂钵音疗', icon: '🔔' }
-]
-
+Page({
 Page({
   data: {
     todayStr: '',
@@ -84,44 +13,33 @@ Page({
     todayRecord: null,
     moodData: null,
     canUseUpgrade: false,
-    // 心情表情
-    moodEmojis: [
-      { value: 'ecstatic', emoji: '🥰', label: '幸福' },
-      { value: 'happy', emoji: '😊', label: '开心' },
-      { value: 'calm', emoji: '😌', label: '平静' },
-      { value: 'grateful', emoji: '🙏', label: '感恩' },
-      { value: 'neutral', emoji: '😐', label: '一般' },
-      { value: 'tired', emoji: '😪', label: '疲惫' },
-      { value: 'anxious', emoji: '😰', label: '焦虑' },
-      { value: 'sad', emoji: '😢', label: '难过' },
-      { value: 'angry', emoji: '😤', label: '生气' },
-      { value: 'stressed', emoji: '🤯', label: '压力' }
-    ],
-    // 自律打卡
+    // 心情表情 (35种 SVG)
+    moodEmojis: moodEmojiData.moodEmojis,
+    // 自律打卡 (19项，纯文字，与HTML版一致)
     disciplineItems: [
-      { key: 'tidyRoom', label: '收拾房间', icon: '🧹' },
-      { key: 'declutter', label: '断舍离', icon: '📦' },
-      { key: 'read', label: '阅读', icon: '📖' },
-      { key: 'exercise', label: '运动', icon: '🏃' },
-      { key: 'cook', label: '做饭', icon: '🍳' },
-      { key: 'noPhone', label: '减少手机', icon: '📵' },
-      { key: 'earlySleep', label: '早睡', icon: '🛏️' },
-      { key: 'gratitude', label: '感恩记录', icon: '✨' },
-      { key: 'meditation', label: '冥想', icon: '🧘' },
-      { key: 'skincare', label: '护肤', icon: '💄' },
-      { key: 'water', label: '喝水', icon: '💧' },
-      { key: 'journal', label: '写日记', icon: '✏️' }
+      { key: 'disc_earlyRise', label: '早起' },
+      { key: 'disc_water', label: '喝水' },
+      { key: 'disc_meditation', label: '冥想' },
+      { key: 'disc_podcast', label: '听播客' },
+      { key: 'disc_read', label: '阅读' },
+      { key: 'disc_news', label: '今日新闻' },
+      { key: 'disc_study', label: '学习打卡' },
+      { key: 'disc_newSkill', label: '学习新技能' },
+      { key: 'disc_english', label: '学英语' },
+      { key: 'disc_journal', label: '写日记' },
+      { key: 'disc_gratitude', label: '感恩日记' },
+      { key: 'disc_plan', label: '写今日规划' },
+      { key: 'disc_cook', label: '做饭' },
+      { key: 'disc_cleanRoom', label: '打扫房间' },
+      { key: 'disc_exercise', label: '运动' },
+      { key: 'disc_declutter', label: '断舍离' },
+      { key: 'disc_lessScreen', label: '少玩电子产品' },
+      { key: 'disc_skincare', label: '护肤' },
+      { key: 'disc_earlySleep', label: '早睡' }
     ],
+    // 自定义打卡
+    moodCustomCheck: '',
     // 冥想音乐
-    musicCategories: musicCategories,
-    meditationMusic: meditationMusic,
-    currentCategory: 'nature',
-    filteredMusic: [],
-    // 播放器
-    isPlaying: false,
-    currentTrack: null,
-    currentTrackIndex: -1,
-    showPlayer: false,
     // 照片
     photos: [],
     // 感恩日记
@@ -134,7 +52,7 @@ Page({
     calDays: [],
     showDayDetail: false,
     detailDate: '',
-    detailMoodEmoji: '',
+    detailMoodSvg: '',
     detailMoodLabel: '',
     detailStatus: '',
     detailDiary: '',
@@ -154,20 +72,11 @@ Page({
       calYear: now.getFullYear(),
       calMonth: now.getMonth()
     })
-    this.filterMusic('nature')
     this.loadData()
   },
 
   onShow: function () {
     this.setData({ canUseUpgrade: app.globalData.canUseUpgrade || false })
-  },
-
-  onHide: function () {
-    this.stopMusic()
-  },
-
-  onUnload: function () {
-    this.stopMusic()
   },
 
   // ===== 数据加载 =====
@@ -200,7 +109,8 @@ Page({
         photos: record.photos || [],
         gratitude1: (record.gratitude && record.gratitude[0]) || '',
         gratitude2: (record.gratitude && record.gratitude[1]) || '',
-        gratitude3: (record.gratitude && record.gratitude[2]) || ''
+        gratitude3: (record.gratitude && record.gratitude[2]) || '',
+        moodCustomCheck: record.customCheck || ''
       })
       self.renderCalendar()
     })
@@ -228,7 +138,7 @@ Page({
   // ===== 心情选择 =====
   onMoodSelect: function (e) {
     audio.playClick()
-    this.setData({ selectedMood: e.currentTarget.dataset.value })
+    this.setData({ selectedMood: e.currentTarget.dataset.key })
   },
 
   // ===== 心情日记输入 =====
@@ -251,6 +161,11 @@ Page({
     this.setData({ todayRecord: record })
   },
 
+  // ===== 自定义打卡输入 =====
+  onCustomCheckInput: function (e) {
+    this.setData({ moodCustomCheck: e.detail.value })
+  },
+
   // ===== 冥想打卡 =====
   onMeditationToggle: function (e) {
     audio.playClick()
@@ -266,154 +181,6 @@ Page({
     var record = this.data.todayRecord
     record.meditationMinutes = parseInt(e.detail.value) || 0
     this.setData({ todayRecord: record })
-  },
-
-  // ===== 音乐分类切换 =====
-  onCategorySelect: function (e) {
-    audio.playClick()
-    var cat = e.currentTarget.dataset.value
-    this.setData({ currentCategory: cat })
-    this.filterMusic(cat)
-  },
-
-  filterMusic: function (category) {
-    var list = []
-    for (var i = 0; i < meditationMusic.length; i++) {
-      if (meditationMusic[i].category === category) {
-        list.push(meditationMusic[i])
-      }
-    }
-    this.setData({ filteredMusic: list })
-  },
-
-  // ===== 音乐播放 =====
-  onPlayTrack: function (e) {
-    audio.playClick()
-    var trackId = e.currentTarget.dataset.id
-    var track = null
-    var index = -1
-    for (var i = 0; i < meditationMusic.length; i++) {
-      if (meditationMusic[i].id === trackId) {
-        track = meditationMusic[i]
-        index = i
-        break
-      }
-    }
-    if (!track) return
-
-    // 如果正在播放同一首，则暂停
-    if (this.data.currentTrack && this.data.currentTrack.id === trackId && this.data.isPlaying) {
-      this.pauseMusic()
-      return
-    }
-
-    this.playMusic(track, index)
-  },
-
-  playMusic: function (track, index) {
-    var self = this
-    // 停止之前的播放
-    if (this._audioCtx) {
-      try { this._audioCtx.stop() } catch (e) {}
-      this._audioCtx.destroy()
-      this._audioCtx = null
-    }
-
-    var ctx = wx.createInnerAudioContext()
-    // 音频URL - 使用 COS 路径
-    var config = require('../../../utils/config.js')
-    var cosBaseUrl = 'https://' + config.COS_CONFIG.Bucket + '.cos.' + config.COS_CONFIG.Region + '.myqcloud.com'
-    ctx.src = cosBaseUrl + '/beauty/music/' + track.id + '.mp3'
-    ctx.title = track.title
-    ctx.coverImgUrl = cosBaseUrl + '/beauty/music/cover.jpg'
-    ctx.volume = 0.6
-
-    ctx.onPlay(function () {
-      self.setData({ isPlaying: true })
-    })
-    ctx.onPause(function () {
-      self.setData({ isPlaying: false })
-    })
-    ctx.onEnded(function () {
-      self.setData({ isPlaying: false })
-      // 自动播放下一首
-      self.playNext()
-    })
-    ctx.onError(function () {
-      self.setData({ isPlaying: false })
-      wx.showToast({ title: '音频加载中，请稍后', icon: 'none', duration: 1500 })
-    })
-
-    this._audioCtx = ctx
-    ctx.play()
-    this.setData({
-      currentTrack: track,
-      currentTrackIndex: index,
-      showPlayer: true,
-      isPlaying: true
-    })
-  },
-
-  pauseMusic: function () {
-    if (this._audioCtx) {
-      try { this._audioCtx.pause() } catch (e) {}
-    }
-    this.setData({ isPlaying: false })
-  },
-
-  resumeMusic: function () {
-    if (this._audioCtx) {
-      try { this._audioCtx.play() } catch (e) {}
-      this.setData({ isPlaying: true })
-    }
-  },
-
-  playNext: function () {
-    var idx = this.data.currentTrackIndex
-    var next = idx + 1
-    if (next >= meditationMusic.length) next = 0
-    this.playMusic(meditationMusic[next], next)
-  },
-
-  playPrev: function () {
-    var idx = this.data.currentTrackIndex
-    var prev = idx - 1
-    if (prev < 0) prev = meditationMusic.length - 1
-    this.playMusic(meditationMusic[prev], prev)
-  },
-
-  onPlayerToggle: function () {
-    audio.playClick()
-    if (this.data.isPlaying) {
-      this.pauseMusic()
-    } else {
-      this.resumeMusic()
-    }
-  },
-
-  onPlayerNext: function () {
-    audio.playClick()
-    this.playNext()
-  },
-
-  onPlayerPrev: function () {
-    audio.playClick()
-    this.playPrev()
-  },
-
-  onClosePlayer: function () {
-    audio.playClick()
-    this.stopMusic()
-    this.setData({ showPlayer: false })
-  },
-
-  stopMusic: function () {
-    if (this._audioCtx) {
-      try { this._audioCtx.stop() } catch (e) {}
-      this._audioCtx.destroy()
-      this._audioCtx = null
-    }
-    this.setData({ isPlaying: false })
   },
 
   // ===== 照片上传 =====
@@ -461,6 +228,7 @@ Page({
     record.diary = this.data.moodDiary
     record.photos = this.data.photos
     record.gratitude = [this.data.gratitude1, this.data.gratitude2, this.data.gratitude3]
+    record.customCheck = this.data.moodCustomCheck
     record.updatedAt = Date.now()
 
     var found = false
@@ -495,16 +263,13 @@ Page({
     var recordMap = {}
     records.forEach(function(r) { recordMap[r.date] = r })
 
-    var moodEmojiMap = {
-      ecstatic: '🥰', happy: '😊', calm: '😌', grateful: '🙏',
-      neutral: '😐', tired: '😪', anxious: '😰', sad: '😢',
-      angry: '😤', stressed: '🤯'
-    }
-    var moodLabelMap = {
-      ecstatic: '幸福', happy: '开心', calm: '平静', grateful: '感恩',
-      neutral: '一般', tired: '疲惫', anxious: '焦虑', sad: '难过',
-      angry: '生气', stressed: '压力'
-    }
+    // 从 moodEmojiData 构建 key->svg 和 key->label 映射
+    var moodSvgMap = {}
+    var moodLabelMap = {}
+    moodEmojiData.moodEmojis.forEach(function(m) {
+      moodSvgMap[m.key] = m.svg
+      moodLabelMap[m.key] = m.label
+    })
 
     function hasRecord(rec) {
       return rec && (rec.status || rec.mood || rec.diary || rec.photos.length > 0 ||
@@ -537,8 +302,8 @@ Page({
         today: ds === todayStr,
         hasRecord: hasData,
         hasPhoto: hasPhoto,
-        hasMood: rec && rec.mood && moodEmojiMap[rec.mood],
-        moodEmoji: rec && rec.mood ? moodEmojiMap[rec.mood] : '',
+        hasMood: rec && rec.mood && moodSvgMap[rec.mood],
+        moodSvg: rec && rec.mood ? moodSvgMap[rec.mood] : '',
         hasGratitude: hasGrat
       })
     }
@@ -577,22 +342,23 @@ Page({
       }
     }
 
-    var moodEmojiMap = {
-      ecstatic: '🥰', happy: '😊', calm: '😌', grateful: '🙏',
-      neutral: '😐', tired: '😪', anxious: '😰', sad: '😢',
-      angry: '😤', stressed: '🤯'
-    }
-    var moodLabelMap = {
-      ecstatic: '幸福', happy: '开心', calm: '平静', grateful: '感恩',
-      neutral: '一般', tired: '疲惫', anxious: '焦虑', sad: '难过',
-      angry: '生气', stressed: '压力'
-    }
+    // 从 moodEmojiData 构建映射
+    var moodSvgMap = {}
+    var moodLabelMap = {}
+    moodEmojiData.moodEmojis.forEach(function(m) {
+      moodSvgMap[m.key] = m.svg
+      moodLabelMap[m.key] = m.label
+    })
 
+    // 自律打卡标签（纯文字，无emoji）
     var discLabels = {
-      tidyRoom: '🧹 收拾房间', declutter: '📦 断舍离', read: '📖 阅读',
-      exercise: '🏃 运动', cook: '🍳 做饭', noPhone: '📵 减少手机',
-      earlySleep: '🛏️ 早睡', gratitude: '✨ 感恩记录', meditation: '🧘 冥想',
-      skincare: '💄 护肤', water: '💧 喝水', journal: '✏️ 写日记'
+      disc_earlyRise: '早起', disc_water: '喝水', disc_meditation: '冥想',
+      disc_podcast: '听播客', disc_read: '阅读', disc_news: '今日新闻',
+      disc_study: '学习打卡', disc_newSkill: '学习新技能', disc_english: '学英语',
+      disc_journal: '写日记', disc_gratitude: '感恩日记', disc_plan: '写今日规划',
+      disc_cook: '做饭', disc_cleanRoom: '打扫房间', disc_exercise: '运动',
+      disc_declutter: '断舍离', disc_lessScreen: '少玩电子产品',
+      disc_skincare: '护肤', disc_earlySleep: '早睡'
     }
 
     var discActive = []
@@ -610,7 +376,7 @@ Page({
     this.setData({
       showDayDetail: true,
       detailDate: dateStr,
-      detailMoodEmoji: record && record.mood ? moodEmojiMap[record.mood] || '' : '',
+      detailMoodSvg: record && record.mood ? moodSvgMap[record.mood] || '' : '',
       detailMoodLabel: record && record.mood ? moodLabelMap[record.mood] || '' : '',
       detailStatus: record ? (record.status || '') : '',
       detailDiary: record ? (record.diary || '') : '',

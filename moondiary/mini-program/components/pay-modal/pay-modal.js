@@ -25,7 +25,8 @@ Component({
     titleText: '试用已到期',
     subText: '7天免费试用结束，购买后继续使用',
     isWxUser: false,
-    wxPhone: ''
+    wxPhone: '',
+    agreeChecked: false
   },
 
   observers: {
@@ -45,6 +46,7 @@ Component({
     'show': function (show) {
       if (show) {
         this._initWxStatus()
+        this.setData({ agreeChecked: false, _scrollTop: 0 })
       }
     }
   },
@@ -68,7 +70,16 @@ Component({
       })
     },
 
+    // ===== 勾选协议 =====
+    toggleAgree: function () {
+      this.setData({ agreeChecked: !this.data.agreeChecked })
+    },
+
     onPay: function () {
+      if (!this.data.agreeChecked) {
+        wx.showToast({ title: '请先勾选同意购买须知和隐私协议', icon: 'none' })
+        return
+      }
       wx.navigateTo({
         url: '/pages/pay/pay'
       })

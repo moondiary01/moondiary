@@ -6,7 +6,7 @@ var config = require('../../utils/config.js')
 Page({
   data: {
     adminStats: { wx: 0, phone: 0, keyFree: 0, trial: 0, basic: 0, upgrade: 0, total: 0 },
-    appVersion: '8.0',
+    appVersion: '2.2.4',
     noticeContent: '',
     noticeSent: false,
     keyList: [],
@@ -292,6 +292,16 @@ Page({
   // ===== 预览试用弹窗 =====
   previewTrialPopup: function () {
     this.setData({ showPreviewModal: true })
+  },
+
+  // 预览29.9升级弹窗
+  previewBeautyPopup: function () {
+    wx.navigateTo({ url: '/subpkg-beauty/pages/upgrade-home/upgrade-home' })
+  },
+
+  // 重置模拟状态
+  resetAdminSimulation: function () {
+    wx.showToast({ title: '已重置模拟状态', icon: 'success' })
   },
 
   closePreviewModal: function () {

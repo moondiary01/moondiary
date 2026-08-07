@@ -16,6 +16,7 @@
         <view class="countdown-title-row">
           <text class="countdown-title">护肤打卡</text>
           <text class="skin-type-badge" bindtap="onSkinTypeChange">{{skinTypeLabel || '未设置'}}</text>
+          <text class="skin-type-badge" bindtap="onSkinToneChange">{{skinToneLabel || '未设置'}}</text>
         </view>
         <view class="countdown-desc">第{{currentDay}}天，坚持变美！</view>
         <view class="countdown-progress">
@@ -66,7 +67,6 @@
   <!-- 2. 今日打卡（checkbox打勾模式） -->
   <view class="card skincare-card">
     <view class="card-title-row">
-      <view class="card-title-icon">📋</view>
       <view class="card-title-text">{{todayStr}}</view>
     </view>
 
@@ -90,12 +90,21 @@
         data-field="{{item.key}}"
         bindtap="onToggleCheck"
       >
-        <text class="check-icon-label">{{item.icon}} {{item.label}}</text>
+        <text class="check-icon-label">{{item.label}}</text>
         <view class="check-box">
           <text wx:if="{{todayRecord[item.key]}}" class="check-tick">✓</text>
         </view>
       </view>
     </view>
+
+    <!-- 自定义打卡 -->
+    <input
+      class="custom-check-input"
+      placeholder="自定义打卡项目，如：面膜"
+      value="{{beautyCustomCheck}}"
+      bindinput="onCustomCheckInput"
+      maxlength="30"
+    />
 
     <!-- 美容院护理心得（打勾后展开） -->
     <textarea
@@ -119,10 +128,26 @@
     />
   </view>
 
+  <!-- 3. 今日自拍记录 -->
+  <view class="card skincare-card">
+    <view class="card-title-row">
+      <view class="card-title-text">今日自拍记录</view>
+    </view>
+    <view class="today-photo-area">
+      <image wx:if="{{todayRecord.photo}}" src="{{todayRecord.photo}}" mode="aspectFill" class="today-photo-preview" bindtap="onViewTodayPhoto" />
+      <view wx:else class="today-photo-placeholder" bindtap="onUploadTodayPhoto">
+        <text class="today-photo-add">+ 上传自拍</text>
+      </view>
+      <view wx:if="{{todayRecord.photo}}" class="today-photo-actions">
+        <button class="btn btn-outline btn-sm" bindtap="onUploadTodayPhoto">更换</button>
+        <button class="btn btn-outline btn-sm" bindtap="onDeleteTodayPhoto">删除</button>
+      </view>
+    </view>
+  </view>
+
   <!-- 4. 护肤日历 -->
   <view class="card skincare-card calendar-card">
     <view class="card-title-row">
-      <view class="card-title-icon">📅</view>
       <view class="card-title-text">护肤日历</view>
     </view>
     <view class="cal-hint">点击日期查看/编辑当日记录</view>
@@ -155,7 +180,7 @@
           data-date="{{item.dateStr}}"
           bindtap="onCalDayClick"
         >
-          <!-- 📷在数字上方 -->
+          <!-- 照片标记在数字上方 -->
           <text wx:if="{{item.hasPhoto}}" class="cal-mark cal-mark-photo">📷</text>
           <view class="cal-day-num">{{item.day}}</view>
           <!-- 底部打勾标记（不分早晚） -->
@@ -169,16 +194,15 @@
 
     <!-- 日历图例 -->
     <view class="cal-legend">
-      <view class="legend-item"><text class="legend-emoji">📷</text><text>有照片</text></view>
-      <view class="legend-item"><text class="legend-emoji">✓</text><text>已打卡</text></view>
-      <view class="legend-item"><text class="legend-emoji skin-dot">◇</text><text>皮肤状态</text></view>
+      <view class="legend-item"><text>📷 有照片</text></view>
+      <view class="legend-item"><text>✓ 已打卡</text></view>
+      <view class="legend-item"><text class="skin-dot">◇ 皮肤状态</text></view>
     </view>
   </view>
 
-  <!-- 6. 备注📝（日历下方） -->
+  <!-- 6. 备注（日历下方） -->
   <view class="card skincare-card">
     <view class="card-title-row">
-      <view class="card-title-icon">📝</view>
       <view class="card-title-text">备注</view>
     </view>
     <textarea
@@ -267,7 +291,7 @@
     <view class="detail-photo-section">
       <view wx:if="{{detailPhoto}}" class="photo-action-row">
         <view class="photo-action-btn photo-view-btn" catchtap="onViewPhoto">
-          <text class="photo-action-icon">👁</text>
+          <text class="photo-action-icon">📷</text>
           <text class="photo-action-text">查看照片</text>
         </view>
         <view class="photo-action-btn photo-upload-btn" catchtap="onDetailUploadPhoto">

@@ -29,7 +29,7 @@
           </view>
         </view>
         <view class="hero-avatar-box">
-          <view class="avatar avatar-lg" bindtap="onOpenSettings">{{userAvatar || '🌙'}}</view>
+          <view class="avatar avatar-lg" bindtap="onOpenAvatarModal">{{userAvatar ? '' : ''}}<image wx:if="{{userAvatar}}" src="{{userAvatar}}" mode="aspectFill" style="width:100%;height:100%;border-radius:50%" /></view>
           <view class="hero-nickname" bindtap="onOpenSettings">{{userName || '点击设置'}}</view>
         </view>
       </view>
@@ -883,6 +883,19 @@
           <view class="detail-text">{{detailData.note}}</view>
         </view>
 
+        <!-- 照片区域 -->
+        <view class="detail-section">
+          <view class="detail-label">日期照片</view>
+          <view wx:if="{{detailData.photo}}" class="detail-photo-row">
+            <image src="{{detailData.photo}}" mode="aspectFill" class="detail-photo-thumb" bindtap="onPreviewDetailPhoto" />
+            <button class="btn btn-outline btn-sm" bindtap="onUploadDetailPhoto">📷 更换</button>
+            <button class="btn btn-outline btn-sm" bindtap="onDeleteDetailPhoto">🗑 删除</button>
+          </view>
+          <view wx:else>
+            <button class="btn btn-outline btn-sm" bindtap="onUploadDetailPhoto">📷 上传照片</button>
+          </view>
+        </view>
+
         <view class="detail-actions">
           <block wx:if="{{isFemale}}">
             <button class="btn btn-outline" bindtap="onTogglePeriod" wx:if="{{!isPeriodDay}}">标记经期</button>
@@ -1047,6 +1060,22 @@
     <view class="bn-item {{bottomActive==='my'?'active':''}}" bindtap="onBottomMy">
       <view class="bn-icon bn-icon-my"></view>
       <text class="bn-label">我的</text>
+    </view>
+  </view>
+</view>
+
+<!-- 头像选择弹窗 -->
+<view class="overlay" wx:if="{{showAvatarModal}}" bindtap="onCloseAvatarModal">
+  <view class="modal avatar-modal" catchtap="">
+    <view class="modal-title">设置头像</view>
+    <view class="avatar-preview">
+      <image wx:if="{{userAvatar}}" src="{{userAvatar}}" mode="aspectFill" style="width:160rpx;height:160rpx;border-radius:50%" />
+      <view wx:else class="avatar-placeholder" style="width:160rpx;height:160rpx;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;color:#a8a29e;font-size:24rpx">暂无头像</view>
+    </view>
+    <view class="avatar-actions">
+      <button class="btn btn-primary" bindtap="onChooseAvatar">{{userAvatar ? '更换头像' : '上传头像'}}</button>
+      <button wx:if="{{userAvatar}}" class="btn btn-outline" bindtap="onRemoveAvatar">删除头像</button>
+      <button class="btn btn-outline" bindtap="onCloseAvatarModal">关闭</button>
     </view>
   </view>
 </view>

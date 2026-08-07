@@ -6,7 +6,8 @@
     "pages/pay/pay",
     "pages/notice/notice",
     "pages/privacy/privacy",
-    "pages/my-detail/my-detail"
+    "pages/my-detail/my-detail",
+    "pages/plan/plan"
   ],
   "subPackages": [
     {
@@ -35,7 +36,6 @@
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",
-  "requiredBackgroundModes": ["audio"],
   "usingComponents": {
     "pay-modal": "/components/pay-modal/pay-modal"
   }

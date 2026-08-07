@@ -18,7 +18,8 @@ Component({
     showPrivacy: false,         // 隐私说明弹窗
     isWxUser: false,            // 是否微信用户
     wxPhone: '',                // 微信用户输入的手机号
-    realPhone: ''               // 绑定的真实手机号
+    realPhone: '',               // 绑定的真实手机号
+    agreeChecked: false          // 协议勾选状态
   },
 
   lifetimes: {
@@ -41,8 +42,18 @@ Component({
     // ===== 阻止滑动穿透 =====
     preventMove: function () {},
 
+    // ===== 勾选协议 =====
+    toggleAgree: function () {
+      audio.playClick()
+      this.setData({ agreeChecked: !this.data.agreeChecked })
+    },
+
     // ===== 购买按钮 → 弹出用户协议 =====
     onPay: function () {
+      if (!this.data.agreeChecked) {
+        wx.showToast({ title: '请先勾选同意购买须知和隐私协议', icon: 'none' })
+        return
+      }
       audio.playClick()
       this.setData({ showNotice: true })
     },

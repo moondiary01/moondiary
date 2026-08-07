@@ -436,6 +436,55 @@ function getPresetKeys() {
   return PRESET_KEYS;
 }
 
+// ===== 上传照片到COS =====
+function getCosAuthWithPath(method, cosPath) {
+  var SecretId = COS_CONFIG.SecretId;
+  var SecretKey = COS_CONFIG.SecretKey;
+  var host = COS_CONFIG.Bucket + '.cos.' + COS_CONFIG.Region + '.myqcloud.com';
+  var pathStr = '/' + cosPath;
+
+  var now = Math.floor(Date.now() / 1000);
+  var keyTime = now + ';' + (now + 600);
+  var signKey = hmacSha1(SecretKey, keyTime);
+  var httpMethod = method.toLowerCase();
+  var httpUri = pathStr;
+  var headerList = 'host';
+  var httpHeaderString = 'host=' + host + '\n';
+  var httpRequestString = httpMethod + '\n' + httpUri + '\n\n' + httpHeaderString + '\n';
+  var signature = hmacSha1(signKey, httpRequestString);
+
+  return 'q-sign-algorithm=sha1&q-ak=' + SecretId + '&q-sign-time=' + keyTime + '&q-key-time=' + keyTime + '&q-header-list=' + headerList + '&q-url-param-list=&q-signature=' + signature;
+}
+
+function uploadToCOS(tempFilePath, cosPath, callback) {
+  var host = COS_CONFIG.Bucket + '.cos.' + COS_CONFIG.Region + '.myqcloud.com';
+  var url = 'https://' + host + '/' + cosPath;
+  var auth = getCosAuthWithPath('post', cosPath);
+
+  wx.uploadFile({
+    url: url,
+    filePath: tempFilePath,
+    name: 'file',
+    header: {
+      'Authorization': auth,
+      'Host': host
+    },
+    success: function (res) {
+      if (res.statusCode === 200) {
+        console.log('照片上传成功:', cosPath);
+        if (callback) callback(url);
+      } else {
+        console.error('照片上传失败:', res.statusCode, res.data);
+        if (callback) callback(null);
+      }
+    },
+    fail: function (err) {
+      console.error('照片上传异常:', err);
+      if (callback) callback(null);
+    }
+  });
+}
+
 // ===== 常量 =====
 var WATER_CUP_ML = 200;
 
@@ -453,5 +502,6 @@ module.exports = {
   checkUserStatus, formatRemaining,
   WATER_CUP_ML,
   loadPayments, savePayments,
-  addDynamicKey, getPresetKeys
+  addDynamicKey, getPresetKeys,
+  uploadToCOS
 };

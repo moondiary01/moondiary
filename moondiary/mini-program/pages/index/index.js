@@ -11,6 +11,7 @@ Page({
   data: {
     userName: '',
     userAvatar: '',
+    showAvatarModal: false,
     todayStr: '',
     todayWeightDisplay: '--',
     unitLabel: '斤',
@@ -584,6 +585,61 @@ Page({
     store.saveState(app.globalData.userKey, this.currentState);
     this.initPage(this.currentState, this.currentToday);
     wx.showToast({ title: '已切换为' + newUnit, icon: 'success' });
+  },
+
+  // ===== 头像弹窗 =====
+  onOpenAvatarModal: function () {
+    this.setData({ showAvatarModal: true })
+  },
+
+  onCloseAvatarModal: function () {
+    this.setData({ showAvatarModal: false })
+  },
+
+  onChooseAvatar: function () {
+    var self = this
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: function (res) {
+        var tempPath = res.tempFiles[0].tempFilePath
+        // 上传到COS
+        var config = require('../../utils/config.js')
+        var store = require('../../utils/store.js')
+        var userKey = app.globalData.userKey || 'local'
+        var cosPath = 'avatars/' + userKey + '/avatar.jpg'
+        store.uploadToCOS(tempPath, cosPath, function (url) {
+          var avatarUrl = url || tempPath
+          self.setData({ userAvatar: avatarUrl, showAvatarModal: false })
+          // 同步到 state
+          var state = app.globalData.state
+          state.avatar = avatarUrl
+          app.globalData.state = state
+          store.saveState(app, function () {})
+          wx.showToast({ title: '头像已更新', icon: 'success' })
+        })
+      }
+    })
+  },
+
+  onRemoveAvatar: function () {
+    var self = this
+    wx.showModal({
+      title: '确认',
+      content: '确定删除当前头像？',
+      success: function (res) {
+        if (res.confirm) {
+          self.setData({ userAvatar: '', showAvatarModal: false })
+          var state = app.globalData.state
+          state.avatar = ''
+          app.globalData.state = state
+          var store = require('../../utils/store.js')
+          store.saveState(app, function () {})
+          wx.showToast({ title: '已删除', icon: 'success' })
+        }
+      }
+    })
   },
 
   // ===== 设置 =====
@@ -2138,6 +2194,91 @@ Page({
 
   onCloseDetail: function () {
     this.setData({ showDetail: false })
+  },
+
+  // ===== 经期日历详情照片上传 =====
+  onUploadDetailPhoto: function () {
+    var self = this
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: function (res) {
+        var tempPath = res.tempFiles[0].tempFilePath
+        // 上传到COS
+        var config = require('../../utils/config.js')
+        var store = require('../../utils/store.js')
+        var userKey = app.globalData.userKey || 'local'
+        var dateStr = self.data.detailDate
+        var cosPath = 'photos/' + userKey + '/' + dateStr + '_period.jpg'
+        store.uploadToCOS(tempPath, cosPath, function (url) {
+          if (url) {
+            var detailData = self.data.detailData
+            detailData.photo = url
+            self.setData({ detailData: detailData })
+            // 同步到 state
+            var state = app.globalData.state
+            var days = state.days || []
+            for (var i = 0; i < days.length; i++) {
+              if (days[i].date === dateStr) {
+                days[i].photo = url
+                break
+              }
+            }
+            if (i === days.length) {
+              days.push({ date: dateStr, photo: url })
+            }
+            state.days = days
+            app.globalData.state = state
+            store.saveState(app, function () {})
+            wx.showToast({ title: '照片已上传', icon: 'success' })
+          } else {
+            // 上传失败，使用本地临时路径
+            var detailData2 = self.data.detailData
+            detailData2.photo = tempPath
+            self.setData({ detailData: detailData2 })
+            wx.showToast({ title: '照片已保存(本地)', icon: 'none' })
+          }
+        })
+      }
+    })
+  },
+
+  onDeleteDetailPhoto: function () {
+    var self = this
+    wx.showModal({
+      title: '确认删除',
+      content: '删除后不可恢复，确认删除照片？',
+      success: function (res) {
+        if (res.confirm) {
+          var detailData = self.data.detailData
+          detailData.photo = ''
+          self.setData({ detailData: detailData })
+          var state = app.globalData.state
+          var days = state.days || []
+          for (var i = 0; i < days.length; i++) {
+            if (days[i].date === self.data.detailDate) {
+              days[i].photo = ''
+              break
+            }
+          }
+          state.days = days
+          app.globalData.state = state
+          var store = require('../../utils/store.js')
+          store.saveState(app, function () {})
+          wx.showToast({ title: '已删除', icon: 'success' })
+        }
+      }
+    })
+  },
+
+  onPreviewDetailPhoto: function () {
+    if (this.data.detailData.photo) {
+      wx.previewImage({
+        current: this.data.detailData.photo,
+        urls: [this.data.detailData.photo]
+      })
+    }
   },
 
   onTogglePeriod: function () {

@@ -1,7 +1,7 @@
 <!-- components/pay-modal/pay-modal.wxml — 购买弹窗（试用到期/主动购买/管理员预览） -->
 <view class="overlay" wx:if="{{show}}" catchtap="onClose">
   <view class="modal-box" catchtap="">
-    <scroll-view scroll-y class="pm-scroll">
+    <scroll-view scroll-y class="pm-scroll" scroll-top="{{_scrollTop}}">
       <!-- 顶部渐变背景区 -->
       <view class="pm-top">
         <view class="pm-glow pm-glow-pink"></view>
@@ -46,9 +46,19 @@
             <button class="pm-buy-btn" bindtap="onPay">立即购买开通使用</button>
           </view>
         </view>
+        <!-- 勾选协议 -->
+        <view class="pm-agree-row" catchtap="toggleAgree">
+          <view class="pm-agree-circle {{agreeChecked ? 'checked' : ''}}">
+            <text wx:if="{{agreeChecked}}" class="pm-agree-tick">✓</text>
+          </view>
+          <text class="pm-agree-text">我已阅读并同意</text>
+          <text class="pm-agree-link" catchtap="onNotice">购买须知</text>
+          <text class="pm-agree-text">和</text>
+          <text class="pm-agree-link" catchtap="onPrivacy">隐私协议</text>
+        </view>
         <!-- 激活码区域（默认展示） -->
         <view class="pm-activation-area">
-          <view class="pm-activation-title">输入激活码免费开通，立即使用</view>
+          <view class="pm-activation-title">输入激活码 + 手机号开通</view>
           <!-- 微信用户需填写手机号 -->
           <view class="pm-activation-row" wx:if="{{isWxUser}}" style="margin-bottom:16rpx">
             <input class="pm-activation-input" type="number" maxlength="11" placeholder="请输入手机号" value="{{wxPhone}}" bindinput="onWxPhoneInput" style="letter-spacing:2rpx;font-size:28rpx" />

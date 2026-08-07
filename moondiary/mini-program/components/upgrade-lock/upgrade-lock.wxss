@@ -210,6 +210,46 @@
   margin-top: 20rpx;
 }
 
+/* ===== 勾选协议 ===== */
+.ul-agree-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6rpx;
+  margin-top: 24rpx;
+}
+.ul-agree-circle {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  border: 3rpx solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  flex-shrink: 0;
+}
+.ul-agree-circle.checked {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border-color: transparent;
+}
+.ul-agree-tick {
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+.ul-agree-text {
+  font-size: 24rpx;
+  color: #78716c;
+}
+.ul-agree-link {
+  font-size: 24rpx;
+  color: #8b5cf6;
+  font-weight: 500;
+}
+
 /* ===== 链接区 ===== */
 .ul-links {
   margin-top: 28rpx;

@@ -1098,6 +1098,11 @@ body.has-bottom-nav .float-back-fab{bottom:calc(80px + env(safe-area-inset-botto
 /* 占位全屏页面 */
 .page-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:400;background:#faf5f9;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(72px + env(safe-area-inset-bottom, 0px))}
 
+/* 弹窗返回按钮（右下角） */
+.beauty-back-btn{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom, 0px));right:20px;z-index:9001;display:flex;align-items:center;gap:6px;padding:13px 24px;border:none;border-radius:100px;background:linear-gradient(135deg,#3d2b4f 0%,#5b3a5e 40%,#7a5276 70%,#ec4899 100%);color:#fff;font-size:0.85rem;font-weight:600;letter-spacing:1px;cursor:pointer;box-shadow:0 4px 20px rgba(61,43,79,0.35),0 2px 8px rgba(236,72,153,0.2),inset 0 1px 0 rgba(255,255,255,0.15);-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:all 0.2s}
+.beauty-back-btn:active{transform:scale(0.92);box-shadow:0 2px 12px rgba(61,43,79,0.25),0 1px 4px rgba(236,72,153,0.15),inset 0 1px 0 rgba(255,255,255,0.1)}
+.beauty-back-btn .arr{font-size:1.2rem;line-height:1;font-weight:400}
+
 /* ===== 「我的」页面 ===== */
 .my-page-wrap{max-width:480px;margin:0 auto;padding:40px 20px 20px}
 .my-page-title{text-align:center;margin-bottom:32px}
@@ -1668,16 +1673,6 @@ _loadCosSdk(0);
   </div>
 </div>
 
-    <div id="userListContent" style="display:flex;flex-direction:column;gap:10px"></div>
-    <div id="userListEmpty" style="text-align:center;padding:30px 0;color:#a8a29e;font-size:0.85rem;display:none">暂无用户</div>
-  </div>
-  <button class="float-back-fab" onclick="closeUserList();playClick()">←</button>
-</div>
-
-  </div>
-  <button class="float-back-fab" onclick="closePostDetail();playClick()">←</button>
-</div>
-
   <div class="image-viewer-nav image-viewer-prev" id="imageViewerPrev" onclick="event.stopPropagation();navImage(-1);playClick()">‹</div>
   <img class="image-viewer-img" id="imageViewerImg" src="">
   <div class="image-viewer-nav image-viewer-next" id="imageViewerNext" onclick="event.stopPropagation();navImage(1);playClick()">›</div>
@@ -1734,246 +1729,493 @@ _loadCosSdk(0);
   </div>
 </div>
 
+<!-- ===== 试用到期弹窗（19.9元普通版购买） ===== -->
+<div class="modal-overlay" id="trialExpiredModal">
+  <!-- 管理员返回按钮 -->
+  <div id="trialAdminBack" style="display:none;position:fixed;top:16px;left:16px;z-index:9999">
+    <button class="btn" style="padding:8px 16px;border-radius:100px;background:rgba(255,255,255,0.9);color:#1c1917;font-size:0.8rem;font-weight:600;border:none;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.15)" onclick="dismissTrialModal();resetAdminSimulation();playClick()"><span style="font-size:1rem">‹</span> 返回管理后台</button>
+  </div>
+  <div class="modal" style="max-width:420px;max-height:85vh;overflow-y:auto;padding:0;border-radius:24px;background:transparent;box-shadow:0 24px 80px rgba(124,58,237,0.35),0 8px 24px rgba(0,0,0,0.15)">
+    <!-- 顶部渐变背景区 -->
+    <div style="background:linear-gradient(160deg,#1a1025 0%,#2d1b4e 35%,#4c1d6b 65%,#7c3aed 100%);padding:36px 28px 32px;text-align:center;position:relative;overflow:hidden">
+      <!-- 光晕装饰 -->
+      <div style="position:absolute;top:-40px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,0.25),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-50px;left:-20px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.15),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.12),transparent 60%);pointer-events:none"></div>
+      <!-- 图标 -->
+      <div style="position:relative;z-index:1;font-size:2.2rem;margin-bottom:8px;color:#fbbf24;font-weight:900;letter-spacing:2px;filter:drop-shadow(0 4px 12px rgba(245,158,11,0.4))">VIP</div>
+      <!-- 标题 -->
+      <div style="position:relative;z-index:1;font-size:1.35rem;font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:6px">试用已到期</div>
+      <div style="position:relative;z-index:1;font-size:0.78rem;color:rgba(255,255,255,0.6);letter-spacing:0.5px">7天免费试用结束，购买后继续使用</div>
+    </div>
+    <!-- 底部白色内容区 -->
+    <div style="background:#fff;padding:28px 24px 24px">
+      <!-- 权益清单 -->
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(139,92,246,0.05),rgba(139,92,246,0.02))">
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">云端数据永久储存</div>
+            <div style="font-size:0.68rem;color:#a8a29e">体重/经期/运动数据安全同步，换手机不丢失</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(236,72,153,0.05),rgba(236,72,153,0.02))">
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">趋势图表 & 周度复盘</div>
+            <div style="font-size:0.68rem;color:#a8a29e">体重趋势分析、饮食运动复盘，数据驱动变美</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(245,158,11,0.05),rgba(245,158,11,0.02))">
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">一次购买 · 永久会员权益</div>
+            <div style="font-size:0.68rem;color:#a8a29e">一次付费，永久使用会员权益</div>
+          </div>
+        </div>
+      </div>
+      <!-- 价格卡 -->
+      <div style="background:linear-gradient(135deg,#1a1025,#2d1b4e);border-radius:18px;padding:18px 20px;text-align:center;position:relative;overflow:hidden;margin-bottom:16px">
+        <div style="position:absolute;top:-15px;right:-15px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.3),transparent 70%);pointer-events:none"></div>
+        <div style="position:relative;z-index:1">
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:4px">
+            <span style="font-size:0.7rem;color:rgba(255,255,255,0.5);font-weight:500">¥</span>
+            <span style="font-size:2.4rem;font-weight:900;color:#fbbf24;line-height:1;letter-spacing:-1px">19.9</span>
+          </div>
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.55);margin-bottom:12px">一次购买 · 永久会员权益 · 云端储存</div>
+          <button onclick="purchaseBasicPlan();playClick()" style="width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-size:0.95rem;font-weight:800;letter-spacing:1.5px;cursor:pointer;box-shadow:0 6px 24px rgba(245,158,11,0.4);transition:all 0.25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(245,158,11,0.4)'">立即购买开通使用</button>
+        </div>
+      </div>
+      <!-- 勾选协议 + 购买须知 + 隐私协议 -->
+      <div style="text-align:center;margin-bottom:10px">
+        <div style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:0.72rem;color:#78716c" onclick="toggleAgreeBox(this)">
+          <div class="agree-checkbox" style="width:16px;height:16px;border-width:1.5px"></div>
+          <span>我已阅读并同意</span>
+          <a href="#" onclick="event.stopPropagation();showPurchaseNoticeFromTrial();return false" style="color:#8b5cf6;text-decoration:none;font-weight:500">购买须知</a>
+          <span>和</span>
+          <a href="#" onclick="event.stopPropagation();showPrivacyNoticeFromTrial();return false" style="color:#8b5cf6;text-decoration:none;font-weight:500">隐私协议</a>
+        </div>
+      </div>
+      <!-- 激活码入口 -->
+      <div style="text-align:center;margin-bottom:10px">
+        <a href="#" onclick="showActivationCodeInput();return false" style="font-size:0.72rem;color:#f59e0b;text-decoration:none;font-weight:600">激活码</a>
+      </div>
+      <!-- 激活码输入区（点击激活码展开） -->
+      <div id="activationCodeArea" style="display:none;margin-top:12px;padding:14px;border-radius:14px;background:var(--rose-50);border:1px solid var(--border)">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--ink);margin-bottom:8px;text-align:center">输入激活码 + 手机号开通</div>
+        <input type="tel" id="activationPhoneInput" class="gate-input" placeholder="绑定手机号（11位）" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:0.95rem;margin-bottom:8px" autocomplete="off">
+        <div style="display:flex;gap:8px">
+          <input type="text" id="activationCodeInput" class="gate-input" placeholder="6位激活码" maxlength="6" inputmode="numeric" style="flex:1;letter-spacing:6px;font-size:1rem;margin-bottom:0">
+          <button class="btn" onclick="verifyActivationCode()" style="flex-shrink:0;padding:10px 16px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-weight:700;font-size:0.8rem;border:none;cursor:pointer;white-space:nowrap">开通</button>
+        </div>
+        <div id="activationCodeMsg" style="font-size:0.7rem;color:var(--rose-500);text-align:center;margin-top:6px;min-height:16px"></div>
+      </div>
+      <!-- 稍后再说 -->
+      <div style="text-align:center;margin-top:14px">
+        <a href="#" onclick="dismissTrialModal();return false" style="font-size:0.72rem;color:#c4b5fd;text-decoration:none">稍后再说</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 主动购买弹窗（Hero区19.9入口） ===== -->
+<div class="modal-overlay" id="unlockModal">
+  <div class="modal" style="max-width:420px;max-height:85vh;overflow-y:auto;padding:0;border-radius:24px;background:transparent;box-shadow:0 24px 80px rgba(124,58,237,0.35),0 8px 24px rgba(0,0,0,0.15)">
+    <!-- 顶部渐变背景区 -->
+    <div style="background:linear-gradient(160deg,#1a1025 0%,#2d1b4e 35%,#4c1d6b 65%,#7c3aed 100%);padding:36px 28px 32px;text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-40px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,0.25),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-50px;left:-20px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.15),transparent 70%);pointer-events:none"></div>
+      <div style="position:relative;z-index:1;font-size:2.2rem;margin-bottom:8px;color:#fbbf24;font-weight:900;letter-spacing:2px;filter:drop-shadow(0 4px 12px rgba(245,158,11,0.4))">ON</div>
+      <div style="position:relative;z-index:1;font-size:1.35rem;font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:6px">解锁全部功能</div>
+      <div style="position:relative;z-index:1;font-size:0.78rem;color:rgba(255,255,255,0.6);letter-spacing:0.5px">一次购买 · 永久会员权益 · 云端储存</div>
+    </div>
+    <!-- 底部白色内容区 -->
+    <div style="background:#fff;padding:28px 24px 24px">
+      <!-- 权益清单 -->
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(139,92,246,0.05),rgba(139,92,246,0.02))">
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">云端数据永久储存</div>
+            <div style="font-size:0.68rem;color:#a8a29e">体重/经期/运动数据安全同步，换手机不丢失</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(236,72,153,0.05),rgba(236,72,153,0.02))">
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">趋势图表 & 周度复盘</div>
+            <div style="font-size:0.68rem;color:#a8a29e">体重趋势分析、饮食运动复盘，数据驱动变美</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(245,158,11,0.05),rgba(245,158,11,0.02))">
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:#1c1917">一次购买 · 永久会员权益</div>
+            <div style="font-size:0.68rem;color:#a8a29e">一次付费，永久使用会员权益</div>
+          </div>
+        </div>
+      </div>
+      <!-- 价格卡 -->
+      <div style="background:linear-gradient(135deg,#1a1025,#2d1b4e);border-radius:18px;padding:18px 20px;text-align:center;position:relative;overflow:hidden;margin-bottom:16px">
+        <div style="position:absolute;top:-15px;right:-15px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.3),transparent 70%);pointer-events:none"></div>
+        <div style="position:relative;z-index:1">
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:4px">
+            <span style="font-size:0.7rem;color:rgba(255,255,255,0.5);font-weight:500">¥</span>
+            <span style="font-size:2.4rem;font-weight:900;color:#fbbf24;line-height:1;letter-spacing:-1px">19.9</span>
+          </div>
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.55);margin-bottom:12px">一次购买 · 永久会员权益 · 云端储存</div>
+          <button onclick="purchaseBasicPlan();playClick()" style="width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-size:0.95rem;font-weight:800;letter-spacing:1.5px;cursor:pointer;box-shadow:0 6px 24px rgba(245,158,11,0.4);transition:all 0.25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(245,158,11,0.4)'">立即购买开通使用</button>
+        </div>
+      </div>
+      <!-- 勾选协议 + 购买须知 + 隐私协议 -->
+      <div style="text-align:center;margin-bottom:10px">
+        <div style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:0.72rem;color:#78716c" onclick="toggleAgreeBox(this)">
+          <div class="agree-checkbox" style="width:16px;height:16px;border-width:1.5px"></div>
+          <span>我已阅读并同意</span>
+          <a href="#" onclick="event.stopPropagation();showPurchaseNoticeFromTrial();return false" style="color:#8b5cf6;text-decoration:none;font-weight:500">购买须知</a>
+          <span>和</span>
+          <a href="#" onclick="event.stopPropagation();showPrivacyNoticeFromTrial();return false" style="color:#8b5cf6;text-decoration:none;font-weight:500">隐私协议</a>
+        </div>
+      </div>
+      <!-- 激活码入口 -->
+      <div style="text-align:center;margin-bottom:10px">
+        <a href="#" onclick="document.getElementById('unlockActivationArea').style.display='block';playClick();return false" style="font-size:0.72rem;color:#f59e0b;text-decoration:none;font-weight:600">激活码</a>
+      </div>
+      <!-- 激活码输入区 -->
+      <div id="unlockActivationArea" style="display:none;margin-top:12px;padding:14px;border-radius:14px;background:var(--rose-50);border:1px solid var(--border)">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--ink);margin-bottom:8px;text-align:center">输入激活码 + 手机号开通</div>
+        <input type="tel" id="unlockActivationPhone" class="gate-input" placeholder="绑定手机号（11位）" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:0.95rem;margin-bottom:8px" autocomplete="off">
+        <div style="display:flex;gap:8px">
+          <input type="text" id="unlockActivationCode" class="gate-input" placeholder="6位激活码" maxlength="6" inputmode="numeric" style="flex:1;letter-spacing:6px;font-size:1rem;margin-bottom:0">
+          <button class="btn" onclick="verifyUnlockActivationCode()" style="flex-shrink:0;padding:10px 16px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-weight:700;font-size:0.8rem;border:none;cursor:pointer;white-space:nowrap">开通</button>
+        </div>
+        <div id="unlockActivationMsg" style="font-size:0.7rem;color:var(--rose-500);text-align:center;margin-top:6px;min-height:16px"></div>
+      </div>
+      <!-- 稍后再说 -->
+      <div style="text-align:center;margin-top:14px">
+        <a href="#" onclick="dismissUnlockModal();return false" style="font-size:0.72rem;color:#c4b5fd;text-decoration:none">稍后再说</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ===== 100天变美日记升级版购买弹窗 ===== -->
 <div class="modal-overlay" id="beautyHomeModal">
-  <div class="modal" style="max-width:420px;max-height:85vh;overflow-y:auto;padding:24px 20px">
-    <!-- 锁定提示 -->
-    <div id="beautyLockMsg" style="display:none;text-align:center;padding:20px 0">
-      <div style="font-size:3rem;margin-bottom:12px"></div>
-      <div style="font-size:1rem;font-weight:700;color:#1c1917;margin-bottom:6px">升级版已锁定</div>
-      <div style="font-size:0.82rem;color:#78716c;line-height:1.6;margin-bottom:16px">开通29.9元永久升级版，解锁护肤日记 &amp; 心情日记</div>
-      <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none;padding:12px" onclick="payBeautyUpgrade();playClick()"> 29.9元 立即开通</button>
-      <div style="margin-top:14px;font-size:0.76rem;color:#a8a29e;cursor:pointer;text-decoration:underline" onclick="showBeautyActivationInput();playClick()">我有激活码</div>
-      <!-- 激活码输入区域 -->
-      <div id="beautyActivationArea" style="display:none;margin-top:10px;text-align:left">
-        <div class="input-group" style="margin-bottom:6px">
-          <label>激活码</label>
-          <input type="text" id="beautyActivationCodeInput" placeholder="输入6位激活码" maxlength="6" style="text-align:center;font-size:1rem;letter-spacing:4px" />
+  <!-- 管理员返回按钮 -->
+  <div id="beautyAdminBack" style="display:none;position:fixed;top:16px;left:16px;z-index:9999">
+    <button class="btn" style="padding:8px 16px;border-radius:100px;background:rgba(255,255,255,0.9);color:#1c1917;font-size:0.8rem;font-weight:600;border:none;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.15)" onclick="dismissBeautyUpgradeModal();playClick()"><span style="font-size:1rem">‹</span> 返回管理后台</button>
+  </div>
+  <div class="modal" style="max-width:420px;max-height:85vh;overflow-y:auto;border-radius:20px;padding:0;background:transparent">
+    <!-- Header: 高级深色渐变 -->
+    <div style="background:linear-gradient(160deg,#1a1025 0%,#2d1b4e 40%,#4c1d6b 70%,#7c3aed 100%);padding:36px 28px 28px;text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-60px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,0.25) 0%,transparent 70%)"></div>
+      <div style="position:absolute;bottom:-30px;left:-30px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.2) 0%,transparent 70%)"></div>
+      <div style="position:relative;z-index:1">
+        <h2 style="color:#fff;font-size:1.35rem;font-weight:800;letter-spacing:3px;text-shadow:0 2px 12px rgba(0,0,0,0.3)">100天变美日记</h2>
+        <div style="color:rgba(255,255,255,0.55);font-size:0.7rem;letter-spacing:4px;margin-top:6px">UPGRADE · YOUR BEST SELF</div>
+      </div>
+    </div>
+    <div style="background:#fff;padding:20px 24px 16px;position:relative;margin-top:-12px;border-radius:20px 20px 0 0;z-index:2">
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#faf5ff,#fdf2f8);margin-bottom:10px;border:1px solid rgba(139,92,246,0.08);box-shadow:0 2px 8px rgba(139,92,246,0.04);opacity:0.7">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:0.95rem;font-weight:700;color:#1c1917">护肤日记</div>
+          <div style="font-size:0.72rem;color:#a8a29e;margin-top:2px">每日护肤打卡 · 日历照片 · do脸记录</div>
         </div>
-        <div id="beautyActivationMsg" style="font-size:0.76rem;color:#ef4444;margin-bottom:6px;min-height:18px"></div>
-        <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none" onclick="verifyBeautyActivationCode();playClick()">验证激活码</button>
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="color:#8b5cf6;font-size:0.6rem;line-height:1;border-left:6px solid #8b5cf6;border-top:4px solid transparent;border-bottom:4px solid transparent"></span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#fdf2f8,#fff1f2);margin-bottom:10px;border:1px solid rgba(236,72,153,0.08);box-shadow:0 2px 8px rgba(236,72,153,0.04);opacity:0.7">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:0.95rem;font-weight:700;color:#1c1917">心情日记</div>
+          <div style="font-size:0.72rem;color:#a8a29e;margin-top:2px">心情记录 · 日历照片 · 感恩日记 · 自律打卡</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(236,72,153,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="color:#ec4899;font-size:0.6rem;line-height:1;border-left:6px solid #ec4899;border-top:4px solid transparent;border-bottom:4px solid transparent"></span></div>
+      </div>
+      <!-- 锁定提示（未购买时显示） -->
+      <div id="beautyLockMsg" style="display:none;text-align:center;padding:20px 16px;background:linear-gradient(135deg,#fffbeb,#fef2f2);border-radius:16px;border:1px solid rgba(251,191,36,0.2)">
+        <div style="font-size:2.2rem;margin-bottom:8px;color:#92400e;font-weight:900;letter-spacing:2px">VIP</div>
+        <div style="font-size:0.92rem;font-weight:700;color:#92400e">升级版会员专享</div>
+        <div style="font-size:0.75rem;color:#a8a29e;margin-top:4px;line-height:1.5">29.9元永久解锁护肤日记 · 心情日记</div>
+        <button class="btn btn-primary" style="margin-top:14px;background:linear-gradient(135deg,#7c3aed,#ec4899);border:none;padding:12px 40px;font-size:0.9rem;font-weight:700;border-radius:12px;box-shadow:0 4px 16px rgba(124,58,237,0.3)" onclick="payBeautyUpgrade();playClick()"> 29.9元 永久开通</button>
+        <div style="font-size:0.68rem;color:#c4b5fd;margin-top:10px">一次购买 · 永久会员权益 · 云端储存</div>
+        <!-- 激活码入口 -->
+        <div style="margin-top:12px">
+          <a href="#" onclick="showBeautyActivationInput();return false" style="font-size:0.7rem;color:#f59e0b;text-decoration:underline;font-weight:600">我有激活码</a>
+        </div>
+        <!-- 激活码输入区域 -->
+        <div id="beautyActivationArea" style="display:none;margin-top:10px;text-align:left">
+          <div class="input-group" style="margin-bottom:6px">
+            <label>激活码</label>
+            <input type="text" id="beautyActivationCodeInput" placeholder="输入6位激活码" maxlength="6" style="text-align:center;font-size:1rem;letter-spacing:4px" />
+          </div>
+          <div id="beautyActivationMsg" style="font-size:0.76rem;color:#ef4444;margin-bottom:6px;min-height:18px"></div>
+          <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none" onclick="verifyBeautyActivationCode();playClick()">验证激活码</button>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:12px;justify-content:center">
+          <a href="#" onclick="showPurchaseNotice();return false" style="font-size:0.68rem;color:#8b5cf6;text-decoration:underline">购买须知</a>
+          <a href="#" onclick="showPrivacyNotice();return false" style="font-size:0.68rem;color:#8b5cf6;text-decoration:underline">隐私说明</a>
+        </div>
+      </div>
+      <!-- 价格卡（与19.9弹窗一致风格） -->
+      <div id="beautyPriceCard" style="background:linear-gradient(135deg,#1a1025,#2d1b4e);border-radius:18px;padding:18px 20px;text-align:center;position:relative;overflow:hidden;margin-top:16px;margin-bottom:16px">
+        <div style="position:absolute;top:-15px;right:-15px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,0.3),transparent 70%);pointer-events:none"></div>
+        <div style="position:relative;z-index:1">
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:4px">
+            <span style="font-size:0.7rem;color:rgba(255,255,255,0.5);font-weight:500">¥</span>
+            <span style="font-size:2.4rem;font-weight:900;color:#f472b6;line-height:1;letter-spacing:-1px">29.9</span>
+          </div>
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.55);margin-bottom:14px">一次购买 · 永久会员权益 · 云端储存</div>
+          <button onclick="payBeautyUpgrade();playClick()" style="width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-size:0.95rem;font-weight:800;letter-spacing:1.5px;cursor:pointer;box-shadow:0 6px 24px rgba(124,58,237,0.4);transition:all 0.25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(124,58,237,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(124,58,237,0.4)'">立即购买开通使用</button>
+        </div>
+      </div>
+      <!-- 勾选协议 + 购买须知 + 隐私协议 -->
+      <div style="text-align:center;margin-bottom:10px">
+        <div style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:0.72rem;color:#78716c" onclick="toggleAgreeBox(this)">
+          <div class="agree-checkbox" style="width:16px;height:16px;border-width:1.5px"></div>
+          <span>我已阅读并同意</span>
+          <a href="#" onclick="event.stopPropagation();showPurchaseNotice();return false" style="color:#8b5cf6;text-decoration:none;font-weight:500">购买须知</a>
+          <span>和</span>
+          <a href="#" onclick="event.stopPropagation();showPrivacyNotice();return false" style="color:#8b5cf6;text-decoration:none;font-weight:500">隐私协议</a>
+        </div>
+      </div>
+      <!-- 激活码入口 -->
+      <div style="text-align:center;margin-bottom:12px">
+        <a href="#" onclick="showBeautyActivationInput();return false" style="font-size:0.72rem;color:#f59e0b;text-decoration:none;font-weight:600">激活码</a>
       </div>
     </div>
     <!-- 已开通时显示的内容（由 JS 动态控制） -->
-    <div id="beautySections" style="display:none">
-      <div style="text-align:center;padding:20px 0">
-        <div style="font-size:2.5rem;margin-bottom:10px"></div>
-        <div style="font-size:1.1rem;font-weight:700;color:#1c1917;margin-bottom:4px">100天变美日记</div>
-        <div style="font-size:0.82rem;color:#78716c">选择要记录的日记类型</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
-        <div onclick="openBeautySkincare();playClick()" style="padding:16px;border-radius:14px;background:linear-gradient(135deg,#f3e8ff,#ede4ff);cursor:pointer;text-align:center;transition:all 0.2s;border:1px solid #d8c9f0">
-          <div style="font-size:1.8rem;margin-bottom:4px"></div>
-          <div style="font-weight:700;color:#7c3aed;font-size:0.95rem">护肤日记</div>
-          <div style="font-size:0.76rem;color:#a78bfa;margin-top:2px">记录每日护肤流程与皮肤变化</div>
-        </div>
-        <div onclick="openBeautyMood();playClick()" style="padding:16px;border-radius:14px;background:linear-gradient(135deg,#fce7f3,#fdf2f8);cursor:pointer;text-align:center;transition:all 0.2s;border:1px solid #f0c4da">
-          <div style="font-size:1.8rem;margin-bottom:4px"></div>
-          <div style="font-weight:700;color:#ec4899;font-size:0.95rem">心情日记</div>
-          <div style="font-size:0.76rem;color:#f9a8d4;margin-top:2px">记录每日心情、感恩与自律打卡</div>
-        </div>
+    <div id="beautySections" style="display:none;background:#fff;padding:0 24px 16px">
+      <div style="text-align:center;padding:16px 0">
+        <div style="font-size:2rem;margin-bottom:8px;color:#8b5cf6;font-weight:900;letter-spacing:2px">ON</div>
+        <div style="font-size:0.95rem;font-weight:700;color:#1c1917">升级版已开通</div>
+        <div style="font-size:0.78rem;color:#a8a29e;margin-top:4px">点击上方卡片开始记录</div>
       </div>
     </div>
     <!-- 底部版权信息 -->
-    <div style="text-align:center;margin-top:16px;font-size:0.7rem;color:#c4b5fd">已开通升级版，永久有效</div>
+    <div style="background:#fff;padding:0 24px 20px;text-align:center;border-radius:0 0 20px 20px">
+      <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(236,72,153,0.06));font-size:0.7rem;color:#a8a29e;letter-spacing:1px">UPGRADE · 一次购买 · 永久会员权益 · 云端储存</div>
+      <div id="beautyFooterText" style="margin-top:14px">
+        <button class="btn btn-outline" style="border-color:#e5e7eb;color:#78716c;font-size:0.82rem" onclick="document.getElementById('beautyHomeModal').classList.remove('show');playClick()">关闭</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- ===== 护肤日记弹窗 ===== -->
 <div class="modal-overlay" id="beautySkincareModal">
-  <button class="float-back-fab" onclick="document.getElementById('beautySkincareModal').classList.remove('show');playClick()" style="z-index:9001">←</button>
-  <div class="modal" style="max-width:450px;max-height:85vh;overflow-y:auto;padding:24px 18px">
-    <!-- 倒计时卡片区域 -->
-    <div id="skincareCountdown"></div>
+  <div class="modal" style="max-width:580px;max-height:85vh;overflow-y:auto">
+    <div id="skincareContent">
+      <!-- 倒计时卡片+皮肤状态小字（JS动态填充） -->
+      <div id="skincareCountdown"></div>
 
-    <!-- 皮肤状态摘要 -->
-    <div id="skincareSummary" style="margin-top:8px"></div>
-
-    <!-- 今日打卡区域 -->
-    <div style="margin-top:14px;background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.04)">
-      <div style="font-size:0.82rem;font-weight:700;color:#44403c;margin-bottom:10px">今日护肤打卡</div>
-
-      <!-- 早晚护肤 -->
-      <div class="skincare-check-row" id="check-morningSkincare" onclick="toggleSkincareCheck('morningSkincare');playClick()">
-        <span> 晨间护肤</span>
-        <span class="skincare-check-tick" style="display:none;color:#7c3aed;font-weight:700">✓</span>
-      </div>
-      <div class="skincare-check-row" id="check-nightSkincare" onclick="toggleSkincareCheck('nightSkincare');playClick()">
-        <span> 晚间护肤</span>
-        <span class="skincare-check-tick" style="display:none;color:#7c3aed;font-weight:700">✓</span>
-      </div>
-
-      <!-- 美容院/do脸 -->
-      <div class="skincare-check-row" id="check-salon" onclick="toggleSkincareCheck('salon');playClick()">
-        <span> 美容院护理</span>
-        <span class="skincare-check-tick" style="display:none;color:#7c3aed;font-weight:700">✓</span>
-      </div>
-      <textarea id="beautySalonNote" class="form-input" placeholder="记录美容院做了什么..." style="display:none;margin:0 0 10px 0;font-size:0.82rem;min-height:50px" oninput="autoSaveSkincare()"></textarea>
-
-      <div class="skincare-check-row" id="check-cosmetic" onclick="toggleSkincareCheck('cosmetic');playClick()">
-        <span> do脸小记</span>
-        <span class="skincare-check-tick" style="display:none;color:#7c3aed;font-weight:700">✓</span>
-      </div>
-      <textarea id="beautyCosmeticNote" class="form-input" placeholder="记录do脸项目..." style="display:none;margin:0 0 10px 0;font-size:0.82rem;min-height:50px" oninput="autoSaveSkincare()"></textarea>
-
-      <!-- 身体护理标签 -->
-      <div style="font-size:0.78rem;font-weight:600;color:#78716c;margin:12px 0 6px">身体护理</div>
-      <div id="bodyCareTags" style="display:flex;flex-wrap:wrap;gap:6px">
-        <span class="beauty-tag" data-key="faceCare" onclick="toggleBodyCare(this,'faceCare');playClick()">面部护理</span>
-        <span class="beauty-tag" data-key="oralCare" onclick="toggleBodyCare(this,'oralCare');playClick()">口腔护理</span>
-        <span class="beauty-tag" data-key="neckCare" onclick="toggleBodyCare(this,'neckCare');playClick()">颈部护理</span>
-        <span class="beauty-tag" data-key="lipsCare" onclick="toggleBodyCare(this,'lipsCare');playClick()">护唇</span>
-        <span class="beauty-tag" data-key="bodyCare" onclick="toggleBodyCare(this,'bodyCare');playClick()">身体护理</span>
-        <span class="beauty-tag" data-key="handCare" onclick="toggleBodyCare(this,'handCare');playClick()">手部护理</span>
-        <span class="beauty-tag" data-key="footCare" onclick="toggleBodyCare(this,'footCare');playClick()">脚部护理</span>
-        <span class="beauty-tag" data-key="eyeCare" onclick="toggleBodyCare(this,'eyeCare');playClick()">护眼</span>
-        <span class="beauty-tag" data-key="chestCare" onclick="toggleBodyCare(this,'chestCare');playClick()">胸部护理</span>
-        <span class="beauty-tag" data-key="intimateCare" onclick="toggleBodyCare(this,'intimateCare');playClick()">私处护理</span>
-        <span class="beauty-tag" data-key="hairCare" onclick="toggleBodyCare(this,'hairCare');playClick()">头发护理</span>
-        <span class="beauty-tag" data-key="nailCare" onclick="toggleBodyCare(this,'nailCare');playClick()">美甲</span>
+      <!-- 今日皮肤状态（多选标签 + 自定义输入） -->
+      <div style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:4px">今日皮肤状态</div>
+        <div id="skinStatusTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;margin-bottom:12px">
+          <span class="beauty-tag" data-key="hydrated" onclick="toggleSkinStatus(this,'hydrated')">水润</span>
+          <span class="beauty-tag" data-key="dry" onclick="toggleSkinStatus(this,'dry')">干燥</span>
+          <span class="beauty-tag" data-key="oily" onclick="toggleSkinStatus(this,'oily')">泛油</span>
+          <span class="beauty-tag" data-key="acne" onclick="toggleSkinStatus(this,'acne')">痘痘</span>
+          <span class="beauty-tag" data-key="combo" onclick="toggleSkinStatus(this,'combo')">外油内干</span>
+          <span class="beauty-tag" data-key="closedComedo" onclick="toggleSkinStatus(this,'closedComedo')">闭口</span>
+          <span class="beauty-tag" data-key="acneMark" onclick="toggleSkinStatus(this,'acneMark')">痘印</span>
+          <span class="beauty-tag" data-key="blackhead" onclick="toggleSkinStatus(this,'blackhead')">黑头</span>
+          <span class="beauty-tag" data-key="sting" onclick="toggleSkinStatus(this,'sting')">刺痛</span>
+          <span class="beauty-tag" data-key="largePores" onclick="toggleSkinStatus(this,'largePores')">毛孔粗大</span>
+          <span class="beauty-tag" data-key="itchy" onclick="toggleSkinStatus(this,'itchy')">发痒</span>
+          <span class="beauty-tag" data-key="fineLines" onclick="toggleSkinStatus(this,'fineLines')">干纹</span>
+          <span class="beauty-tag" data-key="dull" onclick="toggleSkinStatus(this,'dull')">暗沉</span>
+          <span class="beauty-tag" data-key="edema" onclick="toggleSkinStatus(this,'edema')">水肿</span>
+          <span class="beauty-tag" data-key="sensitive" onclick="toggleSkinStatus(this,'sensitive')">敏感泛红</span>
+        </div>
+        <input type="text" id="skinStatusCustom" placeholder="自定义皮肤状态，如：毛孔粗大" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:0.9rem;outline:none;background:#fafaf9;font-family:inherit" oninput="autoSaveSkincare()">
       </div>
 
-      <!-- 皮肤状态标签 -->
-      <div style="font-size:0.78rem;font-weight:600;color:#78716c;margin:12px 0 6px">今日皮肤状态</div>
-      <div id="skinStatusTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-        <span class="beauty-tag" data-key="hydrated" onclick="toggleSkinStatus(this,'hydrated');playClick()">水润</span>
-        <span class="beauty-tag" data-key="dry" onclick="toggleSkinStatus(this,'dry');playClick()">干燥</span>
-        <span class="beauty-tag" data-key="oily" onclick="toggleSkinStatus(this,'oily');playClick()">出油</span>
-        <span class="beauty-tag" data-key="mixed" onclick="toggleSkinStatus(this,'mixed');playClick()">混合</span>
-        <span class="beauty-tag" data-key="acne" onclick="toggleSkinStatus(this,'acne');playClick()">长痘</span>
-        <span class="beauty-tag" data-key="dull" onclick="toggleSkinStatus(this,'dull');playClick()">暗沉</span>
-        <span class="beauty-tag" data-key="fine" onclick="toggleSkinStatus(this,'fine');playClick()">细纹</span>
-        <span class="beauty-tag" data-key="sensitive" onclick="toggleSkinStatus(this,'sensitive');playClick()">敏感泛红</span>
+      <!-- 今日打卡（护理项目 + 打勾项） -->
+      <div style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:4px">今日打卡</div>
+
+        <!-- 护理项目（多选标签） -->
+        <div id="bodyCareTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;margin-bottom:12px">
+          <span class="beauty-tag" data-key="faceCare" onclick="toggleBodyCare(this,'faceCare')">面部护理</span>
+          <span class="beauty-tag" data-key="oralCare" onclick="toggleBodyCare(this,'oralCare')">口腔护理</span>
+          <span class="beauty-tag" data-key="neckCare" onclick="toggleBodyCare(this,'neckCare')">颈部护理</span>
+          <span class="beauty-tag" data-key="lipsCare" onclick="toggleBodyCare(this,'lipsCare')">护唇</span>
+          <span class="beauty-tag" data-key="bodyCare" onclick="toggleBodyCare(this,'bodyCare')">身体护理</span>
+          <span class="beauty-tag" data-key="handCare" onclick="toggleBodyCare(this,'handCare')">手部护理</span>
+          <span class="beauty-tag" data-key="footCare" onclick="toggleBodyCare(this,'footCare')">脚部护理</span>
+          <span class="beauty-tag" data-key="eyeCare" onclick="toggleBodyCare(this,'eyeCare')">护眼</span>
+          <span class="beauty-tag" data-key="chestCare" onclick="toggleBodyCare(this,'chestCare')">胸部护理</span>
+          <span class="beauty-tag" data-key="intimateCare" onclick="toggleBodyCare(this,'intimateCare')">私处护理</span>
+          <span class="beauty-tag" data-key="hairCare" onclick="toggleBodyCare(this,'hairCare')">头发护理</span>
+          <span class="beauty-tag" data-key="nailCare" onclick="toggleBodyCare(this,'nailCare')">美甲</span>
+        </div>
+
+        <!-- 自定义打卡项目 -->
+        <textarea id="beautyCustomCheck" placeholder="自定义打卡项目，如：面膜" style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-bottom:12px;resize:vertical;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
+
+        <div class="skincare-check-list">
+          <div class="skincare-check-row" id="check-salon" onclick="toggleSkincareCheck('salon');playClick()">
+            <span class="skincare-check-label">美容院护理</span>
+            <span class="skincare-check-box"><span class="skincare-check-tick" style="display:none">✓</span></span>
+          </div>
+          <textarea id="beautySalonNote" placeholder="护理心得..." style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;margin-bottom:8px;display:none;resize:vertical;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
+          <div class="skincare-check-row" id="check-cosmetic" onclick="toggleSkincareCheck('cosmetic');playClick()">
+            <span class="skincare-check-label">do脸小记</span>
+            <span class="skincare-check-box"><span class="skincare-check-tick" style="display:none">✓</span></span>
+          </div>
+        </div>
+        <textarea id="beautyCosmeticNote" placeholder="do脸项目感受..." style="width:100%;min-height:45px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;background:#fafaf9;margin-top:8px;display:none;resize:vertical;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
       </div>
-      <input type="text" id="skinStatusCustom" class="form-input" placeholder="自定义皮肤状态..." style="font-size:0.82rem;margin-bottom:8px" oninput="autoSaveSkincare()" />
 
-      <!-- 自定义打卡 -->
-      <div style="font-size:0.78rem;font-weight:600;color:#78716c;margin:12px 0 6px">自定义打卡</div>
-      <input type="text" id="beautyCustomCheck" class="form-input" placeholder="自定义打卡项..." style="font-size:0.82rem;margin-bottom:8px" oninput="autoSaveSkincare()" />
-
-      <!-- 护肤日记备注 -->
-      <div style="font-size:0.78rem;font-weight:600;color:#78716c;margin:12px 0 6px">日记备注</div>
-      <textarea id="beautyNote" class="form-input" placeholder="记录护肤心得..." style="min-height:70px;font-size:0.82rem" oninput="autoSaveSkincare()"></textarea>
-
-      <!-- 今日照片区域 -->
-      <div id="skincareTodayPhotoArea" style="margin-top:10px">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center"></div>
+      <!-- 自拍打卡 -->
+      <div style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:8px">自拍记录</div>
+        <div id="skincareTodayPhotoArea"></div>
       </div>
-      <div style="text-align:center;margin-top:8px">
-        <span onclick="document.getElementById('beautyPhotoInput').click();playClick()" style="display:inline-block;padding:6px 16px;border-radius:100px;background:#f5f3ff;color:#7c3aed;font-size:0.76rem;font-weight:600;cursor:pointer;border:1px dashed #c4b5fd">+ 上传照片</span>
-        <input type="file" id="beautyPhotoInput" accept="image/*" multiple style="display:none" onchange="onSkincarePhotoChange(event)" />
+
+      <!-- 护肤日历 -->
+      <div style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:4px">护肤日历</div>
+        <div style="font-size:0.75rem;color:#a8a29e;text-align:center;margin-bottom:10px">点击日期查看/编辑当日记录</div>
+        <div id="skincareCalendar"></div>
+      </div>
+
+      <!-- 备注（日历下方） -->
+      <div style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:8px"> 备注</div>
+        <textarea id="beautyNote" placeholder="记录今天的备注..." style="width:100%;min-height:80px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;resize:vertical;outline:none;font-family:inherit" oninput="autoSaveSkincare()"></textarea>
       </div>
     </div>
+  </div>
+  <button class="beauty-back-btn" onclick="document.getElementById('beautySkincareModal').classList.remove('show');goHome();playClick()"><span class="arr">‹</span>返回</button>
+</div>
 
-    <!-- 护肤日历 -->
-    <div style="margin-top:16px;background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.04)">
-      <div style="font-size:0.82rem;font-weight:700;color:#44403c;margin-bottom:10px">护肤日历</div>
-      <div id="skincareCalendar"></div>
+<!-- 护肤日历日期详情弹窗 -->
+<div class="modal-overlay" id="skincareDayDetailModal">
+  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto;padding:0;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#faf8ff 0%,#f5f0fa 30%,#faf5ff 60%,#fdf2f8 100%)">
+    <div style="background:linear-gradient(135deg,#8b5cf6,#ec4899);padding:20px 24px;text-align:center">
+      <h2 id="skincareDayDetailTitle" style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;letter-spacing:1px">日期详情</h2>
+    </div>
+    <div style="padding:16px 18px" id="skincareDayDetailContent"></div>
+    <div class="modal-actions" style="display:flex;gap:8px;padding:0 18px 18px">
+      <button class="btn btn-outline" id="skincareDetailEditBtn" onclick="toggleSkincareDetailEdit();playClick()" style="flex:1;border-radius:12px">编辑打卡</button>
+      <button class="btn btn-outline" onclick="closeSkincareDayDetail();playClick()" style="flex:1;border-radius:12px">关闭</button>
     </div>
   </div>
 </div>
 
-<!-- ===== 心情日记弹窗 ===== -->
+<!-- 心情日记弹窗 -->
 <div class="modal-overlay" id="beautyMoodModal">
-  <button class="float-back-fab" onclick="document.getElementById('beautyMoodModal').classList.remove('show');playClick()" style="z-index:9001">←</button>
-  <div class="modal" style="max-width:450px;max-height:85vh;overflow-y:auto;padding:24px 18px">
-    <!-- 日期 -->
-    <div id="moodTodayDate" style="text-align:center;font-size:0.82rem;color:#a8a29e;margin-bottom:12px"></div>
-
-    <!-- 心情选择区域 -->
-    <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.04);margin-bottom:12px">
-      <div style="font-size:0.82rem;font-weight:700;color:#44403c;margin-bottom:10px">今日心情（多选）</div>
-      <div id="moodEmojiGrid" class="beauty-mood-grid" style="display:flex;flex-wrap:wrap;gap:8px">
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('happy',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB5C5"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>开心</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('satisfied',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFC8B0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 20 Q18 15 22 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 15 38 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>满足</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('calm',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C8E0FF"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M15 20 L21 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M31 20 L37 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M22 30 L30 30" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/></svg><small>平静</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('excited',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB0B8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><text x="14" y="23" font-size="7" fill="#5C3D4A">★</text><text x="30" y="23" font-size="7" fill="#5C3D4A">★</text><path d="M18 27 Q26 38 34 27" stroke="#5C3D4A" stroke-width="2" fill="#FFE0E8" stroke-linecap="round"/></svg><small>兴奋</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('surprised',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#F0C0FF"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="19" r="3.5" fill="#5C3D4A"/><circle cx="34" cy="19" r="3.5" fill="#5C3D4A"/><circle cx="18" cy="19" r="1.5" fill="white"/><circle cx="34" cy="19" r="1.5" fill="white"/><circle cx="26" cy="30" r="4" fill="#5C3D4A"/></svg><small>惊讶</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('heartbeat',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB0C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><text x="14" y="24" font-size="8" fill="#E8556D">♥</text><text x="30" y="24" font-size="8" fill="#E8556D">♥</text><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>心动</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('moved',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#B0D0FF"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><text x="12" y="15" font-size="4" fill="#FFD700">✦</text><text x="40" y="15" font-size="4" fill="#FFD700">✦</text><path d="M22 30 Q26 34 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>感动</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('shy',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB8C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 20 Q18 18 22 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 18 38 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M22 30 Q26 34 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>害羞</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('confident',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFD0A0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 18 Q18 22 22 18" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><path d="M21 30 Q26 35 31 30" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>自信</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('proud',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFD080"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="19" r="2" fill="#5C3D4A"/><circle cx="34" cy="19" r="2" fill="#5C3D4A"/><path d="M16 14 L18 12 L20 14" stroke="#5C3D4A" stroke-width="1" fill="none"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>自豪</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('loose',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0E8D0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 20 Q18 16 22 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 16 38 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M22 30 Q26 33 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>放松</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('relieved',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C0E8E8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><circle cx="34" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><path d="M22 30 Q26 33 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>释然</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('healed',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFD8C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><text x="10" y="14" font-size="5" fill="#FFB5C5">♡</text><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>治愈</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('hopeful',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#E0C8FF"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A" opacity="0.6"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A" opacity="0.6"/><path d="M22 30 Q26 34 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>期待</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('lost',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0D0E8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="16" cy="19" r="2" fill="#5C3D4A"/><circle cx="36" cy="19" r="2" fill="#5C3D4A"/><path d="M20 28 Q26 32 32 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>迷茫</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('nostalgic',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#E8D0C0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><circle cx="34" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><path d="M22 30 Q26 33 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>怀念</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('bored',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D8D8E0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M15 20 L21 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M31 20 L37 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M22 31 L30 31" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/></svg><small>无聊</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('dazed',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#E0D8F0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><text x="16" y="22" font-size="5" fill="#5C3D4A">×</text><text x="32" y="22" font-size="5" fill="#5C3D4A">×</text><ellipse cx="26" cy="30" rx="3" ry="3.5" fill="#5C3D4A"/></svg><small>懵圈</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('relaxed',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C8D8E8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><path d="M16 14 Q18 12 20 14" stroke="#5C3D4A" stroke-width="0.8" fill="none"/><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>惬意</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('tired',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0C8D8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M15 20 L21 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M31 20 L37 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M22 31 L30 31" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/></svg><small>疲惫</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('nervous',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#E0D0C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/><path d="M20 29 Q23 31 26 29 Q29 27 32 29" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>紧张</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('lonely',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0D8E8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A" opacity="0.6"/><circle cx="34" cy="20" r="2" fill="#5C3D4A" opacity="0.6"/><path d="M22 32 L30 32" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/></svg><small>孤独</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('pitiful',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#E0D0D8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>委屈</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('down',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C8D0E0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>低落</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('sad',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#B8C8E0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>难过</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('anxious',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D8C8C0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/><path d="M20 29 Q23 31 26 29 Q29 27 32 29" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>焦虑</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('scared',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C8C0D0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="3" fill="#5C3D4A"/><circle cx="34" cy="20" r="3" fill="#5C3D4A"/><ellipse cx="26" cy="31" rx="5" ry="6" fill="#5C3D4A"/></svg><small>害怕</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('angry',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB8B0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M13 18 L19 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M19 18 L13 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M33 18 L39 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M39 18 L33 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="2" fill="none" stroke-linecap="round"/></svg><small>生气</small></span>
-        <span class="beauty-emoji-card" onclick="selectMoodEmoji('irritated',this);playClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFC0A8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 18 L20 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M20 18 L14 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M32 18 L38 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M38 18 L32 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M19 29 Q26 36 33 29" stroke="#5C3D4A" stroke-width="1.8" fill="white" stroke-linecap="round"/><path d="M23 30 L23 35" stroke="#5C3D4A" stroke-width="0.8"/><path d="M27 30 L27 35" stroke="#5C3D4A" stroke-width="0.8"/></svg><small>烦躁</small></span>
+  <div class="modal" style="max-width:580px;max-height:85vh;overflow-y:auto">
+    <h2> 心情日记</h2>
+    <!-- 阳光心情卡片：温暖渐变背景包裹日期+状态+心情+日记 -->
+    <div style="background:linear-gradient(135deg,#fff9e6 0%,#fef0e6 25%,#ffe4f0 55%,#f3e8ff 85%,#e0f2fe 100%);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:0 4px 20px rgba(251,191,36,0.1),inset 0 1px 0 rgba(255,255,255,0.6)">
+      <div id="moodTodayDate" onclick="document.getElementById('moodCalendar').scrollIntoView({behavior:'smooth',block:'center'});playClick()" style="text-align:center;font-size:0.82rem;font-weight:700;color:#92400e;letter-spacing:0.5px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed rgba(251,191,36,0.3);cursor:pointer"></div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:0.8rem;color:#92400e;font-weight:600"> 当前状态</label>
+        <input type="text" id="moodStatus" placeholder="此刻的感受，一句话记录..." maxlength="50" style="width:100%;padding:10px 14px;border:1.5px solid rgba(251,191,36,0.3);border-radius:12px;font-size:0.95rem;outline:none;background:rgba(255,255,255,0.7);margin-top:6px;backdrop-filter:blur(4px)" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'">
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:0.8rem;color:#92400e;font-weight:600">今日心情</label>
+        <div id="moodEmojiGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;justify-content:flex-start">
+                    <span class="beauty-emoji-card" onclick="selectMoodEmoji('happy',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB5C5"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>开心</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('satisfied',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFC8B0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 20 Q18 15 22 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 15 38 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>满足</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('surprised',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#F0C0FF"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="19" r="3.5" fill="#5C3D4A"/><circle cx="34" cy="19" r="3.5" fill="#5C3D4A"/><circle cx="18" cy="19" r="1.5" fill="white"/><circle cx="34" cy="19" r="1.5" fill="white"/><circle cx="26" cy="30" r="4" fill="#5C3D4A"/></svg><small>惊喜</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('heartbeat',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB0C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><text x="14" y="24" font-size="8" fill="#E8556D">♥</text><text x="30" y="24" font-size="8" fill="#E8556D">♥</text><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>心动</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('moved',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#B0D0FF"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><text x="12" y="15" font-size="4" fill="#FFD700">✦</text><text x="40" y="15" font-size="4" fill="#FFD700">✦</text><path d="M22 30 Q26 34 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>感动</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('shy',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB8C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 20 Q18 18 22 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 18 38 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M22 30 Q26 34 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>害羞</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('calm',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C8E0FF"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M15 20 L21 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M31 20 L37 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M22 30 L30 30" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/></svg><small>平静</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('excited',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB0B8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><text x="14" y="23" font-size="7" fill="#5C3D4A">★</text><text x="30" y="23" font-size="7" fill="#5C3D4A">★</text><path d="M18 27 Q26 38 34 27" stroke="#5C3D4A" stroke-width="2" fill="#FFE0E8" stroke-linecap="round"/></svg><small>激动</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('confident',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFD0A0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 18 Q18 22 22 18" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><path d="M21 30 Q26 35 31 30" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>自信</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('proud',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFD080"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="19" r="2" fill="#5C3D4A"/><circle cx="34" cy="19" r="2" fill="#5C3D4A"/><path d="M16 14 L18 12 L20 14" stroke="#5C3D4A" stroke-width="1" fill="none"/><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>骄傲</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('loose',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0E8D0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 20 Q18 16 22 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 16 38 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M22 30 Q26 33 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>松弛</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('relieved',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C0E8E8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><circle cx="34" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><path d="M22 30 Q26 33 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>释然</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('healed',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFD8C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><text x="10" y="14" font-size="5" fill="#FFB5C5">♡</text><path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>治愈</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('hopeful',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#E0C8FF"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A" opacity="0.6"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A" opacity="0.6"/><path d="M22 30 Q26 34 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>憧憬</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('lost',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0D0E8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="16" cy="19" r="2" fill="#5C3D4A"/><circle cx="36" cy="19" r="2" fill="#5C3D4A"/><path d="M20 28 Q26 32 32 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>迷茫</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('nostalgic',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#E8D0C0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><circle cx="34" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><path d="M22 30 Q26 33 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>怀念</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('bored',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D8D8E0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M15 20 L21 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M31 20 L37 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M22 31 L30 31" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/></svg><small>无聊</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('dazed',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#E0D8F0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><text x="16" y="22" font-size="5" fill="#5C3D4A">×</text><text x="32" y="22" font-size="5" fill="#5C3D4A">×</text><ellipse cx="26" cy="30" rx="3" ry="3.5" fill="#5C3D4A"/></svg><small>恍惚</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('relaxed',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C8D8E8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><path d="M16 14 Q18 12 20 14" stroke="#5C3D4A" stroke-width="0.8" fill="none"/><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>无助</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('tired',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0C8D8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M15 20 L21 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M31 20 L37 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M22 31 L30 31" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/></svg><small>疲惫</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('nervous',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#E0D0C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/><path d="M20 29 Q23 31 26 29 Q29 27 32 29" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>紧张</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('lonely',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0D8E8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A" opacity="0.6"/><circle cx="34" cy="20" r="2" fill="#5C3D4A" opacity="0.6"/><path d="M22 32 L30 32" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/></svg><small>孤独</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('pitiful',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#E0D0D8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><text x="13" y="28" font-size="5" fill="#88BBEE"></text><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>可怜</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('down',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C8D0E0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>低落</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('aloof',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#B8C0D8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><path d="M22 32 L30 32" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/></svg><small>压抑</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('bitter',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0C0D0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><circle cx="34" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>心酸</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('wronged',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D8C8D8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><text x="13" y="28" font-size="5" fill="#88BBEE"></text><path d="M20 32 Q23 30 26 32 Q29 34 32 32" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>委屈</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('cold',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C0C8D8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><path d="M22 31 L30 31" stroke="#5C3D4A" stroke-width="1.2" stroke-linecap="round"/></svg><small>冷漠</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('sad',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#B8C8E0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><text x="11" y="29" font-size="6" fill="#88BBEE"></text><text x="35" y="29" font-size="6" fill="#88BBEE"></text><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><small>难过</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('anxious',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D8C8C0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/><path d="M20 29 Q23 31 26 29 Q29 27 32 29" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>焦虑</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('scared',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#C8C0D0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="18" cy="20" r="3" fill="#5C3D4A"/><circle cx="34" cy="20" r="3" fill="#5C3D4A"/><ellipse cx="26" cy="31" rx="5" ry="6" fill="#5C3D4A"/></svg><small>恐惧</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('angry',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFB8B0"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M13 18 L19 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M19 18 L13 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M33 18 L39 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M39 18 L33 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="2" fill="none" stroke-linecap="round"/></svg><small>生气</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('irritated',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#FFC0A8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><path d="M14 18 L20 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M20 18 L14 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M32 18 L38 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M38 18 L32 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M19 29 Q26 36 33 29" stroke="#5C3D4A" stroke-width="1.8" fill="white" stroke-linecap="round"/><path d="M23 30 L23 35" stroke="#5C3D4A" stroke-width="0.8"/><path d="M27 30 L27 35" stroke="#5C3D4A" stroke-width="0.8"/></svg><small>烦躁</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('jealous',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D0C8B8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/><path d="M20 32 Q26 28 32 32" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>妒忌</small></span>
+          <span class="beauty-emoji-card" onclick="selectMoodEmoji('confused',this)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52"><circle cx="26" cy="26" r="24" fill="#D8D0C8"/><circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/><path d="M20 28 Q26 32 32 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><small>疑惑</small></span>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:0.8rem;color:#92400e;font-weight:600">日记本</label>
+        <textarea id="moodDiary" placeholder="今天发生了什么？记录下你的感受和想法..." maxlength="1000" style="width:100%;min-height:280px;padding:16px 18px;border:1.5px solid rgba(251,191,36,0.3);border-radius:14px;font-size:0.95rem;resize:vertical;outline:none;font-family:inherit;margin-top:6px;background:rgba(255,255,255,0.7);line-height:1.8;backdrop-filter:blur(4px)" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'"></textarea>
+        <div style="text-align:right;font-size:0.72rem;color:#c8c4c0" id="moodCharCount">0/1000</div>
+      </div>
+      <!-- 感恩日记 -->
+      <div style="margin-bottom:0;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(254,243,199,0.5),rgba(254,215,170,0.35));border:1px solid rgba(251,191,36,0.2);box-shadow:0 2px 12px rgba(251,191,36,0.08);margin-top:16px">
+        <label style="font-size:0.8rem;color:#92400e;font-weight:700;letter-spacing:0.3px;margin-bottom:10px;display:block">感恩日记</label>
+        <input type="text" id="gratitude1" placeholder="今天你想感恩的第一件事……" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid rgba(251,191,36,0.3);border-radius:12px;font-size:0.95rem;outline:none;background:rgba(255,255,255,0.7);backdrop-filter:blur(4px);margin-bottom:8px;transition:border-color 0.2s" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'">
+        <input type="text" id="gratitude2" placeholder="今天你想感恩的第二件事……" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid rgba(251,191,36,0.3);border-radius:12px;font-size:0.95rem;outline:none;background:rgba(255,255,255,0.7);backdrop-filter:blur(4px);margin-bottom:8px;transition:border-color 0.2s" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'">
+        <input type="text" id="gratitude3" placeholder="今天你想感恩的第三件事……" maxlength="30" style="width:100%;padding:10px 14px;border:1.5px solid rgba(251,191,36,0.3);border-radius:12px;font-size:0.95rem;outline:none;background:rgba(255,255,255,0.7);backdrop-filter:blur(4px);transition:border-color 0.2s" oninput="autoSaveMood()" onfocus="this.style.borderColor='#fbbf24'" onblur="this.style.borderColor='rgba(251,191,36,0.3)'">
       </div>
     </div>
-
-    <!-- 今日状态 -->
-    <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.04);margin-bottom:12px">
-      <div style="font-size:0.82rem;font-weight:700;color:#44403c;margin-bottom:8px">今日状态</div>
-      <input type="text" id="moodStatus" class="form-input" placeholder="一句话总结今天的状态..." style="font-size:0.82rem" oninput="autoSaveMood()" />
+    <!-- 心情照片打卡 -->
+    <div style="margin-bottom:16px">
+      <div class="card-title" style="margin-bottom:8px">心情照片</div>
+      <div id="moodTodayPhotoArea"></div>
     </div>
-
-    <!-- 日记 -->
-    <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.04);margin-bottom:12px">
-      <div style="font-size:0.82rem;font-weight:700;color:#44403c;margin-bottom:8px">日记</div>
-      <textarea id="moodDiary" class="form-input" placeholder="记录今天发生的事情..." style="min-height:100px;font-size:0.82rem" oninput="autoSaveMood();document.getElementById('moodCharCount').textContent=this.value.length+'/1000'"></textarea>
-      <div id="moodCharCount" style="text-align:right;font-size:0.72rem;color:#a8a29e;margin-top:4px">0/1000</div>
-    </div>
-
-    <!-- 感恩日记 -->
-    <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.04);margin-bottom:12px">
-      <div style="font-size:0.82rem;font-weight:700;color:#44403c;margin-bottom:8px">感恩日记</div>
-      <input type="text" id="gratitude1" class="form-input" placeholder="感恩一..." style="font-size:0.82rem;margin-bottom:6px" oninput="autoSaveMood()" />
-      <input type="text" id="gratitude2" class="form-input" placeholder="感恩二..." style="font-size:0.82rem;margin-bottom:6px" oninput="autoSaveMood()" />
-      <input type="text" id="gratitude3" class="form-input" placeholder="感恩三..." style="font-size:0.82rem" oninput="autoSaveMood()" />
-    </div>
-
-    <!-- 自律打卡 -->
-    <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.04);margin-bottom:12px">
-      <div style="font-size:0.82rem;font-weight:700;color:#44403c;margin-bottom:10px">自律打卡</div>
+    <div style="margin-bottom:16px">
+      <div style="font-weight:600;font-size:0.9rem;margin-bottom:8px">自律打卡</div>
       <div id="disciplineGrid" style="display:flex;flex-wrap:wrap;gap:8px">
-        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_early');playClick()"> 早起</span>
-        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_water');playClick()"> 喝足水</span>
-        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_exercise');playClick()"> 运动</span>
-        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_read');playClick()"> 阅读</span>
-        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_nosugar');playClick()"> 戒糖</span>
-        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_nophone');playClick()"> 少刷手机</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_earlyRise')">早起</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_water')"> 喝水</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_meditation')">冥想</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_podcast')">听播客</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_read')">阅读</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_news')">今日新闻</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_study')">学习打卡</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_newSkill')"> 学习新技能</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_english')">学英语</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_journal')">写日记</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_gratitude')">感恩日记</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_plan')">写今日规划</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_cook')">做饭</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_cleanRoom')">打扫房间</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_exercise')">运动</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_declutter')">断舍离</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_lessScreen')">少玩电子产品</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_skincare')"> 护肤</span>
+        <span class="beauty-check" onclick="toggleBeautyCheck(this,'disc_earlySleep')">早睡</span>
       </div>
-      <!-- 自定义打卡 -->
-      <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
-        <span id="moodCustomCheckTag" style="display:none"></span>
-        <input type="text" id="moodCustomCheck" class="form-input" placeholder="自定义打卡项..." style="font-size:0.82rem;flex:1" oninput="autoSaveMood()" />
-      </div>
+      <input type="text" id="moodCustomCheck" placeholder="自定义打卡项目，如：跑步5公里" style="width:100%;min-height:42px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;outline:none;background:#fafaf9;margin-top:10px;resize:vertical;font-family:inherit" oninput="autoSaveMood()">
     </div>
-
-    <!-- 今日照片区域 -->
-    <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.04);margin-bottom:12px">
-      <div style="font-size:0.82rem;font-weight:700;color:#44403c;margin-bottom:8px">今日照片</div>
-      <div id="moodTodayPhotoArea">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center"></div>
-      </div>
-      <div style="text-align:center;margin-top:8px">
-        <span onclick="document.getElementById('beautyMoodPhotoInput').click();playClick()" style="display:inline-block;padding:6px 16px;border-radius:100px;background:#fdf2f8;color:#ec4899;font-size:0.76rem;font-weight:600;cursor:pointer;border:1px dashed #f9a8d4">+ 上传照片</span>
-        <input type="file" id="beautyMoodPhotoInput" accept="image/*" multiple style="display:none" onchange="onMoodPhotoChange(event)" />
-      </div>
-    </div>
-
-    <!-- 心情日历 -->
-    <div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.04)">
-      <div style="font-size:0.82rem;font-weight:700;color:#44403c;margin-bottom:10px">心情日历</div>
+    <div style="margin-top:4px;margin-bottom:16px;text-align:center;font-size:0.72rem;color:#a8a29e"> 数据自动保存，永久留存</div>
+    <div style="margin-bottom:16px">
+      <div style="font-weight:600;font-size:0.9rem;margin-bottom:4px">心情日历</div>
+      <div style="font-size:0.75rem;color:#a8a29e;text-align:center;margin-bottom:10px">点击日期查看当日记录</div>
       <div id="moodCalendar"></div>
     </div>
   </div>
+  <button class="beauty-back-btn" onclick="document.getElementById('beautyMoodModal').classList.remove('show');goHome();playClick()"><span class="arr">‹</span>返回</button>
 </div>
+
+<!-- 心情日历日期详情弹窗 -->
+<div class="modal-overlay" id="moodDayDetailModal">
+  <div class="modal" style="max-width:420px;max-height:80vh;overflow-y:auto;padding:0;border-radius:20px;overflow:hidden">
+    <div style="background:linear-gradient(135deg,#ec4899,#f59e0b);padding:20px 24px;text-align:center">
+      <h2 id="moodDayDetailTitle" style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;letter-spacing:1px">日期详情</h2>
+    </div>
+    <div style="padding:16px 18px" id="moodDayDetailContent"></div>
+    <div class="modal-actions" style="display:flex;gap:8px;padding:0 18px 18px">
+      <button class="btn btn-outline" id="moodDetailEditBtn" onclick="toggleMoodDetailEdit();playClick()" style="flex:1;border-radius:12px">编辑</button>
+      <button class="btn btn-outline" onclick="closeMoodDayDetail();playClick()" style="flex:1;border-radius:12px">关闭</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- ===== 底部导航栏 ===== -->
 <nav class="bottom-nav" id="bottomNav">
@@ -2365,6 +2607,41 @@ _loadCosSdk(0);
     <div class="modal-actions">
       <button class="btn btn-outline" id="periodDetailAction" onclick="cancelPeriodFromDetail();playClick()">取消经期</button>
       <button class="btn btn-outline" onclick="closePeriodDetail();playClick()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 日期详情编辑弹窗（完整记录表点击日期） -->
+<div class="modal-overlay" id="dayDetailModal">
+  <div class="modal" style="max-width:500px;max-height:85vh;overflow-y:auto">
+    <h2>日期详情</h2>
+    <div id="dayDetailContent"></div>
+    <div id="dayDetailEdit" style="display:none">
+      <style>
+        .edit-form .edit-field{width:100%;margin-top:4px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);outline:none;background:#fff;color:var(--ink);font-size:1rem;font-weight:500;letter-spacing:0;font-family:inherit;transition:border-color 0.2s;box-shadow:none}
+        .edit-form .edit-field:focus{border-color:var(--rose-400)}
+        .edit-form .edit-field::placeholder{color:#C4B5FD}
+        .edit-form select.edit-field{padding-right:24px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237C3AED' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 10px center}
+        .edit-form textarea.edit-field{line-height:1.5;min-height:90px;resize:vertical}
+      </style>
+      <div class="edit-form" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div><label style="font-size:0.8rem;color:var(--text-l)">晨重(<span id="editUnitLabel">斤</span>)</label><input type="number" step="0.1" id="editWeightAM" class="edit-field" placeholder="晨重"></div>
+        <div><label style="font-size:0.8rem;color:var(--text-l)">晚重(<span class="editUnitLabel2">斤</span>)</label><input type="number" step="0.1" id="editWeightPM" class="edit-field" placeholder="晚重"></div>
+        <div><label style="font-size:0.8rem;color:var(--text-l)">排便</label><select id="editBM" class="edit-field"><option value="">—</option><option value="有">有</option><option value="无">无</option><option value="便秘">便秘</option></select></div>
+        <div><label style="font-size:0.8rem;color:var(--text-l)">饮水(杯)</label><input type="number" id="editWater" class="edit-field" placeholder="0" min="0"></div>
+        <div><label style="font-size:0.8rem;color:var(--text-l)">饮食</label><select id="editDiet" class="edit-field"><option value="">—</option><option value="液断">液断</option><option value="轻断食">轻断食</option><option value="少餐">少餐</option><option value="正餐">正餐</option><option value="放纵">放纵</option></select></div>
+        <div><label style="font-size:0.8rem;color:var(--text-l)">运动</label><select id="editExercise" class="edit-field"><option value="">—</option><option value="有运动">有运动</option><option value="无运动">无运动</option><option value="有氧运动">有氧运动</option><option value="力量训练">力量训练</option><option value="瑜伽拉伸">瑜伽拉伸</option><option value="散步">散步</option></select></div>
+        <div><label style="font-size:0.8rem;color:var(--text-l)">体脂率(%)</label><input type="number" step="0.1" id="editFat" class="edit-field" placeholder="体脂率" min="0"></div>
+      </div>
+      <div class="edit-form" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">
+        <div><label style="font-size:0.8rem;color:var(--text-l)">胸围(cm)</label><input type="number" step="0.1" id="editBust" class="edit-field" placeholder="胸围" min="0"></div>
+        <div><label style="font-size:0.8rem;color:var(--text-l)">腰围(cm)</label><input type="number" step="0.1" id="editWaist" class="edit-field" placeholder="腰围" min="0"></div>
+        <div><label style="font-size:0.8rem;color:var(--text-l)">臀围(cm)</label><input type="number" step="0.1" id="editHip" class="edit-field" placeholder="臀围" min="0"></div>
+      </div>
+      <div class="edit-form" style="margin-bottom:12px"><label style="font-size:0.8rem;color:var(--text-l)">心情日记</label><textarea id="editNote" class="edit-field" placeholder="今天的心情..."></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeDayDetail();playClick()">关闭</button>
     </div>
   </div>
 </div>
@@ -4322,6 +4599,8 @@ function updateBottomNavActive(active) {
 
 /* 点击底部"主页" — 切到每日记录并置顶 */
 function goHome() {
+  /* 清除 body 滚动锁定（防止返回后页面无法下滑） */
+  document.body.style.overflow = ''; document.body.style.position = ''; document.body.style.width = ''; document.body.style.top = ''; window.scrollTo(0, _bodyScrollY || 0);
   /* 隐藏占位页面 */
   document.getElementById('posterPage').style.display = 'none';
   document.getElementById('myPage').style.display = 'none';
@@ -4835,6 +5114,9 @@ function checkTrialExpiredPopup() {
   _trialLocked = true;
   _bodyScrollY = window.scrollY; document.body.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.width = '100%'; document.body.style.top = '-' + _bodyScrollY + 'px';
   document.getElementById('trialExpiredModal').classList.add('show');
+  var tm = document.getElementById('trialExpiredModal');
+  var tinner = tm ? tm.querySelector('.modal') : null;
+  if (tinner) tinner.scrollTop = 0;
   /* 添加锁定提示条 */
   var banner = document.getElementById('lockBanner');
   if (banner) banner.style.display = 'flex';
@@ -4878,11 +5160,39 @@ function previewTrialExpiredPopup() {
   if (adminBack) adminBack.style.display = 'block';
   _bodyScrollY = window.scrollY; document.body.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.width = '100%'; document.body.style.top = '-' + _bodyScrollY + 'px';
   document.getElementById('trialExpiredModal').classList.add('show');
+  var m = document.getElementById('trialExpiredModal');
+  var inner = m ? m.querySelector('.modal') : null;
+  if (inner) inner.scrollTop = 0;
 }
 
-/* 管理员后台预览29.9升级弹窗 */
+/* 管理员后台预览29.9升级弹窗 — 强制显示完整购买页面 */
 function previewBeautyUpgradeModal() {
+  _bodyScrollY = window.scrollY; document.body.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.width = '100%'; document.body.style.top = '-' + _bodyScrollY + 'px';
+  /* 管理员预览：强制显示锁定状态（购买页面），隐藏已开通内容 */
+  var lockMsg = document.getElementById('beautyLockMsg');
+  var sections = document.getElementById('beautySections');
+  var footerText = document.getElementById('beautyFooterText');
+  if (lockMsg) lockMsg.style.display = 'block';
+  if (sections) sections.style.display = 'none';
+  if (footerText) footerText.innerHTML = '<span style="font-size:0.72rem;color:#c4b5fd">已开通升级版，永久有效</span>';
+  /* 显示管理员返回按钮 */
+  var adminBack = document.getElementById('beautyAdminBack');
+  if (adminBack) adminBack.style.display = 'block';
   document.getElementById('beautyHomeModal').classList.add('show');
+  var bm = document.getElementById('beautyHomeModal');
+  var binner = bm ? bm.querySelector('.modal') : null;
+  if (binner) binner.scrollTop = 0;
+}
+
+/* 关闭29.9弹窗（管理员预览返回） */
+function dismissBeautyUpgradeModal() {
+  document.getElementById('beautyHomeModal').classList.remove('show');
+  document.body.style.overflow = ''; document.body.style.position = ''; document.body.style.width = ''; document.body.style.top = ''; window.scrollTo(0, _bodyScrollY || 0);
+  var adminBack = document.getElementById('beautyAdminBack');
+  if (adminBack) adminBack.style.display = 'none';
+  /* 恢复底部按钮 */
+  var footerText = document.getElementById('beautyFooterText');
+  if (footerText) footerText.innerHTML = '<button class="btn btn-outline" style="border-color:#e5e7eb;color:#78716c;font-size:0.82rem" onclick="document.getElementById(\'beautyHomeModal\').classList.remove(\'show\');playClick()">关闭</button>';
 }
 
 /* 重置管理员模拟状态 */
@@ -4901,6 +5211,9 @@ function openBasicPlanFromHero() {
   _pendingPurchaseType = 'basic';
   _bodyScrollY = window.scrollY; document.body.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.width = '100%'; document.body.style.top = '-' + _bodyScrollY + 'px';
   document.getElementById('unlockModal').classList.add('show');
+  var um = document.getElementById('unlockModal');
+  var uinner = um ? um.querySelector('.modal') : null;
+  if (uinner) uinner.scrollTop = 0;
 }
 
 /* 关闭主动购买弹窗（稍后再说） */
@@ -4945,8 +5258,25 @@ function verifyUnlockActivationCode() {
   renderAll();
 }
 
+/* 切换协议勾选状态（弹窗用） */
+function toggleAgreeBox(el) {
+  var cb = el.querySelector('.agree-checkbox');
+  if (cb) {
+    cb.classList.toggle('checked');
+    playClick();
+  }
+}
+
 /* 19.9元购买普通版 */
 function purchaseBasicPlan() {
+  /* 检查勾选协议 */
+  var modal = document.getElementById('unlockModal');
+  if (!modal.classList.contains('show')) modal = document.getElementById('trialExpiredModal');
+  var cb = modal ? modal.querySelector('.agree-checkbox') : null;
+  if (cb && !cb.classList.contains('checked')) {
+    showToast('请先勾选同意购买须知和隐私协议');
+    return;
+  }
   document.getElementById('trialExpiredModal').classList.remove('show');
   document.getElementById('unlockModal').classList.remove('show');
   document.body.style.overflow = ''; document.body.style.position = ''; document.body.style.width = ''; document.body.style.top = ''; window.scrollTo(0, _bodyScrollY || 0);
@@ -7994,6 +8324,12 @@ function openBeautyUpgrade() {
 }
 
 function payBeautyUpgrade() {
+  /* 检查勾选协议 */
+  var cb = document.querySelector('#beautyHomeModal .agree-checkbox');
+  if (cb && !cb.classList.contains('checked')) {
+    showToast('请先勾选同意购买须知和隐私协议');
+    return;
+  }
   showPurchaseNotice();
 }
 function confirmBeautyUpgrade() {

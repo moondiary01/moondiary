@@ -21,25 +21,45 @@ Page({
       { value: 'dry', label: '干性' },
       { value: 'oily', label: '油性' },
       { value: 'combination', label: '混合' },
-      { value: 'sensitive', label: '敏感' }
+      { value: 'sensitive', label: '敏感' },
+      { value: 'acne', label: '痘痘' }
     ],
-    // checkbox 打勾项（美容院护理 + do脸日记）
+    // 肤色选择
+    skinTone: '',
+    skinToneLabel: '未设置',
+    skinToneOptions: [
+      { value: 'coolWhite', label: '冷白' },
+      { value: 'naturalWhite', label: '自然白' },
+      { value: 'yellow1', label: '黄一白' },
+      { value: 'yellow2', label: '黄二白' },
+      { value: 'lightWheat', label: '浅小麦' },
+      { value: 'deepWheat', label: '深小麦' }
+    ],
+    // checkbox 打勾项（美容院护理 + do脸小记）
     checkItems: [
-      { key: 'salon', label: '美容院护理', icon: '💆' },
-      { key: 'cosmetic', label: 'do脸日记', icon: '💉' }
+      { key: 'salon', label: '美容院护理' },
+      { key: 'cosmetic', label: 'do脸小记' }
     ],
-    // 护理项目多选（面部护理排在最前面）
+    // 护理项目多选（12种，与HTML版一致）
     bodyCareOptions: [
       { key: 'faceCare', label: '面部护理' },
       { key: 'oralCare', label: '口腔护理' },
       { key: 'neckCare', label: '颈部护理' },
+      { key: 'lipsCare', label: '护唇' },
       { key: 'bodyCare', label: '身体护理' },
       { key: 'handCare', label: '手部护理' },
-      { key: 'footCare', label: '脚部护理' }
+      { key: 'footCare', label: '脚部护理' },
+      { key: 'eyeCare', label: '护眼' },
+      { key: 'chestCare', label: '胸部护理' },
+      { key: 'intimateCare', label: '私处护理' },
+      { key: 'hairCare', label: '头发护理' },
+      { key: 'nailCare', label: '美甲' }
     ],
     bodyCareSelected: [],
-    // 皮肤状态预设标签
-    skinStatusOptions: ['水润', '干燥', '出油', '混合', '长痘', '暗沉', '细纹', '敏感泛红'],
+    // 皮肤状态预设标签（15种，与HTML版一致）
+    skinStatusOptions: ['水润', '干燥', '泛油', '痘痘', '外油内干', '闭口', '痘印', '黑头', '刺痛', '毛孔粗大', '发痒', '干纹', '暗沉', '水肿', '敏感泛红'],
+    // 自定义打卡
+    beautyCustomCheck: '',
     // 顶部摘要：已选打卡项标签列表
     topSummaryTags: [],
     // 日历
@@ -137,16 +157,30 @@ Page({
         }
       }
 
+      // 计算 skinToneLabel
+      var skinTone = (data.skinProfile && data.skinProfile.tone) || ''
+      var skinToneLabel = '未设置'
+      var toneOptions = self.data.skinToneOptions
+      for (var k = 0; k < toneOptions.length; k++) {
+        if (toneOptions[k].value === skinTone) {
+          skinToneLabel = toneOptions[k].label
+          break
+        }
+      }
+
       self.setData({
         skinData: data,
         todayRecord: record,
         skinType: skinType,
         skinTypeLabel: skinTypeLabel,
+        skinTone: skinTone,
+        skinToneLabel: skinToneLabel,
         startDate: data.startDate,
         endDate: data.endDate,
         totalDays: total,
         currentDay: dayDiff,
-        bodyCareSelected: record.bodyCare || []
+        bodyCareSelected: record.bodyCare || [],
+        beautyCustomCheck: record.customCheck || ''
       })
       self.updateTopSummary()
       self.renderCalendar()
@@ -212,11 +246,35 @@ Page({
     })
   },
 
+  // ===== 肤色选择 =====
+  onSkinToneChange: function () {
+    var self = this
+    audio.playClick()
+    var labels = this.data.skinToneOptions.map(function (o) { return o.label })
+    wx.showActionSheet({
+      itemList: labels,
+      success: function (res) {
+        var selected = self.data.skinToneOptions[res.tapIndex]
+        self.setData({
+          skinTone: selected.value,
+          skinToneLabel: selected.label
+        })
+        self.autoSaveSkinProfile()
+      }
+    })
+  },
+
+  // ===== 自定义打卡输入 =====
+  onCustomCheckInput: function (e) {
+    this.setData({ beautyCustomCheck: e.detail.value })
+  },
+
   autoSaveSkinProfile: function () {
     var data = this.data.skinData
     if (!data) return
     data.skinProfile = {
       type: this.data.skinType,
+      tone: this.data.skinTone,
       updatedAt: Date.now()
     }
     beautyStore.saveSkincare(app.globalData.userKey, data, function () {})
@@ -332,8 +390,10 @@ Page({
 
     data.skinProfile = {
       type: this.data.skinType,
+      tone: this.data.skinTone,
       updatedAt: Date.now()
     }
+    record.customCheck = this.data.beautyCustomCheck
 
     var found = false
     var now = Date.now()
@@ -493,6 +553,97 @@ Page({
 
   onSkinStatusCustomInput: function (e) {
     this.setData({ detailSkinStatusCustom: e.detail.value })
+  },
+
+  // ===== 今日自拍记录（主页面照片上传） =====
+  onUploadTodayPhoto: function () {
+    var self = this
+    audio.playClick()
+    if (wx.chooseMedia) {
+      wx.chooseMedia({
+        count: 1,
+        mediaType: ['image'],
+        sourceType: ['album', 'camera'],
+        sizeType: ['compressed'],
+        success: function (res) {
+          var tempPath = res.tempFiles && res.tempFiles[0] ? res.tempFiles[0].tempFilePath : ''
+          if (!tempPath && res.tempFilePaths && res.tempFilePaths[0]) tempPath = res.tempFilePaths[0]
+          if (!tempPath) { wx.showToast({ title: '获取照片失败', icon: 'none' }); return }
+          self.processTodayPhoto(tempPath)
+        },
+        fail: function () { self.fallbackTodayChooseImage() }
+      })
+    } else {
+      self.fallbackTodayChooseImage()
+    }
+  },
+
+  fallbackTodayChooseImage: function () {
+    var self = this
+    wx.chooseImage({
+      count: 1, sizeType: ['compressed'], sourceType: ['album', 'camera'],
+      success: function (res) {
+        var tempPath = res.tempFilePaths && res.tempFilePaths[0]
+        if (!tempPath) { wx.showToast({ title: '获取照片失败', icon: 'none' }); return }
+        self.processTodayPhoto(tempPath)
+      }
+    })
+  },
+
+  processTodayPhoto: function (tempPath) {
+    var self = this
+    wx.showLoading({ title: '处理中...' })
+    var fsm = wx.getFileSystemManager()
+    fsm.readFile({
+      filePath: tempPath,
+      encoding: 'base64',
+      success: function (fileRes) {
+        wx.hideLoading()
+        var ext = 'jpeg'
+        var lowerPath = tempPath.toLowerCase()
+        if (lowerPath.indexOf('.png') > -1) ext = 'png'
+        var base64Data = 'data:image/' + ext + ';base64,' + fileRes.data
+        if (fileRes.data.length > 1.5 * 1024 * 1024) {
+          wx.showToast({ title: '图片过大，请选小图', icon: 'none', duration: 2500 })
+          return
+        }
+        var record = self.data.todayRecord
+        record.photo = base64Data
+        self.setData({ todayRecord: record })
+        self.autoSave()
+        wx.showToast({ title: '照片已添加', icon: 'success' })
+      },
+      fail: function () {
+        wx.hideLoading()
+        var record = self.data.todayRecord
+        record.photo = tempPath
+        self.setData({ todayRecord: record })
+        self.autoSave()
+        wx.showToast({ title: '照片已添加(本地)', icon: 'none' })
+      }
+    })
+  },
+
+  onViewTodayPhoto: function () {
+    if (this.data.todayRecord.photo) {
+      wx.previewImage({ current: this.data.todayRecord.photo, urls: [this.data.todayRecord.photo] })
+    }
+  },
+
+  onDeleteTodayPhoto: function () {
+    var self = this
+    wx.showModal({
+      title: '确认删除', content: '删除后不可恢复，确认删除？',
+      success: function (res) {
+        if (res.confirm) {
+          var record = self.data.todayRecord
+          record.photo = ''
+          self.setData({ todayRecord: record })
+          self.autoSave()
+          wx.showToast({ title: '已删除', icon: 'success' })
+        }
+      }
+    })
   },
 
   // ===== 照片上传（多策略：chooseMedia → chooseImage，base64存入JSON） =====

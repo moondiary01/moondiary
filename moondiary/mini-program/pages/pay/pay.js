@@ -13,7 +13,8 @@ Page({
     activationMsg: '',           // 激活码提示
     isWxUser: false,            // 是否微信用户
     wxPhone: '',                // 微信用户输入的手机号
-    realPhone: ''               // 绑定的真实手机号
+    realPhone: '',               // 绑定的真实手机号
+    agreeChecked: false          // 协议勾选状态
   },
 
   onLoad: function () {
@@ -35,6 +36,10 @@ Page({
 
   // ===== 基础版支付 =====
   onBasicPay: function () {
+    if (!this.data.agreeChecked) {
+      wx.showToast({ title: '请先勾选同意购买须知和隐私协议', icon: 'none' })
+      return
+    }
     var self = this
     wx.showModal({
       title: '确认开通',
@@ -72,6 +77,11 @@ Page({
         wx.switchTab({ url: '/pages/index/index' })
       }, 1500)
     })
+  },
+
+  // ===== 勾选协议 =====
+  toggleAgree: function () {
+    this.setData({ agreeChecked: !this.data.agreeChecked })
   },
 
   // ===== 购买须知 / 隐私说明 =====
