@@ -1,0 +1,320 @@
+<view class="mood-page">
+
+  <!-- 1. 当前状态 -->
+  <view class="card mood-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">📝</view>
+      <view class="card-title-text">当前状态</view>
+    </view>
+    <view class="status-date">{{todayStr}}</view>
+    <input
+      class="status-input"
+      placeholder="此刻的感受，一句话记录..."
+      value="{{currentStatus}}"
+      bindinput="onStatusInput"
+      maxlength="50"
+    />
+  </view>
+
+  <!-- 2. 心情表情 -->
+  <view class="card mood-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">💖</view>
+      <view class="card-title-text">今日心情</view>
+    </view>
+    <view class="emoji-grid">
+      <view
+        wx:for="{{moodEmojis}}"
+        wx:key="value"
+        class="emoji-item {{selectedMood === item.value ? 'emoji-active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onMoodSelect"
+      >
+        <text class="emoji-icon">{{item.emoji}}</text>
+        <text class="emoji-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 3. 心情日记 -->
+  <view class="card mood-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">📔</view>
+      <view class="card-title-text">心情日记</view>
+    </view>
+    <textarea
+      class="diary-textarea"
+      placeholder="今天发生了什么？记录下你的感受和想法..."
+      value="{{moodDiary}}"
+      bindinput="onDiaryInput"
+      maxlength="1000"
+      auto-height
+    />
+    <view class="char-count">{{moodDiary.length}}/1000</view>
+  </view>
+
+  <!-- 4. 感恩日记 -->
+  <view class="card mood-card gratitude-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">🙏</view>
+      <view class="card-title-text">感恩日记</view>
+    </view>
+    <view class="gratitude-list">
+      <input class="gratitude-input" placeholder="今天想感恩的第一件事……" value="{{gratitude1}}" bindinput="onGratitude1Input" maxlength="30" />
+      <input class="gratitude-input" placeholder="今天想感恩的第二件事……" value="{{gratitude2}}" bindinput="onGratitude2Input" maxlength="30" />
+      <input class="gratitude-input" placeholder="今天想感恩的第三件事……" value="{{gratitude3}}" bindinput="onGratitude3Input" maxlength="30" />
+    </view>
+  </view>
+
+  <!-- 5. 冥想打卡 -->
+  <view class="card mood-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">🧘</view>
+      <view class="card-title-text">冥想打卡</view>
+    </view>
+    <view class="meditation-checkin">
+      <view
+        class="check-item {{todayRecord.meditation ? 'check-item-active' : ''}}"
+        bindtap="onMeditationToggle"
+      >
+        <view class="check-circle {{todayRecord.meditation ? 'check-circle-active' : ''}}">
+          <text wx:if="{{todayRecord.meditation}}" class="check-icon">✓</text>
+        </view>
+        <text>今日冥想</text>
+      </view>
+      <view wx:if="{{todayRecord.meditation}}" class="meditation-minutes">
+        <text class="minutes-label">冥想时长</text>
+        <view class="minutes-input-wrap">
+          <input
+            class="minutes-input"
+            type="number"
+            value="{{todayRecord.meditationMinutes}}"
+            bindinput="onMeditationMinutesChange"
+          />
+          <text class="minutes-unit">分钟</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 6. 冥想音乐 -->
+  <view class="card mood-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">🎵</view>
+      <view class="card-title-text">冥想音乐</view>
+    </view>
+
+    <!-- 分类标签 -->
+    <scroll-view scroll-x class="music-category-scroll" enhanced show-scrollbar="{{false}}">
+      <view class="music-category-row">
+        <view
+          wx:for="{{musicCategories}}"
+          wx:key="value"
+          class="music-cat-item {{currentCategory === item.value ? 'music-cat-active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="onCategorySelect"
+        >
+          <text class="music-cat-icon">{{item.icon}}</text>
+          <text class="music-cat-label">{{item.label}}</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 音乐列表 -->
+    <view class="music-list">
+      <view
+        wx:for="{{filteredMusic}}"
+        wx:key="id"
+        class="music-track {{currentTrack.id === item.id ? 'track-active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onPlayTrack"
+      >
+        <view class="track-icon-wrap">
+          <text wx:if="{{currentTrack.id === item.id && isPlaying}}" class="track-playing-icon">🔊</text>
+          <text wx:else class="track-play-icon">▶</text>
+        </view>
+        <view class="track-info">
+          <text class="track-title">{{item.title}}</text>
+          <text class="track-duration">{{item.duration}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 7. 自律打卡 -->
+  <view class="card mood-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">⭐</view>
+      <view class="card-title-text">自律打卡</view>
+    </view>
+    <view class="discipline-grid">
+      <view
+        wx:for="{{disciplineItems}}"
+        wx:key="key"
+        class="discipline-item {{todayRecord.discipline[item.key] ? 'discipline-active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onDisciplineToggle"
+      >
+        <text class="discipline-icon">{{item.icon}}</text>
+        <text class="discipline-label">{{item.label}}</text>
+        <view class="discipline-check {{todayRecord.discipline[item.key] ? 'discipline-check-on' : ''}}">
+          <text wx:if="{{todayRecord.discipline[item.key]}}" class="check-icon">✓</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 8. 心情日历 -->
+  <view class="card mood-card mood-calendar-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">📅</view>
+      <view class="card-title-text">心情日历</view>
+    </view>
+    <view class="cal-hint">点击日期查看/编辑当日记录</view>
+
+    <!-- 月份导航 -->
+    <view class="cal-nav">
+      <view class="cal-nav-btn" bindtap="onPrevMonth">‹</view>
+      <view class="cal-nav-title">{{calYear}}年{{calMonth + 1}}月</view>
+      <view class="cal-nav-btn" bindtap="onNextMonth">›</view>
+    </view>
+
+    <!-- 日历表头 -->
+    <view class="cal-header">
+      <view class="cal-hcell">日</view>
+      <view class="cal-hcell">一</view>
+      <view class="cal-hcell">二</view>
+      <view class="cal-hcell">三</view>
+      <view class="cal-hcell">四</view>
+      <view class="cal-hcell">五</view>
+      <view class="cal-hcell">六</view>
+    </view>
+
+    <!-- 日历网格 -->
+    <view class="cal-grid">
+      <block wx:for="{{calDays}}" wx:key="key">
+        <view class="cal-cell cal-empty" wx:if="{{item.empty}}"></view>
+        <view
+          class="cal-cell {{item.today ? 'cal-today' : ''}} {{item.hasRecord ? 'cal-has-record' : ''}}"
+          wx:else
+          data-date="{{item.dateStr}}"
+          bindtap="onCalDayClick"
+        >
+          <text wx:if="{{item.hasPhoto}}" class="cal-mark cal-mark-photo">📷</text>
+          <view class="cal-day-num">{{item.day}}</view>
+          <view class="cal-day-marks">
+            <text wx:if="{{item.hasMood}}" class="cal-mark cal-mark-mood">{{item.moodEmoji}}</text>
+            <text wx:if="{{item.hasRecord}}" class="cal-mark cal-mark-done">✓</text>
+            <text wx:if="{{item.hasGratitude && !item.today}}" class="cal-mark cal-mark-gratitude">♡</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 日历图例 -->
+    <view class="cal-legend">
+      <view class="legend-item"><text class="legend-emoji">📷</text><text>有照片</text></view>
+      <view class="legend-item"><text class="legend-emoji mood-dot">✓</text><text>已记录</text></view>
+      <view class="legend-item"><text class="legend-emoji gratitude-dot">♡</text><text>感恩日记</text></view>
+    </view>
+  </view>
+
+  <!-- 9. 日历照片 -->
+  <view class="card mood-card">
+    <view class="card-title-row">
+      <view class="card-title-icon">📸</view>
+      <view class="card-title-text">今日照片</view>
+    </view>
+    <view class="photo-grid">
+      <block wx:for="{{photos}}" wx:key="*this">
+        <view class="photo-thumb" data-index="{{index}}" bindtap="onPreviewPhoto">
+          <image src="{{item}}" mode="aspectFill" />
+          <view class="photo-delete" catchtap="onDeletePhoto" data-index="{{index}}">×</view>
+        </view>
+      </block>
+      <view wx:if="{{photos.length < 9}}" class="photo-add-btn" bindtap="onAddPhoto">
+        <text class="photo-add-icon">+</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-btn-wrapper">
+    <view class="save-btn" bindtap="onSave">保存今日心情日记</view>
+  </view>
+
+</view>
+
+<!-- 日历日期详情弹窗 -->
+<view class="overlay" wx:if="{{showDayDetail}}" bindtap="onCloseDetail">
+  <view class="modal detail-modal" catchtap="">
+    <view class="detail-header">
+      <text class="detail-title-text">{{detailDate}}</text>
+      <view class="detail-close-btn" catchtap="onCloseDetail">✕</view>
+    </view>
+
+    <!-- 心情卡片 -->
+    <view class="detail-card detail-card-pink" wx:if="{{detailMoodEmoji}}">
+      <view class="detail-card-title">今日心情</view>
+      <view class="mood-detail-display">
+        <text class="mood-detail-emoji">{{detailMoodEmoji}}</text>
+        <text class="mood-detail-label">{{detailMoodLabel}}</text>
+      </view>
+    </view>
+
+    <!-- 当前状态卡片 -->
+    <view class="detail-card detail-card-purple" wx:if="{{detailStatus}}">
+      <view class="detail-card-title">当前状态</view>
+      <text class="detail-status-text">{{detailStatus}}</text>
+    </view>
+
+    <!-- 日记卡片 -->
+    <view class="detail-card detail-card-gray" wx:if="{{detailDiary}}">
+      <view class="detail-card-title">日记本</view>
+      <text class="detail-diary-text">{{detailDiary}}</text>
+    </view>
+
+    <!-- 自律打卡卡片 -->
+    <view class="detail-card detail-card-green" wx:if="{{detailDiscipline.length > 0}}">
+      <view class="detail-card-title">自律打卡</view>
+      <view class="detail-mini-tags">
+        <text wx:for="{{detailDiscipline}}" wx:key="*this" class="detail-mini-tag mini-on">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 感恩日记卡片 -->
+    <view class="detail-card detail-card-amber" wx:if="{{detailGratitude.length > 0}}">
+      <view class="detail-card-title">感恩日记</view>
+      <view wx:for="{{detailGratitude}}" wx:key="*this" class="gratitude-detail-item">
+        <text class="gratitude-detail-num">{{index + 1}}</text>
+        <text class="gratitude-detail-text">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 照片区域 -->
+    <view class="detail-photo-section" wx:if="{{detailPhotos.length > 0}}">
+      <view class="detail-photo-row">
+        <image wx:for="{{detailPhotos}}" wx:key="*this" src="{{item}}" mode="aspectFill" class="detail-photo-thumb" data-index="{{index}}" bindtap="onPreviewDetailPhoto"/>
+      </view>
+    </view>
+
+    <view class="detail-actions">
+      <button class="btn btn-outline" catchtap="onCloseDetail">关闭</button>
+    </view>
+  </view>
+</view>
+
+<!-- 底部迷你播放器 -->
+<view wx:if="{{showPlayer && currentTrack}}" class="mini-player">
+  <view class="player-info">
+    <text class="player-title">{{currentTrack.title}}</text>
+    <view class="player-controls">
+      <view class="player-btn" bindtap="onPlayerPrev">⏮</view>
+      <view class="player-btn player-btn-main" bindtap="onPlayerToggle">
+        <text>{{isPlaying ? '⏸' : '▶'}}</text>
+      </view>
+      <view class="player-btn" bindtap="onPlayerNext">⏭</view>
+    </view>
+  </view>
+  <view class="player-close" bindtap="onClosePlayer">×</view>
+</view>

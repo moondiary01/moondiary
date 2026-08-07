@@ -1,0 +1,31 @@
+<!-- pages/privacy/privacy.wxml — 隐私说明 -->
+<view class="privacy-page">
+  <view class="card">
+    <view class="section">
+      <view class="section-title">1. 数据收集</view>
+      <view class="section-item">• 我们仅收集您主动输入的身材数据、护肤记录、心情日记及自拍照片。</view>
+      <view class="section-item">• 手机号仅用于身份识别和数据绑定，不向第三方分享。</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">2. 数据存储</view>
+      <view class="section-item">• 您的数据存储在加密的云端服务器（腾讯云COS），仅您本人可访问。</view>
+      <view class="section-item">• 照片数据经压缩处理后存储，不会用于其他用途。</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">3. 数据隔离</view>
+      <view class="section-item">• 每个用户的数据独立存储，互不可见。一手机号一份数据。</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">4. 数据删除</view>
+      <view class="section-item">• 您可随时联系管理员删除所有个人数据。</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">5. 联系方式</view>
+      <view class="section-item">• 如有隐私相关问题，请联系管理员处理。</view>
+    </view>
+  </view>
+</view>

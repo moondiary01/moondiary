@@ -1,0 +1,115 @@
+<!-- subpkg-beauty/pages/notice/notice.wxml -->
+<view class="notice-page">
+  <view class="notice-header">
+    <text class="notice-title">🔔 互动提醒</text>
+    <text class="notice-sub">{{totalUnread > 0 ? totalUnread + '条新消息' : '最近10条'}}</text>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:elif="{{!hasAny}}" class="empty-state">
+    <text class="empty-icon">📭</text>
+    <text class="empty-text">还没有人评论你的帖子</text>
+    <text class="empty-sub">发布更多动态，吸引月友评论吧</text>
+  </view>
+
+  <!-- 通知列表 -->
+  <view wx:else class="notice-list">
+
+    <!-- 未读消息 -->
+    <view wx:if="{{unreadNotices.length > 0}}" class="notice-section">
+      <view class="notice-section-title">
+        <view class="notice-dot unread"></view>
+        <text>新消息</text>
+        <view class="notice-badge">{{totalUnread}}</view>
+      </view>
+      <view wx:for="{{unreadNotices}}" wx:key="timestamp" class="notice-item notice-item-unread" data-pid="{{item.post.id}}" data-cid="{{item.comment.id}}" data-type="{{item.type}}" bindtap="onTapNotice">
+        <view wx:if="{{item.type === 'like'}}" class="notice-row">
+          <view class="notice-avatar-wrap">
+            <view class="notice-avatar-default">❤️</view>
+          </view>
+          <view class="notice-body">
+            <view class="notice-action">
+              <text class="notice-type-tag like-tag">赞</text>
+              赞了你的帖子
+            </view>
+            <view class="notice-time">{{formatTime(item.timestamp)}}</view>
+          </view>
+          <view wx:if="{{item.post.images && item.post.images.length > 0}}" class="notice-thumb">
+            <image src="{{item.post.images[0]}}" mode="aspectFill" />
+          </view>
+        </view>
+        <view wx:else class="notice-row">
+          <view class="notice-avatar-wrap">
+            <image wx:if="{{item.comment.avatar}}" class="notice-avatar" src="{{item.comment.avatar}}" mode="aspectFill" />
+            <view wx:else class="notice-avatar-default">{{item.comment.nickname[0] || '月'}}</view>
+          </view>
+          <view class="notice-body">
+            <view class="notice-nick">{{item.comment.nickname}}<text class="notice-type-tag {{item.type === 'reply' ? 'reply-tag' : 'comment-tag'}}">{{item.type === 'reply' ? '回复' : '评论'}}</text></view>
+            <view wx:if="{{item.type === 'reply'}}" class="notice-action">在帖子回复了你</view>
+            <view wx:else class="notice-action">评论了你的帖子</view>
+            <view class="notice-comment-content">{{item.comment.content}}</view>
+            <view class="notice-time">{{formatTime(item.comment.createdAt)}}</view>
+          </view>
+          <view wx:if="{{item.post.images && item.post.images.length > 0}}" class="notice-thumb">
+            <image src="{{item.post.images[0]}}" mode="aspectFill" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 历史消息 -->
+    <view wx:if="{{visibleRead.length > 0}}" class="notice-section">
+      <view class="notice-section-title" wx:if="{{unreadNotices.length > 0}}">
+        <view class="notice-dot read"></view>
+        <text>历史消息</text>
+      </view>
+      <view wx:for="{{visibleRead}}" wx:key="timestamp" class="notice-item notice-item-read" data-pid="{{item.post.id}}" data-cid="{{item.comment.id}}" data-type="{{item.type}}" bindtap="onTapNotice">
+        <view wx:if="{{item.type === 'like'}}" class="notice-row">
+          <view class="notice-avatar-wrap">
+            <view class="notice-avatar-default">❤️</view>
+          </view>
+          <view class="notice-body">
+            <view class="notice-action">
+              <text class="notice-type-tag like-tag">赞</text>
+              赞了你的帖子
+            </view>
+            <view class="notice-time">{{formatTime(item.timestamp)}}</view>
+          </view>
+          <view wx:if="{{item.post.images && item.post.images.length > 0}}" class="notice-thumb">
+            <image src="{{item.post.images[0]}}" mode="aspectFill" />
+          </view>
+        </view>
+        <view wx:else class="notice-row">
+          <view class="notice-avatar-wrap">
+            <image wx:if="{{item.comment.avatar}}" class="notice-avatar" src="{{item.comment.avatar}}" mode="aspectFill" />
+            <view wx:else class="notice-avatar-default">{{item.comment.nickname[0] || '月'}}</view>
+          </view>
+          <view class="notice-body">
+            <view class="notice-nick">{{item.comment.nickname}}<text class="notice-type-tag {{item.type === 'reply' ? 'reply-tag' : 'comment-tag'}}">{{item.type === 'reply' ? '回复' : '评论'}}</text></view>
+            <view wx:if="{{item.type === 'reply'}}" class="notice-action">在帖子回复了你</view>
+            <view wx:else class="notice-action">评论了你的帖子</view>
+            <view class="notice-comment-content">{{item.comment.content}}</view>
+            <view class="notice-time">{{formatTime(item.comment.createdAt)}}</view>
+          </view>
+          <view wx:if="{{item.post.images && item.post.images.length > 0}}" class="notice-thumb">
+            <image src="{{item.post.images[0]}}" mode="aspectFill" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 折叠的历史消息 -->
+    <view wx:if="{{hiddenCount > 0}}" class="notice-fold-toggle" bindtap="onToggleHidden">
+      <text>{{hiddenExpanded ? '收起历史消息' : '查看更早的 ' + hiddenCount + ' 条消息'}}</text>
+      <text class="fold-arrow {{hiddenExpanded ? 'fold-arrow-up' : ''}}">▾</text>
+    </view>
+
+  </view>
+
+  <view style="height:40rpx"></view>
+</view>

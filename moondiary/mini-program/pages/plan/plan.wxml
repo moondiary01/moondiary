@@ -1,0 +1,287 @@
+<!-- pages/plan/plan.wxml -->
+<view class="plan-page">
+
+  <!-- 基本信息卡片 -->
+  <view class="card" bindtap="onEditCard" data-card="basic">
+    <view class="card-title">基本信息</view>
+    <view class="info-grid">
+      <view class="info-cell">
+        <text class="info-label">姓名</text>
+        <text class="info-value">{{state.name || '未设置'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">性别</text>
+        <text class="info-value">{{state.gender || '未设置'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">年龄</text>
+        <text class="info-value">{{state.age || '--'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">身高</text>
+        <text class="info-value">{{state.height || '--'}} cm</text>
+      </view>
+    </view>
+    <view class="edit-hint">点击编辑</view>
+  </view>
+
+  <!-- 三阶段计划 -->
+  <view class="card">
+    <view class="card-title">三阶段计划</view>
+    <view class="stage-card stage-s1">
+      <view class="stage-header">
+        <text class="stage-num">阶段一</text>
+        <text class="stage-name">适应期</text>
+        <text class="stage-range">第 1-30 天</text>
+      </view>
+      <view class="stage-goal">目标：建立记录习惯，了解身体数据变化规律</view>
+      <view class="stage-tips">
+        <text>• 每天固定时间称重（晨起空腹 + 睡前）</text>
+        <text>• 记录排便、运动、饮食情况</text>
+        <text>• 不需要刻意节食，保持日常饮食习惯</text>
+        <text>• 建立喝水习惯，每天至少 1500ml</text>
+      </view>
+    </view>
+    <view class="stage-card stage-s2">
+      <view class="stage-header">
+        <text class="stage-num">阶段二</text>
+        <text class="stage-name">加速期</text>
+        <text class="stage-range">第 31-60 天</text>
+      </view>
+      <view class="stage-goal">目标：稳定减重节奏，每周减 0.5-1 kg</view>
+      <view class="stage-tips">
+        <text>• 控制每日热量摄入，参考饮食表</text>
+        <text>• 每周至少 3 次有氧运动（30分钟以上）</text>
+        <text>• 增加蛋白质摄入，减少精制碳水</text>
+        <text>• 保证 7-8 小时睡眠，减少压力</text>
+      </view>
+    </view>
+    <view class="stage-card stage-s3">
+      <view class="stage-header">
+        <text class="stage-num">阶段三</text>
+        <text class="stage-name">巩固期</text>
+        <text class="stage-range">第 61-100 天</text>
+      </view>
+      <view class="stage-goal">目标：维持减重成果，养成健康生活习惯</view>
+      <view class="stage-tips">
+        <text>• 逐步恢复正常饮食，但保持健康搭配</text>
+        <text>• 加入力量训练，提高基础代谢</text>
+        <text>• 每周称重 2-3 次，关注体脂率变化</text>
+        <text>• 形成长期可持续的健康生活方式</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 每日饮食参考表 5列 -->
+  <view class="card">
+    <view class="card-title">每日饮食参考</view>
+    <view class="meal-table">
+      <view class="meal-row meal-header">
+        <text class="meal-cell meal-time">餐次</text>
+        <text class="meal-cell meal-time-range">时间</text>
+        <text class="meal-cell meal-food">食物建议</text>
+        <text class="meal-cell meal-cal">热量</text>
+        <text class="meal-cell meal-note">备注</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">早餐</text>
+        <text class="meal-cell meal-time-range">7:00-8:00</text>
+        <text class="meal-cell meal-food">燕麦粥+1鸡蛋+脱脂牛奶</text>
+        <text class="meal-cell meal-cal">~350</text>
+        <text class="meal-cell meal-note">高蛋白</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">加餐</text>
+        <text class="meal-cell meal-time-range">10:30</text>
+        <text class="meal-cell meal-food">苹果或坚果</text>
+        <text class="meal-cell meal-cal">~100</text>
+        <text class="meal-cell meal-note">膳食纤维</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">午餐</text>
+        <text class="meal-cell meal-time-range">12:00</text>
+        <text class="meal-cell meal-food">糙米+鸡胸肉+蔬菜</text>
+        <text class="meal-cell meal-cal">~450</text>
+        <text class="meal-cell meal-note">均衡</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">加餐</text>
+        <text class="meal-cell meal-time-range">15:30</text>
+        <text class="meal-cell meal-food">无糖酸奶或黄瓜</text>
+        <text class="meal-cell meal-cal">~80</text>
+        <text class="meal-cell meal-note">低卡</text>
+      </view>
+      <view class="meal-row">
+        <text class="meal-cell meal-time">晚餐</text>
+        <text class="meal-cell meal-time-range">18:00</text>
+        <text class="meal-cell meal-food">红薯+清蒸鱼+蔬菜</text>
+        <text class="meal-cell meal-cal">~350</text>
+        <text class="meal-cell meal-note">清淡</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关键提醒 -->
+  <view class="card">
+    <view class="card-title">关键提醒</view>
+    <view class="tip-list">
+      <text class="tip-item">• 每天固定时间称重：晨起空腹排便后 + 晚餐后睡前</text>
+      <text class="tip-item">• 晨起体重最准，反映真实减脂效果</text>
+      <text class="tip-item">• 排便情况影响体重波动，排便后称重更准</text>
+      <text class="tip-item">• 体重自然波动属正常，关注周趋势而非单日</text>
+      <text class="tip-item">• 每周减重不超过 1 kg / 2 斤，不要节食暴瘦</text>
+      <text class="tip-item">• 保证每天 7-8 小时睡眠，多喝水促进代谢</text>
+      <text class="tip-item">• 如有不适，立即停止并咨询医生</text>
+    </view>
+  </view>
+
+  <!-- 减重计划卡片 -->
+  <view class="card" bindtap="onEditCard" data-card="plan">
+    <view class="card-title">减重计划</view>
+    <view class="info-grid">
+      <view class="info-cell">
+        <text class="info-label">开始日期</text>
+        <text class="info-value">{{state.startDate || '未设置'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">目标日期</text>
+        <text class="info-value">{{state.targetDate || '未设置'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">开始体重</text>
+        <text class="info-value">{{startWeightDisplay}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">目标体重</text>
+        <text class="info-value">{{targetWeightDisplay}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">体脂率</text>
+        <text class="info-value">{{state.startFat || '--'}}%</text>
+      </view>
+    </view>
+    <view class="edit-hint">点击编辑</view>
+  </view>
+
+  <!-- 进度卡片 -->
+  <view class="card">
+    <view class="card-title">进度</view>
+    <view class="progress-list">
+      <view class="progress-item">
+        <text class="progress-label">当前第几天</text>
+        <text class="progress-value">第 {{currentDay}} 天</text>
+      </view>
+      <view class="progress-item">
+        <text class="progress-label">剩余天数</text>
+        <text class="progress-value">{{remainingDays}} 天</text>
+      </view>
+      <view class="progress-item">
+        <text class="progress-label">已减重</text>
+        <text class="progress-value {{lostWeight > 0 ? 'progress-good' : ''}} {{lostWeight < 0 ? 'progress-bad' : ''}}">{{lostWeightStr}}</text>
+      </view>
+    </view>
+    <view class="progress-bar-wrap" wx:if="{{totalDays > 0}}">
+      <view class="progress-bar">
+        <view class="progress-bar-fill" style="width: {{progressPercent}}%"></view>
+      </view>
+      <text class="progress-percent">{{progressPercent}}%</text>
+    </view>
+  </view>
+
+  <!-- 三围记录 -->
+  <view class="card" bindtap="onEditCard" data-card="measure">
+    <view class="card-title">三围记录</view>
+    <view class="measure-row">
+      <view class="measure-cell">
+        <text class="measure-num">{{state.bust || '--'}}</text>
+        <text class="measure-lbl">胸围 cm</text>
+      </view>
+      <view class="measure-cell">
+        <text class="measure-num">{{state.waist || '--'}}</text>
+        <text class="measure-lbl">腰围 cm</text>
+      </view>
+      <view class="measure-cell">
+        <text class="measure-num">{{state.hip || '--'}}</text>
+        <text class="measure-lbl">臀围 cm</text>
+      </view>
+    </view>
+    <view class="edit-hint">点击编辑</view>
+  </view>
+
+</view>
+
+<!-- 编辑弹窗 -->
+<view class="overlay" wx:if="{{showEditModal}}" bindtap="onCloseModal">
+  <view class="modal" catchtap="">
+    <view class="modal-title">编辑信息</view>
+
+    <block wx:if="{{editCard === 'basic'}}">
+      <view class="input-group">
+        <text class="input-label">姓名</text>
+        <input class="input" placeholder="请输入姓名" value="{{editName}}" bindinput="onInput" data-field="editName" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">性别</text>
+        <view class="gender-row">
+          <view class="gender-btn {{editGender === '女' ? 'gender-active' : ''}}" bindtap="onGenderSelect" data-val="女">女</view>
+          <view class="gender-btn {{editGender === '男' ? 'gender-active' : ''}}" bindtap="onGenderSelect" data-val="男">男</view>
+        </view>
+      </view>
+      <view class="input-group">
+        <text class="input-label">年龄</text>
+        <input class="input" type="number" placeholder="请输入年龄" value="{{editAge}}" bindinput="onInput" data-field="editAge" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">身高(cm)</text>
+        <input class="input" type="digit" placeholder="请输入身高" value="{{editHeight}}" bindinput="onInput" data-field="editHeight" />
+      </view>
+    </block>
+
+    <block wx:if="{{editCard === 'plan'}}">
+      <view class="input-group">
+        <text class="input-label">开始日期</text>
+        <picker mode="date" value="{{editStartDate}}" bindchange="onDateChange" data-field="editStartDate">
+          <view class="picker-value">{{editStartDate || '选择日期'}}</view>
+        </picker>
+      </view>
+      <view class="input-group">
+        <text class="input-label">目标日期</text>
+        <picker mode="date" value="{{editTargetDate}}" bindchange="onDateChange" data-field="editTargetDate">
+          <view class="picker-value">{{editTargetDate || '选择日期'}}</view>
+        </picker>
+      </view>
+      <view class="input-group">
+        <text class="input-label">开始体重({{unitLabel}})</text>
+        <input class="input" type="digit" placeholder="请输入体重" value="{{editStartWeight}}" bindinput="onInput" data-field="editStartWeight" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">目标体重({{unitLabel}})</text>
+        <input class="input" type="digit" placeholder="请输入体重" value="{{editTargetWeight}}" bindinput="onInput" data-field="editTargetWeight" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">体脂率(%)</text>
+        <input class="input" type="digit" placeholder="请输入体脂率" value="{{editStartFat}}" bindinput="onInput" data-field="editStartFat" />
+      </view>
+    </block>
+
+    <block wx:if="{{editCard === 'measure'}}">
+      <view class="input-group">
+        <text class="input-label">胸围(cm)</text>
+        <input class="input" type="digit" placeholder="请输入胸围" value="{{editBust}}" bindinput="onInput" data-field="editBust" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">腰围(cm)</text>
+        <input class="input" type="digit" placeholder="请输入腰围" value="{{editWaist}}" bindinput="onInput" data-field="editWaist" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">臀围(cm)</text>
+        <input class="input" type="digit" placeholder="请输入臀围" value="{{editHip}}" bindinput="onInput" data-field="editHip" />
+      </view>
+    </block>
+
+    <view class="modal-actions">
+      <button class="btn btn-outline" bindtap="onCloseModal">取消</button>
+      <button class="btn btn-primary" bindtap="onConfirmEdit">保存</button>
+    </view>
+  </view>
+</view>

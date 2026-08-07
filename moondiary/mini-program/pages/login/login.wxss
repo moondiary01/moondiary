@@ -1,0 +1,399 @@
+/* ===== Splash 品牌动画 ===== */
+.splash {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--grad-hero);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+}
+
+.splash-logo {
+  width: 200rpx;
+  height: 200rpx;
+  margin-top: -120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* CSS 月牙 — Splash 用 */
+.splash-moon {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7C3AED 0%, #C026D3 50%, #EC4899 100%);
+  position: relative;
+  box-shadow: 0 8rpx 48rpx rgba(255,255,255,0.25);
+}
+.splash-moon::after {
+  content: '';
+  position: absolute;
+  top: -16rpx;
+  right: -36rpx;
+  width: 144rpx;
+  height: 192rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6D28D9, #9333EA);
+}
+
+.splash-title {
+  color: #fff;
+  font-size: 56rpx;
+  font-weight: 900;
+  letter-spacing: 4rpx;
+  margin-top: 40rpx;
+  font-style: italic;
+  text-shadow: 0 8rpx 40rpx rgba(0,0,0,0.2);
+  text-align: center;
+  line-height: 1.3;
+}
+.splash-brand {
+  font-size: 56rpx;
+  font-weight: 900;
+  display: block;
+}
+.splash-sub {
+  color: rgba(255,255,255,0.85);
+  font-size: 28rpx;
+  font-weight: 400;
+  font-style: normal;
+  display: block;
+}
+
+.splash-loader {
+  width: 400rpx;
+  height: 8rpx;
+  background: rgba(255,255,255,0.2);
+  border-radius: 4rpx;
+  margin-top: 60rpx;
+  overflow: hidden;
+}
+.splash-loader-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #C026D3, #EC4899);
+  border-radius: 4rpx;
+}
+
+/* ===== 登录页面 ===== */
+.login-page {
+  min-height: 100vh;
+  background: var(--grad-hero);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== 毛玻璃卡片 ===== */
+.gate-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 64rpx;
+  padding: 80rpx 68rpx 68rpx;
+  max-width: 700rpx;
+  width: 100%;
+  box-shadow: 0 32rpx 80rpx rgba(26,21,48,0.3);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== 月亮 Logo ===== */
+.moon-logo {
+  width: 160rpx;
+  height: 160rpx;
+  margin: 0 auto 8rpx;
+  position: relative;
+}
+
+/* 光晕 */
+.moon-glow {
+  position: absolute;
+  inset: -20rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,85,247,0.25) 0%, transparent 65%);
+}
+
+/* 月牙 */
+.moon-crescent {
+  position: absolute;
+  top: 16rpx;
+  left: 16rpx;
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7C3AED 0%, #C026D3 50%, #EC4899 100%);
+}
+.moon-crescent::after {
+  content: '';
+  position: absolute;
+  top: -12rpx;
+  right: -28rpx;
+  width: 112rpx;
+  height: 148rpx;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* 金色星星 */
+.moon-star {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #D4A574, #E8C9A0);
+}
+.moon-star.s1 { width: 12rpx; height: 12rpx; top: 24rpx; right: 20rpx; }
+.moon-star.s2 { width: 9rpx; height: 9rpx; top: 60rpx; right: 8rpx; opacity: 0.7; }
+.moon-star.s3 { width: 10rpx; height: 10rpx; top: 100rpx; right: 28rpx; opacity: 0.8; }
+
+/* ===== 品牌标题 ===== */
+.gate-title {
+  font-size: 48rpx;
+  font-weight: 900;
+  color: #1c1917;
+  margin-bottom: 12rpx;
+  letter-spacing: -1rpx;
+}
+.gate-title .brand {
+  background: linear-gradient(135deg, var(--rose-600), var(--coral));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-style: italic;
+  font-weight: 900;
+  font-size: 50rpx;
+}
+
+/* ===== 登录内容 ===== */
+.gate-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== Tabs 切换 ===== */
+.gate-tabs {
+  display: flex;
+  margin-bottom: 28rpx;
+  border-bottom: 4rpx solid var(--border);
+}
+.gate-tab {
+  flex: 1;
+  text-align: center;
+  padding: 14rpx 0;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-l);
+  border-bottom: 4rpx solid transparent;
+  margin-bottom: -4rpx;
+}
+.gate-tab.active {
+  color: var(--rose-600);
+  border-bottom-color: var(--rose-600);
+}
+
+/* ===== 输入框 ===== */
+.gate-input {
+  width: 100%;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 800;
+  padding: 28rpx;
+  border: 4rpx solid var(--border);
+  border-radius: 24rpx;
+  outline: none;
+  color: var(--rose-600);
+  background: var(--rose-50);
+  box-sizing: border-box;
+  margin-bottom: 20rpx;
+}
+.gate-input-code {
+  flex: 1;
+  letter-spacing: 10rpx;
+  font-size: 36rpx;
+  margin-bottom: 0;
+}
+.sms-row {
+  display: flex;
+  gap: 12rpx;
+  align-items: center;
+  margin-bottom: 0;
+}
+.sms-btn {
+  flex-shrink: 0;
+  padding: 26rpx 20rpx;
+  border-radius: 24rpx;
+  background: var(--rose-100);
+  color: var(--rose-600);
+  font-weight: 700;
+  font-size: 24rpx;
+  border: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+.sms-btn[disabled] { opacity: 0.5; }
+.gate-input-placeholder { color: var(--rose-200); }
+
+/* ===== 微信登录区域 ===== */
+.wx-login-box {
+  text-align: center;
+  padding: 16rpx 0 8rpx;
+}
+.wx-icon-btn {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: #07c160;
+  margin: 0 auto 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  color: #fff;
+  font-weight: 900;
+}
+.wx-icon-btn-hover { transform: scale(1.08); }
+.wx-login-hint {
+  font-size: 26rpx;
+  color: var(--text-l);
+  margin-bottom: 12rpx;
+}
+.wx-login-desc {
+  font-size: 22rpx;
+  color: var(--text-l);
+  line-height: 1.6;
+  white-space: pre-line;
+  opacity: 0.7;
+}
+
+/* ===== 按钮 ===== */
+.gate-btn {
+  width: 100%;
+  margin-top: 24rpx;
+  padding: 28rpx;
+  border: none;
+  border-radius: 24rpx;
+  background: var(--grad-hero);
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+  box-shadow: 0 8rpx 32rpx rgba(147,51,234,0.25);
+}
+.gate-btn-hover { transform: scale(0.98); opacity: 0.9; }
+
+/* ===== 提示文字 ===== */
+.gate-hint {
+  font-size: 22rpx;
+  color: var(--text-l);
+  margin-top: 32rpx;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* 错误提示 */
+.gate-error {
+  color: var(--rose-500);
+  font-size: 26rpx;
+  margin-top: 16rpx;
+  min-height: 36rpx;
+  font-weight: 600;
+}
+
+/* ===== 协议勾选 ===== */
+.agree-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4rpx;
+  margin-top: 32rpx;
+  padding: 10rpx 12rpx;
+  position: relative;
+  z-index: 10;
+}
+
+/* 圆圈勾选 */
+.agree-checkbox-box {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.agree-checkbox-circle {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  border: 3rpx solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+.agree-checkbox-circle.checked {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border-color: transparent;
+}
+.agree-checkbox-tick {
+  color: #fff;
+  font-size: 22rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* 文字区域 */
+.agree-text-wrap {
+  display: flex;
+  align-items: center;
+}
+.agree-text {
+  font-size: 24rpx;
+  color: var(--text-l);
+  line-height: 1.6;
+}
+
+/* 链接按钮 */
+.agree-link-box {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 4rpx;
+  text-decoration: none;
+}
+.agree-link {
+  color: #8b5cf6;
+  font-size: 24rpx;
+  font-weight: 600;
+  text-decoration: underline;
+  line-height: 1.6;
+}
+
+/* ===== 弹窗内容样式 ===== */
+.notice-content {
+  text-align: left;
+  padding: 0 8rpx;
+}
+.notice-section {
+  margin-top: 20rpx;
+  margin-bottom: 8rpx;
+}
+.notice-bold {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.notice-item {
+  font-size: 26rpx;
+  color: var(--text);
+  line-height: 1.8;
+  margin-bottom: 4rpx;
+}
+.notice-confirm-btn {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899) !important;
+  border: none !important;
+}

@@ -1,0 +1,246 @@
+/* pages/plan/plan.wxss */
+.plan-page {
+  padding: 16rpx 32rpx 40rpx;
+  background: var(--bg);
+}
+
+/* 基本信息网格 — HTML: gap 10px→20rpx */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin-bottom: 8rpx;
+}
+.info-cell {
+  padding: 12rpx;
+}
+.info-label {
+  font-size: 22rpx;
+  color: var(--text-l);
+  display: block;
+  margin-bottom: 4rpx;
+}
+.info-value {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.edit-hint {
+  text-align: right;
+  font-size: 22rpx;
+  color: var(--text-l);
+  opacity: 0.6;
+  margin-top: 4rpx;
+}
+
+/* 三阶段计划 — HTML: padding 16px→32rpx, margin-bottom 10px→20rpx, border-left 3px→6rpx */
+.stage-card {
+  border-radius: 0 20rpx 20rpx 0;
+  padding: 32rpx;
+  margin-bottom: 20rpx;
+  border-left: 6rpx solid;
+}
+.stage-s1 {
+  background: linear-gradient(135deg, #f5f3ff, #fce7f3);
+  border-color: var(--rose-200);
+}
+.stage-s2 {
+  background: linear-gradient(135deg, #fce7f3, #fff1f2);
+  border-color: var(--rose-300);
+}
+.stage-s3 {
+  background: linear-gradient(135deg, #fff1f2, #fffbeb);
+  border-color: var(--rose-400);
+}
+.stage-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+.stage-num {
+  font-size: 28rpx;
+  font-weight: 800;
+  color: var(--rose-600);
+}
+.stage-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.stage-range {
+  font-size: 22rpx;
+  color: var(--text-l);
+  margin-left: auto;
+}
+.stage-goal {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--rose-500);
+  margin-bottom: 12rpx;
+}
+.stage-tips text {
+  display: block;
+  font-size: 26rpx;
+  color: var(--text);
+  line-height: 2;
+}
+
+/* 饮食参考表 — HTML: th padding 10px→20rpx, th font 0.85rem→28rpx */
+.meal-table {
+  border-radius: 24rpx;
+  overflow: hidden;
+  border: 2rpx solid var(--border);
+}
+.meal-row {
+  display: flex;
+}
+.meal-header {
+  background: var(--rose-500);
+}
+.meal-header .meal-cell {
+  color: #fff;
+  font-weight: 600;
+  font-size: 26rpx;
+}
+.meal-cell {
+  padding: 20rpx 14rpx;
+  font-size: 26rpx;
+  color: var(--text);
+  text-align: center;
+  border-bottom: 1rpx solid var(--border);
+}
+.meal-time { flex: 1; }
+.meal-time-range { flex: 1.2; }
+.meal-food { flex: 2.2; }
+.meal-cal { flex: 0.8; }
+.meal-note { flex: 1; }
+.meal-row:last-child .meal-cell {
+  border-bottom: none;
+}
+.meal-row:nth-child(even) .meal-cell {
+  background: var(--rose-50);
+}
+
+/* 关键提醒 — HTML: padding 12px 16px→24rpx 32rpx, font 0.8rem→26rpx, border-left 3px→6rpx */
+.tip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+.tip-item {
+  font-size: 26rpx;
+  color: var(--text);
+  font-weight: 500;
+  line-height: 1.6;
+  padding: 24rpx 32rpx;
+  background: #FFE4E6;
+  border-radius: 16rpx;
+  border-left: 6rpx solid var(--rose-400);
+}
+
+/* 进度 — HTML: 进度条高度 8px→16rpx */
+.progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+.progress-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8rpx 0;
+}
+.progress-label {
+  font-size: 28rpx;
+  color: var(--text-l);
+}
+.progress-value {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.progress-good { color: var(--mint); }
+.progress-bad { color: #ef4444; }
+.progress-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.progress-bar {
+  flex: 1;
+  height: 16rpx;
+  background: var(--rose-100);
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--grad-hero);
+  border-radius: 8rpx;
+  transition: width 0.5s;
+}
+.progress-percent {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--rose-600);
+  min-width: 60rpx;
+}
+
+/* 三围 */
+.measure-row {
+  display: flex;
+  gap: 20rpx;
+}
+.measure-cell {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 10rpx;
+  background: var(--rose-50);
+  border-radius: 24rpx;
+  border: 2rpx solid var(--border);
+}
+.measure-num {
+  font-size: 42rpx;
+  font-weight: 800;
+  color: var(--rose-600);
+  display: block;
+}
+.measure-lbl {
+  font-size: 24rpx;
+  color: var(--text-l);
+  margin-top: 4rpx;
+  display: block;
+}
+
+/* 性别选择 */
+.gender-row {
+  display: flex;
+  gap: 16rpx;
+}
+.gender-btn {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx;
+  border-radius: 16rpx;
+  border: 3rpx solid var(--border);
+  font-size: 28rpx;
+  color: var(--text-l);
+  transition: all 0.15s;
+}
+.gender-active {
+  border-color: var(--rose-500);
+  background: var(--rose-50);
+  color: var(--rose-600);
+  font-weight: 700;
+}
+
+/* picker */
+.picker-value {
+  padding: 20rpx 24rpx;
+  border: 3rpx solid var(--border);
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  color: var(--ink);
+}

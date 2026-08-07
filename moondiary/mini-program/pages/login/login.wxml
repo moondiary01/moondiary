@@ -1,0 +1,87 @@
+<!-- pages/login/login.wxml -->
+
+<!-- ===== Splash 品牌动画 ===== -->
+<view class="splash" wx:if="{{showSplash}}">
+  <view class="splash-logo">
+    <view class="splash-moon"></view>
+  </view>
+  <view class="splash-title">
+    <text class="splash-brand">Moon Memo</text>
+    <text class="splash-sub">月亮日记</text>
+  </view>
+  <view class="splash-loader">
+    <view class="splash-loader-bar"></view>
+  </view>
+</view>
+
+<view class="login-page" wx:if="{{!showSplash}}">
+  <!-- 毛玻璃卡片 -->
+  <view class="gate-card">
+    <!-- 月亮 logo -->
+    <view class="moon-logo">
+      <view class="moon-glow"></view>
+      <view class="moon-crescent"></view>
+      <view class="moon-star s1"></view>
+      <view class="moon-star s2"></view>
+      <view class="moon-star s3"></view>
+    </view>
+    <view class="gate-title"><text class="brand">MoonMemo</text></view>
+
+    <!-- ===== 统一登录区域 ===== -->
+    <view class="gate-content">
+      <!-- Tabs -->
+      <view class="gate-tabs">
+        <view class="gate-tab {{loginTab === 'sms' ? 'active' : ''}}" bindtap="switchLoginTab" data-tab="sms">手机验证码</view>
+        <view class="gate-tab {{loginTab === 'wx' ? 'active' : ''}}" bindtap="switchLoginTab" data-tab="wx">微信登录</view>
+      </view>
+
+      <!-- 手机验证码登录 -->
+      <view wx:if="{{loginTab === 'sms'}}">
+        <input class="gate-input" type="number" maxlength="11" placeholder="手机号" placeholder-class="gate-input-placeholder" value="{{loginPhone}}" bindinput="onLoginPhoneInput" />
+        <view class="sms-row">
+          <input class="gate-input gate-input-code" type="number" maxlength="6" placeholder="验证码" placeholder-class="gate-input-placeholder" value="{{smsCode}}" bindinput="onSmsCodeInput" />
+          <button class="sms-btn" bindtap="sendSmsCode" disabled="{{smsCooldown > 0}}">{{smsBtnText}}</button>
+        </view>
+        <view class="gate-error" wx:if="{{gateError}}">{{gateError}}</view>
+        <button class="gate-btn" hover-class="gate-btn-hover" bindtap="smsLogin">登 录</button>
+        <view class="gate-hint">首次登录自动注册，所有用户均可免费试用7天</view>
+      </view>
+
+      <!-- 微信登录 -->
+      <view wx:if="{{loginTab === 'wx'}}">
+        <view class="wx-login-box">
+          <view class="wx-icon-btn" bindtap="wxLogin" hover-class="wx-icon-btn-hover">W</view>
+          <view class="wx-login-hint">点击微信图标授权登录</view>
+          <view class="wx-login-desc">授权后自动获取微信绑定手机号\n首次登录自动注册，免费试用7天</view>
+        </view>
+        <view class="gate-error" wx:if="{{wxError}}">{{wxError}}</view>
+      </view>
+
+      <!-- ===== 协议勾选（放在 wx:if 外面，所有 tab 共用） ===== -->
+      <view class="agree-row">
+        <!-- 圆圈勾选 -->
+        <view class="agree-checkbox-box" bindtap="toggleAgree">
+          <view class="agree-checkbox-circle {{agreeChecked ? 'checked' : ''}}">
+            <text wx:if="{{agreeChecked}}" class="agree-checkbox-tick">✓</text>
+          </view>
+        </view>
+        <!-- 文字区域：点击勾选 -->
+        <view class="agree-text-wrap" bindtap="toggleAgree">
+          <text class="agree-text">我已阅读及同意</text>
+        </view>
+        <!-- 用户协议：跳转独立页面 -->
+        <navigator url="/pages/notice/notice" class="agree-link-box" hover-class="none">
+          <text class="agree-link">用户协议</text>
+        </navigator>
+        <view class="agree-text-wrap" bindtap="toggleAgree">
+          <text class="agree-text">及</text>
+        </view>
+        <!-- 隐私政策：跳转独立页面 -->
+        <navigator url="/pages/privacy/privacy" class="agree-link-box" hover-class="none">
+          <text class="agree-link">隐私政策</text>
+        </view>
+      </view>
+
+    </view>
+  </view>
+</view>

@@ -1,0 +1,257 @@
+/* ===== MoonMemo 月亮日记 全局样式 ===== */
+page {
+  /* CSS 变量 — 对齐 index.html :root */
+  --rose-50: #FAF5FF;
+  --rose-100: #F3E8FF;
+  --rose-200: #E9D5FF;
+  --rose-300: #D8B4FE;
+  --rose-400: #C084FC;
+  --rose-500: #A855F7;
+  --rose-600: #9333EA;
+  --rose-700: #7E22CE;
+  --primary: #7C3AED;
+  --primary-d: #6D28D9;
+  --primary-l: #F5F3FF;
+  --coral: #EC4899;
+  --coral-d: #DB2777;
+  --coral-l: #FCE7F3;
+  --mauve: #A78BFA;
+  --mauve-d: #7C3AED;
+  --mauve-l: #EDE9FE;
+  --gold: #C9A876;
+  --gold-d: #A67C2E;
+  --gold-l: #FAF3E8;
+  --mint: #10B981;
+  --mint-l: #D1FAE5;
+  --amber: #F59E0B;
+  --amber-l: #FEF3C7;
+  --sky: #0EA5E9;
+  --sky-l: #E0F2FE;
+  --ink: #1A1530;
+  --text: #3F3D56;
+  --text-l: #918CA8;
+  --bg: #F8F6FC;
+  --card: #FFFFFF;
+  --border: #ECE6F5;
+  --shadow: 0 1px 3px rgba(26,21,48,0.04), 0 6px 20px rgba(124,58,237,0.05);
+  --shadow-lg: 0 16px 48px rgba(124,58,237,0.12);
+  --shadow-soft: 0 4px 16px rgba(168,85,247,0.05);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --grad-hero: linear-gradient(135deg, #6D28D9 0%, #9333EA 30%, #A855F7 55%, #C026D3 80%, #EC4899 100%);
+  --grad-soft: linear-gradient(135deg, #F5F3FF 0%, #FCE7F3 50%, #FAF5FF 100%);
+  --grad-card: linear-gradient(135deg, #FFFFFF 0%, #FAF5FF 100%);
+  --grad-gold: linear-gradient(135deg, #C9A876, #E0C9A0);
+
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: var(--text);
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+/* 卡片 */
+.card {
+  background: var(--grad-card);
+  border-radius: 40rpx;
+  padding: 30rpx;
+  margin-bottom: 28rpx;
+  box-shadow: var(--shadow);
+  border: 1rpx solid var(--border);
+}
+.card-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 20rpx;
+}
+
+/* 按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18rpx 36rpx;
+  border-radius: 32rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+  transition: all 0.15s;
+}
+.btn-primary {
+  background: var(--grad-hero);
+  color: #fff;
+  box-shadow: 0 8rpx 32rpx rgba(147,51,234,0.25);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--rose-600);
+  border: 3rpx solid var(--rose-300);
+}
+.btn-danger {
+  background: #ef4444;
+  color: #fff;
+}
+.btn-block {
+  width: 100%;
+  display: flex;
+}
+
+/* 输入框 */
+.input {
+  width: 100%;
+  padding: 20rpx 24rpx;
+  border: 3rpx solid var(--border);
+  border-radius: 32rpx;
+  font-size: 30rpx;
+  background: #fff;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.input-group {
+  margin-bottom: 20rpx;
+}
+.input-label {
+  font-size: 26rpx;
+  color: var(--text-l);
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(26,21,48,0.85);
+  color: #fff;
+  padding: 20rpx 40rpx;
+  border-radius: 32rpx;
+  font-size: 28rpx;
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* 遮罩层 */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26,21,48,0.4);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 弹窗 */
+.modal {
+  background: #fff;
+  border-radius: 56rpx;
+  padding: 40rpx;
+  width: 85%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+.modal-actions {
+  display: flex;
+  gap: 20rpx;
+  justify-content: center;
+  margin-top: 30rpx;
+}
+
+/* 标签 */
+.tag {
+  display: inline-block;
+  padding: 8rpx 20rpx;
+  border-radius: 40rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+.tag-active {
+  background: var(--rose-100);
+  color: var(--rose-600);
+}
+
+/* 文字辅助 */
+.text-sm { font-size: 24rpx; }
+.text-md { font-size: 28rpx; }
+.text-lg { font-size: 32rpx; }
+.text-xl { font-size: 40rpx; }
+.text-light { color: var(--text-l); }
+.text-center { text-align: center; }
+.text-bold { font-weight: 700; }
+.mt-10 { margin-top: 10rpx; }
+.mt-20 { margin-top: 20rpx; }
+.mt-30 { margin-top: 30rpx; }
+.mb-10 { margin-bottom: 10rpx; }
+.mb-20 { margin-bottom: 20rpx; }
+
+/* 主题色 */
+.theme-rose { color: var(--coral); }
+.theme-rose-bg { background: var(--coral-l); }
+
+/* ===== 升级版公共样式 ===== */
+.upgrade-tag {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  font-weight: 700;
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  color: #fff;
+  letter-spacing: 1rpx;
+}
+.upgrade-gradient {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+}
+.upgrade-card {
+  background: linear-gradient(135deg, #fdf2f8, #f5f3ff);
+  border: 2rpx solid #e9d5ff;
+}
+.beauty-title {
+  font-size: 40rpx;
+  font-weight: 800;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 16rpx 24rpx;
+  border-radius: 32rpx;
+  background: #f5f5f4;
+  font-size: 28rpx;
+  transition: all 0.15s;
+}
+.check-item-active {
+  background: linear-gradient(135deg, #fce7f3, #f5f3ff);
+  color: #8b5cf6;
+  font-weight: 600;
+}
+.check-circle {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  border: 3rpx solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.check-circle-active {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: #fff;
+}

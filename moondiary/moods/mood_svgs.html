@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><meta charset="UTF-8"><title>Mood SVGs</title>
+<style>
+  body { background:#1a1a2e; color:#eee; font-family:system-ui; padding:20px; text-align:center; }
+  h1 { color:#f0c0d0; }
+  .grid { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:900px; margin:20px auto; }
+  .item { background:#16213e; border-radius:16px; padding:12px; width:80px; text-align:center; }
+  .item svg { width:52px; height:52px; }
+  .item .name { font-size:0.65rem; color:#ccc; margin-top:4px; }
+</style></head>
+<body>
+<h1>心情表情预览</h1>
+<div class="grid" id="grid"></div>
+<script>
+const moods = [
+  {name:'开心',color:'#FFB5C5',eye:'happy',mouth:'smile'},
+  {name:'满足',color:'#FFC8B0',eye:'closed_happy',mouth:'smile'},
+  {name:'惊喜',color:'#F0C0FF',eye:'wide',mouth:'o'},
+  {name:'心动',color:'#FFB0C8',eye:'heart',mouth:'smile'},
+  {name:'感动',color:'#B0D0FF',eye:'sparkle',mouth:'smile_small'},
+  {name:'害羞',color:'#FFB8C8',eye:'shy',mouth:'smile_small'},
+  {name:'平静',color:'#C8E0FF',eye:'closed',mouth:'line'},
+  {name:'激动',color:'#FFB0B8',eye:'star',mouth:'big_smile'},
+  {name:'自信',color:'#FFD0A0',eye:'confident',mouth:'wink_smile'},
+  {name:'骄傲',color:'#FFD080',eye:'proud',mouth:'smile'},
+  {name:'松弛',color:'#D0E8D0',eye:'relaxed',mouth:'gentle_smile'},
+  {name:'释然',color:'#C0E8E8',eye:'soft',mouth:'gentle_smile'},
+  {name:'治愈',color:'#FFD8C8',eye:'healing',mouth:'smile'},
+  {name:'憧憬',color:'#E0C8FF',eye:'dreamy',mouth:'smile_small'},
+  {name:'迷茫',color:'#D0D0E8',eye:'confused',mouth:'crooked'},
+  {name:'怀念',color:'#E8D0C0',eye:'soft',mouth:'gentle_smile'},
+  {name:'无聊',color:'#D8D8E0',eye:'half',mouth:'flat'},
+  {name:'恍惚',color:'#E0D8F0',eye:'dizzy',mouth:'small_o'},
+  {name:'无助',color:'#C8D8E8',eye:'worried',mouth:'frown'},
+  {name:'疲惫',color:'#D0C8D8',eye:'tired',mouth:'flat'},
+  {name:'紧张',color:'#E0D0C8',eye:'nervous',mouth:'wavy'},
+  {name:'孤独',color:'#D0D8E8',eye:'sad_soft',mouth:'sad_line'},
+  {name:'可怜',color:'#E0D0D8',eye:'teary',mouth:'sad'},
+  {name:'低落',color:'#C8D0E0',eye:'sad',mouth:'sad'},
+  {name:'压抑',color:'#B8C0D8',eye:'downcast',mouth:'sad_line'},
+  {name:'心酸',color:'#D0C0D0',eye:'teary_soft',mouth:'sad'},
+  {name:'委屈',color:'#D8C8D8',eye:'teary',mouth:'wavy_sad'},
+  {name:'冷漠',color:'#C0C8D8',eye:'deadpan',mouth:'flat_line'},
+  {name:'难过',color:'#B8C8E0',eye:'crying',mouth:'sad'},
+  {name:'焦虑',color:'#D8C8C0',eye:'anxious',mouth:'wavy'},
+  {name:'恐惧',color:'#C8C0D0',eye:'fear',mouth:'open_wavy'},
+  {name:'生气',color:'#FFB8B0',eye:'angry',mouth:'angry'},
+  {name:'烦躁',color:'#FFC0A8',eye:'irritated',mouth:'teeth'},
+  {name:'妒忌',color:'#D0C8B8',eye:'jealous',mouth:'pout'},
+  {name:'疑惑',color:'#D8D0C8',eye:'skeptical',mouth:'crooked'}
+];
+
+function makeSVG(color, eyeType, mouthType) {
+  const c = color;
+  const darker = c; // same
+  
+  const eyes = {
+    happy: '<circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/>',
+    closed_happy: '<path d="M14 20 Q18 15 22 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 15 38 20" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+    wide: '<circle cx="18" cy="19" r="3.5" fill="#5C3D4A"/><circle cx="34" cy="19" r="3.5" fill="#5C3D4A"/><circle cx="18" cy="19" r="1.5" fill="white"/><circle cx="34" cy="19" r="1.5" fill="white"/>',
+    heart: '<text x="14" y="24" font-size="8" fill="#E8556D">♥</text><text x="30" y="24" font-size="8" fill="#E8556D">♥</text>',
+    sparkle: '<circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><text x="12" y="15" font-size="4" fill="#FFD700">✦</text><text x="40" y="15" font-size="4" fill="#FFD700">✦</text>',
+    shy: '<path d="M14 20 Q18 18 22 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 18 38 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+    closed: '<path d="M15 20 L21 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M31 20 L37 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/>',
+    star: '<text x="14" y="23" font-size="7" fill="#5C3D4A">★</text><text x="30" y="23" font-size="7" fill="#5C3D4A">★</text>',
+    confident: '<path d="M14 18 Q18 22 22 18" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/>',
+    proud: '<circle cx="18" cy="19" r="2" fill="#5C3D4A"/><circle cx="34" cy="19" r="2" fill="#5C3D4A"/><path d="M16 14 L18 12 L20 14" stroke="#5C3D4A" stroke-width="1" fill="none"/>',
+    relaxed: '<path d="M14 20 Q18 16 22 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M30 20 Q34 16 38 20" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+    soft: '<circle cx="18" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><circle cx="34" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/>',
+    healing: '<circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><text x="10" y="14" font-size="5" fill="#FFB5C5">♡</text>',
+    dreamy: '<circle cx="18" cy="20" r="2.5" fill="#5C3D4A" opacity="0.6"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A" opacity="0.6"/>',
+    confused: '<circle cx="16" cy="19" r="2" fill="#5C3D4A"/><circle cx="36" cy="19" r="2" fill="#5C3D4A"/>',
+    half: '<path d="M15 20 L21 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M31 20 L37 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/>',
+    dizzy: '<text x="16" y="22" font-size="5" fill="#5C3D4A">✕</text><text x="32" y="22" font-size="5" fill="#5C3D4A">✕</text>',
+    worried: '<circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/><path d="M16 14 Q18 12 20 14" stroke="#5C3D4A" stroke-width="0.8" fill="none"/>',
+    tired: '<path d="M15 20 L21 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/><path d="M31 20 L37 20" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/>',
+    nervous: '<circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/>',
+    sad_soft: '<circle cx="18" cy="20" r="2" fill="#5C3D4A" opacity="0.6"/><circle cx="34" cy="20" r="2" fill="#5C3D4A" opacity="0.6"/>',
+    teary: '<circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><text x="13" y="28" font-size="5" fill="#88BBEE">💧</text>',
+    sad: '<circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/>',
+    downcast: '<circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/>',
+    teary_soft: '<circle cx="18" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/><circle cx="34" cy="20" r="2" fill="#5C3D4A" opacity="0.7"/>',
+    deadpan: '<circle cx="18" cy="20" r="2" fill="#5C3D4A"/><circle cx="34" cy="20" r="2" fill="#5C3D4A"/>',
+    crying: '<circle cx="18" cy="20" r="2.5" fill="#5C3D4A"/><circle cx="34" cy="20" r="2.5" fill="#5C3D4A"/><text x="11" y="29" font-size="6" fill="#88BBEE">💧</text><text x="35" y="29" font-size="6" fill="#88BBEE">💧</text>',
+    anxious: '<circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/>',
+    fear: '<circle cx="18" cy="20" r="3" fill="#5C3D4A"/><circle cx="34" cy="20" r="3" fill="#5C3D4A"/>',
+    angry: '<path d="M13 18 L19 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M19 18 L13 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M33 18 L39 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/><path d="M39 18 L33 22" stroke="#5C3D4A" stroke-width="2" stroke-linecap="round"/>',
+    irritated: '<path d="M14 18 L20 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M20 18 L14 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M32 18 L38 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/><path d="M38 18 L32 22" stroke="#5C3D4A" stroke-width="1.8" stroke-linecap="round"/>',
+    jealous: '<circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/>',
+    skeptical: '<circle cx="17" cy="20" r="2" fill="#5C3D4A"/><circle cx="35" cy="20" r="2" fill="#5C3D4A"/>'
+  };
+  
+  const mouths = {
+    smile: '<path d="M20 29 Q26 36 32 29" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+    big_smile: '<path d="M18 27 Q26 38 34 27" stroke="#5C3D4A" stroke-width="2" fill="#FFE0E8" stroke-linecap="round"/>',
+    o: '<circle cx="26" cy="30" r="4" fill="#5C3D4A"/>',
+    smile_small: '<path d="M22 30 Q26 34 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+    line: '<path d="M22 30 L30 30" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/>',
+    wink_smile: '<path d="M21 30 Q26 35 31 30" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+    gentle_smile: '<path d="M22 30 Q26 33 30 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+    crooked: '<path d="M20 28 Q26 32 32 30" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+    flat: '<path d="M22 31 L30 31" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/>',
+    small_o: '<ellipse cx="26" cy="30" rx="3" ry="3.5" fill="#5C3D4A"/>',
+    frown: '<path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+    wavy: '<path d="M20 29 Q23 31 26 29 Q29 27 32 29" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+    sad_line: '<path d="M22 32 L30 32" stroke="#5C3D4A" stroke-width="1.5" stroke-linecap="round"/>',
+    sad: '<path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+    wavy_sad: '<path d="M20 32 Q23 30 26 32 Q29 34 32 32" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+    flat_line: '<path d="M22 31 L30 31" stroke="#5C3D4A" stroke-width="1.2" stroke-linecap="round"/>',
+    open_wavy: '<ellipse cx="26" cy="31" rx="5" ry="6" fill="#5C3D4A"/>',
+    angry: '<path d="M20 33 Q26 28 32 33" stroke="#5C3D4A" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    teeth: '<path d="M19 29 Q26 36 33 29" stroke="#5C3D4A" stroke-width="1.8" fill="white" stroke-linecap="round"/><path d="M23 30 L23 35" stroke="#5C3D4A" stroke-width="0.8"/><path d="M27 30 L27 35" stroke="#5C3D4A" stroke-width="0.8"/>',
+    pout: '<path d="M20 32 Q26 28 32 32" stroke="#5C3D4A" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
+  };
+  
+  const blush = '<circle cx="12" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/><circle cx="40" cy="23" r="3.5" fill="#FFB0B0" opacity="0.35"/>';
+  
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52">
+  <circle cx="26" cy="26" r="24" fill="${c}"/>
+  ${blush}
+  ${eyes[eyeType] || eyes.happy}
+  ${mouths[mouthType] || mouths.smile}
+</svg>`;
+  return svg;
+}
+
+const grid = document.getElementById('grid');
+moods.forEach((m, i) => {
+  const div = document.createElement('div');
+  div.className = 'item';
+  div.innerHTML = makeSVG(m.color, m.eye, m.mouth) + `<div class="name">${i+1}.${m.name}</div>`;
+  grid.appendChild(div);
+});
+</script>
+</body>
+</html>

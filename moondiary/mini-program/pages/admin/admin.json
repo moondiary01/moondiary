@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "管理后台",
+  "usingComponents": {
+    "pay-modal": "/components/pay-modal/pay-modal"
+  }
+}

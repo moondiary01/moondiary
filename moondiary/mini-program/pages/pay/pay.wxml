@@ -1,0 +1,95 @@
+<!-- pages/pay/pay.wxml -->
+<view class="pay-page">
+  <!-- 基础版（19.9元，唯一购买页面） -->
+  <view class="pay-content">
+    <view class="pay-card">
+      <view class="pay-card-header">
+        <text class="pay-card-title">19.9元</text>
+        <text class="pay-card-sub">永久普通版</text>
+      </view>
+      <view class="pay-benefits">
+        <view class="pay-benefit-item"> 全部功能解锁</view>
+        <view class="pay-benefit-item"> 云端数据同步</view>
+        <view class="pay-benefit-item"> 经期日历</view>
+        <view class="pay-benefit-item"> 照片上传</view>
+        <view class="pay-benefit-item"> 数据导出</view>
+      </view>
+      <button class="btn btn-primary pay-btn" bindtap="onBasicPay">立即开通 19.9元</button>
+      <view class="pay-note">一次购买 · 永久有效 · 云端储存</view>
+      <!-- 激活码 + 用户协议 + 隐私政策 -->
+      <view class="pay-links">
+        <text class="pay-link" bindtap="showPurchaseNotice">用户协议</text>
+        <text class="pay-link-divider">|</text>
+        <text class="pay-link pay-link-activation" bindtap="showActivationInput">激活码</text>
+        <text class="pay-link-divider">|</text>
+        <text class="pay-link" bindtap="showPrivacyNotice">隐私政策</text>
+      </view>
+      <!-- 激活码输入区（点击展开） -->
+      <view class="pay-activation-area" wx:if="{{showActivation}}">
+        <view class="pay-activation-title">输入激活码免费开通普通版</view>
+        <!-- 微信用户需填写手机号 -->
+        <view class="pay-activation-row" wx:if="{{isWxUser}}" style="margin-bottom:16rpx">
+          <input class="pay-activation-input" type="number" maxlength="11" placeholder="请输入手机号" value="{{wxPhone}}" bindinput="onWxPhoneInput" style="letter-spacing:2rpx;font-size:28rpx" />
+        </view>
+        <view class="pay-activation-row">
+          <input class="pay-activation-input" type="number" maxlength="6" placeholder="6位激活码" value="{{activationCode}}" bindinput="onActivationInput" />
+          <button class="pay-activation-btn" bindtap="verifyActivationCode">开通</button>
+        </view>
+        <view class="pay-activation-msg" wx:if="{{activationMsg}}">{{activationMsg}}</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 购买须知弹窗 -->
+<view class="overlay" wx:if="{{showNoticeModal}}" bindtap="closeNoticeModal">
+  <view class="modal" catchtap>
+    <view class="modal-title">购买须知</view>
+    <scroll-view scroll-y style="max-height:60vh">
+      <view class="notice-content">
+        <view class="notice-section"><text class="notice-bold">1. 会员档位</text></view>
+        <view class="notice-item">• 19.9元 永久普通版：永久云端存储 + 趋势图表 + 周度复盘，不含护肤日记/心情日记功能。</view>
+        <view class="notice-item">• 29.9元 永久升级版：包含云端存储 + 100天变美计划（护肤日记、心情日记），永久有效。</view>
+        <view class="notice-section"><text class="notice-bold">2. 退款政策</text></view>
+        <view class="notice-item">• 数字商品一经开通，不支持退款。</view>
+        <view class="notice-section"><text class="notice-bold">3. 使用期限</text></view>
+        <view class="notice-item">• 均为永久有效，一次购买终身使用。</view>
+        <view class="notice-item">• 无限期权益仅在本小程序正常运营存续期间内有效。</view>
+        <view class="notice-section"><text class="notice-bold">4. 开通方式</text></view>
+        <view class="notice-item">• 联系管理员手动开通，开通后立即生效。</view>
+        <view class="notice-section"><text class="notice-bold">5. 数据安全</text></view>
+        <view class="notice-item">• 您的数据仅存储在您的个人云端空间，其他用户无法访问。</view>
+      </view>
+    </scroll-view>
+    <view class="modal-actions">
+      <button class="btn btn-outline" bindtap="closeNoticeModal">关闭</button>
+      <button class="btn btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none" bindtap="confirmPurchase">我已阅读并同意 · 确认开通</button>
+    </view>
+  </view>
+</view>
+
+<!-- 隐私说明弹窗 -->
+<view class="overlay" wx:if="{{showPrivacyModal}}" bindtap="closePrivacyModal">
+  <view class="modal" catchtap>
+    <view class="modal-title">隐私说明</view>
+    <scroll-view scroll-y style="max-height:60vh">
+      <view class="notice-content">
+        <view class="notice-section"><text class="notice-bold">1. 数据收集</text></view>
+        <view class="notice-item">• 我们仅收集您主动输入的身材数据、护肤记录、心情日记及自拍照片。</view>
+        <view class="notice-item">• 手机号仅用于身份识别和数据绑定，不向第三方分享。</view>
+        <view class="notice-section"><text class="notice-bold">2. 数据存储</text></view>
+        <view class="notice-item">• 您的数据存储在加密的云端服务器（腾讯云COS），仅您本人可访问。</view>
+        <view class="notice-item">• 照片数据经压缩处理后存储，不会用于其他用途。</view>
+        <view class="notice-section"><text class="notice-bold">3. 数据隔离</text></view>
+        <view class="notice-item">• 每个用户的数据独立存储，互不可见。一手机号一份数据。</view>
+        <view class="notice-section"><text class="notice-bold">4. 数据删除</text></view>
+        <view class="notice-item">• 您可随时联系管理员删除所有个人数据。</view>
+        <view class="notice-section"><text class="notice-bold">5. 联系方式</text></view>
+        <view class="notice-item">• 如有隐私相关问题，请联系管理员处理。</view>
+      </view>
+    </scroll-view>
+    <view class="modal-actions">
+      <button class="btn btn-primary" bindtap="closePrivacyModal">我知道了</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,12 @@
+<view class="my-detail-page">
+  <view class="my-detail-header">
+    <view class="my-detail-back" bindtap="onBack">‹</view>
+    <text class="my-detail-title">{{pageTitle}}</text>
+  </view>
+  <view class="my-detail-body">
+    <view class="my-detail-placeholder">
+      <view class="ph-circle"></view>
+      <text class="ph-text">内容待完善</text>
+    </view>
+  </view>
+</view>

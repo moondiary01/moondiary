@@ -1,0 +1,139 @@
+<!-- pages/chart/chart.wxml -->
+<view class="chart-page">
+
+  <!-- 体重趋势图 -->
+  <view class="card">
+    <view class="card-title">体重趋势图</view>
+    <view class="chart-legend">
+      <view class="legend-item">
+        <view class="legend-dot legend-morning"></view>
+        <text>晨起体重</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-dot legend-evening"></view>
+        <text>晚间体重</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-dot legend-fat"></view>
+        <text>体脂率</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-dot legend-period"></view>
+        <text>经期</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-dot legend-period-zone"></view>
+        <text>经期区间</text>
+      </view>
+    </view>
+    <canvas canvas-id="weightChart" id="weightChart" class="chart-canvas"></canvas>
+    <view class="chart-empty" wx:if="{{!hasData}}">
+      <text>暂无体重数据，去记录吧~</text>
+    </view>
+  </view>
+
+  <!-- 周条形图 -->
+  <view class="card">
+    <view class="card-title">每周体重变化 (kg)</view>
+    <canvas canvas-id="chartWeekBar" id="chartWeekBar" class="chart-bar-canvas"></canvas>
+  </view>
+
+  <!-- BMI 卡片：环形图 + 分类 -->
+  <view class="card">
+    <view class="card-title">BMI 指数</view>
+    <view class="bmi-row-new">
+      <view class="bmi-ring-wrap">
+        <view class="bmi-ring {{bmiClass}}">
+          <text class="bmi-ring-num">{{bmiValue || '--'}}</text>
+          <text class="bmi-ring-lbl">BMI</text>
+        </view>
+      </view>
+      <view class="bmi-info-right">
+        <view class="bmi-cat">{{bmiStatus || '数据不足'}}</view>
+        <view class="bmi-desc" wx:if="{{bmiValue}}">
+          <text wx:if="{{bmiClass === 'bmi-thin'}}">体重过轻，建议加强营养和力量训练</text>
+          <text wx:elif="{{bmiClass === 'bmi-normal'}}">体重标准，继续保持健康生活方式</text>
+          <text wx:elif="{{bmiClass === 'bmi-over'}}">体重偏重，建议控制饮食+增加运动</text>
+          <text wx:elif="{{bmiClass === 'bmi-obese'}}">体重肥胖，建议咨询医生制定减重计划</text>
+        </view>
+        <view class="bmi-tags">
+          <text class="bmi-tag bmi-tag-thin">偏瘦 &lt;18.5</text>
+          <text class="bmi-tag bmi-tag-normal">标准 18.5-23.9</text>
+          <text class="bmi-tag bmi-tag-over">偏胖 24-27.9</text>
+          <text class="bmi-tag bmi-tag-obese">肥胖 ≥28</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数据统计 10 项 -->
+  <view class="card">
+    <view class="card-title">数据统计</view>
+    <view class="stat-grid-new">
+      <view class="stat-item">
+        <text class="stat-val">{{statStartWeight || '—'}}</text>
+        <text class="stat-lbl">起始体重</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val coral">{{statTargetWeight || '—'}}</text>
+        <text class="stat-lbl">目标体重</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val amber">{{statLatestWeight || '—'}}</text>
+        <text class="stat-lbl">最新体重</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val mint">{{statLostWeight || '—'}}</text>
+        <text class="stat-lbl">已减重</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val">{{statStartFat || '—'}}</text>
+        <text class="stat-lbl">起始体脂率</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val">{{statLatestFat || '—'}}</text>
+        <text class="stat-lbl">最新体脂率</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val mint">{{statFatDiff || '—'}}</text>
+        <text class="stat-lbl">体脂变化</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val pink">{{statRecordDays || 0}}</text>
+        <text class="stat-lbl">记录天数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-val rose">{{bmiValue || '—'}}</text>
+        <text class="stat-lbl">当前BMI</text>
+      </view>
+      <view class="stat-item dash-clickable" bindtap="onEditMeasure" data-field="all">
+        <text class="stat-val gold">{{hasMeasure ? '✓' : '—'}}</text>
+        <text class="stat-lbl">三围记录</text>
+      </view>
+    </view>
+  </view>
+
+</view>
+
+<!-- 编辑三围弹窗 -->
+<view class="overlay" wx:if="{{showEditModal}}" bindtap="onCloseModal">
+  <view class="modal" catchtap="">
+    <view class="modal-title">编辑三围 (cm)</view>
+    <view class="input-group">
+      <text class="input-label">胸围</text>
+      <input class="input" type="digit" placeholder="请输入胸围" value="{{editBust}}" bindinput="onEditInput" data-field="editBust" />
+    </view>
+    <view class="input-group">
+      <text class="input-label">腰围</text>
+      <input class="input" type="digit" placeholder="请输入腰围" value="{{editWaist}}" bindinput="onEditInput" data-field="editWaist" />
+    </view>
+    <view class="input-group">
+      <text class="input-label">臀围</text>
+      <input class="input" type="digit" placeholder="请输入臀围" value="{{editHip}}" bindinput="onEditInput" data-field="editHip" />
+    </view>
+    <view class="modal-actions">
+      <button class="btn btn-outline" bindtap="onCloseModal">取消</button>
+      <button class="btn btn-primary" bindtap="onConfirmEdit">保存</button>
+    </view>
+  </view>
+</view>
