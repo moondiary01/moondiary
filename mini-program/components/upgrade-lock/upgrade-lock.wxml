@@ -1,0 +1,142 @@
+<!-- components/upgrade-lock/upgrade-lock.wxml -->
+<!-- 29.9升级版购买弹窗 — 与 HTML beautyHomeModal 锁定状态一致 -->
+
+<view class="ul-overlay" wx:if="{{show}}" catchtouchmove="preventMove">
+  <view class="ul-modal">
+
+    <!-- Header: 深色渐变 + 径向光晕 -->
+    <view class="ul-header">
+      <view class="ul-glow ul-glow-tr"></view>
+      <view class="ul-glow ul-glow-bl"></view>
+      <view class="ul-glow ul-glow-center"></view>
+      <view class="ul-header-inner">
+        <view class="ul-title">100天变美日记</view>
+        <view class="ul-subtitle">UPGRADE · YOUR BEST SELF</view>
+      </view>
+    </view>
+
+    <!-- Body: 锁定状态内容 -->
+    <view class="ul-body">
+      <!-- 栏目入口（预览，不可点击） -->
+      <view class="ul-section-card ul-section-skincare">
+        <view class="ul-section-info">
+          <view class="ul-section-title">护肤日记</view>
+          <view class="ul-section-desc">每日护肤打卡 · 日历照片 · do脸记录</view>
+        </view>
+        <view class="ul-section-arrow ul-section-arrow-purple">VIP</view>
+      </view>
+      <view class="ul-section-card ul-section-mood">
+        <view class="ul-section-info">
+          <view class="ul-section-title">心情日记</view>
+          <view class="ul-section-desc">心情记录 · 日历照片 · 感恩日记 · 自律打卡</view>
+        </view>
+        <view class="ul-section-arrow ul-section-arrow-pink">ON</view>
+      </view>
+
+      <!-- 锁定信息区 -->
+      <view class="ul-lock-msg">
+        <view class="ul-lock-icon">VIP</view>
+        <view class="ul-lock-title">升级版会员专享</view>
+        <view class="ul-lock-desc">29.9元永久解锁护肤日记 · 心情日记</view>
+
+        <!-- 价格 + 购买按钮 -->
+        <button class="ul-buy-btn" catchtap="onPay"> 29.9元 永久开通</button>
+        <view class="ul-buy-note">一次购买 · 永久会员权益 · 云端储存</view>
+
+        <!-- 勾选协议 -->
+        <view class="ul-agree-row" catchtap="toggleAgree">
+          <view class="ul-agree-circle {{agreeChecked ? 'checked' : ''}}">
+            <text wx:if="{{agreeChecked}}" class="ul-agree-tick">✓</text>
+          </view>
+          <text class="ul-agree-text">我已阅读并同意</text>
+          <text class="ul-agree-link" catchtap="showPurchaseNotice">购买须知</text>
+          <text class="ul-agree-text">和</text>
+          <text class="ul-agree-link" catchtap="showPrivacyNotice">隐私协议</text>
+        </view>
+
+        <!-- 激活码 + 用户协议 + 隐私政策 -->
+        <view class="ul-links">
+          <text class="ul-link" catchtap="showPurchaseNotice">用户协议</text>
+          <text class="ul-link-divider">|</text>
+          <text class="ul-link ul-link-activation" catchtap="showActivationInput">激活码</text>
+          <text class="ul-link-divider">|</text>
+          <text class="ul-link" catchtap="showPrivacyNotice">隐私政策</text>
+        </view>
+
+        <!-- 激活码输入区（点击展开） -->
+        <view class="ul-activation-area" wx:if="{{showActivation}}">
+          <view class="ul-activation-title">输入激活码 + 手机号开通</view>
+          <!-- 手机号输入 -->
+          <view class="ul-activation-row" style="margin-bottom:16rpx">
+            <input class="ul-activation-input" type="number" maxlength="11" placeholder="绑定手机号（11位）" value="{{wxPhone}}" bindinput="onWxPhoneInput" style="letter-spacing:2rpx;font-size:28rpx" />
+          </view>
+          <view class="ul-activation-row">
+            <input class="ul-activation-input" type="number" maxlength="6" placeholder="6位激活码" value="{{activationCode}}" bindinput="onActivationInput" />
+            <button class="ul-activation-btn" catchtap="verifyActivationCode">开通</button>
+          </view>
+          <view class="ul-activation-msg" wx:if="{{activationMsg}}">{{activationMsg}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Footer -->
+    <view class="ul-footer">
+      <view class="ul-footer-tag">UPGRADE · 一次购买 · 永久会员权益 · 云端储存</view>
+      <button class="ul-close-btn" catchtap="onClose">关闭</button>
+    </view>
+
+  </view>
+</view>
+
+<!-- 购买须知弹窗（用户协议） -->
+<view class="ul-overlay ul-overlay-sub" wx:if="{{showNotice}}" catchtouchmove="preventMove">
+  <view class="ul-sub-modal" catchtap>
+    <view class="ul-sub-title">用户协议</view>
+    <scroll-view scroll-y class="ul-sub-scroll">
+      <view class="ul-sub-content">
+        <view class="ul-sub-section"><text class="ul-sub-bold">1. 会员档位</text></view>
+        <view class="ul-sub-item">• 19.9元 永久普通版：永久云端存储 + 趋势图表 + 周度复盘，不含护肤日记/心情日记功能。</view>
+        <view class="ul-sub-item">• 29.9元 永久升级版：包含云端存储 + 100天变美计划（护肤日记、心情日记），永久有效。</view>
+        <view class="ul-sub-section"><text class="ul-sub-bold">2. 退款政策</text></view>
+        <view class="ul-sub-item">• 数字商品一经开通，不支持退款。</view>
+        <view class="ul-sub-section"><text class="ul-sub-bold">3. 使用期限</text></view>
+        <view class="ul-sub-item">• 均为永久有效，一次购买终身使用。</view>
+        <view class="ul-sub-item">• 无限期权益仅在本小程序正常运营存续期间内有效。</view>
+        <view class="ul-sub-section"><text class="ul-sub-bold">4. 开通方式</text></view>
+        <view class="ul-sub-item">• 联系管理员手动开通，开通后立即生效。</view>
+        <view class="ul-sub-section"><text class="ul-sub-bold">5. 数据安全</text></view>
+        <view class="ul-sub-item">• 您的数据仅存储在您的个人云端空间，其他用户无法访问。</view>
+      </view>
+    </scroll-view>
+    <view class="ul-sub-actions">
+      <button class="ul-sub-btn-outline" catchtap="closeNotice">关闭</button>
+      <button class="ul-sub-btn-primary" catchtap="confirmPurchase">我已阅读并同意 · 确认开通</button>
+    </view>
+  </view>
+</view>
+
+<!-- 隐私说明弹窗 -->
+<view class="ul-overlay ul-overlay-sub" wx:if="{{showPrivacy}}" catchtouchmove="preventMove">
+  <view class="ul-sub-modal" catchtap>
+    <view class="ul-sub-title">隐私说明</view>
+    <scroll-view scroll-y class="ul-sub-scroll">
+      <view class="ul-sub-content">
+        <view class="ul-sub-section"><text class="ul-sub-bold">1. 数据收集</text></view>
+        <view class="ul-sub-item">• 我们仅收集您主动输入的身材数据、护肤记录、心情日记及自拍照片。</view>
+        <view class="ul-sub-item">• 手机号仅用于身份识别和数据绑定，不向第三方分享。</view>
+        <view class="ul-sub-section"><text class="ul-sub-bold">2. 数据存储</text></view>
+        <view class="ul-sub-item">• 您的数据存储在加密的云端服务器（腾讯云COS），仅您本人可访问。</view>
+        <view class="ul-sub-item">• 照片数据经压缩处理后存储，不会用于其他用途。</view>
+        <view class="ul-sub-section"><text class="ul-sub-bold">3. 数据隔离</text></view>
+        <view class="ul-sub-item">• 每个用户的数据独立存储，互不可见。一手机号一份数据。</view>
+        <view class="ul-sub-section"><text class="ul-sub-bold">4. 数据删除</text></view>
+        <view class="ul-sub-item">• 您可随时联系管理员删除所有个人数据。</view>
+        <view class="ul-sub-section"><text class="ul-sub-bold">5. 联系方式</text></view>
+        <view class="ul-sub-item">• 如有隐私相关问题，请联系管理员处理。</view>
+      </view>
+    </scroll-view>
+    <view class="ul-sub-actions">
+      <button class="ul-sub-btn-primary" catchtap="closePrivacy">我知道了</button>
+    </view>
+  </view>
+</view>

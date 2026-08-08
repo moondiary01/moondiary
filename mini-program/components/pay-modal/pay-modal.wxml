@@ -1,0 +1,89 @@
+<!-- components/pay-modal/pay-modal.wxml — 购买弹窗（试用到期/主动购买/管理员预览） -->
+<view class="overlay" wx:if="{{show}}" catchtap="onClose">
+  <view class="modal-box" catchtap="">
+    <scroll-view scroll-y class="pm-scroll" scroll-top="{{_scrollTop}}">
+      <!-- 顶部渐变背景区 -->
+      <view class="pm-top">
+        <view class="pm-glow pm-glow-pink"></view>
+        <view class="pm-glow pm-glow-gold"></view>
+        <view class="pm-glow pm-glow-center"></view>
+        <text class="pm-icon">◑</text>
+        <text class="pm-title">{{titleText}}</text>
+        <text class="pm-sub">{{subText}}</text>
+      </view>
+      <!-- 底部白色内容区 -->
+      <view class="pm-body">
+        <!-- 权益清单 -->
+        <view class="pm-benefits">
+          <view class="pm-benefit">
+            <view class="pm-bf-text">
+              <text class="pm-bf-title">云端数据永久储存</text>
+              <text class="pm-bf-desc">体重/经期/运动数据安全同步，换手机不丢失</text>
+            </view>
+          </view>
+          <view class="pm-benefit">
+            <view class="pm-bf-text">
+              <text class="pm-bf-title">趋势图表 & 周度复盘</text>
+              <text class="pm-bf-desc">体重趋势分析、饮食运动复盘，数据驱动变美</text>
+            </view>
+          </view>
+          <view class="pm-benefit">
+            <view class="pm-bf-text">
+              <text class="pm-bf-title">一次购买 · 永久会员权益</text>
+              <text class="pm-bf-desc">一次付费，永久使用会员权益</text>
+            </view>
+          </view>
+        </view>
+        <!-- 价格卡 -->
+        <view class="pm-price-card">
+          <view class="pm-price-glow"></view>
+          <view class="pm-price-inner">
+            <view class="pm-price-row">
+              <text class="pm-price-yuan">¥</text>
+              <text class="pm-price-num">19.9</text>
+            </view>
+            <text class="pm-price-tag">一次购买 · 永久会员权益 · 云端储存</text>
+            <button class="pm-buy-btn" bindtap="onPay">立即购买开通使用</button>
+          </view>
+        </view>
+        <!-- 勾选协议 -->
+        <view class="pm-agree-row" catchtap="toggleAgree">
+          <view class="pm-agree-circle {{agreeChecked ? 'checked' : ''}}">
+            <text wx:if="{{agreeChecked}}" class="pm-agree-tick">✓</text>
+          </view>
+          <text class="pm-agree-text">我已阅读并同意</text>
+          <text class="pm-agree-link" catchtap="onNotice">购买须知</text>
+          <text class="pm-agree-text">和</text>
+          <text class="pm-agree-link" catchtap="onPrivacy">隐私协议</text>
+        </view>
+        <!-- 激活码区域（默认展示） -->
+        <view class="pm-activation-area">
+          <view class="pm-activation-title">输入激活码 + 手机号开通</view>
+          <!-- 手机号输入 -->
+          <view class="pm-activation-row" style="margin-bottom:16rpx">
+            <input class="pm-activation-input" type="number" maxlength="11" placeholder="绑定手机号（11位）" value="{{wxPhone}}" bindinput="onWxPhoneInput" style="letter-spacing:2rpx;font-size:28rpx" />
+          </view>
+          <view class="pm-activation-row">
+            <input class="pm-activation-input" type="number" maxlength="6" placeholder="输入6位激活码" value="{{activationCode}}" bindinput="onActivationCodeInput" />
+            <button class="pm-activation-btn" bindtap="onVerifyActivation">开通</button>
+          </view>
+          <view class="pm-activation-msg" wx:if="{{activationMsg}}">{{activationMsg}}</view>
+        </view>
+        <!-- 用户协议 + 隐私协议 -->
+        <view class="pm-links">
+          <text class="pm-link" catchtap="onNotice">用户协议</text>
+          <text class="pm-link-divider">|</text>
+          <text class="pm-link" catchtap="onPrivacy">隐私协议</text>
+        </view>
+        <!-- 稍后再说 -->
+        <view class="pm-later" catchtap="onClose">
+          <text class="pm-later-text">稍后再说</text>
+        </view>
+        <!-- 管理员预览：返回按钮 -->
+        <view class="pm-admin-back" wx:if="{{isAdminPreview}}" catchtap="onBackToAdmin">
+          <text class="pm-admin-back-text">← 返回管理员后台</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>
