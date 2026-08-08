@@ -5059,16 +5059,10 @@ function refreshBeautyEntryUI() {
   var basicEntry = document.getElementById('basicPlanEntry'); /* 19.9元购买入口 */
   
   if (isAdminUser()) {
-    /* 管理员：已购升级版则隐藏底部卡片，未购则显示（和用户一致） */
-    if (hasBeautyPermission()) {
-      if (quickBtns) quickBtns.style.display = 'flex';
-      if (bottomCard) bottomCard.style.display = 'none';
-      if (basicEntry) basicEntry.style.display = 'none';
-    } else {
-      if (quickBtns) quickBtns.style.display = 'flex';
-      if (bottomCard) bottomCard.style.display = '';
-      if (basicEntry) basicEntry.style.display = '';
-    }
+    /* 管理员：显示全部功能 + 购买入口（用于预览体验） */
+    if (quickBtns) quickBtns.style.display = 'flex';
+    if (bottomCard) bottomCard.style.display = '';
+    if (basicEntry) basicEntry.style.display = '';
     return;
   }
   
