@@ -1,0 +1,42 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/index/index",
+    "pages/admin/admin",
+    "pages/pay/pay",
+    "pages/notice/notice",
+    "pages/privacy/privacy",
+    "pages/my-detail/my-detail",
+    "pages/plan/plan"
+  ],
+  "subPackages": [
+    {
+      "root": "subpkg-beauty",
+      "name": "beauty",
+      "pages": [
+        "pages/upgrade-home/upgrade-home",
+        "pages/skincare/skincare",
+        "pages/mood/mood",
+        "pages/notice/notice"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "wifi",
+      "packages": ["beauty"]
+    }
+  },
+  "window": {
+    "navigationBarBackgroundColor": "#1a1025",
+    "navigationBarTitleText": "MoonMemo",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#faf5f9",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "usingComponents": {
+    "pay-modal": "/components/pay-modal/pay-modal"
+  }
+}

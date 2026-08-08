@@ -1,0 +1,1081 @@
+<!-- pages/index/index.wxml -->
+<pay-modal show="{{showPayModal}}" mode="{{payModalMode}}" bind:close="onPayModalClose" />
+
+<!-- 试用到期锁定提示条 -->
+<view class="lock-banner" wx:if="{{isLocked}}" catchtap="onLockTap">
+  <text class="lock-banner-text">试用已到期，购买后继续使用全部功能</text>
+  <text class="lock-banner-btn">立即开通 ›</text>
+</view>
+
+<view class="index-page {{isLocked ? 'locked' : ''}}">
+
+  <!-- ===== Hero ===== -->
+  <view class="hero">
+    <view class="hero-inner">
+      <view class="hero-top">
+        <view class="hero-left">
+          <view class="hero-title">
+            <text class="brand">Moon Memo</text>
+            <text class="hero-sub">月亮日记</text>
+          </view>
+          <view class="hero-clock">{{todayStr}}</view>
+          <view class="hero-actions">
+            <view class="unit-toggle">
+              <text class="unit-btn {{unitLabel === 'kg' ? 'unit-active' : ''}}" bindtap="onSwitchUnit" data-unit="kg">kg</text>
+              <text class="unit-btn {{unitLabel === '斤' ? 'unit-active' : ''}}" bindtap="onSwitchUnit" data-unit="斤">斤</text>
+            </view>
+            <text class="btn-glass" bindtap="onOpenSettings">设置</text>
+            <text class="btn-glass" bindtap="onLogout">退出</text>
+          </view>
+        </view>
+        <view class="hero-avatar-box">
+          <view class="avatar avatar-lg" bindtap="onOpenAvatarModal">{{userAvatar ? '' : ''}}<image wx:if="{{userAvatar}}" src="{{userAvatar}}" mode="aspectFill" style="width:100%;height:100%;border-radius:50%" /></view>
+          <view class="hero-nickname" bindtap="onOpenSettings">{{userName || '点击设置'}}</view>
+        </view>
+      </view>
+      <view class="profile-bar">
+        <view class="profile-info">
+          <view class="pf-item" bindtap="onScrollToTop">
+            <text class="pf-value pf-weight-val">{{todayWeightDisplay}}</text>
+            <text class="pf-label">今日体重</text>
+          </view>
+          <view class="pf-item" bindtap="onOpenSettings">
+            <text class="pf-label">性别</text>
+            <text class="pf-value">{{userGender || '—'}}</text>
+          </view>
+          <view class="pf-item" bindtap="onOpenSettings">
+            <text class="pf-label">年龄</text>
+            <text class="pf-value">{{userAge || '—'}}</text>
+          </view>
+          <view class="pf-item" bindtap="onOpenSettings">
+            <text class="pf-label">身高</text>
+            <text class="pf-value">{{userHeight || '—'}}</text>
+          </view>
+        </view>
+      </view>
+      <!-- 升级版快捷入口（仅已购用户可见） -->
+      <view class="beauty-quick-btns" wx:if="{{showBeautyQuick}}">
+        <view class="beauty-quick-btn beauty-quick-skincare" bindtap="onOpenSkincare">
+          <text class="beauty-quick-title">护肤日记</text>
+          <text class="beauty-quick-sub">SKINCARE DIARY</text>
+        </view>
+        <view class="beauty-quick-btn beauty-quick-mood" bindtap="onOpenMood">
+          <text class="beauty-quick-title">心情日记</text>
+          <text class="beauty-quick-sub">MOOD DIARY</text>
+        </view>
+      </view>
+      <!-- 19.9元普通版购买入口（试用/未购用户可见） -->
+      <view class="basic-plan-entry" wx:if="{{showBasicPlanEntry}}" bindtap="onOpenBasicPay">
+        <view class="basic-plan-glow basic-plan-glow-gold"></view>
+        <view class="basic-plan-inner">
+          <view class="basic-plan-left">
+            <text class="basic-plan-title">解锁全部功能</text>
+            <text class="basic-plan-sub">一次购买 · 永久会员权益 · 云端储存</text>
+          </view>
+          <view class="basic-plan-price-pill">
+            <text class="basic-plan-yuan">¥</text>
+            <text class="basic-plan-num">19.9</text>
+            <text class="basic-plan-perm">永久</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- === TOP TABS === -->
+  <view class="top-tabs">
+    <view class="top-tab {{currentTab===0?'active':''}}" bindtap="onSwitchTab" data-idx="0">每日记录</view>
+    <view class="top-tab {{currentTab===1?'active':''}}" bindtap="onSwitchTab" data-idx="1">趋势统计</view>
+    <view class="top-tab {{currentTab===2?'active':''}}" bindtap="onSwitchTab" data-idx="2">计划详情</view>
+    <view class="top-tab {{currentTab===3?'active':''}}" bindtap="onSwitchTab" data-idx="3">周度复盘</view>
+    <view class="top-tab {{currentTab===4?'active':''}}" bindtap="onSwitchTab" data-idx="4">经期日历</view>
+  </view>
+
+  <!-- Tab 0: 每日记录 -->
+  <view class="main-content" wx:if="{{currentTab===0}}">
+    <!-- ===== 仪表盘 6项 ===== -->
+    <view class="dash">
+      <view class="dash-item" bindtap="onEditField" data-field="startDate">
+        <text class="dash-label">计划天数</text>
+        <text class="dash-value">{{dashTotalDays || '—'}}</text>
+      </view>
+      <view class="dash-item">
+        <text class="dash-label">当前第几天</text>
+        <text class="dash-value light-pink">{{dashCurrentDay || '—'}}</text>
+      </view>
+      <view class="dash-item" bindtap="onEditField" data-field="startWeight">
+        <text class="dash-label">起始体重</text>
+        <text class="dash-value">{{dashStartWeight || '—'}}</text>
+      </view>
+      <view class="dash-item" bindtap="onEditField" data-field="targetWeight">
+        <text class="dash-label">目标体重</text>
+        <text class="dash-value coral">{{dashTargetWeight || '—'}}</text>
+      </view>
+      <view class="dash-item">
+        <text class="dash-label">已减重</text>
+        <text class="dash-value mint">{{dashLostWeight || '—'}}</text>
+      </view>
+      <view class="dash-item">
+        <text class="dash-label">最新体重</text>
+        <text class="dash-value amber">{{dashLatestWeight || '—'}}</text>
+      </view>
+    </view>
+
+    <!-- ===== 减重进度条 ===== -->
+    <view class="card progress-card">
+      <view class="card-title">减重进度</view>
+      <view class="progress-wrap">
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{progressPercent}}%"></view>
+        </view>
+        <view class="progress-text">{{progressPercent}}%</view>
+      </view>
+    </view>
+
+    <!-- ===== 今日记录 ===== -->
+    <view class="card today-card">
+      <view class="card-title">今日记录 <text class="sub">输入自动保存</text></view>
+
+      <!-- 体重 Hero：深紫渐变 + 早晚体重 + 体脂率 -->
+      <view class="weight-hero">
+        <view class="today-block-header">
+          <view class="today-block-dot w"></view>
+          <text class="today-block-title">早晚体重打卡</text>
+          <text class="today-block-sub">{{unitLabel}}</text>
+        </view>
+        <view class="am-pm-row">
+          <input class="weight-input-am" type="digit" placeholder="点击输入 晨起体重（空腹排便后）" value="{{dayData.weightAM ? (unitLabel === '斤' ? (dayData.weightAM * 2).toFixed(1) : Number(dayData.weightAM).toFixed(1)) : ''}}" bindinput="onMorningWeightInput" bindblur="onMorningWeightBlur" />
+          <input class="weight-input-pm" type="digit" placeholder="点击输入 睡前体重" value="{{dayData.weightPM ? (unitLabel === '斤' ? (dayData.weightPM * 2).toFixed(1) : Number(dayData.weightPM).toFixed(1)) : ''}}" bindinput="onEveningWeightInput" bindblur="onEveningWeightBlur" />
+        </view>
+        <view class="fat-inline">
+          <text class="fat-inline-label">体脂率</text>
+          <input class="fat-inline-input" type="digit" placeholder="--" value="{{dayData.fat || ''}}" bindinput="onFatRateInput" bindblur="onFatRateBlur" />
+          <text class="fat-inline-unit">%</text>
+        </view>
+      </view>
+
+      <!-- 喝水打卡 -->
+      <view class="today-block water-block">
+        <view class="today-block-header">
+          <view class="today-block-dot h"></view>
+          <text class="today-block-title">喝水打卡</text>
+        </view>
+        <view class="water-cups">
+          <view wx:for="{{waterCups}}" wx:key="index"
+            class="water-cup {{item.filled ? 'water-cup-filled' : ''}}"
+            bindtap="onWaterAdd"
+            data-index="{{index}}">
+            {{index + 1}}
+          </view>
+        </view>
+        <view class="water-info">已喝 <text class="water-bold">{{dayData.water || 0}}</text> 杯 <text class="water-bold">{{waterMl}}</text>ml</view>
+        <view class="water-goal-progress">目标 {{waterGoal}} ml</view>
+      </view>
+
+      <!-- 健康三合一：排便 + 运动 + 饮食 -->
+      <view class="health-trio">
+        <view class="health-trio-row">
+          <!-- 排便 -->
+          <view class="health-trio-cell">
+            <text class="health-trio-label">排便</text>
+            <picker mode="selector" range="{{bmOptions}}" value="{{bmIndex}}" bindchange="onBmChange">
+              <view class="health-trio-picker {{dayData.bm ? 'health-trio-picker-active' : ''}}">
+                {{dayData.bm || '—'}}
+              </view>
+            </picker>
+          </view>
+          <!-- 运动 -->
+          <view class="health-trio-cell">
+            <text class="health-trio-label">运动</text>
+            <picker mode="selector" range="{{exerciseTrioOptions}}" value="{{exerciseIndex}}" bindchange="onExerciseChange">
+              <view class="health-trio-picker {{dayData.exercise ? 'health-trio-picker-active' : ''}}">
+                {{dayData.exercise || '—'}}
+              </view>
+            </picker>
+          </view>
+        </view>
+        <!-- 饮食（占满一行） -->
+        <view class="health-trio-diet-row">
+          <text class="health-trio-label">饮食</text>
+          <scroll-view scroll-x="true" class="diet-scroll">
+            <view class="diet-tag-list">
+              <view wx:for="{{dietOptions}}" wx:key="*this"
+                class="diet-tag {{dayData.diet === item ? 'diet-tag-active' : ''}}"
+                bindtap="onDietSelect" data-value="{{item}}">
+                {{item}}
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+      </view>
+
+      <!-- 生理期（仅女性） -->
+      <view class="today-block period-block" wx:if="{{isFemale}}">
+        <view class="today-block-header">
+          <view class="today-block-dot p"></view>
+          <text class="today-block-title">生理期记录</text>
+        </view>
+        <view class="period-row">
+          <view class="period-chip {{dayData.period ? 'period-chip-active' : ''}}" bindtap="onPeriodToggle">今天来月经</view>
+          <view class="period-chip {{dayData.periodEnd ? 'period-chip-active' : ''}}" wx:if="{{dayData.period}}" bindtap="onPeriodEndToggle">标记结束</view>
+        </view>
+        <view class="period-status" wx:if="{{periodStatusText}}">{{periodStatusText}}</view>
+        <textarea class="period-note" placeholder="症状/流量备注（如：量多、痛经）" value="{{dayData.periodNote}}" bindinput="onPeriodNoteInput" bindblur="onPeriodNoteBlur" maxlength="200"></textarea>
+      </view>
+
+      <!-- 备注/日记 -->
+      <view class="today-block note-block">
+        <view class="today-block-header">
+          <view class="today-block-dot n"></view>
+          <text class="today-block-title">备注/日记</text>
+        </view>
+        <textarea class="note-textarea" placeholder="记录今天的心情与感悟..." value="{{dayData.note}}" bindinput="onNoteInput" bindblur="onNoteBlur" maxlength="500" auto-height></textarea>
+      </view>
+    </view>
+
+    <!-- ===== 完整记录表（按月分组折叠） ===== -->
+    <view class="card">
+      <view class="card-title">完整记录表</view>
+      <view class="record-accordion">
+        <view class="month-section" wx:for="{{monthGroups}}" wx:key="month">
+          <view class="month-header" bindtap="onToggleMonth" data-month="{{item.month}}">
+            <text class="month-title">{{item.month}}</text>
+            <text class="month-count">{{item.records.length}}条</text>
+            <text class="month-arrow {{item.expanded ? 'month-arrow-open' : ''}}">›</text>
+          </view>
+          <view class="month-body" wx:if="{{item.expanded}}">
+            <view class="record-row" wx:for="{{item.records}}" wx:for-item="rec" wx:key="date">
+              <text class="record-date">{{rec.dateStr}}</text>
+              <text class="record-weight">{{rec.weight || '—'}}</text>
+              <text class="record-bm">{{rec.bm || '—'}}</text>
+              <text class="record-exercise">{{rec.exercise || '—'}}</text>
+              <text class="record-diet">{{rec.diet || '—'}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="record-empty" wx:if="{{monthGroups.length === 0}}">暂无记录</view>
+      </view>
+    </view>
+
+    <!-- ===== 升级版入口卡片（仅已购普通版或升级版用户可见） ===== -->
+    <view class="beauty-entry-card" bindtap="onGoBeauty" wx:if="{{!hideBeautyEntry && canSeeUpgrade}}">
+      <view class="beauty-glow beauty-glow-pink"></view>
+      <view class="beauty-glow beauty-glow-gold"></view>
+      <view class="beauty-entry-inner">
+        <view class="beauty-entry-top">
+          <view class="beauty-entry-title-wrap">
+            <text class="beauty-entry-title">100天变美日记</text>
+            <view class="beauty-entry-sub-row">
+              <text class="beauty-entry-en">UPGRADE · YOUR BEST SELF</text>
+              <text class="beauty-entry-badge">升级版</text>
+            </view>
+          </view>
+          <text class="beauty-entry-arrow">›</text>
+        </view>
+        <view class="beauty-features-row">
+          <text class="beauty-feat-chip">护肤日记</text>
+          <text class="beauty-feat-chip">心情记录</text>
+          <text class="beauty-feat-chip">感恩日记</text>
+          <text class="beauty-feat-chip">自律打卡</text>
+        </view>
+        <view class="beauty-entry-bottom">
+          <text class="beauty-entry-subline">一次购买 · 永久会员权益 · 云端储存</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 管理员入口 ===== -->
+    <view class="admin-entry-card" wx:if="{{isAdmin}}">
+      <view class="admin-entry" bindtap="onGoAdmin">
+        <text class="admin-entry-text">⚙️ 管理后台</text>
+        <text class="admin-entry-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 底部留白 -->
+    <view style="height: 120rpx;"></view>
+  </view>
+
+  <!-- Tab 1: 趋势统计 -->
+  <view class="main-content" wx:if="{{currentTab===1}}">
+    <!-- 体重趋势图 -->
+    <view class="card">
+      <view class="card-title">体重趋势图</view>
+      <view class="chart-legend">
+        <view class="legend-item">
+          <view class="legend-dot legend-morning"></view>
+          <text>晨起体重</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot legend-evening"></view>
+          <text>晚间体重</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot legend-fat"></view>
+          <text>体脂率</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot legend-period"></view>
+          <text>经期</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot legend-period-zone"></view>
+          <text>经期区间</text>
+        </view>
+      </view>
+      <canvas canvas-id="weightChart" id="weightChart" class="chart-canvas"></canvas>
+      <view class="chart-empty" wx:if="{{!chartHasData}}">
+        <text>暂无体重数据，去记录吧~</text>
+      </view>
+    </view>
+
+    <!-- 周条形图 -->
+    <view class="card">
+      <view class="card-title">每周体重变化 (kg)</view>
+      <canvas canvas-id="chartWeekBar" id="chartWeekBar" class="chart-bar-canvas"></canvas>
+    </view>
+
+    <!-- BMI 卡片：环形图 + 分类 -->
+    <view class="card">
+      <view class="card-title">BMI 指数</view>
+      <view class="bmi-row-new">
+        <view class="bmi-ring-wrap">
+          <view class="bmi-ring {{bmiClass}}">
+            <text class="bmi-ring-num">{{bmiValue || '--'}}</text>
+            <text class="bmi-ring-lbl">BMI</text>
+          </view>
+        </view>
+        <view class="bmi-info-right">
+          <view class="bmi-cat">{{bmiStatus || '数据不足'}}</view>
+          <view class="bmi-desc" wx:if="{{bmiValue}}">
+            <text wx:if="{{bmiClass === 'bmi-thin'}}">体重过轻，建议加强营养和力量训练</text>
+            <text wx:elif="{{bmiClass === 'bmi-normal'}}">体重标准，继续保持健康生活方式</text>
+            <text wx:elif="{{bmiClass === 'bmi-over'}}">体重偏重，建议控制饮食+增加运动</text>
+            <text wx:elif="{{bmiClass === 'bmi-obese'}}">体重肥胖，建议咨询医生制定减重计划</text>
+          </view>
+          <view class="bmi-tags">
+            <text class="bmi-tag bmi-tag-thin">偏瘦 &lt;18.5</text>
+            <text class="bmi-tag bmi-tag-normal">标准 18.5-23.9</text>
+            <text class="bmi-tag bmi-tag-over">偏胖 24-27.9</text>
+            <text class="bmi-tag bmi-tag-obese">肥胖 ≥28</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 数据统计 10 项 -->
+    <view class="card">
+      <view class="card-title">数据统计</view>
+      <view class="stat-grid-new">
+        <view class="stat-item">
+          <text class="stat-val">{{statStartWeight || '—'}}</text>
+          <text class="stat-lbl">起始体重</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-val coral">{{statTargetWeight || '—'}}</text>
+          <text class="stat-lbl">目标体重</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-val amber">{{statLatestWeight || '—'}}</text>
+          <text class="stat-lbl">最新体重</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-val mint">{{statLostWeight || '—'}}</text>
+          <text class="stat-lbl">已减重</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-val">{{statStartFat || '—'}}</text>
+          <text class="stat-lbl">起始体脂率</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-val">{{statLatestFat || '—'}}</text>
+          <text class="stat-lbl">最新体脂率</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-val mint">{{statFatDiff || '—'}}</text>
+          <text class="stat-lbl">体脂变化</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-val pink">{{statRecordDays || 0}}</text>
+          <text class="stat-lbl">记录天数</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-val rose">{{bmiValue || '—'}}</text>
+          <text class="stat-lbl">当前BMI</text>
+        </view>
+        <view class="stat-item dash-clickable" bindtap="onEditMeasure" data-field="all">
+          <text class="stat-val gold">{{hasMeasure ? '✓' : '—'}}</text>
+          <text class="stat-lbl">三围记录</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 编辑三围弹窗 -->
+    <view class="overlay" wx:if="{{showEditModal}}" bindtap="onCloseModal">
+      <view class="modal" catchtap="">
+        <view class="modal-title">编辑三围 (cm)</view>
+        <view class="input-group">
+          <text class="input-label">胸围</text>
+          <input class="input" type="digit" placeholder="请输入胸围" value="{{editBust}}" bindinput="onEditInput" data-field="editBust" />
+        </view>
+        <view class="input-group">
+          <text class="input-label">腰围</text>
+          <input class="input" type="digit" placeholder="请输入腰围" value="{{editWaist}}" bindinput="onEditInput" data-field="editWaist" />
+        </view>
+        <view class="input-group">
+          <text class="input-label">臀围</text>
+          <input class="input" type="digit" placeholder="请输入臀围" value="{{editHip}}" bindinput="onEditInput" data-field="editHip" />
+        </view>
+        <view class="modal-actions">
+          <button class="btn btn-outline" bindtap="onCloseModal">取消</button>
+          <button class="btn btn-primary" bindtap="onConfirmEdit">保存</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab 2: 计划详情 -->
+  <view class="main-content" wx:if="{{currentTab===2}}">
+    <!-- 基本信息卡片 -->
+    <view class="card" bindtap="onPlanEditCard" data-card="basic">
+      <view class="card-title">基本信息</view>
+      <view class="info-grid">
+        <view class="info-cell">
+          <text class="info-label">姓名</text>
+          <text class="info-value">{{planState.name || '未设置'}}</text>
+        </view>
+        <view class="info-cell">
+          <text class="info-label">性别</text>
+          <text class="info-value">{{planState.gender || '未设置'}}</text>
+        </view>
+        <view class="info-cell">
+          <text class="info-label">年龄</text>
+          <text class="info-value">{{planState.age || '--'}}</text>
+        </view>
+        <view class="info-cell">
+          <text class="info-label">身高</text>
+          <text class="info-value">{{planState.height || '--'}} cm</text>
+        </view>
+      </view>
+      <view class="edit-hint">点击编辑</view>
+    </view>
+
+    <!-- 三阶段计划 -->
+    <view class="card">
+      <view class="card-title">三阶段计划</view>
+      <view class="stage-card stage-s1">
+        <view class="stage-header">
+          <text class="stage-num">阶段一</text>
+          <text class="stage-name">适应期</text>
+          <text class="stage-range">第 1-30 天</text>
+        </view>
+        <view class="stage-goal">目标：建立记录习惯，了解身体数据变化规律</view>
+        <view class="stage-tips">
+          <text>• 每天固定时间称重（晨起空腹 + 睡前）</text>
+          <text>• 记录排便、运动、饮食情况</text>
+          <text>• 不需要刻意节食，保持日常饮食习惯</text>
+          <text>• 建立喝水习惯，每天至少 1500ml</text>
+        </view>
+      </view>
+      <view class="stage-card stage-s2">
+        <view class="stage-header">
+          <text class="stage-num">阶段二</text>
+          <text class="stage-name">加速期</text>
+          <text class="stage-range">第 31-60 天</text>
+        </view>
+        <view class="stage-goal">目标：稳定减重节奏，每周减 0.5-1 kg</view>
+        <view class="stage-tips">
+          <text>• 控制每日热量摄入，参考饮食表</text>
+          <text>• 每周至少 3 次有氧运动（30分钟以上）</text>
+          <text>• 增加蛋白质摄入，减少精制碳水</text>
+          <text>• 保证 7-8 小时睡眠，减少压力</text>
+        </view>
+      </view>
+      <view class="stage-card stage-s3">
+        <view class="stage-header">
+          <text class="stage-num">阶段三</text>
+          <text class="stage-name">巩固期</text>
+          <text class="stage-range">第 61-100 天</text>
+        </view>
+        <view class="stage-goal">目标：维持减重成果，养成健康生活习惯</view>
+        <view class="stage-tips">
+          <text>• 逐步恢复正常饮食，但保持健康搭配</text>
+          <text>• 加入力量训练，提高基础代谢</text>
+          <text>• 每周称重 2-3 次，关注体脂率变化</text>
+          <text>• 形成长期可持续的健康生活方式</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 每日饮食参考表 5列 -->
+    <view class="card">
+      <view class="card-title">每日饮食参考</view>
+      <view class="meal-table">
+        <view class="meal-row meal-header">
+          <text class="meal-cell meal-time">餐次</text>
+          <text class="meal-cell meal-time-range">时间</text>
+          <text class="meal-cell meal-food">食物建议</text>
+          <text class="meal-cell meal-cal">热量</text>
+          <text class="meal-cell meal-note">备注</text>
+        </view>
+        <view class="meal-row">
+          <text class="meal-cell meal-time">早餐</text>
+          <text class="meal-cell meal-time-range">7:00-8:00</text>
+          <text class="meal-cell meal-food">燕麦粥+1鸡蛋+脱脂牛奶</text>
+          <text class="meal-cell meal-cal">~350</text>
+          <text class="meal-cell meal-note">高蛋白</text>
+        </view>
+        <view class="meal-row">
+          <text class="meal-cell meal-time">加餐</text>
+          <text class="meal-cell meal-time-range">10:30</text>
+          <text class="meal-cell meal-food">苹果或坚果</text>
+          <text class="meal-cell meal-cal">~100</text>
+          <text class="meal-cell meal-note">膳食纤维</text>
+        </view>
+        <view class="meal-row">
+          <text class="meal-cell meal-time">午餐</text>
+          <text class="meal-cell meal-time-range">12:00</text>
+          <text class="meal-cell meal-food">糙米+鸡胸肉+蔬菜</text>
+          <text class="meal-cell meal-cal">~450</text>
+          <text class="meal-cell meal-note">均衡</text>
+        </view>
+        <view class="meal-row">
+          <text class="meal-cell meal-time">加餐</text>
+          <text class="meal-cell meal-time-range">15:30</text>
+          <text class="meal-cell meal-food">无糖酸奶或黄瓜</text>
+          <text class="meal-cell meal-cal">~80</text>
+          <text class="meal-cell meal-note">低卡</text>
+        </view>
+        <view class="meal-row">
+          <text class="meal-cell meal-time">晚餐</text>
+          <text class="meal-cell meal-time-range">18:00</text>
+          <text class="meal-cell meal-food">红薯+清蒸鱼+蔬菜</text>
+          <text class="meal-cell meal-cal">~350</text>
+          <text class="meal-cell meal-note">清淡</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 关键提醒 -->
+    <view class="card">
+      <view class="card-title">关键提醒</view>
+      <view class="tip-list">
+        <text class="tip-item">• 每天固定时间称重：晨起空腹排便后 + 晚餐后睡前</text>
+        <text class="tip-item">• 晨起体重最准，反映真实减脂效果</text>
+        <text class="tip-item">• 排便情况影响体重波动，排便后称重更准</text>
+        <text class="tip-item">• 体重自然波动属正常，关注周趋势而非单日</text>
+        <text class="tip-item">• 每周减重不超过 1 kg / 2 斤，不要节食暴瘦</text>
+        <text class="tip-item">• 保证每天 7-8 小时睡眠，多喝水促进代谢</text>
+        <text class="tip-item">• 如有不适，立即停止并咨询医生</text>
+      </view>
+    </view>
+
+    <!-- 减重计划卡片 -->
+    <view class="card" bindtap="onPlanEditCard" data-card="plan">
+      <view class="card-title">减重计划</view>
+      <view class="info-grid">
+        <view class="info-cell">
+          <text class="info-label">开始日期</text>
+          <text class="info-value">{{planState.startDate || '未设置'}}</text>
+        </view>
+        <view class="info-cell">
+          <text class="info-label">目标日期</text>
+          <text class="info-value">{{planState.targetDate || '未设置'}}</text>
+        </view>
+        <view class="info-cell">
+          <text class="info-label">开始体重</text>
+          <text class="info-value">{{startWeightDisplay}}</text>
+        </view>
+        <view class="info-cell">
+          <text class="info-label">目标体重</text>
+          <text class="info-value">{{targetWeightDisplay}}</text>
+        </view>
+        <view class="info-cell">
+          <text class="info-label">体脂率</text>
+          <text class="info-value">{{planState.startFat || '--'}}%</text>
+        </view>
+      </view>
+      <view class="edit-hint">点击编辑</view>
+    </view>
+
+    <!-- 进度卡片 -->
+    <view class="card">
+      <view class="card-title">进度</view>
+      <view class="progress-list">
+        <view class="progress-item">
+          <text class="progress-label">当前第几天</text>
+          <text class="progress-value">第 {{currentDay}} 天</text>
+        </view>
+        <view class="progress-item">
+          <text class="progress-label">剩余天数</text>
+          <text class="progress-value">{{remainingDays}} 天</text>
+        </view>
+        <view class="progress-item">
+          <text class="progress-label">已减重</text>
+          <text class="progress-value {{lostWeight > 0 ? 'progress-good' : ''}} {{lostWeight < 0 ? 'progress-bad' : ''}}">{{lostWeightStr}}</text>
+        </view>
+      </view>
+      <view class="progress-bar-wrap" wx:if="{{totalDays > 0}}">
+        <view class="progress-bar">
+          <view class="progress-bar-fill" style="width: {{progressPercent}}%"></view>
+        </view>
+        <text class="progress-percent">{{progressPercent}}%</text>
+      </view>
+    </view>
+
+    <!-- 三围记录 -->
+    <view class="card" bindtap="onPlanEditCard" data-card="measure">
+      <view class="card-title">三围记录</view>
+      <view class="measure-row">
+        <view class="measure-cell">
+          <text class="measure-num">{{planState.bust || '--'}}</text>
+          <text class="measure-lbl">胸围 cm</text>
+        </view>
+        <view class="measure-cell">
+          <text class="measure-num">{{planState.waist || '--'}}</text>
+          <text class="measure-lbl">腰围 cm</text>
+        </view>
+        <view class="measure-cell">
+          <text class="measure-num">{{planState.hip || '--'}}</text>
+          <text class="measure-lbl">臀围 cm</text>
+        </view>
+      </view>
+      <view class="edit-hint">点击编辑</view>
+    </view>
+
+    <!-- 编辑弹窗 -->
+    <view class="overlay" wx:if="{{showPlanEditModal}}" bindtap="onPlanCloseModal">
+      <view class="modal" catchtap="">
+        <view class="modal-title">编辑信息</view>
+
+        <block wx:if="{{editCard === 'basic'}}">
+          <view class="input-group">
+            <text class="input-label">姓名</text>
+            <input class="input" placeholder="请输入姓名" value="{{editName}}" bindinput="onPlanInput" data-field="editName" />
+          </view>
+          <view class="input-group">
+            <text class="input-label">性别</text>
+            <view class="gender-row">
+              <view class="gender-btn {{editGender === '女' ? 'gender-active' : ''}}" bindtap="onGenderSelect" data-val="女">女</view>
+              <view class="gender-btn {{editGender === '男' ? 'gender-active' : ''}}" bindtap="onGenderSelect" data-val="男">男</view>
+            </view>
+          </view>
+          <view class="input-group">
+            <text class="input-label">年龄</text>
+            <input class="input" type="number" placeholder="请输入年龄" value="{{editAge}}" bindinput="onPlanInput" data-field="editAge" />
+          </view>
+          <view class="input-group">
+            <text class="input-label">身高(cm)</text>
+            <input class="input" type="digit" placeholder="请输入身高" value="{{editHeight}}" bindinput="onPlanInput" data-field="editHeight" />
+          </view>
+        </block>
+
+        <block wx:if="{{editCard === 'plan'}}">
+          <view class="input-group">
+            <text class="input-label">开始日期</text>
+            <picker mode="date" value="{{editStartDate}}" bindchange="onDateChange" data-field="editStartDate">
+              <view class="picker-value">{{editStartDate || '选择日期'}}</view>
+            </picker>
+          </view>
+          <view class="input-group">
+            <text class="input-label">目标日期</text>
+            <picker mode="date" value="{{editTargetDate}}" bindchange="onDateChange" data-field="editTargetDate">
+              <view class="picker-value">{{editTargetDate || '选择日期'}}</view>
+            </picker>
+          </view>
+          <view class="input-group">
+            <text class="input-label">开始体重({{unitLabel}})</text>
+            <input class="input" type="digit" placeholder="请输入体重" value="{{editStartWeight}}" bindinput="onPlanInput" data-field="editStartWeight" />
+          </view>
+          <view class="input-group">
+            <text class="input-label">目标体重({{unitLabel}})</text>
+            <input class="input" type="digit" placeholder="请输入体重" value="{{editTargetWeight}}" bindinput="onPlanInput" data-field="editTargetWeight" />
+          </view>
+          <view class="input-group">
+            <text class="input-label">体脂率(%)</text>
+            <input class="input" type="digit" placeholder="请输入体脂率" value="{{editStartFat}}" bindinput="onPlanInput" data-field="editStartFat" />
+          </view>
+        </block>
+
+        <block wx:if="{{editCard === 'measure'}}">
+          <view class="input-group">
+            <text class="input-label">胸围(cm)</text>
+            <input class="input" type="digit" placeholder="请输入胸围" value="{{editBust}}" bindinput="onPlanInput" data-field="editBust" />
+          </view>
+          <view class="input-group">
+            <text class="input-label">腰围(cm)</text>
+            <input class="input" type="digit" placeholder="请输入腰围" value="{{editWaist}}" bindinput="onPlanInput" data-field="editWaist" />
+          </view>
+          <view class="input-group">
+            <text class="input-label">臀围(cm)</text>
+            <input class="input" type="digit" placeholder="请输入臀围" value="{{editHip}}" bindinput="onPlanInput" data-field="editHip" />
+          </view>
+        </block>
+
+        <view class="modal-actions">
+          <button class="btn btn-outline" bindtap="onPlanCloseModal">取消</button>
+          <button class="btn btn-primary" bindtap="onPlanConfirmEdit">保存</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab 3: 周度复盘 -->
+  <view class="main-content" wx:if="{{currentTab===3}}">
+    <view class="review-tip">每周复盘你的变化，记录感受与调整策略</view>
+    
+    <block wx:for="{{weekList}}" wx:key="week">
+      <view class="card review-card" style="background: {{item.bg}};">
+        <view class="review-header">
+          <text class="review-week-num">第{{item.weekNum}}周</text>
+          <text class="review-week-date">{{item.dateRange}}</text>
+        </view>
+        <view class="review-stats">
+          <view class="review-stat">
+            <text class="review-stat-label">周一</text>
+            <text class="review-stat-val">{{item.mondayWeight}}</text>
+          </view>
+          <view class="review-stat">
+            <text class="review-stat-label">周日</text>
+            <text class="review-stat-val">{{item.sundayWeight}}</text>
+          </view>
+          <view class="review-stat">
+            <text class="review-stat-label">本周变化</text>
+            <text class="review-stat-val {{item.weekChangeColor}}">{{item.weekChange}}</text>
+          </view>
+          <view class="review-stat">
+            <text class="review-stat-label">累计变化</text>
+            <text class="review-stat-val {{item.totalChangeColor}}">{{item.totalChange}}</text>
+          </view>
+          <view class="review-stat">
+            <text class="review-stat-label">记录</text>
+            <text class="review-stat-val">{{item.recordDays}}</text>
+          </view>
+          <view class="review-stat" wx:if="{{item.periodDays > 0}}">
+            <text class="review-stat-label">经期</text>
+            <text class="review-stat-val review-stat-period">{{item.periodDays}}天</text>
+          </view>
+          <view class="review-stat">
+            <text class="review-stat-label">日均水</text>
+            <text class="review-stat-val review-stat-water">{{item.waterAvg}}ml</text>
+          </view>
+        </view>
+        <textarea 
+          class="review-textarea" 
+          placeholder="本周感想/调整..." 
+          value="{{item.review}}"
+          data-week="{{index}}"
+          bindinput="onReviewInput"
+        ></textarea>
+        <button class="btn btn-primary review-save-btn" data-week="{{index}}" bindtap="saveReview">保存</button>
+      </view>
+    </block>
+
+    <view class="review-export-bar" wx:if="{{weekList.length > 0}}">
+      <button class="btn btn-primary" bindtap="exportReviewImage"> 导出复盘报表图片</button>
+    </view>
+
+    <view wx:if="{{weekList.length === 0}}" class="review-empty">
+      <text>暂无复盘数据，请先设置计划开始日期并记录体重</text>
+    </view>
+  </view>
+
+  <!-- Tab 4: 经期日历 -->
+  <view class="main-content" wx:if="{{currentTab===4}}">
+    <!-- 月份导航 -->
+    <view class="cal-nav">
+      <view class="cal-nav-btn" bindtap="onPrevMonth">‹</view>
+      <view class="cal-nav-title">{{calYear}}年{{calMonth + 1}}月</view>
+      <view class="cal-nav-btn" bindtap="onNextMonth">›</view>
+    </view>
+
+    <!-- 日历表头 -->
+    <view class="cal-header">
+      <view class="cal-hcell">日</view>
+      <view class="cal-hcell">一</view>
+      <view class="cal-hcell">二</view>
+      <view class="cal-hcell">三</view>
+      <view class="cal-hcell">四</view>
+      <view class="cal-hcell">五</view>
+      <view class="cal-hcell">六</view>
+    </view>
+
+    <!-- 日历网格 -->
+    <view class="cal-grid">
+      <block wx:for="{{calDays}}" wx:key="key">
+        <view class="cal-cell cal-empty" wx:if="{{item.empty}}"></view>
+        <view class="cal-cell {{item.today ? 'cal-today' : ''}} {{item.period ? 'cal-period' : ''}} {{item.periodPredict ? 'cal-period-predict' : ''}} {{item.ovulation ? 'cal-ovulation' : ''}} {{item.exercise ? 'cal-exercise' : ''}}"
+          wx:else
+          bindtap="onCalDayClick" data-date="{{item.dateStr}}">
+          <view class="cal-day-num">{{item.day}}</view>
+          <view class="cal-day-marks">
+            <text wx:if="{{item.ovulation}}" class="cal-mark cal-egg">🥚</text>
+            <text wx:if="{{item.exercise}}" class="cal-mark cal-run">🏃</text>
+            <text wx:if="{{item.hasPhoto}}" class="cal-mark cal-cam">📷</text>
+          </view>
+          <view class="cal-day-weight" wx:if="{{item.weightChange}}">
+            <text class="weight-arrow {{item.weightUp ? 'arrow-up' : 'arrow-down'}}">{{item.weightUp ? '↑' : '↓'}}</text>
+            <text class="weight-change-val {{item.weightUp ? 'change-up' : 'change-down'}}">{{item.weightChange}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 图例 -->
+    <view class="cal-legend">
+      <view class="legend-item" wx:if="{{isFemale}}">
+        <view class="legend-dot lg-period"></view>
+        <text>经期</text>
+      </view>
+      <view class="legend-item" wx:if="{{isFemale}}">
+        <view class="legend-dot lg-ovulation"></view>
+        <text>排卵日</text>
+      </view>
+      <view class="legend-item" wx:if="{{isFemale}}">
+        <view class="legend-dot lg-predict"></view>
+        <text>经期预测</text>
+      </view>
+      <view class="legend-item" wx:if="{{!isFemale}}">
+        <view class="legend-dot lg-exercise"></view>
+        <text>运动日</text>
+      </view>
+      <view class="legend-item">
+        <text class="legend-emoji">📷</text>
+        <text>有照片</text>
+      </view>
+    </view>
+
+    <!-- 日期详情弹窗 -->
+    <view class="overlay" wx:if="{{showDetail}}" bindtap="onCloseDetail">
+      <view class="modal detail-modal" catchtap="">
+        <view class="modal-title">{{detailDate}}</view>
+
+        <view class="detail-section">
+          <view class="detail-row">
+            <text class="detail-label">晨起体重</text>
+            <text class="detail-val">{{detailData.weightAM ? (unitLabel === '斤' ? (detailData.weightAM * 2) : detailData.weightAM) : '--'}} {{unitLabel}}</text>
+          </view>
+          <view class="detail-row">
+            <text class="detail-label">晚间体重</text>
+            <text class="detail-val">{{detailData.weightPM ? (unitLabel === '斤' ? (detailData.weightPM * 2) : detailData.weightPM) : '--'}} {{unitLabel}}</text>
+          </view>
+          <view class="detail-row">
+            <text class="detail-label">体脂率</text>
+            <text class="detail-val">{{detailData.fat ? detailData.fat + '%' : '--'}}</text>
+          </view>
+          <view class="detail-row">
+            <text class="detail-label">饮食</text>
+            <text class="detail-val">{{detailData.diet || '--'}}</text>
+          </view>
+          <view class="detail-row">
+            <text class="detail-label">运动</text>
+            <text class="detail-val">{{detailData.exercise || '--'}}</text>
+          </view>
+        </view>
+
+        <view class="detail-section" wx:if="{{isFemale && detailData.periodNote}}">
+          <view class="detail-label">经期备注</view>
+          <view class="detail-text">{{detailData.periodNote}}</view>
+        </view>
+
+        <view class="detail-section" wx:if="{{detailData.note}}">
+          <view class="detail-label">心情日记</view>
+          <view class="detail-text">{{detailData.note}}</view>
+        </view>
+
+        <!-- 照片区域 -->
+        <view class="detail-section">
+          <view class="detail-label">日期照片</view>
+          <view wx:if="{{detailData.photo}}" class="detail-photo-row">
+            <image src="{{detailData.photo}}" mode="aspectFill" class="detail-photo-thumb" bindtap="onPreviewDetailPhoto" />
+            <button class="btn btn-outline btn-sm" bindtap="onUploadDetailPhoto">📷 更换</button>
+            <button class="btn btn-outline btn-sm" bindtap="onDeleteDetailPhoto">🗑 删除</button>
+          </view>
+          <view wx:else>
+            <button class="btn btn-outline btn-sm" bindtap="onUploadDetailPhoto">📷 上传照片</button>
+          </view>
+        </view>
+
+        <view class="detail-actions">
+          <block wx:if="{{isFemale}}">
+            <button class="btn btn-outline" bindtap="onTogglePeriod" wx:if="{{!isPeriodDay}}">标记经期</button>
+            <button class="btn btn-outline" bindtap="onTogglePeriod" wx:else>取消经期</button>
+          </block>
+          <block wx:if="{{!isFemale}}">
+            <button class="btn btn-outline" bindtap="onToggleExercise" wx:if="{{!isExerciseDay}}">运动打卡</button>
+            <button class="btn btn-outline" bindtap="onToggleExercise" wx:else>取消打卡</button>
+          </block>
+          <button class="btn btn-primary" bindtap="onCloseDetail">关闭</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 今日海报 ===== -->
+  <view class="poster-overlay" wx:if="{{showPosterPage}}">
+    <scroll-view scroll-y="true" class="poster-scroll">
+      <view class="poster-container">
+        <view class="poster-header">
+          <text class="poster-brand">Moon Memo</text>
+          <text class="poster-subtitle">今日海报</text>
+          <text class="poster-date">{{posterDate}}</text>
+        </view>
+        <view class="poster-divider"></view>
+
+        <!-- 已减重圆形 -->
+        <view class="poster-circle-wrap">
+          <view class="poster-circle">
+            <text class="poster-circle-num">{{posterLost}}</text>
+            <text class="poster-circle-unit">kg</text>
+            <text class="poster-circle-label">已减重</text>
+          </view>
+        </view>
+
+        <!-- 体重数据 -->
+        <view class="poster-weight-row">
+          <text class="poster-weight-main">{{posterTodayWeight}}</text>
+          <text class="poster-weight-fat">{{posterFat}}</text>
+        </view>
+        <view class="poster-weight-dual">
+          <view class="poster-weight-side">
+            <text class="poster-weight-side-label">起始体重</text>
+            <text class="poster-weight-side-val">{{posterStartWeight}}</text>
+          </view>
+          <view class="poster-weight-side">
+            <text class="poster-weight-side-label">目标体重</text>
+            <text class="poster-weight-side-val">{{posterTargetWeight}}</text>
+          </view>
+        </view>
+
+        <!-- 照片 -->
+        <block wx:if="{{posterPhotos.length > 0}}">
+          <view class="poster-divider"></view>
+          <view class="poster-photos">
+            <image wx:for="{{posterPhotos}}" wx:key="index" class="poster-photo" src="{{item}}" mode="aspectFill"></image>
+          </view>
+        </block>
+
+        <!-- 健康记录 -->
+        <view class="poster-divider"></view>
+        <view class="poster-section-title">健康记录</view>
+        <view class="poster-check-grid">
+          <view wx:for="{{posterHealth}}" wx:key="label" class="poster-check-item">
+            <view class="poster-check-dot {{item.done ? 'done' : 'skip'}}"></view>
+            <text>{{item.label}}</text>
+            <text class="poster-check-val">{{item.val}}</text>
+          </view>
+        </view>
+
+        <!-- 护肤日记 -->
+        <view class="poster-divider"></view>
+        <view class="poster-section-title">护肤日记</view>
+        <view class="poster-check-grid">
+          <view wx:for="{{posterSkincare}}" wx:key="label" class="poster-check-item">
+            <view class="poster-check-dot {{item.done ? 'done' : 'skip'}}"></view>
+            <text>{{item.label}}</text>
+            <text class="poster-check-val">{{item.val}}</text>
+          </view>
+        </view>
+        <view wx:if="{{posterSkincareNote}}" class="poster-check-note">{{posterSkincareNote}}</view>
+        <view wx:if="{{posterSkincare.length === 0 && !posterSkincareNote}}" class="poster-check-note">今日暂无记录</view>
+
+        <!-- 心情日记 -->
+        <view class="poster-divider"></view>
+        <view class="poster-section-title">心情日记</view>
+        <view class="poster-check-grid">
+          <view wx:for="{{posterMood}}" wx:key="label" class="poster-check-item">
+            <view class="poster-check-dot done"></view>
+            <text>{{item.label}}</text>
+            <text class="poster-check-val">{{item.val}}</text>
+          </view>
+        </view>
+        <view wx:if="{{posterMoodDiary}}" class="poster-diary">{{posterMoodDiary}}</view>
+        <view wx:if="{{posterMoodGratitude}}" class="poster-gratitude">{{posterMoodGratitude}}</view>
+        <view wx:if="{{posterMood.length === 0 && !posterMoodDiary && !posterMoodGratitude}}" class="poster-check-note">今日暂无记录</view>
+
+        <!-- 保存 -->
+        <view class="poster-divider"></view>
+        <button class="poster-save-btn" bindtap="onSavePoster">保存到相册</button>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 海报生成 Canvas（隐藏） -->
+  <canvas canvas-id="posterCanvas" class="poster-canvas" wx:if="{{showPosterPage}}"></canvas>
+
+  <!-- === 我的页面 === -->
+  <view class="my-page-overlay" wx:if="{{showMyPage}}">
+    <view class="my-page-wrap">
+      <view class="my-page-title">
+        <text class="my-page-brand">Moon Memo</text>
+        <text class="my-page-name">我的</text>
+      </view>
+      <view class="my-list">
+        <view class="my-list-item" bindtap="onOpenMySub" data-key="privacy" data-title="隐私政策">
+          <text class="my-list-num">01</text>
+          <text class="my-list-name">隐私政策</text>
+        </view>
+        <view class="my-list-item" bindtap="onOpenMySub" data-key="agreement" data-title="用户协议">
+          <text class="my-list-num">02</text>
+          <text class="my-list-name">用户协议</text>
+        </view>
+        <view class="my-list-item" bindtap="onOpenMySub" data-key="purchase" data-title="购买须知">
+          <text class="my-list-num">03</text>
+          <text class="my-list-name">购买须知</text>
+        </view>
+        <view class="my-list-item" bindtap="onOpenMySub" data-key="guide" data-title="使用说明">
+          <text class="my-list-num">04</text>
+          <text class="my-list-name">使用说明</text>
+        </view>
+        <view class="my-list-item" bindtap="onOpenMySub" data-key="license" data-title="资质证照">
+          <text class="my-list-num">05</text>
+          <text class="my-list-name">资质证照</text>
+        </view>
+        <view class="my-list-item" bindtap="onOpenMySub" data-key="cancel" data-title="注销账号">
+          <text class="my-list-num">06</text>
+          <text class="my-list-name">注销账号</text>
+        </view>
+        <view class="my-list-item" bindtap="onOpenMySub" data-key="service" data-title="联系客服">
+          <text class="my-list-num">07</text>
+          <text class="my-list-name">联系客服</text>
+        </view>
+        <view class="my-list-item" bindtap="onOpenMySub" data-key="feedback" data-title="建议反馈">
+          <text class="my-list-num">08</text>
+          <text class="my-list-name">建议反馈</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- === BOTTOM NAV === -->
+  <view class="bottom-nav">
+    <view class="bn-item {{bottomActive==='home'?'active':''}}" bindtap="onBottomHome">
+      <view class="bn-icon bn-icon-home"></view>
+      <text class="bn-label">主页</text>
+    </view>
+    <view class="bn-item {{bottomActive==='poster'?'active':''}}" bindtap="onBottomPoster">
+      <view class="bn-icon bn-icon-poster"></view>
+      <text class="bn-label">今日海报</text>
+    </view>
+    <view class="bn-item {{bottomActive==='my'?'active':''}}" bindtap="onBottomMy">
+      <view class="bn-icon bn-icon-my"></view>
+      <text class="bn-label">我的</text>
+    </view>
+  </view>
+</view>
+
+<!-- 头像选择弹窗 -->
+<view class="overlay" wx:if="{{showAvatarModal}}" bindtap="onCloseAvatarModal">
+  <view class="modal avatar-modal" catchtap="">
+    <view class="modal-title">设置头像</view>
+    <view class="avatar-preview">
+      <image wx:if="{{userAvatar}}" src="{{userAvatar}}" mode="aspectFill" style="width:160rpx;height:160rpx;border-radius:50%" />
+      <view wx:else class="avatar-placeholder" style="width:160rpx;height:160rpx;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;color:#a8a29e;font-size:24rpx">暂无头像</view>
+    </view>
+    <view class="avatar-actions">
+      <button class="btn btn-primary" bindtap="onChooseAvatar">{{userAvatar ? '更换头像' : '上传头像'}}</button>
+      <button wx:if="{{userAvatar}}" class="btn btn-outline" bindtap="onRemoveAvatar">删除头像</button>
+      <button class="btn btn-outline" bindtap="onCloseAvatarModal">关闭</button>
+    </view>
+  </view>
+</view>
