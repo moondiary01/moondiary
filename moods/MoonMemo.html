@@ -1943,7 +1943,7 @@ _loadCosSdk(0);
         </div>
       </div>
       <!-- 勾选协议 + 购买须知 + 隐私协议 -->
-      <div style="text-align:center;margin-bottom:10px">
+      <div id="beautyAgreeRow" style="text-align:center;margin-bottom:10px">
         <div style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:0.72rem;color:#78716c" onclick="toggleAgreeBox(this)">
           <div class="agree-checkbox" style="width:16px;height:16px;border-width:1.5px"></div>
           <span>我已阅读并同意</span>
@@ -1953,7 +1953,7 @@ _loadCosSdk(0);
         </div>
       </div>
       <!-- 激活码入口 -->
-      <div style="text-align:center;margin-bottom:12px">
+      <div id="beautyActivationLink" style="text-align:center;margin-bottom:12px">
         <a href="#" onclick="showBeautyActivationInput();return false" style="font-size:0.72rem;color:#f59e0b;text-decoration:none;font-weight:600">激活码</a>
       </div>
       <!-- 激活码输入区域 -->
@@ -1975,8 +1975,8 @@ _loadCosSdk(0);
       </div>
     </div>
     <!-- 底部版权信息 -->
-    <div style="background:#fff;padding:0 24px 20px;text-align:center;border-radius:0 0 20px 20px">
-      <div style="display:inline-block;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(236,72,153,0.06));font-size:0.7rem;color:#a8a29e;letter-spacing:1px">UPGRADE · 一次购买 · 永久会员权益 · 云端储存</div>
+    <div id="beautyFooter" style="background:#fff;padding:0 24px 20px;text-align:center;border-radius:0 0 20px 20px">
+      <div id="beautyFooterTag" style="display:inline-block;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(236,72,153,0.06));font-size:0.7rem;color:#a8a29e;letter-spacing:1px">UPGRADE · 一次购买 · 永久会员权益 · 云端储存</div>
       <div id="beautyFooterText" style="margin-top:14px">
         <button class="btn btn-outline" style="border-color:#e5e7eb;color:#78716c;font-size:0.82rem" onclick="document.getElementById('beautyHomeModal').classList.remove('show');playClick()">关闭</button>
       </div>
@@ -3841,7 +3841,8 @@ function verifyActivationCode() {
 /* ===== 29.9升级版弹窗：激活码输入入口 ===== */
 function showBeautyActivationInput() {
   var area = document.getElementById('beautyActivationArea');
-  area.style.display = area.style.display === 'none' ? 'block' : 'none';
+  if (!area) return;
+  area.style.display = area.style.display === 'block' ? 'none' : 'block';
   if (area.style.display === 'block') {
     document.getElementById('beautyActivationCodeInput').focus();
   }
@@ -5160,11 +5161,19 @@ function previewBeautyUpgradeModal() {
   _bodyScrollY = window.scrollY; document.body.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.width = '100%'; document.body.style.top = '-' + _bodyScrollY + 'px';
   /* 管理员预览：强制显示锁定状态（购买页面），隐藏已开通内容 */
   var lockMsg = document.getElementById('beautyLockMsg');
+  var priceCard = document.getElementById('beautyPriceCard');
+  var activationLink = document.getElementById('beautyActivationLink');
+  var agreeRow = document.getElementById('beautyAgreeRow');
+  var activationArea = document.getElementById('beautyActivationArea');
   var sections = document.getElementById('beautySections');
   var footerText = document.getElementById('beautyFooterText');
   if (lockMsg) lockMsg.style.display = 'block';
+  if (priceCard) priceCard.style.display = 'block';
+  if (activationLink) activationLink.style.display = 'block';
+  if (agreeRow) agreeRow.style.display = 'block';
+  if (activationArea) activationArea.style.display = 'none';
   if (sections) sections.style.display = 'none';
-  if (footerText) footerText.innerHTML = '<span style="font-size:0.72rem;color:#c4b5fd">已开通升级版，永久有效</span>';
+  if (footerText) footerText.innerHTML = '<button class="btn btn-outline" style="border-color:#e5e7eb;color:#78716c;font-size:0.82rem" onclick="document.getElementById(\'beautyHomeModal\').classList.remove(\'show\');playClick()">关闭</button>';
   /* 显示管理员返回按钮 */
   var adminBack = document.getElementById('beautyAdminBack');
   if (adminBack) adminBack.style.display = 'block';
@@ -8298,14 +8307,26 @@ function openBeautyUpgrade() {
   /* 先从云端刷新付费数据，确保实时感知管理员操作 */
   refreshPaymentsFromCloud(function() {
     var lockMsg = document.getElementById('beautyLockMsg');
-    // beautySections removed (redesigned)
-    if (hasBeautyPermission()) {
-      lockMsg.style.display = 'none';
-      // sections display removed (redesigned)
-    } else {
-      // sections display removed (redesigned)
-      lockMsg.style.display = 'block';
+    var priceCard = document.getElementById('beautyPriceCard');
+    var activationArea = document.getElementById('beautyActivationArea');
+    var activationLink = document.getElementById('beautyActivationLink');
+    var agreeRow = document.getElementById('beautyAgreeRow');
+    var sections = document.getElementById('beautySections');
+    var footer = document.getElementById('beautyFooterText');
+    var paid = hasBeautyPermission();
+
+    if (lockMsg) lockMsg.style.display = paid ? 'none' : 'block';
+    if (priceCard) priceCard.style.display = paid ? 'none' : 'block';
+    if (activationArea) activationArea.style.display = 'none';
+    if (activationLink) activationLink.style.display = paid ? 'none' : 'block';
+    if (agreeRow) agreeRow.style.display = paid ? 'none' : 'block';
+    if (sections) sections.style.display = paid ? 'block' : 'none';
+    if (footer) {
+      footer.innerHTML = paid
+        ? '<span style="font-size:0.72rem;color:#c4b5fd">已开通升级版，永久有效</span>'
+        : '<button class="btn btn-outline" style="border-color:#e5e7eb;color:#78716c;font-size:0.82rem" onclick="document.getElementById(\'beautyHomeModal\').classList.remove(\'show\');playClick()">关闭</button>';
     }
+
     var upgModal = document.getElementById('beautyHomeModal');
     upgModal.classList.add('show');
     var upgInner = upgModal.querySelector('.modal');
