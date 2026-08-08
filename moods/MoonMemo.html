@@ -3140,11 +3140,13 @@ function isAdminUser() {
 }
 
 function getCurrentPhone() {
-  if (isAdminUser()) return 'admin';
-  if (currentPhone) return currentPhone;
-  var sp = sessionStorage.getItem(SESSION_PHONE) || localStorage.getItem(SESSION_PHONE);
+  /* 管理员返回实际手机号，数据各自独立 */
+  var sp = currentPhone || sessionStorage.getItem(SESSION_PHONE) || localStorage.getItem(SESSION_PHONE);
   if (sp) return sp;
-  /* 降级：用密钥作为路径（兼容旧数据） */
+  if (currentKey === ADMIN_SESSION) {
+    /* 兼容旧数据：管理员密钥登录时用 admin */
+    return 'admin';
+  }
   return currentKey || sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY) || 'local';
 }
 
@@ -5057,10 +5059,16 @@ function refreshBeautyEntryUI() {
   var basicEntry = document.getElementById('basicPlanEntry'); /* 19.9元购买入口 */
   
   if (isAdminUser()) {
-    /* 管理员：显示全部功能 + 购买入口（用于模拟体验） */
-    if (quickBtns) quickBtns.style.display = 'flex';
-    if (bottomCard) bottomCard.style.display = '';
-    if (basicEntry) basicEntry.style.display = '';
+    /* 管理员：已购升级版则隐藏底部卡片，未购则显示（和用户一致） */
+    if (hasBeautyPermission()) {
+      if (quickBtns) quickBtns.style.display = 'flex';
+      if (bottomCard) bottomCard.style.display = 'none';
+      if (basicEntry) basicEntry.style.display = 'none';
+    } else {
+      if (quickBtns) quickBtns.style.display = 'flex';
+      if (bottomCard) bottomCard.style.display = '';
+      if (basicEntry) basicEntry.style.display = '';
+    }
     return;
   }
   
