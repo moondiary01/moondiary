@@ -8277,7 +8277,8 @@ function openBeautyUpgrade() {
     var agreeRow = document.getElementById('beautyAgreeRow');
     var sections = document.getElementById('beautySections');
     var footer = document.getElementById('beautyFooterText');
-    var paid = hasBeautyPermission();
+    /* 管理员也显示购买页面（和用户看到的一样） */
+    var paid = hasBeautyPermission() && !isAdminUser();
 
     if (lockMsg) lockMsg.style.display = paid ? 'none' : 'block';
     if (priceCard) priceCard.style.display = paid ? 'none' : 'block';
