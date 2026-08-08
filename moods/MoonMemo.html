@@ -4756,13 +4756,12 @@ function renderPosterPage() {
         if (rec.skinStatusCustom) {
           scItems.push({label:'状况备注', val:rec.skinStatusCustom, done:true});
         }
-        scItems.push({label:'晨间护肤', val:rec.morningSkincare ? '已完成' : '未打卡', done:!!rec.morningSkincare});
-        scItems.push({label:'夜间护肤', val:rec.nightSkincare ? '已完成' : '未打卡', done:!!rec.nightSkincare});
         if (rec.bodyCare && rec.bodyCare.length > 0) {
           var bodyCareLabelMap={faceCare:'面部护理',oralCare:'口腔护理',neckCare:'颈部护理',lipsCare:'护唇',bodyCare:'身体护理',handCare:'手部护理',footCare:'脚部护理',eyeCare:'护眼',chestCare:'胸部护理',intimateCare:'私处护理',hairCare:'头发护理',nailCare:'美甲'}; var bodyCareLabels=rec.bodyCare.map(function(bc){return bodyCareLabelMap[bc]||bc;}); scItems.push({label:'身体护理', val:bodyCareLabels.join('、'), done:true});
         }
         if (rec.salon) scItems.push({label:'美容院', val:rec.salonNote||'已打卡', done:true});
         if (rec.cosmetic) scItems.push({label:'do脸', val:rec.cosmeticNote||'已打卡', done:true});
+        if (rec.customCheck) scItems.push({label:'自定义打卡', val:rec.customCheck, done:true});
         scNote = rec.note || '';
         break;
       }
@@ -4797,7 +4796,7 @@ function renderPosterPage() {
         if (mrec.discipline) {
           var discItems = [];
           for (var dk in mrec.discipline) {
-            var discLabelMap={tidyRoom:'收拾房间',declutter:'断舍离',read:'阅读',exercise:'运动',cook:'做饭',noPhone:'减少手机',earlySleep:'早睡',gratitude:'感恩记录',meditation:'冥想',skincare:'护肤',water:'喝水',journal:'写日记'}; if (mrec.discipline[dk]) discItems.push(discLabelMap[dk]||dk);
+            var discLabelMap={disc_earlyRise:'早起',disc_water:'喝水',disc_meditation:'冥想',disc_podcast:'听播客',disc_read:'阅读',disc_news:'今日新闻',disc_study:'学习打卡',disc_newSkill:'学习新技能',disc_english:'学英语',disc_journal:'写日记',disc_gratitude:'感恩日记',disc_plan:'写今日规划',disc_cook:'做饭',disc_cleanRoom:'打扫房间',disc_exercise:'运动',disc_declutter:'断舍离',disc_lessScreen:'少玩电子产品',disc_skincare:'护肤',disc_earlySleep:'早睡',tidyRoom:'收拾房间',declutter:'断舍离',read:'阅读',exercise:'运动',cook:'做饭',noPhone:'减少手机',earlySleep:'早睡',gratitude:'感恩记录',meditation:'冥想',skincare:'护肤',water:'喝水',journal:'写日记'}; if (mrec.discipline[dk]) discItems.push(discLabelMap[dk]||dk);
           }
           if (discItems.length > 0) moodItems.push({label:'自律', val:discItems.join(' · '), done:true});
         }
