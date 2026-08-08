@@ -1,0 +1,248 @@
+<!-- pages/admin/admin.wxml -->
+<view class="admin-page">
+
+  <!-- ===== 统计区：两行卡片 ===== -->
+  <view class="card">
+    <view class="card-title">管理后台 <text class="sub">{{adminRole}} 专属</text></view>
+
+    <!-- 第一行：按来源 -->
+    <view class="stat-section-label">按来源</view>
+    <view class="admin-stat-grid">
+      <view class="admin-stat-item stat-wx" bindtap="showUsersByType" data-type="wx">
+        <text class="admin-stat-num">{{adminStats.wx}}</text>
+        <text class="admin-stat-lbl">微信用户</text>
+      </view>
+      <view class="admin-stat-item stat-phone" bindtap="showUsersByType" data-type="phone">
+        <text class="admin-stat-num">{{adminStats.phone}}</text>
+        <text class="admin-stat-lbl">手机用户</text>
+      </view>
+      <view class="admin-stat-item stat-key" bindtap="showUsersByType" data-type="keyFree">
+        <text class="admin-stat-num">{{adminStats.keyFree}}</text>
+        <text class="admin-stat-lbl">激活码用户</text>
+      </view>
+    </view>
+
+    <!-- 第二行：按版本 -->
+    <view class="stat-section-label" style="margin-top:24rpx">按版本</view>
+    <view class="admin-stat-grid">
+      <view class="admin-stat-item stat-trial" bindtap="showUsersByType" data-type="trial">
+        <text class="admin-stat-num">{{adminStats.trial}}</text>
+        <text class="admin-stat-lbl">试用期</text>
+      </view>
+      <view class="admin-stat-item stat-basic" bindtap="showUsersByType" data-type="basic">
+        <text class="admin-stat-num">{{adminStats.basic}}</text>
+        <text class="admin-stat-lbl">普通版</text>
+      </view>
+      <view class="admin-stat-item stat-upgrade" bindtap="showUsersByType" data-type="upgrade">
+        <text class="admin-stat-num">{{adminStats.upgrade}}</text>
+        <text class="admin-stat-lbl">升级版</text>
+      </view>
+      <view class="admin-stat-item admin-stat-total" bindtap="showUsersByType" data-type="all">
+        <text class="admin-stat-num">{{adminStats.total}}</text>
+        <text class="admin-stat-lbl">总人数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 全局搜索 ===== -->
+  <view class="card">
+    <view class="card-title">搜索用户</view>
+    <input class="input" placeholder="手机号 / 微信号 / 版本 / 免费 / 性别 / 昵称" value="{{globalSearch}}" bindinput="onGlobalSearch" />
+    <view class="search-result-count" wx:if="{{globalSearchResult.length > 0}}">找到 {{globalSearchResult.length}} 位用户</view>
+    <scroll-view scroll-y style="max-height:400rpx" wx:if="{{globalSearchResult.length > 0}}">
+      <block wx:for="{{globalSearchResult}}" wx:key="key">
+        <view class="search-result-row" bindtap="showUserDetail" data-index="{{index}}">
+          <view class="search-result-left">
+            <text class="search-result-id">{{item.displayId}}</text>
+            <text class="search-result-tags">
+              <text class="tag tag-{{item.versionTag}}">{{item.versionLabel}}</text>
+              <text class="tag tag-free" wx:if="{{item.isFree}}">免费</text>
+            </text>
+          </view>
+          <text class="search-result-meta">{{item.metaText}}</text>
+        </view>
+      </block>
+    </scroll-view>
+    <view class="search-empty" wx:if="{{globalSearch && globalSearchResult.length === 0}}">未找到匹配用户</view>
+  </view>
+
+  <!-- ===== 预览与调试 ===== -->
+  <view class="card">
+    <view class="card-title">预览调试 查看用户端弹窗效果</view>
+    <button class="btn btn-outline" bindtap="previewTrialPopup">预览 19.9 试用弹窗</button>
+    <button class="btn btn-outline" style="margin-top:16rpx" bindtap="previewBeautyPopup">预览 29.9 升级弹窗</button>
+    <button class="btn btn-outline" style="margin-top:16rpx" bindtap="resetAdminSimulation">重置模拟状态</button>
+  </view>
+
+  <!-- ===== 版本更新通知 ===== -->
+  <view class="card">
+    <view class="card-title">版本更新通知</view>
+    <view class="version-info">
+      <text class="version-label">当前版本：v{{appVersion}}</text>
+      <button class="btn btn-outline btn-sm" bindtap="sendVersionNotice">发送通知</button>
+    </view>
+    <input class="input" style="margin-top:16rpx" placeholder="通知内容" value="{{noticeContent}}" bindinput="onNoticeInput" />
+  </view>
+
+  <!-- ===== 付费管理 ===== -->
+  <view class="card">
+    <view class="card-title">付费管理 <text class="sub">手动开通用户</text></view>
+    <input class="input" type="number" maxlength="11" placeholder="输入用户手机号（11位）" value="{{paymentPhone}}" bindinput="onPaymentPhoneInput" />
+    <view class="payment-btns">
+      <button class="btn btn-primary payment-btn-storage" bindtap="adminGrantPayment" data-type="storage">开通 19.9元\n<text style="font-size:24rpx;opacity:0.85">云端存储</text></button>
+      <button class="btn btn-primary payment-btn-beauty" bindtap="adminGrantPayment" data-type="beauty">开通 29.9元\n<text style="font-size:24rpx;opacity:0.85">变美计划+云存储</text></button>
+    </view>
+    <view class="payment-status" wx:if="{{paymentStatus}}">{{paymentStatus}}</view>
+  </view>
+
+  <!-- ===== 激活码管理（入口按钮，点击进入列表） ===== -->
+  <view class="card">
+    <view class="card-title">激活码管理</view>
+    <button class="btn btn-primary btn-block" bindtap="showKeyListModal">进入激活码管理</button>
+  </view>
+
+  <!-- ===== 动态激活码生成 ===== -->
+  <view class="card">
+    <view class="card-title">动态激活码生成</view>
+    <button class="btn btn-primary" bindtap="generateDynamicKey"> 生成新激活码</button>
+    <view wx:if="{{newDynamicKey}}" class="dynamic-key-result">
+      <text>新激活码：</text>
+      <text class="dynamic-key-code">{{newDynamicKey}}</text>
+    </view>
+  </view>
+
+  <!-- ===== 管理员密码修改 ===== -->
+  <view class="card">
+    <view class="card-title">管理员密码 <text class="sub">登录后可修改</text></view>
+    <view class="input-group">
+      <text class="input-label">当前密码</text>
+      <input class="input" type="text" password="{{true}}" placeholder="输入当前管理员密码" value="{{oldPw}}" bindinput="onOldPwInput" />
+    </view>
+    <view class="input-group">
+      <text class="input-label">新密码</text>
+      <input class="input" type="text" password="{{true}}" placeholder="设置新密码（至少6位）" value="{{newPw}}" bindinput="onNewPwInput" />
+    </view>
+    <view class="input-group">
+      <text class="input-label">确认新密码</text>
+      <input class="input" type="text" password="{{true}}" placeholder="再次输入新密码" value="{{newPw2}}" bindinput="onNewPw2Input" />
+    </view>
+    <button class="btn btn-primary" bindtap="changeAdminPw">保存新密码</button>
+  </view>
+</view>
+
+<!-- ===== 用户列表弹窗 ===== -->
+<view class="overlay" wx:if="{{showUsersModal}}" bindtap="closeUsersModal">
+  <view class="modal" catchtap>
+    <view class="modal-title">{{usersModalTitle}}</view>
+    <input class="input" style="margin-bottom:16rpx" placeholder="在此筛选..." value="{{modalSearch}}" bindinput="onModalSearch" />
+    <scroll-view scroll-y style="max-height:60vh">
+      <block wx:for="{{modalUserList}}" wx:key="key">
+        <view class="user-info-row" bindtap="showUserDetailFromModal" data-index="{{index}}">
+          <view class="user-info-main">
+            <view class="user-info-id-line">
+              <text class="user-info-phone">{{item.displayId}}</text>
+              <text class="tag tag-{{item.versionTag}}">{{item.versionLabel}}</text>
+              <text class="tag tag-free" wx:if="{{item.isFree}}">免费</text>
+            </view>
+            <text class="user-info-meta">{{item.metaText}}</text>
+          </view>
+          <text class="login-badge {{item.loginBadgeClass}}">{{item.loginBadge}}</text>
+        </view>
+      </block>
+      <view wx:if="{{modalUserList.length === 0}}" class="user-info-empty">暂无此类用户</view>
+    </scroll-view>
+    <view class="modal-actions">
+      <button class="btn btn-primary" bindtap="closeUsersModal">关闭</button>
+    </view>
+  </view>
+</view>
+
+<!-- ===== 用户详情弹窗 ===== -->
+<view class="overlay" wx:if="{{showDetailModal}}" bindtap="closeDetailModal">
+  <view class="modal" catchtap>
+    <view class="modal-title">用户详情</view>
+    <view class="detail-list">
+      <view class="detail-row"><text class="detail-label">手机号/微信</text><text class="detail-val">{{detailData.displayId}}</text></view>
+      <view class="detail-row" wx:if="{{detailData.wxId}}"><text class="detail-label">微信ID</text><text class="detail-val">{{detailData.wxId}}</text></view>
+      <view class="detail-row" wx:if="{{detailData.boundPhone}}"><text class="detail-label">绑定手机号</text><text class="detail-val">{{detailData.boundPhone}}</text></view>
+      <view class="detail-row"><text class="detail-label">来源</text><text class="detail-val">{{detailData.source}}</text></view>
+      <view class="detail-row"><text class="detail-label">版本</text><text class="detail-val">{{detailData.versionLabel}}</text></view>
+      <view class="detail-row" wx:if="{{detailData.isFree}}"><text class="detail-label">开通方式</text><text class="detail-val">激活码免费开通</text></view>
+      <view class="detail-row"><text class="detail-label">性别</text><text class="detail-val">{{detailData.gender || '未设置'}}</text></view>
+      <view class="detail-row"><text class="detail-label">年龄</text><text class="detail-val">{{detailData.age || '未设置'}}</text></view>
+      <view class="detail-row"><text class="detail-label">昵称</text><text class="detail-val">{{detailData.nickname || '未设置'}}</text></view>
+      <view class="detail-row"><text class="detail-label">首次登录</text><text class="detail-val">{{detailData.firstLoginText}}</text></view>
+      <view class="detail-row"><text class="detail-label">今日登录</text><text class="detail-val">{{detailData.loginToday}}</text></view>
+      <view class="detail-row" wx:if="{{detailData.note}}"><text class="detail-label">备注</text><text class="detail-val">{{detailData.note}}</text></view>
+    </view>
+    <view class="modal-actions">
+      <button class="btn btn-primary" bindtap="closeDetailModal">关闭</button>
+    </view>
+  </view>
+</view>
+
+<!-- ===== 激活码列表弹窗 ===== -->
+<view class="overlay" wx:if="{{showKeyListModal}}" bindtap="closeKeyListModal">
+  <view class="modal key-list-modal" catchtap>
+    <view class="modal-title">激活码管理</view>
+    <input class="input" style="margin-bottom:16rpx" type="number" maxlength="11" placeholder="搜索用户手机号/微信号" value="{{keySearchPhone}}" bindinput="onKeySearchInput" />
+    <scroll-view scroll-y class="key-list-scroll">
+      <block wx:for="{{keyList}}" wx:key="code">
+        <view class="key-row">
+          <view class="key-row-main">
+            <text class="key-code">{{item.code}}</text>
+            <text class="key-badge key-badge-{{item.userType}}">{{item.userTypeLabel}}</text>
+            <text class="key-badge key-badge-version" wx:if="{{item.versionBadge}}" style="{{item.versionBadgeStyle}}">{{item.versionLabel}}</text>
+            <text class="key-badge key-badge-login" style="{{item.loginBadgeStyle}}">{{item.loginLabel}}</text>
+          </view>
+          <view class="key-row-info" bindtap="editKeyNote" data-key="{{item.code}}">
+            <text class="key-info-text">{{item.infoText || '点击编辑'}}</text>
+            <text class="key-info-arrow">编辑 ›</text>
+          </view>
+          <view class="key-row-action">
+            <button class="key-toggle {{item.toggleClass}}" bindtap="toggleKey" data-key="{{item.code}}">{{item.toggleLabel}}</button>
+            <button class="key-toggle key-toggle-trial {{item.trialActive ? 'key-toggle-trial-on' : ''}}" wx:if="{{item.showTrialBtn}}" bindtap="toggleBeautyTrial" data-phone="{{item.phone}}">{{item.trialLabel}}</button>
+          </view>
+        </view>
+      </block>
+      <view wx:if="{{keyList.length === 0}}" class="key-empty">暂无激活码</view>
+    </scroll-view>
+    <view class="modal-actions">
+      <button class="btn btn-primary" bindtap="closeKeyListModal">关闭</button>
+    </view>
+  </view>
+</view>
+
+<!-- ===== 激活码备注编辑弹窗 ===== -->
+<view class="overlay" wx:if="{{showKeyEditModal}}" bindtap="closeKeyEditModal">
+  <view class="modal" catchtap>
+    <view class="modal-title">{{editingKeyTitle}}</view>
+    <view class="input-group">
+      <text class="input-label">手机号</text>
+      <input class="input" type="number" maxlength="11" placeholder="用户手机号" value="{{editingKeyPhone}}" bindinput="onEditKeyPhoneInput" />
+    </view>
+    <view class="input-group">
+      <text class="input-label">性别</text>
+      <input class="input" placeholder="男/女" value="{{editingKeyGender}}" bindinput="onEditKeyGenderInput" />
+    </view>
+    <view class="input-group">
+      <text class="input-label">年龄</text>
+      <input class="input" type="number" placeholder="年龄" value="{{editingKeyAge}}" bindinput="onEditKeyAgeInput" />
+    </view>
+    <view class="input-group">
+      <text class="input-label">昵称</text>
+      <input class="input" placeholder="用户昵称" value="{{editingKeyNickname}}" bindinput="onEditKeyNicknameInput" />
+    </view>
+    <view class="input-group">
+      <text class="input-label">备注</text>
+      <input class="input" placeholder="备注信息" value="{{editingKeyNote}}" bindinput="onEditKeyNoteInput" />
+    </view>
+    <view class="modal-actions">
+      <button class="btn btn-outline" bindtap="closeKeyEditModal">取消</button>
+      <button class="btn btn-primary" bindtap="saveKeyNote">保存</button>
+    </view>
+  </view>
+</view>
+
+<!-- 预览试用弹窗 -->
+<pay-modal show="{{showPreviewModal}}" mode="expired" isAdminPreview="{{true}}" bind:close="closePreviewModal" />
