@@ -1957,13 +1957,14 @@ _loadCosSdk(0);
         <a href="#" onclick="showBeautyActivationInput();return false" style="font-size:0.72rem;color:#f59e0b;text-decoration:none;font-weight:600">激活码</a>
       </div>
       <!-- 激活码输入区域 -->
-      <div id="beautyActivationArea" style="display:none;margin-bottom:12px;text-align:left">
-        <div class="input-group" style="margin-bottom:6px">
-          <label>激活码</label>
-          <input type="text" id="beautyActivationCodeInput" placeholder="输入6位激活码" maxlength="6" style="text-align:center;font-size:1rem;letter-spacing:4px" />
+      <div id="beautyActivationArea" style="display:none;margin-bottom:12px;padding:14px;border-radius:14px;background:var(--rose-50);border:1px solid var(--border)">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--ink);margin-bottom:8px;text-align:center">输入激活码 + 手机号开通</div>
+        <input type="tel" id="beautyActivationPhone" class="gate-input" placeholder="绑定手机号（11位）" maxlength="11" inputmode="numeric" style="letter-spacing:2px;font-size:0.95rem;margin-bottom:8px" autocomplete="off">
+        <div style="display:flex;gap:8px">
+          <input type="text" id="beautyActivationCodeInput" class="gate-input" placeholder="6位激活码" maxlength="6" inputmode="numeric" style="flex:1;letter-spacing:6px;font-size:1rem;margin-bottom:0">
+          <button class="btn" onclick="verifyBeautyActivationCode();playClick()" style="flex-shrink:0;padding:10px 16px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1025;font-weight:700;font-size:0.8rem;border:none;cursor:pointer;white-space:nowrap">开通</button>
         </div>
-        <div id="beautyActivationMsg" style="font-size:0.76rem;color:#ef4444;margin-bottom:6px;min-height:18px"></div>
-        <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none" onclick="verifyBeautyActivationCode();playClick()">验证激活码</button>
+        <div id="beautyActivationMsg" style="font-size:0.7rem;color:var(--rose-500);text-align:center;margin-top:6px;min-height:16px"></div>
       </div>
     </div>
     <!-- 已开通时显示的内容（由 JS 动态控制） -->
@@ -3852,10 +3853,10 @@ function showBeautyActivationInput() {
 
 /* 29.9升级版弹窗：激活码验证 — 通过后开通升级版（beautyPaid） */
 function verifyBeautyActivationCode() {
-  var phone = getCurrentPhone();
+  var phone = document.getElementById('beautyActivationPhone').value.trim();
   var code = document.getElementById('beautyActivationCodeInput').value.trim();
   var msg = document.getElementById('beautyActivationMsg');
-  if (!phone || phone === 'admin' || phone === 'local') { msg.textContent = '请先登录'; return; }
+  if (!phone || !/^1\d{10}$/.test(phone)) { msg.textContent = '请输入正确的11位手机号'; return; }
   if (!code) { msg.textContent = '请输入激活码'; return; }
   if (code.length !== 6) { msg.textContent = '激活码为6位数字'; return; }
   /* 激活码 151601 仅管理员可用 */
